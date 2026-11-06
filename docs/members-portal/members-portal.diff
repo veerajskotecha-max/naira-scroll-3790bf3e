@@ -6580,13 +6580,193 @@ index 0000000..60c30a9
 +};
 +
 +export default LaidOut;
+diff --git a/src/components/portal/LookGlass.test.tsx b/src/components/portal/LookGlass.test.tsx
+new file mode 100644
+index 0000000..edf1cba
+--- /dev/null
++++ b/src/components/portal/LookGlass.test.tsx
+@@ -0,0 +1,174 @@
++import { cleanup, render } from "@testing-library/react";
++import { afterEach, describe, expect, it, vi } from "vitest";
++import { jewellery as bundled } from "@/data/jewellery";
++import { jewellerySnapshot } from "@/data/jewellerySnapshot";
++import type { JewelPiece } from "@/data/jewellery";
++import { chainPoint, dropY, vanityPiece, type VanityPiece } from "@/lib/portal/vanity";
++import LookGlass, { labelsFor, type Worn } from "./LookGlass";
++
++/* The glass draws every chain first and every pendant above them all,
++   whatever order she tapped them in: a drop always hangs from its own chain,
++   and a longer chain passes behind its bezel (an ivory knockout round the
++   ring), never across the listing's photo. Each pendant swings and fades
++   with its own chain; each name still points to its own chain. */
++
++const catalogue: JewelPiece[] = [...bundled, ...jewellerySnapshot.filter((p) => !bundled.some((j) => j.handle === p.handle))];
++const piece = (h: string) => vanityPiece(catalogue.find((p) => p.handle === h)!, undefined, 7)!;
++/* A piece at another listed length (40/45 has no pair in the catalogue). */
++const at = (v: VanityPiece, cm: number): VanityPiece => ({ ...v, piece: { ...v.piece, handle: `${v.piece.handle}-${cm}` }, length: { ...v.length, cm } });
++
++const NOCTURNE = piece("bold-nocturne-chain"); // 46 cm, links
++const DEWDROP = piece("dewdrop-bezel-necklace"); // 42 cm, a pendant
++const BAGUETTE = piece("baguette-tennis-necklace"); // 36 cm, stones
++const HEART = piece("birthstone-heart-necklace"); // 40 cm, a pendant
++const TEARDROP = piece("teardrop-lariat"); // 40.5 cm, a pendant
++
++const worn = (list: VanityPiece[], leaving = false): Worn[] => list.map((v) => ({ key: v.piece.handle, v, ...(leaving ? { leaving } : {}) }));
++const glass = (list: VanityPiece[], extenders = false) => render(<LookGlass worn={worn(list)} extenders={extenders} onGone={() => {}} />);
++
++const orders = <T,>(xs: T[]): T[][] => (xs.length <= 1 ? [xs] : xs.flatMap((x, i) => orders([...xs.slice(0, i), ...xs.slice(i + 1)]).map((rest) => [x, ...rest])));
++const round = (n: number) => Math.round(n * 10) / 10;
++const translateY = (g: Element) => Number(/translate\(\s*[\d.]+[ ,]+([\d.]+)\)/.exec(g.getAttribute("transform") ?? "")![1]);
++
++afterEach(() => {
++  cleanup();
++  delete (Element.prototype as unknown as { animate?: unknown }).animate;
++});
++
++describe("the looking-glass's layers", () => {
++  const cases: [string, VanityPiece[]][] = [
++    ...orders([BAGUETTE, DEWDROP, NOCTURNE]).map((o): [string, VanityPiece[]] => [o.map((v) => v.length.cm).join(", "), o]),
++    ...orders([DEWDROP, NOCTURNE]).map((o): [string, VanityPiece[]] => [o.map((v) => v.length.cm).join(", "), o]),
++    ...orders([HEART, at(NOCTURNE, 45)]).map((o): [string, VanityPiece[]] => [o.map((v) => v.length.cm).join(", "), o]),
++  ];
++
++  it.each(cases)("tapped in the order %s cm: every chain first, every pendant above them all, at its own chain's lowest point", (_, list) => {
++    const { container } = glass(list);
++    const chains = [...container.querySelectorAll(".ig-vn-chain")];
++    const pendants = [...container.querySelectorAll(".ig-vn-pendant")];
++    expect(chains).toHaveLength(list.length);
++    expect(pendants).toHaveLength(list.filter((v) => v.pendant).length);
++    // Every pendant after (so over) every chain, in one layer, whatever the tap order.
++    for (const p of pendants) for (const c of chains) expect(c.compareDocumentPosition(p) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
++    // No chain carries a bezel; each pendant hangs at its own chain's lowest point.
++    for (const c of chains) expect(c.querySelector("circle, image")).toBeNull();
++    const own = list.filter((v) => v.pendant).map((v) => round(dropY(v.length.cm)));
++    expect(pendants.map((p) => round(translateY(p.querySelector("[transform]")!)))).toEqual(own.sort((a, b) => b - a));
++  });
++
++  it.each(cases)("tapped in the order %s cm: a longer chain passes behind the bezel, an ivory knockout round its ring", (_, list) => {
++    const { container } = glass(list);
++    const vellum = container.querySelector("svg > ellipse")!.getAttribute("fill");
++    const pendants = container.querySelectorAll(".ig-vn-pendant");
++    expect(pendants.length).toBeGreaterThan(0);
++    for (const p of pendants) {
++      const parts = [...p.querySelector("[transform]")!.children];
++      const knock = parts.findIndex((el) => el.tagName === "circle" && el.getAttribute("fill") === "none");
++      const bezel = parts.findIndex((el) => el.tagName === "circle" && el.getAttribute("fill") !== "none");
++      const bail = parts.findIndex((el) => el.tagName === "path");
++      expect(knock).toBeGreaterThanOrEqual(0);
++      const k = parts[knock];
++      const b = parts[bezel];
++      expect(k.getAttribute("stroke")).toBe(vellum);
++      // It reaches past the ring's outer edge (a visible gap in any chain behind) and meets the ring (no sliver between).
++      const r = Number(k.getAttribute("r"));
++      const w = Number(k.getAttribute("stroke-width"));
++      const ringOuter = Number(b.getAttribute("r")) + Number(b.getAttribute("stroke-width")) / 2;
++      expect(r + w / 2).toBeGreaterThanOrEqual(ringOuter + 1.5);
++      expect(r - w / 2).toBeLessThanOrEqual(Number(b.getAttribute("r")));
++      // Under the bezel and its own bail, so the drop still hangs from its own chain.
++      expect(knock).toBeLessThan(bezel);
++      expect(knock).toBeLessThan(bail);
++      expect(k.getAttribute("cy")).toBe(b.getAttribute("cy"));
++    }
++  });
++
++  it("lays a higher drop over a lower one, whatever the order", () => {
++    for (const list of orders([DEWDROP, TEARDROP, HEART])) {
++      const { container, unmount } = glass(list);
++      const ys = [...container.querySelectorAll(".ig-vn-pendant")].map((p) => translateY(p.querySelector("[transform]")!));
++      expect(ys).toEqual([...ys].sort((a, b) => b - a));
++      unmount();
++    }
++  });
++
++  it.each(cases)("tapped in the order %s cm: each name and its leader still point to its own chain", (_, list) => {
++    const { container } = glass(list);
++    const labels = labelsFor(worn(list));
++    [...container.querySelectorAll(".ig-vn-chain")].forEach((c, i) => {
++      const v = list[i];
++      const [first] = v.piece.name.split(/\s+/);
++      expect(c.querySelector("text")!.textContent).toMatch(new RegExp(`^${first}`));
++      const leader = [...c.querySelectorAll("path")].find((p) => /^M[\d.]+ [\d.]+L/.test(p.getAttribute("d") ?? ""))!;
++      const [fx, fy] = chainPoint(v.length.cm, labels[i].left, 0.6);
++      expect(leader.getAttribute("d")).toMatch(new RegExp(`^M${fx.toFixed(1)} ${fy.toFixed(1)}L`));
++    });
++  });
++
++  it("keeps the extenders' dashed tails on the chains' layer, under every pendant", () => {
++    const { container } = glass([DEWDROP, NOCTURNE], true);
++    const tails = [...container.querySelectorAll('path[stroke-dasharray="3 3"]')];
++    expect(tails).toHaveLength(2);
++    for (const t of tails) expect(t.closest(".ig-vn-chain")).not.toBeNull();
++  });
++});
++
++describe("a pendant moves with its own chain", () => {
++  type Call = { el: Element; keyframes: Keyframe[]; options: KeyframeAnimationOptions; a: { onfinish: (() => void) | null; cancel: ReturnType<typeof vi.fn> } };
++  const animate = () => {
++    const calls: Call[] = [];
++    (Element.prototype as unknown as { animate: unknown }).animate = function (this: Element, keyframes: Keyframe[], options: KeyframeAnimationOptions) {
++      const a = { onfinish: null, cancel: vi.fn() };
++      calls.push({ el: this, keyframes, options, a });
++      return a;
++    };
++    return calls;
++  };
++
++  it("swings with it as it goes on, about the same point, at the same moment", () => {
++    const calls = animate();
++    const { container } = glass([NOCTURNE, DEWDROP]);
++    const chain = container.querySelectorAll(".ig-vn-chain")[1];
++    const pendant = container.querySelector(".ig-vn-pendant")!;
++    expect((pendant as SVGGElement).style.transformOrigin).toBe((chain as SVGGElement).style.transformOrigin);
++    const swing = (el: Element) => calls.find((c) => c.el === el && String(c.keyframes[0].transform ?? "").startsWith("rotate"));
++    expect(swing(pendant)).toBeDefined();
++    expect(swing(pendant)!.keyframes).toEqual(swing(chain)!.keyframes);
++    expect(swing(pendant)!.options).toEqual(swing(chain)!.options);
++  });
++
++  it("fades with it as it comes off, is gone once, and comes back whole if she lays it on again first", () => {
++    const calls = animate();
++    const onGone = vi.fn();
++    const { container, rerender } = render(<LookGlass worn={worn([DEWDROP])} extenders={false} onGone={onGone} />);
++    const chain = container.querySelector(".ig-vn-chain")!;
++    const pendant = container.querySelector(".ig-vn-pendant")!;
++    rerender(<LookGlass worn={worn([DEWDROP], true)} extenders={false} onGone={onGone} />);
++    const fade = (el: Element) => calls.find((c) => c.el === el && c.keyframes[0].opacity === 1 && c.keyframes[1]?.opacity === 0);
++    expect(fade(chain)).toBeDefined();
++    expect(fade(pendant)).toBeDefined();
++    expect(fade(pendant)!.options).toEqual(fade(chain)!.options);
++    // Laid on again before the fade ends: both come back, neither left at nothing.
++    rerender(<LookGlass worn={worn([DEWDROP])} extenders={false} onGone={onGone} />);
++    expect(fade(chain)!.a.cancel).toHaveBeenCalled();
++    expect(fade(pendant)!.a.cancel).toHaveBeenCalled();
++    expect(onGone).not.toHaveBeenCalled();
++    // Taken off and let go: said gone once.
++    rerender(<LookGlass worn={worn([DEWDROP], true)} extenders={false} onGone={onGone} />);
++    for (const c of calls.slice(-2)) c.a.onfinish?.();
++    expect(onGone).toHaveBeenCalledTimes(1);
++    expect(onGone).toHaveBeenCalledWith(DEWDROP.piece.handle);
++  });
++
++  it("is simply there, or gone, under reduced motion", () => {
++    const calls = animate();
++    const matchMedia = window.matchMedia;
++    window.matchMedia = ((query: string) => ({ matches: query.includes("reduce"), media: query, addEventListener() {}, removeEventListener() {} })) as unknown as typeof window.matchMedia;
++    const onGone = vi.fn();
++    const { rerender } = render(<LookGlass worn={worn([DEWDROP])} extenders={false} onGone={onGone} />);
++    rerender(<LookGlass worn={worn([DEWDROP], true)} extenders={false} onGone={onGone} />);
++    expect(calls).toHaveLength(0);
++    expect(onGone).toHaveBeenCalledTimes(1);
++    window.matchMedia = matchMedia;
++  });
++});
 diff --git a/src/components/portal/LookGlass.tsx b/src/components/portal/LookGlass.tsx
 new file mode 100644
-index 0000000..0e9b228
+index 0000000..04a3594
 --- /dev/null
 +++ b/src/components/portal/LookGlass.tsx
-@@ -0,0 +1,206 @@
-+import { useId, useLayoutEffect, useRef } from "react";
+@@ -0,0 +1,249 @@
++import { useId, useLayoutEffect, useRef, type RefObject } from "react";
 +import { shopifyImage } from "@/lib/shopifyImage";
 +import { EASE_BLOOM, EASE_REVEAL, play, stillMotion } from "@/lib/portal/motion";
 +import { GLASS, chainKind, chainPath, chainPoint, dropY, isBold, type ChainKind, type VanityPiece } from "@/lib/portal/vanity";
@@ -6600,14 +6780,19 @@ index 0000000..0e9b228
 +  the neck out over the collarbones, in the style its listing names (a fine
 +  chain, links, ball beads, a smooth snake, a line of stones, pearl
 +  stations: vanity's chainKind), its pendant the listing's own photo in a
-+  small round gold bezel. Its name sits beside the glass's edge, from the
++  small round gold bezel. Every chain is drawn first and every pendant on
++  one layer above them all, whatever order she tapped them in (a higher drop
++  over a lower one), each bezel in a thin ring of the glass's own vellum, so
++  a longer chain passes behind it and every drop hangs from its own chain.
++  Its name sits beside the glass's edge, from the
 +  highest chain down, alternately left and right, a hairline leading to it
 +  from the chain's own curve. "Show extenders" adds each listed extender as
 +  a dashed tail at its full reach.
 +
 +  Putting one on: it draws on from the clasp round to the centre (600 ms,
 +  stroke-dashoffset), its links or stones fade in over it, it swings once
-+  into its curve (one damped turn, 700 ms) and is still. Taking one off: a 250 ms fade. Under reduced motion each
++  into its curve (one damped turn, 700 ms) and is still. Taking one off: a 250 ms fade. Its pendant swings and fades
++  with it, about the same point, at the same moment. Under reduced motion each
 +  is simply there, or gone. The glass is aria-hidden: the room's "Your
 +  look" says it in words.
 +*/
@@ -6623,6 +6808,8 @@ index 0000000..0e9b228
 +const short = (name: string) => name.replace(/\s+[—-]\s+.*$/, "").split(/\s+/).slice(0, 2);
 +
 +const IVORY = "#FFF8EE";
++/* The glass's own vellum: a bezel's knockout ring is drawn in it, so a chain behind the bezel breaks off just short of its rim. */
++const VELLUM = "rgb(255 248 245)";
 +/* Each style's line, in the glass's units (318 px wide on a phone): its weight tells the pieces apart. */
 +const WEIGHT: Record<ChainKind, number> = { fine: 1.1, smooth: 1.7, links: 2.2, beads: 0.6, stones: 2.4, pearl: 1.1 };
 +
@@ -6645,16 +6832,35 @@ index 0000000..0e9b228
 +
 +type Label = { left: boolean; y: number };
 +
-+const Chain = ({ w, label, extenders, clip, onGone }: { w: Worn; label: Label; extenders: boolean; clip: string; onGone: (key: string) => void }) => {
++const colourOf = (v: VanityPiece) => (v.metal === "silver" ? SILVER : GOLD);
++/* Every piece on the glass turns about the neck: a chain and its pendant (on the layer above) swing as one. */
++const ORIGIN = { transformOrigin: `${GLASS.cx}px ${GLASS.neckY}px` };
++const swing = (el: Element | null) => play(el, SWING.map((r) => ({ transform: `rotate(${r}deg)` })), { duration: 700, delay: 600, easing: EASE_BLOOM });
++
++/* Taking one off: a 250 ms fade, then `gone` (at once under reduced motion). Laid on again before it ends, it is whole again. */
++const useLeave = (ref: RefObject<Element>, w: Worn, gone?: (key: string) => void) =>
++  useLayoutEffect(() => {
++    if (!w.leaving) return;
++    const a = stillMotion() ? null : play(ref.current, [{ opacity: 1 }, { opacity: 0 }], { duration: 250, easing: EASE_REVEAL, fill: "forwards" });
++    if (!a) {
++      gone?.(w.key);
++      return;
++    }
++    if (gone) a.onfinish = () => gone(w.key);
++    return () => {
++      a.onfinish = null;
++      a.cancel();
++    };
++  }, [ref, w.leaving, w.key, gone]);
++
++const Chain = ({ w, label, extenders, onGone }: { w: Worn; label: Label; extenders: boolean; onGone: (key: string) => void }) => {
 +  const ref = useRef<SVGGElement>(null);
 +  const line = useRef<SVGPathElement>(null);
 +  const texture = useRef<SVGGElement>(null);
 +  const { v } = w;
-+  const y = dropY(v.length.cm);
-+  const colour = v.metal === "silver" ? SILVER : GOLD;
++  const colour = colourOf(v);
 +  const { left, y: labelY } = label;
 +  const lx = left ? 86 : GLASS.w - 86;
-+  const photo = v.variant?.image ?? v.piece.cover ?? v.piece.image;
 +  const kind = chainKind(v.piece);
 +  const bold = isBold(v.piece);
 +  const d = chainPath(v.length.cm);
@@ -6666,37 +6872,19 @@ index 0000000..0e9b228
 +    if (w.leaving || stillMotion()) return;
 +    play(line.current, [{ strokeDashoffset: 1 }, { strokeDashoffset: 0 }], { duration: 600, easing: EASE_REVEAL, fill: "backwards" });
 +    play(texture.current, [{ opacity: 0 }, { opacity: 1 }], { duration: 300, delay: 450, easing: EASE_REVEAL, fill: "backwards" });
-+    play(ref.current, SWING.map((r) => ({ transform: `rotate(${r}deg)` })), { duration: 700, delay: 600, easing: EASE_BLOOM });
++    swing(ref.current);
 +    // Once, as it goes on.
 +    // eslint-disable-next-line react-hooks/exhaustive-deps
 +  }, []);
-+  useLayoutEffect(() => {
-+    if (!w.leaving) return;
-+    const a = stillMotion() ? null : play(ref.current, [{ opacity: 1 }, { opacity: 0 }], { duration: 250, easing: EASE_REVEAL, fill: "forwards" });
-+    if (!a) {
-+      onGone(w.key);
-+      return;
-+    }
-+    a.onfinish = () => onGone(w.key);
-+    return () => {
-+      a.onfinish = null;
-+    };
-+  }, [w.leaving, w.key, onGone]);
++  useLeave(ref, w, onGone);
 +
 +  return (
-+    <g ref={ref} className="ig-vn-chain" style={{ transformOrigin: `${GLASS.cx}px ${GLASS.neckY}px` }}>
++    <g ref={ref} className="ig-vn-chain" style={ORIGIN}>
 +      {extenders && v.length.ext && <path d={chainPath(v.length.cm + v.length.ext)} fill="none" stroke={colour} strokeWidth="1" strokeDasharray="3 3" opacity=".6" />}
 +      <path ref={line} d={d} pathLength={1} fill="none" stroke={colour} strokeWidth={kind === "links" && bold ? 2.8 : WEIGHT[kind]} strokeLinecap="round" style={{ strokeDasharray: 1 }} data-kind={kind} />
 +      <g ref={texture}>
 +        <Texture kind={kind} d={d} colour={colour} bold={bold} />
 +      </g>
-+      {v.pendant && (
-+        <g transform={`translate(${GLASS.cx} ${y})`}>
-+          <path d="M0 0V5" stroke={colour} strokeWidth="1" />
-+          <circle cy="16" r="11.5" fill="#FBF3EC" stroke={GOLD} strokeWidth="1.4" />
-+          {photo && <image href={shopifyImage(photo, 120)} x="-10" y="6" width="20" height="20" preserveAspectRatio="xMidYMid slice" clipPath={`url(#${clip})`} />}
-+        </g>
-+      )}
 +      <path d={`M${fx.toFixed(1)} ${fy.toFixed(1)}L${lx + (left ? 2 : -2)} ${labelY - 4}`} stroke={GOLD} strokeOpacity=".6" strokeWidth=".5" fill="none" />
 +      <text x={lx} y={labelY} textAnchor={left ? "end" : "start"} className="ig-vn-label">
 +        <tspan x={lx}>{first}</tspan>
@@ -6706,6 +6894,34 @@ index 0000000..0e9b228
 +          </tspan>
 +        )}
 +      </text>
++    </g>
++  );
++};
++
++/* A chain's pendant, on the layer above every chain: its bail, the bezel in a knockout ring of vellum (a longer chain
++   behind it breaks off just short of the rim, so it reads as passing behind, never threaded through or across the
++   photo), and the listing's own photo. It swings and fades with its chain. */
++const Pendant = ({ w, clip }: { w: Worn; clip: string }) => {
++  const ref = useRef<SVGGElement>(null);
++  const { v } = w;
++  const photo = v.variant?.image ?? v.piece.cover ?? v.piece.image;
++
++  useLayoutEffect(() => {
++    if (w.leaving || stillMotion()) return;
++    swing(ref.current);
++    // Once, as it goes on, with its chain.
++    // eslint-disable-next-line react-hooks/exhaustive-deps
++  }, []);
++  useLeave(ref, w);
++
++  return (
++    <g ref={ref} className="ig-vn-pendant" style={ORIGIN}>
++      <g transform={`translate(${GLASS.cx} ${dropY(v.length.cm)})`}>
++        <circle cy="16" r="12.8" fill="none" stroke={VELLUM} strokeWidth="3.4" />
++        <path d="M0 0V5" stroke={colourOf(v)} strokeWidth="1" />
++        <circle cy="16" r="11.5" fill="#FBF3EC" stroke={GOLD} strokeWidth="1.4" />
++        {photo && <image href={shopifyImage(photo, 120)} x="-10" y="6" width="20" height="20" preserveAspectRatio="xMidYMid slice" clipPath={`url(#${clip})`} />}
++      </g>
 +    </g>
 +  );
 +};
@@ -6751,7 +6967,7 @@ index 0000000..0e9b228
 +        </g>
 +      </defs>
 +      {/* The glass: vellum in a gold double hairline. */}
-+      <ellipse cx={cx} cy={h / 2 + 4} rx={w / 2 - 14} ry={h / 2 - 16} fill="rgb(255 248 245)" />
++      <ellipse cx={cx} cy={h / 2 + 4} rx={w / 2 - 14} ry={h / 2 - 16} fill={VELLUM} />
 +      <g clipPath={`url(#${uid}o)`}>
 +        {/* A neckline and collarbones, one ink line, nothing marked. */}
 +        <g fill="none" stroke={INK} strokeWidth="1.1" strokeLinecap="round">
@@ -6761,8 +6977,15 @@ index 0000000..0e9b228
 +          <path d="M146 166L150 171L154 166" strokeOpacity=".7" />
 +        </g>
 +        {worn.map((x, i) => (
-+          <Chain key={x.key} w={x} label={labels[i]} extenders={extenders} clip={`${uid}b`} onGone={onGone} />
++          <Chain key={x.key} w={x} label={labels[i]} extenders={extenders} onGone={onGone} />
 +        ))}
++        {/* Every pendant above every chain, whatever the tap order: from the lowest drop up, so a higher one lies over it. */}
++        {worn
++          .filter((x) => x.v.pendant)
++          .sort((a, b) => b.v.length.cm - a.v.length.cm)
++          .map((x) => (
++            <Pendant key={x.key} w={x} clip={`${uid}b`} />
++          ))}
 +      </g>
 +      <ellipse cx={cx} cy={h / 2 + 4} rx={w / 2 - 14} ry={h / 2 - 16} fill="none" stroke={GOLD} strokeWidth="1.2" />
 +      <ellipse cx={cx} cy={h / 2 + 4} rx={w / 2 - 8} ry={h / 2 - 10} fill="none" stroke={GOLD} strokeOpacity=".55" strokeWidth=".6" />
@@ -7208,10 +7431,10 @@ index 0000000..9447ad9
 +export default OccasionForm;
 diff --git a/src/components/portal/PetalBurst.ts b/src/components/portal/PetalBurst.ts
 new file mode 100644
-index 0000000..1410227
+index 0000000..06eed7e
 --- /dev/null
 +++ b/src/components/portal/PetalBurst.ts
-@@ -0,0 +1,37 @@
+@@ -0,0 +1,50 @@
 +import { PETAL_HUE, PETAL_IDS } from "./PetalSymbols";
 +import { EASE_IN, play, stillMotion } from "@/lib/portal/motion";
 +import { clampCount, petalNode, settle, type PetalOptions } from "./petalFlight";
@@ -7219,14 +7442,27 @@ index 0000000..1410227
 +/* At most 24 petals, removed as each lands (petalFlight.ts); the Doors' fall is PetalFall.ts. */
 +export { MAX_PETALS } from "./petalFlight";
 +
++type BurstOptions = PetalOptions & {
++  /** The most, in px, a petal's centre climbs above where it starts: the round's upper half opens flatter to stay under it. */
++  rise?: number;
++};
++
++/* Each petal lifts this much as it opens, and reaches 0.62 of its way out at the top of its arc. */
++const LIFT = 18;
++const OUT = 0.62;
++
 +/** A round burst that opens out and fades where it is: a bloom for something she did. */
-+export const burstPetals = (layer: HTMLElement | null, x: number, y: number, options: PetalOptions = {}): Animation[] => {
++export const burstPetals = (layer: HTMLElement | null, x: number, y: number, options: BurstOptions = {}): Animation[] => {
 +  if (!layer || stillMotion()) return [];
 +  const count = clampCount(options.count, 18);
 +  const spread = options.spread ?? 120;
 +  const duration = options.duration ?? 820;
 +  const ids = options.ids ?? PETAL_IDS;
 +  const [sMin, sMax] = options.size ?? [9, 18];
++  // Under a ceiling, the lift and the upper half's reach (at most spread * 1.15 * 0.8 out) shrink to fit it.
++  const rise = Math.max(0, options.rise ?? LIFT + spread);
++  const lift = Math.min(LIFT, rise);
++  const flat = Math.min(1, (rise - lift) / (spread * 1.15 * 0.8 * OUT));
 +  const out: Animation[] = [];
 +  for (let i = 0; i < count; i++) {
 +    const id = ids[i % ids.length];
@@ -7234,13 +7470,13 @@ index 0000000..1410227
 +    const angle = (i / count) * Math.PI * 2 + Math.random() * 0.5;
 +    const dist = spread * (0.55 + Math.random() * 0.6);
 +    const dx = Math.cos(angle) * dist;
-+    const dy = Math.sin(angle) * dist * 0.8;
++    const dy = Math.sin(angle) * dist * 0.8 * (Math.sin(angle) < 0 ? flat : 1);
 +    const turn = (Math.random() - 0.5) * 540;
 +    const a = play(
 +      svg,
 +      [
 +        { transform: "translate(-50%,-50%) translate(0,0) rotate(0deg) scale(.3)", opacity: 0, easing: "cubic-bezier(0.2, 0.7, 0.3, 1)" },
-+        { transform: `translate(-50%,-50%) translate(${dx * 0.62}px,${dy * 0.62 - 18}px) rotate(${turn * 0.6}deg) scale(1)`, opacity: 1, offset: 0.4, easing: EASE_IN },
++        { transform: `translate(-50%,-50%) translate(${dx * OUT}px,${dy * OUT - lift}px) rotate(${turn * 0.6}deg) scale(1)`, opacity: 1, offset: 0.4, easing: EASE_IN },
 +        { transform: `translate(-50%,-50%) translate(${dx}px,${dy + 34}px) rotate(${turn}deg) scale(.85)`, opacity: 0 },
 +      ],
 +      { duration: duration * (0.8 + Math.random() * 0.35), delay: (options.delay ?? 0) + Math.random() * 60, easing: "linear", fill: "both" },
@@ -7251,10 +7487,10 @@ index 0000000..1410227
 +};
 diff --git a/src/components/portal/PetalCrown.test.tsx b/src/components/portal/PetalCrown.test.tsx
 new file mode 100644
-index 0000000..3229b00
+index 0000000..841e7ec
 --- /dev/null
 +++ b/src/components/portal/PetalCrown.test.tsx
-@@ -0,0 +1,355 @@
+@@ -0,0 +1,405 @@
 +import { cleanup, render, screen, waitFor, within } from "@testing-library/react";
 +import { MemoryRouter } from "react-router-dom";
 +import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -7311,7 +7547,8 @@ index 0000000..3229b00
 +  animations.push({ el: this, keyframes, options: options ?? {} });
 +  return { currentTime: 0, finished: Promise.resolve(), onfinish: null, oncancel: null, play: () => {}, pause: () => {}, finish: () => {}, cancel: () => {}, playState: "running" } as unknown as Animation;
 +};
-+const crownAnimations = () => animations.filter((a) => a.el.closest(".ig-bed-crown"));
++/* The crown's own animations: its pieces and gold leaf in the bed, and its fall in the layer beside the bed. */
++const crownAnimations = () => animations.filter((a) => a.el.closest(".ig-bed-crown, .ig-crown-fall"));
 +
 +const member = (p?: number, over: Partial<Member> = {}): Member => ({
 +  user: { id: USER, email: "ananya@example.com", created_at: "2026-11-01T05:00:00Z", user_metadata: {} } as unknown as Member["user"],
@@ -7537,6 +7774,55 @@ index 0000000..3229b00
 +    expect(crownAnimations()).toEqual([]);
 +  });
 +
++  /* Each petal lands when `land` is called; everything else finishes at once. */
++  const holdPetals = () => {
++    let land = () => {};
++    const landed = new Promise<void>((r) => (land = r));
++    const cancels = vi.fn();
++    (Element.prototype as unknown as { animate: unknown }).animate = function (this: Element, keyframes: Keyframe[], options: KeyframeAnimationOptions) {
++      animations.push({ el: this, keyframes, options: options ?? {} });
++      const finished = this.matches(".ig-petal") ? landed.then(() => ({}) as Animation) : Promise.resolve({} as Animation);
++      return { finished, play: () => {}, pause: () => {}, cancel: cancels, playState: "running" } as unknown as Animation;
++    };
++    return { land: () => land(), cancels };
++  };
++
++  it("lets the fall open above the bed's top edge: its petals fall in a layer beside the bed, which still clips its plants", async () => {
++    const { land } = holdPetals();
++    const { container } = home(WHOLE);
++    await waitFor(() => expect(container.querySelector(".ig-crown-fall .ig-petal")).not.toBeNull());
++    const bed = container.querySelector(".ig-bed") as HTMLElement;
++    const layer = container.querySelector(".ig-crown-fall") as HTMLElement;
++    // In the bed's own wrap, laid over the bed, and not inside it: the bed's clip never slices a petal flat at its top.
++    expect(layer.parentElement).toBe(bed.parentElement);
++    expect(bed.contains(layer)).toBe(false);
++    expect(layer.style.position).toBe("absolute");
++    expect(layer.style.pointerEvents).toBe("none");
++    expect(layer.getAttribute("aria-hidden")).toBe("true");
++    const petals = crownAnimations().filter((a) => a.el.matches(".ig-petal"));
++    expect(petals.length).toBeGreaterThan(0);
++    expect(petals.length).toBeLessThanOrEqual(24);
++    for (const a of petals) {
++      expect(a.el.closest(".ig-bed")).toBeNull();
++      expect(a.el.parentElement).toBe(layer);
++    }
++    // Nothing else leaves the bed: its pieces stay in it, and it still clips at its edges.
++    expect(bed.querySelector(".ig-bed-crown [data-piece]")).not.toBeNull();
++    expect(readFileSync(resolve(src, "pages/members/members.css"), "utf8")).toMatch(/\.ig-bed \{[^}]*overflow: hidden;/);
++    // Once the petals have landed, the layer goes.
++    land();
++    await waitFor(() => expect(container.querySelector(".ig-crown-fall")).toBeNull());
++  });
++
++  it("takes the fall and its layer away if she leaves the garden mid-fall", async () => {
++    const { cancels } = holdPetals();
++    const { container, unmount } = home(WHOLE);
++    await waitFor(() => expect(container.querySelector(".ig-crown-fall .ig-petal")).not.toBeNull());
++    unmount();
++    expect(document.querySelector(".ig-crown-fall")).toBeNull();
++    expect(cancels).toHaveBeenCalled();
++  });
++
 +  it("under reduced motion, is drawn final at once, with no animation and no petals", async () => {
 +    setReducedMotion(true);
 +    noteFound(USER, BITS.care);
@@ -7612,10 +7898,10 @@ index 0000000..3229b00
 +});
 diff --git a/src/components/portal/PetalCrown.tsx b/src/components/portal/PetalCrown.tsx
 new file mode 100644
-index 0000000..c055c9b
+index 0000000..c6c5457
 --- /dev/null
 +++ b/src/components/portal/PetalCrown.tsx
-@@ -0,0 +1,196 @@
+@@ -0,0 +1,225 @@
 +import { useLayoutEffect, useRef, useState, type CSSProperties } from "react";
 +import { BED } from "@/lib/portal/gardenLayout";
 +import { FLOWER_PETALS, FLOWER_STEM, LEAF_SAGE, PETAL_BLUSH } from "@/lib/portal/brandFlower";
@@ -7640,7 +7926,12 @@ index 0000000..c055c9b
 +  When all five are home, once on this phone, a gold-leaf line draws round
 +  it (stroke-dashoffset, 1.2 s) and 24 blush and gold petals fall from the
 +  crown, once any petals still in the air (the Doors') have landed; then it
-+  is still art, edged in gold leaf for good. Each of those waits, at its
++  is still art, edged in gold leaf for good. The crown stands just under the
++  bed's top edge and the petals open up past it before they fall, so they
++  fall in a layer of their own laid over the bed in its wrap, not in the bed
++  (which clips its plants at its edges and would slice them flat there),
++  never up over the words above the garden (the round opens flatter on top
++  instead); the layer goes once they have landed. Each of those waits, at its
 +  first frame, until the crown is in view below the shop's fixed header and
 +  above the garden path: played under either, the gold leaf would be marked
 +  drawn unseen.
@@ -7670,6 +7961,19 @@ index 0000000..c055c9b
 +};
 +
 +const pathOf = (p: Piece) => (p.part === "stem" ? FLOWER_STEM : FLOWER_PETALS[p.part]);
++
++/* How far a falling petal's centre keeps from the words above the garden: the largest petal's half, turned, and a hair. */
++const FALL_CLEAR = 10;
++
++/* The fall's layer: laid over the bed, beside it in its wrap, so the bed's clip never cuts the petals at its top edge. */
++const fallLayer = (bed: HTMLElement) => {
++  const layer = document.createElement("div");
++  layer.className = "ig-crown-fall";
++  layer.setAttribute("aria-hidden", "true");
++  layer.style.cssText = `position:absolute;left:${bed.offsetLeft}px;top:${bed.offsetTop}px;width:${bed.offsetWidth}px;height:${bed.offsetHeight}px;pointer-events:none`;
++  bed.after(layer);
++  return layer;
++};
 +
 +const CrownBed = ({ bits: account, member }: { bits: number; member: string }) => {
 +  // Her account's pieces, and any found this visit that her account had no room for.
@@ -7714,6 +8018,7 @@ index 0000000..c055c9b
 +    // Held at the first frame until the crown is in view: played unseen, the gold leaf would be marked drawn unseen.
 +    made.forEach((a) => a.pause());
 +    let fall: Animation[] = [];
++    let layer: HTMLElement | null = null;
 +    let gone = false;
 +    const start = () => {
 +      made.forEach((a) => a.play());
@@ -7726,7 +8031,13 @@ index 0000000..c055c9b
 +        if (gone) return;
 +        const box = root.getBoundingClientRect();
 +        const scale = box.width / BED.w;
-+        fall = burstPetals(root, BLOOM_AT.x * scale, BLOOM_AT.y * scale, {
++        const bed = root.closest<HTMLElement>(".ig-bed");
++        layer = bed?.parentElement ? fallLayer(bed) : null;
++        // Up past the bed's top (or, with no layer beside it, under it), never over the words above her garden (her greeting's
++        // last line): the round opens flatter on top.
++        const ceiling = layer ? bed?.parentElement?.previousElementSibling?.getBoundingClientRect().bottom : box.top;
++        fall = burstPetals(layer ?? root, BLOOM_AT.x * scale, BLOOM_AT.y * scale, {
++          rise: ceiling === undefined ? undefined : box.top + BLOOM_AT.y * scale - ceiling - FALL_CLEAR,
 +          count: 24,
 +          spread: 70 * Math.max(0.8, scale),
 +          duration: 1400,
@@ -7734,6 +8045,9 @@ index 0000000..c055c9b
 +          size: [7, 13],
 +          ids: [PETAL_IDS[0], PETAL_SPARK, PETAL_IDS[4], PETAL_IDS[0], PETAL_SPARK, PETAL_IDS[1]],
 +        });
++        // Each petal is removed as it lands (petalFlight.ts); the layer, once the last has.
++        const own = layer;
++        if (own) void Promise.all(fall.map((a) => a.finished.catch(() => undefined))).then(() => own.remove());
 +      });
 +      // Drawn once on this phone: set when the last edge has drawn to its end (never on a cancel).
 +      const last = lastEdge as Animation | null;
@@ -7760,6 +8074,7 @@ index 0000000..c055c9b
 +      io?.disconnect();
 +      made.forEach((a) => a.cancel());
 +      fall.forEach((a) => a.cancel());
++      layer?.remove();
 +    };
 +    // Once per mount: what was fresh, and whether it is whole, are read as it mounts.
 +    // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -11001,11 +11316,11 @@ index 0000000..b1047fc
 +export default Sprig;
 diff --git a/src/components/portal/StarSheet.test.tsx b/src/components/portal/StarSheet.test.tsx
 new file mode 100644
-index 0000000..be8e932
+index 0000000..3a88c07
 --- /dev/null
 +++ b/src/components/portal/StarSheet.test.tsx
-@@ -0,0 +1,459 @@
-+import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+@@ -0,0 +1,661 @@
++import { act, cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 +import { MemoryRouter } from "react-router-dom";
 +import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 +import { readFileSync } from "node:fs";
@@ -11143,6 +11458,39 @@ index 0000000..be8e932
 +
 +const joinedCount = () => document.querySelectorAll(".ig-star.is-joined").length;
 +const WORDS = "July's flower, the larkspur, written in your sky.";
++/* The words she earned arrive once the flower's line has drawn (here, a moment after the last star). */
++const told = (words = WORDS) => waitFor(() => expect(screen.getByRole("status")).toHaveTextContent(words));
++const flowerLine = () => document.querySelector(".ig-stars-sky path[pathLength='1']");
++
++/* The flower's line draws until `drawn` is called (a cancel ends it as the browser does); everything else finishes at once. */
++const holdFlower = () => {
++  let drawn = () => {};
++  let cut = () => {};
++  const line = new Promise<Animation>((resolve, reject) => {
++    drawn = () => resolve({} as Animation);
++    cut = () => reject(new DOMException("The animation was cancelled.", "AbortError"));
++  });
++  line.catch(() => undefined);
++  const cancels = vi.fn();
++  (Element.prototype as unknown as { animate: unknown }).animate = function (this: Element, keyframes: Keyframe[], options: KeyframeAnimationOptions) {
++    animations.push({ el: this, keyframes, options: options ?? {} });
++    const flower = this === flowerLine();
++    return {
++      finished: flower ? line : Promise.resolve({} as Animation),
++      onfinish: null,
++      oncancel: null,
++      play: () => {},
++      pause: () => {},
++      finish: () => {},
++      cancel: () => {
++        cancels();
++        if (flower) cut();
++      },
++      playState: "running",
++    } as unknown as Animation;
++  };
++  return { drawn: () => drawn(), cancels };
++};
 +
 +describe("in her garden", () => {
 +  const home = (over: Partial<Member> = {}) =>
@@ -11166,6 +11514,13 @@ index 0000000..be8e932
 +    home({ month: null, profile: null });
 +    const link = screen.getByRole("link", { name: "Tell us your month, and your flower joins the stars →" });
 +    expect(link).toHaveAttribute("href", "/members/stone");
++    // The plan's own words, the whole line the link, balanced over its two lines on a phone (no "stars →" left alone).
++    expect(link.parentElement).toHaveClass("ig-lookup");
++    const css = readFileSync(resolve(src, "pages/members/members.css"), "utf8");
++    // (The property is matched as "text-wra[p]", so Tailwind's content scan reads no class in this test.)
++    expect(css).toMatch(/\.ig-lookup > a\.ig-link \{ text-wra[p]: balance; text-align: center; justify-content: center; \}/);
++    // Should a lookup line wrap (a long month flower beside "Look up" at 320 px), a row gap keeps the focus ring off the sentence above.
++    expect(css).toMatch(/\.ig-lookup \{[^}]*column-gap: 0\.5rem; row-gap: 0\.375rem;/);
 +    expect(screen.queryByRole("button", { name: "Look up" })).toBeNull();
 +  });
 +
@@ -11202,18 +11557,18 @@ index 0000000..be8e932
 +    StarSheet = (await import("./StarSheet")).default;
 +  });
 +
-+  it("by taps alone", () => {
++  it("by taps alone", async () => {
 +    const writes: Updater[] = [];
 +    sheet({ changeMeta: (u) => (writes.push(u), { ok: true }) });
 +    for (const star of JULY.stars) fireEvent.pointerDown(sky(), at(star));
 +    expect(joinedCount()).toBe(JULY.stars.length);
-+    expect(screen.getByRole("status")).toHaveTextContent(WORDS);
++    await told();
 +    // Her account keeps one bit, once.
 +    expect(writes).toHaveLength(1);
 +    expect(writes[0](readNaira(null)).p).toBe(STARS);
 +  });
 +
-+  it("by one drag from star to star", () => {
++  it("by one drag from star to star", async () => {
 +    sheet();
 +    fireEvent.pointerDown(sky(), at(JULY.stars[0]));
 +    for (let i = 1; i < JULY.stars.length; i++) {
@@ -11224,18 +11579,18 @@ index 0000000..be8e932
 +    }
 +    fireEvent.pointerUp(sky(), at(JULY.stars[JULY.stars.length - 1]));
 +    expect(joinedCount()).toBe(JULY.stars.length);
-+    expect(screen.getByRole("status")).toHaveTextContent(WORDS);
++    await told();
 +  });
 +
-+  it("by 'Join the next star' alone, and by 'Draw it for me' in one press", () => {
++  it("by 'Join the next star' alone, and by 'Draw it for me' in one press", async () => {
 +    sheet();
 +    for (let i = 0; i < JULY.stars.length; i++) fireEvent.click(screen.getByRole("button", { name: "Join the next star" }));
-+    expect(screen.getByRole("status")).toHaveTextContent(WORDS);
++    await told();
 +    cleanup();
 +    sheet();
 +    fireEvent.click(screen.getByRole("button", { name: "Draw it for me" }));
 +    expect(joinedCount()).toBe(JULY.stars.length);
-+    expect(screen.getByRole("status")).toHaveTextContent(WORDS);
++    await told();
 +    expect(document.activeElement).toBe(screen.getByRole("status"));
 +  });
 +
@@ -11252,7 +11607,7 @@ index 0000000..be8e932
 +    expect(joinedCount()).toBe(JULY.stars.length);
 +  });
 +
-+  it("by a plain click on each star, as a screen reader or a switch sends it, and never twice for her own press", () => {
++  it("by a plain click on each star, as a screen reader or a switch sends it, and never twice for her own press", async () => {
 +    sheet();
 +    const stars = () => within(sky() as unknown as HTMLElement).getAllByRole("button");
 +    // A click with no press before it joins the star.
@@ -11265,13 +11620,13 @@ index 0000000..be8e932
 +    expect(joinedCount()).toBe(4);
 +    fireEvent.click(stars()[4]);
 +    fireEvent.click(stars()[5]);
-+    expect(screen.getByRole("status")).toHaveTextContent(WORDS);
++    await told();
 +  });
 +
-+  it("moves focus to the next star as each joins, and to the first after 'Trace it again'", () => {
++  it("moves focus to the next star as each joins, and to the first after 'Trace it again'", async () => {
 +    sheet();
 +    fireEvent.click(screen.getByRole("button", { name: "Draw it for me" }));
-+    fireEvent.click(screen.getByRole("button", { name: "Trace it again" }));
++    fireEvent.click(await screen.findByRole("button", { name: "Trace it again" }));
 +    expect(document.activeElement).toBe(within(sky() as unknown as HTMLElement).getByRole("button", { name: "Star 1 of your larkspur" }));
 +    fireEvent.keyDown(document.activeElement as Element, { key: "Enter" });
 +    expect(document.activeElement).toBe(within(sky() as unknown as HTMLElement).getByRole("button", { name: "Star 2 of your larkspur" }));
@@ -11302,7 +11657,7 @@ index 0000000..be8e932
 +    expect(touch(JULY.stars[2])).toBe(false);
 +  });
 +
-+  it("comes up into sight between the header and the garden path when opened below it, and stays put when already there", () => {
++  it("comes up into sight between the header and the garden path when opened below it, and stays put when already there", async () => {
 +    const into = vi.fn();
 +    (Element.prototype as unknown as { scrollIntoView: unknown }).scrollIntoView = into;
 +    // Opened below the fold: the frame's top is under the garden path.
@@ -11316,22 +11671,26 @@ index 0000000..be8e932
 +    expect(into).toHaveBeenCalledWith({ block: "start", behavior: "smooth" });
 +    // The first star still takes focus, without a scroll of its own.
 +    expect(document.activeElement).toBe(within(sky() as unknown as HTMLElement).getByRole("button", { name: "Star 1 of your larkspur" }));
-+    // With the last star, the words she earned come above the path.
++    // With the last star, once its flower has drawn, the words she earned come above the path.
 +    into.mockClear();
 +    fireEvent.click(screen.getByRole("button", { name: "Draw it for me" }));
-+    expect(into.mock.instances[0]).toBe(screen.getByRole("status"));
++    await waitFor(() => expect(into.mock.instances[0]).toBe(screen.getByRole("status")));
 +    expect(into).toHaveBeenCalledWith({ block: "end", behavior: "smooth" });
 +    cleanup();
 +    into.mockClear();
-+    // Finished by a drag: the words come up once her finger is off the glass, not under it.
++    // Finished by a drag: the words come up once her finger is off the glass, not under it, even when they arrive first.
++    const { drawn } = holdFlower();
 +    sheet();
 +    into.mockClear();
 +    fireEvent.pointerDown(sky(), at(JULY.stars[0]));
 +    for (const star of JULY.stars.slice(1)) fireEvent.pointerMove(sky(), at(star));
++    await act(async () => drawn());
++    await told();
 +    expect(into).not.toHaveBeenCalled();
 +    fireEvent.pointerUp(sky(), at(JULY.stars[JULY.stars.length - 1]));
 +    expect(into.mock.instances[0]).toBe(screen.getByRole("status"));
 +    cleanup();
++    (Element.prototype as unknown as { animate: unknown }).animate = animate;
 +    into.mockClear();
 +    // Under reduced motion it jumps rather than glides.
 +    setReducedMotion(true);
@@ -11387,11 +11746,169 @@ index 0000000..be8e932
 +    setReducedMotion(true);
 +    sheet();
 +    fireEvent.click(screen.getByRole("button", { name: "Draw it for me" }));
++    // The words she earned and "Trace it again" too, with focus on the words: nothing waits for a drawing.
++    expect(screen.getByRole("status")).toHaveTextContent(WORDS);
++    expect(screen.getByRole("button", { name: "Trace it again" })).toBeInTheDocument();
++    expect(document.activeElement).toBe(screen.getByRole("status"));
 +    fireEvent.pointerDown(sky(), at(JULY.stars[0]));
 +    expect(document.querySelectorAll(".ig-stars-join")).toHaveLength(JULY.stars.length - 1);
 +    expect(document.querySelector(".ig-stars-sky path[pathLength='1']")).not.toBeNull();
 +    expect(animations).toEqual([]);
 +    expect(document.querySelectorAll(".ig-petal")).toHaveLength(0);
++  });
++
++  it("on Data Saver, the words and 'Trace it again' are there at once, as under reduced motion", () => {
++    Object.defineProperty(navigator, "connection", { value: { saveData: true }, configurable: true });
++    try {
++      sheet();
++      fireEvent.click(screen.getByRole("button", { name: "Draw it for me" }));
++      expect(screen.getByRole("status")).toHaveTextContent(WORDS);
++      expect(screen.getByRole("button", { name: "Trace it again" })).toBeInTheDocument();
++      expect(animations).toEqual([]);
++    } finally {
++      delete (navigator as unknown as { connection?: unknown }).connection;
++    }
++  });
++
++  it("with motion, holds the words she earned and 'Trace it again' until the flower's line has drawn; 'Close the sky' is there throughout", async () => {
++    const { drawn } = holdFlower();
++    const writes: Updater[] = [];
++    sheet({ changeMeta: (u) => (writes.push(u), { ok: true }) });
++    const draw = screen.getByRole("button", { name: "Draw it for me" });
++    draw.focus();
++    fireEvent.click(draw);
++    // Drawing: every star joined and the flower's line under way, and nothing yet says it is written.
++    expect(joinedCount()).toBe(JULY.stars.length);
++    expect(flowerLine()).not.toBeNull();
++    expect(screen.getByRole("status").textContent).toBe("");
++    expect(screen.queryByRole("button", { name: "Trace it again" })).toBeNull();
++    expect(screen.getByRole("button", { name: "Close the sky" })).toBeInTheDocument();
++    // Focus stays where she pressed; her account keeps it already.
++    expect(document.activeElement).toBe(draw);
++    expect(writes).toHaveLength(1);
++    await new Promise((r) => setTimeout(r, 30));
++    expect(screen.getByRole("status").textContent).toBe("");
++    // The line has drawn: the words come, they take focus, and "Trace it again" stands in for the buttons that led here.
++    await act(async () => drawn());
++    await told();
++    expect(document.activeElement).toBe(screen.getByRole("status"));
++    expect(screen.getByRole("button", { name: "Trace it again" })).toBeInTheDocument();
++    expect(screen.queryByRole("button", { name: "Draw it for me" })).toBeNull();
++    expect(screen.queryByRole("button", { name: "Join the next star" })).toBeNull();
++    expect(screen.getByRole("button", { name: "Close the sky" })).toBeInTheDocument();
++  });
++
++  it("with motion, leaves her where she went if she moves on while the flower draws: the words come, but neither her focus nor the page is pulled back", async () => {
++    const into = vi.fn();
++    (Element.prototype as unknown as { scrollIntoView: unknown }).scrollIntoView = into;
++    // The words would sit under the garden path, so they would be brought up if she were still at the sky.
++    box.mockImplementation(function (this: Element) {
++      const top = this.classList?.contains("ig-stars-said") ? 700 : 0;
++      return { left: 0, top, width: SHEET, height: SHEET, right: SHEET, bottom: top + SHEET, x: 0, y: top, toJSON: () => ({}) } as DOMRect;
++    });
++    const WATCHED = ["pointerdown", "wheel", "touchmove", "keydown"];
++    const added = vi.spyOn(window, "addEventListener");
++    const removed = vi.spyOn(window, "removeEventListener");
++    const past = document.body.appendChild(document.createElement("a"));
++    past.href = "/members/drops";
++    past.textContent = "Drops";
++    const begin = () => {
++      const { drawn } = holdFlower();
++      sheet();
++      const draw = screen.getByRole("button", { name: "Draw it for me" });
++      draw.focus();
++      fireEvent.click(draw);
++      into.mockClear();
++      return async () => {
++        await act(async () => drawn());
++        await told();
++        expect(screen.getByRole("button", { name: "Trace it again" })).toBeInTheDocument();
++      };
++    };
++    try {
++      // She tabs on past the sky (to the next card) before the line has drawn: focus stays there, and the page stays put.
++      let finish = begin();
++      past.focus();
++      await finish();
++      expect(document.activeElement).toBe(past);
++      expect(into).not.toHaveBeenCalled();
++      cleanup();
++      // She goes to "Close the sky", which stays: it keeps her focus.
++      finish = begin();
++      const close = screen.getByRole("button", { name: "Close the sky" });
++      close.focus();
++      await finish();
++      expect(document.activeElement).toBe(close);
++      expect(into).not.toHaveBeenCalled();
++      cleanup();
++      // She presses somewhere past the sky: neither her focus nor the page is taken back.
++      finish = begin();
++      fireEvent.pointerDown(past);
++      (document.activeElement as HTMLElement).blur();
++      await finish();
++      expect(document.activeElement).toBe(document.body);
++      expect(into).not.toHaveBeenCalled();
++      cleanup();
++      // She scrolls the page on (a wheel, a touch, the page keys), her focus still on "Draw it for me": the words are not scrolled back to.
++      // (That button gives way to "Trace it again", so focus passes to the words, without a scroll of its own.)
++      for (const scroll of [() => fireEvent.wheel(window), () => fireEvent.touchMove(window), () => fireEvent.keyDown(window, { key: "PageUp" })]) {
++        finish = begin();
++        scroll();
++        await finish();
++        expect(into).not.toHaveBeenCalled();
++        expect(document.activeElement).toBe(screen.getByRole("status"));
++        cleanup();
++      }
++      // Still at the sky (a key that does not scroll, a press on the sky itself): the words come above the path, as ever.
++      finish = begin();
++      fireEvent.keyDown(window, { key: "Shift" });
++      fireEvent.pointerDown(sky(), { clientX: 30, clientY: 200 });
++      await finish();
++      expect(into.mock.instances[0]).toBe(screen.getByRole("status"));
++      expect(document.activeElement).toBe(screen.getByRole("status"));
++      // Each watch is let go once its line has drawn.
++      for (const t of WATCHED) expect(removed.mock.calls.filter((c) => c[0] === t)).toHaveLength(added.mock.calls.filter((c) => c[0] === t).length);
++    } finally {
++      added.mockRestore();
++      removed.mockRestore();
++      past.remove();
++      delete (Element.prototype as unknown as { scrollIntoView?: unknown }).scrollIntoView;
++    }
++  });
++
++  it("when she joins the last star herself, the words wait for its flower too, and that star keeps focus until they come", async () => {
++    const { drawn } = holdFlower();
++    sheet();
++    for (let i = 0; i < JULY.stars.length; i++) fireEvent.keyDown(document.activeElement as Element, { key: "Enter" });
++    expect(joinedCount()).toBe(JULY.stars.length);
++    expect(screen.getByRole("status").textContent).toBe("");
++    expect(screen.queryByRole("button", { name: "Trace it again" })).toBeNull();
++    const last = within(sky() as unknown as HTMLElement).getByRole("button", { name: `Star ${JULY.stars.length} of your larkspur, joined` });
++    // Still the sky's one tab stop while its flower draws, so focus never falls back to the page.
++    expect(document.activeElement).toBe(last);
++    expect(last).toHaveAttribute("tabindex", "0");
++    await act(async () => drawn());
++    await told();
++    expect(document.activeElement).toBe(screen.getByRole("status"));
++    expect(last).not.toHaveAttribute("tabindex");
++    expect(screen.getByRole("button", { name: "Trace it again" })).toBeInTheDocument();
++  });
++
++  it("closed while its flower draws, cancels the line and says nothing after", async () => {
++    const { drawn, cancels } = holdFlower();
++    sheet({ naira: readNaira({ v: 1, p: STARS }) });
++    fireEvent.click(screen.getByRole("button", { name: "Trace it again" }));
++    fireEvent.click(screen.getByRole("button", { name: "Draw it for me" }));
++    expect(screen.getByRole("status").textContent).toBe("");
++    const status = screen.getByRole("status");
++    const removed = vi.spyOn(window, "removeEventListener");
++    cleanup();
++    expect(cancels).toHaveBeenCalled();
++    await act(async () => drawn());
++    expect(status.textContent).toBe("");
++    // What it watched while the line drew is let go with it.
++    expect(removed.mock.calls.map((c) => c[0])).toEqual(expect.arrayContaining(["pointerdown", "wheel", "touchmove", "keydown"]));
++    removed.mockRestore();
 +  });
 +
 +  it("once written, opens whole, writes nothing again, and can be traced again for joy", () => {
@@ -11405,14 +11922,14 @@ index 0000000..be8e932
 +    expect(writes).toEqual([]);
 +  });
 +
-+  it("says it is written for this visit only when her account has no room to keep it", () => {
++  it("says it is written for this visit only when her account has no room to keep it", async () => {
 +    const writes: Updater[] = [];
 +    const base = { ...readNaira(null), gifts: Array.from({ length: 8 }, (_, i) => ({ n: "म".repeat(12), m: 10 + (i % 3), d: 20 + i, b: 2500 as const })) };
 +    const room = (l: number) => ({ ...base, saved: ["h".repeat(l)] });
 +    const l = Array.from({ length: 1200 }, (_, i) => i + 1).find((k) => bytesOf({ ...room(k), p: STARS }) > META_CAP_BYTES && bytesOf(room(k)) <= META_CAP_BYTES) as number;
 +    sheet({ naira: room(l), changeMeta: (u) => (writes.push(u), { ok: true }) });
 +    fireEvent.click(screen.getByRole("button", { name: "Draw it for me" }));
-+    expect(screen.getByRole("status")).toHaveTextContent("July's flower, the larkspur, written in your sky for this visit: your account has no room to keep it just now.");
++    await told("July's flower, the larkspur, written in your sky for this visit: your account has no room to keep it just now.");
 +    // The write is still offered (her account may have room by the time it is read), and changes nothing when it has none.
 +    expect(writes).toHaveLength(1);
 +    const full = room(l);
@@ -11466,10 +11983,10 @@ index 0000000..be8e932
 +});
 diff --git a/src/components/portal/StarSheet.tsx b/src/components/portal/StarSheet.tsx
 new file mode 100644
-index 0000000..e68d02a
+index 0000000..593c11f
 --- /dev/null
 +++ b/src/components/portal/StarSheet.tsx
-@@ -0,0 +1,436 @@
+@@ -0,0 +1,490 @@
 +import { useCallback, useEffect, useMemo, useRef, useState, type KeyboardEvent as ReactKeyboardEvent, type PointerEvent as ReactPointerEvent } from "react";
 +import { useMember } from "./MemberContext";
 +import { BIRTH_FLOWER_PATHS } from "./BirthFlowers";
@@ -11498,7 +12015,15 @@ index 0000000..e68d02a
 +  tiny shake: no penalty, no count of tries. With the last star the
 +  flower's single gold line draws through them (900 ms), a few starlight
 +  petals open (12 at most), and her account keeps it (keepStars, bit 5 of
-+  naira.p, written once). From then on it rests in her night sky.
++  naira.p, written once). The words she earned, and "Trace it again" in
++  place of the buttons that led there, wait until that line has drawn (its
++  animation's finished promise, dropped by "Trace it again" or a closed
++  sheet); until then the star or button she pressed keeps focus, and
++  "Close the sky" is always there. If she has moved on by then (focus on
++  something past the sky or on "Close the sky", a press past it, or a
++  scroll of her own), the words still come and are read out, but neither
++  her focus nor the page is pulled back to them. From then on it rests in
++  her night sky.
 +
 +  Each star is a button with a 56-unit target (44 CSS px or more even on a
 +  320 px phone); only the next is in the tab order (and the only one a tap
@@ -11506,7 +12031,7 @@ index 0000000..e68d02a
 +  reader or switch sends it, joins a star too. Escape closes the sheet. No
 +  frame loop, no timer and no twinkle: the bed's fireflies stay the
 +  screen's one loop. Under reduced motion and Data Saver every line and the
-+  flower are there at once, and nothing bursts or shakes.
++  flower are there at once, with the words, and nothing bursts or shakes.
 +
 +  Opened, the sheet comes up into the band between the shop's header and
 +  the garden path (unless it is there already), so the first star she
@@ -11526,6 +12051,8 @@ index 0000000..e68d02a
 +
 +type Pt = readonly [number, number];
 +const HIT = 28;
++// The keys that scroll a page.
++const PAGE_KEYS = ["ArrowUp", "ArrowDown", "PageUp", "PageDown", "Home", "End", " "];
 +const near = (a: Pt, b: Pt, r = HIT) => Math.hypot(a[0] - b[0], a[1] - b[1]) <= r;
 +
 +/* Already in sight: between the bottom of the shop's fixed header and the top of the garden path. */
@@ -11569,6 +12096,10 @@ index 0000000..e68d02a
 +  const [still] = useState(stillMotion);
 +  const [joined, setJoined] = useState(() => (written ? n : 0));
 +  const [said, setSaid] = useState(() => (written && stone ? `${stone.monthName}'s flower, the ${flower}, written in your sky.` : ""));
++  // The words and "Trace it again" are there: at once when it opens written, else once its flower's line has drawn.
++  const [told, setTold] = useState(written);
++  // Each trace's own: a flower line from a trace since undone says nothing (a closed sheet cancels its line).
++  const round = useRef(0);
 +  const joinedRef = useRef(joined);
 +  joinedRef.current = joined;
 +  const kept = useRef(written);
@@ -11578,6 +12109,7 @@ index 0000000..e68d02a
 +  const dragRef = useRef<SVGLineElement>(null);
 +  const burstRef = useRef<HTMLDivElement>(null);
 +  const saidRef = useRef<HTMLParagraphElement>(null);
++  const closeRef = useRef<HTMLButtonElement>(null);
 +  const flowerRef = useRef<SVGPathElement>(null);
 +  const dragging = useRef<number | null>(null);
 +  // The star her pointer last pressed: the click that follows that press is the same join, not a second one.
@@ -11590,6 +12122,9 @@ index 0000000..e68d02a
 +  const drawn = useRef(joined);
 +  const scatter = useMemo(() => scatterFor(user.id, stars), [user.id, stars]);
 +  const done = joined >= n && n > 0;
++  const finished = done && (told || still);
++  // While its flower draws, the last star stays the sky's tab stop, so focus never falls back to the page.
++  const stop = done && !finished ? n - 1 : joined;
 +
 +  const keep = (a: Animation | null) => {
 +    if (a) made.current.push(a);
@@ -11602,6 +12137,7 @@ index 0000000..e68d02a
 +    const first = svgRef.current?.querySelector<SVGGElement>(".ig-star.is-next");
 +    if (first) first.focus({ preventScroll: true });
 +    else saidRef.current?.focus({ preventScroll: true });
++    // Closed: every animation is cancelled, the flower's line with it, so its words are never said.
 +    return () => {
 +      made.current.forEach((a) => a.cancel());
 +      made.current = [];
@@ -11641,7 +12177,7 @@ index 0000000..e68d02a
 +    // eslint-disable-next-line react-hooks/exhaustive-deps
 +  }, [said]);
 +
-+  // Each newly joined pair's hairline draws in; with the last star, the flower, the petals and her account.
++  // Each newly joined pair's hairline draws in; with the last star, the flower, the petals and her account, then the words.
 +  useEffect(() => {
 +    const svg = svgRef.current;
 +    const from = drawn.current;
@@ -11658,23 +12194,56 @@ index 0000000..e68d02a
 +    }
 +    if (joined < n || !stone) return;
 +    const lead = still ? 0 : Math.max(0, joined - Math.max(1, from) - 1) * 140 + 260;
++    const line = still ? null : play(flowerRef.current, [{ strokeDashoffset: 1 }, { strokeDashoffset: 0 }], { duration: 900, delay: lead, easing: "cubic-bezier(0.45, 0, 0.25, 1)", fill: "backwards" });
++    keep(line);
 +    if (!still) {
-+      keep(play(flowerRef.current, [{ strokeDashoffset: 1 }, { strokeDashoffset: 0 }], { duration: 900, delay: lead, easing: "cubic-bezier(0.45, 0, 0.25, 1)", fill: "backwards" }));
 +      const box = svg.getBoundingClientRect();
 +      const k = box.width / SHEET;
 +      // From the last star, kept inside the drawing, so the spray stays on the sheet (most months end at its top edge); two thirds ivory, to show on ink.
 +      const [hx, hy] = stars[n - 1];
 +      burstPetals(burstRef.current, Math.min(Math.max(hx, 100), SHEET - 100) * k, Math.max(hy, 100) * k, { count: 12, spread: 95 * Math.max(0.8, k), size: [10, 16], delay: lead + 700, ids: [PETAL_IDS[3], PETAL_SPARK, PETAL_IDS[1], PETAL_IDS[3]] }).forEach(keep);
 +    }
-+    showSaid.current = true;
 +    // Her account keeps it, or (with no room) it is written for this visit only, and said so.
-+    setSaid(fitsOnAccount(naira, BITS.stars) ? `${stone.monthName}'s flower, the ${flower}, written in your sky.` : `${stone.monthName}'s flower, the ${flower}, written in your sky for this visit: your account has no room to keep it just now.`);
++    const words = fitsOnAccount(naira, BITS.stars) ? `${stone.monthName}'s flower, the ${flower}, written in your sky.` : `${stone.monthName}'s flower, the ${flower}, written in your sky for this visit: your account has no room to keep it just now.`;
 +    if (!kept.current) {
 +      kept.current = true;
 +      changeMeta(keepStars);
 +    }
-+    // The buttons that led here are gone: the line that says it takes focus.
-+    saidRef.current?.focus({ preventScroll: true });
++    // What she does while the line draws: a press past the sky, or a scroll of her own (a wheel, a touch, the page keys), not her drag on it.
++    const seen = { press: false, scroll: false };
++    const note = (e: Event) => {
++      if (dragging.current !== null) return;
++      if (e.type === "pointerdown") {
++        if (!rootRef.current?.contains(e.target as Node)) seen.press = true;
++      } else if (e.type !== "keydown" || PAGE_KEYS.includes((e as KeyboardEvent).key)) seen.scroll = true;
++    };
++    const watch = (on: boolean) => {
++      for (const t of ["pointerdown", "wheel", "touchmove", "keydown"]) {
++        if (on) window.addEventListener(t, note, { capture: true, passive: true });
++        else window.removeEventListener(t, note, { capture: true });
++      }
++    };
++    const tell = () => {
++      // Has she moved on (focus past the sky or on "Close the sky", which stays, or a press past it)? Then the words are only said.
++      const el = document.activeElement;
++      const away = seen.press || Boolean(el && el !== document.body && (!rootRef.current?.contains(el) || el === closeRef.current));
++      // Brought above the garden path only if she is still there and has not scrolled on.
++      showSaid.current = !away && !seen.scroll;
++      setSaid(words);
++      setTold(true);
++      // The buttons that led here give way to "Trace it again": the line that says it takes focus (without a scroll).
++      if (!away) saidRef.current?.focus({ preventScroll: true });
++    };
++    // Once the flower's line has drawn (at once when nothing draws); a cancel ("Trace it again", a closed sheet) says nothing.
++    if (!line) tell();
++    else {
++      const mine = ++round.current;
++      watch(true);
++      void line.finished.then(
++        () => (watch(false), round.current === mine && tell()),
++        () => watch(false),
++      );
++    }
 +    // Read as each star joins.
 +    // eslint-disable-next-line react-hooks/exhaustive-deps
 +  }, [joined]);
@@ -11708,6 +12277,7 @@ index 0000000..e68d02a
 +  };
 +
 +  const again = () => {
++    round.current++;
 +    made.current.forEach((a) => a.cancel());
 +    made.current = [];
 +    drawn.current = 0;
@@ -11716,6 +12286,7 @@ index 0000000..e68d02a
 +    refocus.current = true;
 +    setJoined(0);
 +    setSaid("");
++    setTold(false);
 +  };
 +
 +  /* Her finger, in the sheet's own units. */
@@ -11861,7 +12432,7 @@ index 0000000..e68d02a
 +                className={`ig-star${isNext ? " is-next" : ""}${isJoined ? " is-joined" : ""}`}
 +                transform={`translate(${x} ${y})`}
 +                role="button"
-+                tabIndex={isNext ? 0 : undefined}
++                tabIndex={i === stop ? 0 : undefined}
 +                aria-label={`Star ${i + 1} of your ${flower}${isJoined ? ", joined" : ""}`}
 +                aria-disabled={isJoined || !isNext ? true : undefined}
 +                onClick={onStarClick(i)}
@@ -11883,7 +12454,7 @@ index 0000000..e68d02a
 +        {said}
 +      </p>
 +      <div className="ig-stars-actions">
-+        {done ? (
++        {finished ? (
 +          <button type="button" className={quietButton} onClick={again}>
 +            Trace it again
 +          </button>
@@ -11897,7 +12468,7 @@ index 0000000..e68d02a
 +            </button>
 +          </>
 +        )}
-+        <button type="button" className={quietButton} onClick={onClose}>
++        <button ref={closeRef} type="button" className={quietButton} onClick={onClose}>
 +          Close the sky
 +        </button>
 +      </div>
@@ -14545,10 +15116,10 @@ index 0000000..e099d26
 +};
 diff --git a/src/components/portal/useTapBloom.test.tsx b/src/components/portal/useTapBloom.test.tsx
 new file mode 100644
-index 0000000..767f48a
+index 0000000..4923bce
 --- /dev/null
 +++ b/src/components/portal/useTapBloom.test.tsx
-@@ -0,0 +1,79 @@
+@@ -0,0 +1,104 @@
 +import { cleanup, fireEvent, render } from "@testing-library/react";
 +import { useRef } from "react";
 +import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
@@ -14626,6 +15197,31 @@ index 0000000..767f48a
 +    expect(quiet.childElementCount).toBe(0);
 +    delete (HTMLElement.prototype as unknown as { animate?: unknown }).animate;
 +    delete (SVGElement.prototype as unknown as { animate?: unknown }).animate;
++  });
++
++  it("with a ceiling, opens the round's upper half flatter so no petal climbs past it; without one, opens as before", () => {
++    const apexes = (rise?: number) => {
++      const peaks: number[] = [];
++      const animate = vi.fn((keyframes: Keyframe[]) => {
++        const y = /translate\(-50%,-50%\) translate\([-\d.e]+px,([-\d.e]+)px\)/.exec(String(keyframes[1].transform));
++        peaks.push(Number(y?.[1]));
++        return { onfinish: null, oncancel: null } as unknown as Animation;
++      });
++      (SVGElement.prototype as unknown as { animate: unknown }).animate = animate;
++      burstPetals(document.createElement("div"), 0, 0, { count: 24, spread: 64, rise });
++      delete (SVGElement.prototype as unknown as { animate?: unknown }).animate;
++      return peaks;
++    };
++    const open = apexes();
++    expect(open).toHaveLength(24);
++    expect(Math.min(...open)).toBeLessThan(-30);
++    const capped = apexes(31);
++    expect(capped).toHaveLength(24);
++    for (const y of capped) expect(y).toBeGreaterThanOrEqual(-31);
++    // Still a round, flattened: the petals above the start peak at many heights, not on one line.
++    expect(new Set(capped.filter((y) => y < -18).map((y) => Math.round(y))).size).toBeGreaterThan(3);
++    // Too little room to rise at all: they open level and fall.
++    for (const y of apexes(0)) expect(y).toBeGreaterThanOrEqual(0);
 +  });
 +});
 diff --git a/src/components/portal/useTapBloom.ts b/src/components/portal/useTapBloom.ts
@@ -39905,10 +40501,10 @@ index 0000000..39c5722
 +export default Stone;
 diff --git a/src/pages/members/Vanity.test.tsx b/src/pages/members/Vanity.test.tsx
 new file mode 100644
-index 0000000..c188ba2
+index 0000000..954dc6a
 --- /dev/null
 +++ b/src/pages/members/Vanity.test.tsx
-@@ -0,0 +1,271 @@
+@@ -0,0 +1,283 @@
 +import { act, cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 +import { MemoryRouter } from "react-router-dom";
 +import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -40157,16 +40753,28 @@ index 0000000..c188ba2
 +    expect(document.querySelectorAll(".ig-vn-chain")).toHaveLength(3);
 +  });
 +
-+  it("draws the extenders a listing gives, dashed, only when asked", () => {
++  it("draws the extenders a listing gives, dashed, only when asked, and its toggle says what a tap will do", () => {
 +    room();
 +    fireEvent.click(chip("Bold Nocturne Chain"));
 +    fireEvent.click(chip("Baguette Tennis Necklace"));
 +    const dashed = () => document.querySelectorAll('.ig-vn-chain path[stroke-dasharray="3 3"]').length;
 +    expect(dashed()).toBe(0);
-+    fireEvent.click(screen.getByRole("button", { name: "Show extenders" }));
-+    expect(screen.getByRole("button", { name: "Show extenders" })).toHaveAttribute("aria-pressed", "true");
++    const show = screen.getByRole("button", { name: "Show extenders" });
++    expect(screen.queryByRole("button", { name: "Hide extenders" })).toBeNull();
++    // Its words carry its state, so it says no "pressed" as well (a toggle whose name changes must not: "Hide extenders, pressed" reads as hiding).
++    expect(show).not.toHaveAttribute("aria-pressed");
++    fireEvent.click(show);
++    // While they show, the words say so (the tails are often scrolled out of view): the same button, its name now what a tap will do.
++    expect(screen.queryByRole("button", { name: "Show extenders" })).toBeNull();
++    const hide = screen.getByRole("button", { name: "Hide extenders" });
++    expect(hide).toBe(show);
++    expect(hide).not.toHaveAttribute("aria-pressed");
++    expect(hide).toHaveClass("ig-quiet");
 +    // The chain's 5 cm extender; the choker gives none.
 +    expect(dashed()).toBe(1);
++    fireEvent.click(hide);
++    expect(screen.getByRole("button", { name: "Show extenders" })).not.toHaveAttribute("aria-pressed");
++    expect(dashed()).toBe(0);
 +  });
 +
 +  it("puts chains on with no draw and no swing under reduced motion", () => {
@@ -40182,10 +40790,10 @@ index 0000000..c188ba2
 +});
 diff --git a/src/pages/members/Vanity.tsx b/src/pages/members/Vanity.tsx
 new file mode 100644
-index 0000000..b13a6fa
+index 0000000..902c2bb
 --- /dev/null
 +++ b/src/pages/members/Vanity.tsx
-@@ -0,0 +1,366 @@
+@@ -0,0 +1,367 @@
 +import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 +import { Link } from "react-router-dom";
 +import PortalShell from "@/components/portal/PortalShell";
@@ -40467,8 +41075,9 @@ index 0000000..b13a6fa
 +        </p>
 +
 +        <div className="ig-vn-tools">
-+          <button type="button" className={quietButton} aria-pressed={extenders} onClick={() => setExtenders((e) => !e)}>
-+            Show extenders
++          {/* Its words say what a tap will do (the tails are often scrolled out of view), to a screen reader too: so no aria-pressed, which would read "Hide extenders, pressed" while they show. */}
++          <button type="button" className={quietButton} onClick={() => setExtenders((e) => !e)}>
++            {extenders ? "Hide extenders" : "Show extenders"}
 +          </button>
 +        </div>
 +        <p className="ig-vn-caption">Drawn to each listing's own length, one against another. Where a chain sits on you depends on you.</p>
@@ -41522,10 +42131,10 @@ index 0000000..026d622
 +}
 diff --git a/src/pages/members/members.css b/src/pages/members/members.css
 new file mode 100644
-index 0000000..a1daeeb
+index 0000000..91a2417
 --- /dev/null
 +++ b/src/pages/members/members.css
-@@ -0,0 +1,496 @@
+@@ -0,0 +1,499 @@
 +/*
 +  The Inner Garden. Imported only by MembersRoute, so Vite ships this as the
 +  route's own stylesheet: nothing here reaches the product page, the bag or
@@ -42020,8 +42629,11 @@ index 0000000..a1daeeb
 +}
 +
 +/* Phase 6: after dark, the line under her garden that asks her to look up (the star sheet is a chunk of its own). */
-+.ig-lookup { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; column-gap: 0.5rem; width: 100%; margin: 0.5rem 0 0; }
++/* Its row gap keeps a wrapped "Look up" (a long month flower at 320 px) and its focus ring (2 px, 2 px off) clear of the sentence above. */
++.ig-lookup { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; column-gap: 0.5rem; row-gap: 0.375rem; width: 100%; margin: 0.5rem 0 0; }
 +.ig-lookup > .ig-fineprint { margin: 0; }
++/* Without her month the whole line is the link, in the plan's own words: balanced over its two lines at phone widths, so "stars →" is never left alone. */
++.ig-lookup > a.ig-link { text-wrap: balance; text-align: center; justify-content: center; }
 diff --git a/src/pages/members/orders.css b/src/pages/members/orders.css
 new file mode 100644
 index 0000000..9ec54aa
@@ -42231,10 +42843,10 @@ index 0000000..9300264
 +}
 diff --git a/src/pages/members/vanity.css b/src/pages/members/vanity.css
 new file mode 100644
-index 0000000..0656686
+index 0000000..ec67dfb
 --- /dev/null
 +++ b/src/pages/members/vanity.css
-@@ -0,0 +1,79 @@
+@@ -0,0 +1,80 @@
 +/*
 +  The Vanity (/members/vanity): the looking-glass, the tray of necklaces and
 +  her look. Imported by Vanity.tsx alone, so it ships in that room's own
@@ -42300,9 +42912,10 @@ index 0000000..0656686
 +.ig-vn-page button:focus-visible,
 +.ig-vn-page a:focus-visible,
 +.ig-vn-results:focus-visible { outline: 2px solid var(--nf-accent-strong); outline-offset: 2px; }
++/* Her taps' answer sits flush left under the tray's own footnote, as the tray does (the page column centres its blocks). */
++.ig-vn-said { align-self: stretch; text-align: left; }
 +.ig-vn-said:empty { margin: 0; }
 +.ig-vn-tools { display: flex; justify-content: center; width: 100%; margin-top: 0.4rem; }
-+.ig-vn-tools [aria-pressed="true"] { color: var(--nf-ink); text-decoration-color: var(--nf-accent-strong); }
 +.ig-vn-caption { margin: 0.2rem 0 0; font-family: var(--nf-font-editorial); font-style: italic; font-size: 1.02rem; line-height: 1.5; color: rgb(var(--nf-ink-rgb) / 0.72); }
 +.ig-vn-look { margin: 0; padding: 0; list-style: none; }
 +.ig-vn-item { display: grid; gap: 2px; padding: 0.7rem 0; border-bottom: 1px solid var(--ig-line); }

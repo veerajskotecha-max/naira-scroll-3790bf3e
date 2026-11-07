@@ -1008,3 +1008,23 @@ note on how PVD differs from regular plating, and anti-tarnish.
 - **Until it is published:** the live site still shows Buy 2 / Buy 3 and a
   4-piece bag still hands BUY3 (20%). Nobody is charged more than shown.
 - **Screenshots:** `docs/images/offer-2026-11-07/`.
+- **Review round (main efc3d17, same publish):** three reviewers (money,
+  phone layout, copy); each finding was challenged by one or two skeptics;
+  5 of 14 held and were fixed:
+  - a bag line of 2 of one piece now says the product page's per-piece price
+    at 30% (it could read ₹1 higher when the bag's leftover rupee landed on
+    it);
+  - the gold underline of the reached rung sits inside the box, so the
+    phone's buy bar no longer covers it (390x844, Prism Rivière);
+  - with 4+ in the bag the line under the box says "30% off is on your bag,
+    this piece included" instead of a second price ₹1 off the column's;
+  - the bag's "Sitewide sale live today · up to 30% off" breaks only after
+    the dot on narrow phones;
+  - the home offer line uses the design tokens for its letter-spacing.
+  - Checks: tsc app + node clean, 982 tests, build clean; box re-checked on
+    a 390px phone with 4 pieces in the bag (`pdp-box-after-4inbag-390.png`).
+- **Raised by the reviewers, already on the site before this change (owner's
+  call, not changed):** "N pieces sold in the last 48 hours" above the offer
+  box is a number made from the product name, not real sales; the sage
+  announcement strip is white on #AEBDB6 (contrast 1.95:1, under the 4.5:1
+  readability guideline) and keeps scrolling under reduced motion.

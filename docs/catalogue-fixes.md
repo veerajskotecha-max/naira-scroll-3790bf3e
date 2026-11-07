@@ -1028,3 +1028,31 @@ note on how PVD differs from regular plating, and anti-tarnish.
   box is a number made from the product name, not real sales; the sage
   announcement strip is white on #AEBDB6 (contrast 1.95:1, under the 4.5:1
   readability guideline) and keeps scrolling under reduced motion.
+
+## 7 November — smooth page changes: no flower curtain, no glide on Back (main e7b91da, a588064)
+
+- **What the owner's phone video showed** (Android Chrome, Rivière Classique
+  and the Necklaces page):
+  - a sage curtain with the Naira flower sweeping over the screen for about a
+    second whenever a category page opened, including on Back from a product
+    (`PageCurtain`);
+  - on Back, the product page gliding down to its foot before the list
+    appeared, then the list showing at its old place.
+- **Cause of the glide:** the browser's own scroll restore was on for listing
+  pages. It runs the moment Back is pressed, while the product page is still
+  on screen for a few frames, and `scroll-behavior: smooth` animated the
+  product page towards the list's old offset (measured on a Pixel 7
+  emulation of the live site: 0 to 2,695 px over about 700 ms).
+- **Fixed:**
+  - `PageCurtain` removed: pages change plainly.
+  - The browser's restore is off on every page; the site restores the list
+    itself once it is drawn. Measured on the fixed build: the product page
+    stays still and the list lands on the tapped card in one frame (6,412 px
+    after Show more; 4,800 px mid-list). Restoring stops at the first touch.
+  - A reload of a list still returns to the spot (kept in sessionStorage);
+    a fresh visit opens at the top.
+  - Category pages remember 'Show more' on Back (they reset to 30 before,
+    so the page was too short for the spot and the shopper was carried down
+    as it grew).
+- **Checks:** tsc app + node clean, 987 tests (new tests for each case), build
+  clean. Live after Publish → Update in Lovable.

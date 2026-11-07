@@ -766,10 +766,10 @@ index 0000000..137a42c
 +export default AtelierNote;
 diff --git a/src/components/portal/BirthFlowers.tsx b/src/components/portal/BirthFlowers.tsx
 new file mode 100644
-index 0000000..6424ce7
+index 0000000..4794ba5
 --- /dev/null
 +++ b/src/components/portal/BirthFlowers.tsx
-@@ -0,0 +1,138 @@
+@@ -0,0 +1,161 @@
 +/*
 +  The twelve birth flowers (stones.ts names them: carnation, violet,
 +  daffodil, daisy, lily of the valley, rose, larkspur, gladiolus, aster,
@@ -876,6 +876,29 @@ index 0000000..6424ce7
 +  // December · narcissus: six round petals, a small flat cup with its eye, a blade
 +  `${STEM(20.2, 1.5)}${petals(20, 17, 6, 2.2, 11.5, 4.6, 0.9, 30)}${scallop(20, 17, 3.2, 9, 0.8)}${round(20, 17, 1.3)}${blade(-1)}`,
 +];
++
++/*
++  A birth flower as the rangoli's floor draws it, at about 30 px, where a line drawing's smallest loops close up:
++  the larkspur's four-loop florets read as blocks there, so its small drawing keeps the stem and leaf as lines and
++  fills each floret as a five-petal flower with a cream eye, smaller toward the bud. Keyed by month.
++*/
++const sprigFloret = ([x, y, s]: readonly number[]) => petals(20 + (x - 20) * 0.95, y, 5, 0, s * 1.3, s * 0.75, 0.95, x < 20 ? 10 : -10);
++const LARKSPUR_FLORETS = [
++  [16.5, 34, 4.4],
++  [23.5, 27.5, 4],
++  [16.8, 21, 3.6],
++  [23.2, 15, 3.2],
++  [17.4, 9.6, 2.6],
++] as const;
++
++// eslint-disable-next-line react-refresh/only-export-components -- the drawings themselves, for the rangoli's floor
++export const BIRTH_FLOWER_SMALL: Readonly<Record<number, { line: string; fill: string; eyes: string }>> = {
++  7: {
++    line: `M20 63C20.5 45 20 25 20 6${leaf(50, 1, 9, 2.4)}`,
++    fill: `${LARKSPUR_FLORETS.map(sprigFloret).join("")}${petal(20, 6.4, 0, 0, 3.6, 1.8, 0.6)}`,
++    eyes: LARKSPUR_FLORETS.map(([x, y, s]) => round(20 + (x - 20) * 0.95, y, s * 0.26)).join(""),
++  },
++};
 +
 +type Props = {
 +  /** 1 to 12. */
@@ -6309,7 +6332,7 @@ index 0000000..bf1e1d5
 +export default HerbariumFrame;
 diff --git a/src/components/portal/KeepsakeFrame.tsx b/src/components/portal/KeepsakeFrame.tsx
 new file mode 100644
-index 0000000..524f1ce
+index 0000000..1c1bf49
 --- /dev/null
 +++ b/src/components/portal/KeepsakeFrame.tsx
 @@ -0,0 +1,191 @@
@@ -6478,7 +6501,7 @@ index 0000000..524f1ce
 +          <rect x="0" y="0" width="100%" height="100%" pathLength={1} />
 +          <rect x="3.5%" y="2.8%" width="93%" height="94.4%" pathLength={1} className="ig-herb-fine" />
 +        </svg>
-+        <div className="ig-herb-flower">
++        <div className={`ig-herb-flower ig-herb-flower--${keepsake.id}`}>
 +          {art}
 +          {keepsake.kept && (
 +            <>
@@ -9549,10 +9572,10 @@ index 0000000..6e7974d
 +export default PieceCard;
 diff --git a/src/components/portal/PortalMore.tsx b/src/components/portal/PortalMore.tsx
 new file mode 100644
-index 0000000..c8b3f6c
+index 0000000..d0b4f8b
 --- /dev/null
 +++ b/src/components/portal/PortalMore.tsx
-@@ -0,0 +1,152 @@
+@@ -0,0 +1,155 @@
 +import { useEffect, useRef, type CSSProperties } from "react";
 +import { EASE_DRAWER, play, stillMotion } from "@/lib/portal/motion";
 +import { MORE_PATHS, Tab } from "./PortalNav";
@@ -9621,13 +9644,16 @@ index 0000000..c8b3f6c
 +  </svg>
 +);
 +
-+/* Twins (Phase 7): two pressed flowers side by side, their stems crossed, a gold thread where they meet. */
++/* Twins (Phase 7): two five-petal flowers side by side, a gold eye in each, their stems leaning in to meet at the foot
++   (never crossed), a leaf on each: two of a kind, gathered. */
 +const TwinsIcon = () => (
 +  <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden>
-+    <path d="M7.6 9.6L15 21.5M16.4 9.6L9 21.5" className="ig-nav-line" />
-+    <circle cx="7.2" cy="6.6" r="3.2" className="ig-nav-petal" />
-+    <circle cx="16.8" cy="6.6" r="3.2" className="ig-nav-petal" />
-+    <path d="M10.4 16.4C9.2 15.4 9.6 14.4 12 15.6 14.4 14.4 14.8 15.4 13.6 16.4" className="ig-nav-line" />
++    <path d="M7.2 10.6C7.6 14.4 9.4 18 11.4 21.4M16.8 10.6C16.4 14.4 14.6 18 12.6 21.4" className="ig-nav-line" />
++    <path d="M8.6 16C6.6 16.2 5.2 15.2 4.6 13.6 6.6 13.4 8 14.4 8.6 16ZM15.4 16C17.4 16.2 18.8 15.2 19.4 13.6 17.4 13.4 16 14.4 15.4 16Z" className="ig-nav-line" />
++    <path d="M6.1 5.8C3.6 2.5 9.1 1.5 7.9 5.5C10.2 2.1 12.8 7 8.7 7C12.6 8.2 8.7 12.2 7.5 8.3C7.6 12.4 2.6 9.9 5.9 7.5C2 8.9 2.8 3.4 6.1 5.8Z" className="ig-nav-petal" />
++    <path d="M16.1 5.5C14.9 1.5 20.4 2.5 17.9 5.8C21.2 3.4 22 8.9 18.1 7.5C21.4 9.9 16.4 12.4 16.5 8.3C15.3 12.2 11.4 8.2 15.3 7C11.2 7 13.8 2.1 16.1 5.5Z" className="ig-nav-petal" />
++    <circle cx="7.2" cy="6.8" r="0.9" className="ig-nav-core" />
++    <circle cx="16.8" cy="6.8" r="0.9" className="ig-nav-core" />
 +  </svg>
 +);
 +
@@ -10168,12 +10194,12 @@ index 0000000..8995282
 +});
 diff --git a/src/components/portal/RangoliArt.tsx b/src/components/portal/RangoliArt.tsx
 new file mode 100644
-index 0000000..0517ba6
+index 0000000..a342d29
 --- /dev/null
 +++ b/src/components/portal/RangoliArt.tsx
 @@ -0,0 +1,126 @@
 +import { forwardRef, memo, useId } from "react";
-+import { BIRTH_FLOWER_PATHS } from "./BirthFlowers";
++import { BIRTH_FLOWER_PATHS, BIRTH_FLOWER_SMALL } from "./BirthFlowers";
 +import {
 +  BINDU_R,
 +  CENTRE,
@@ -10221,7 +10247,7 @@ index 0000000..0517ba6
 +/** One flower's drawing, in its 100 x 100 box, in currentColor (`outline`: with a gold hairline, for a pale colour on vellum). */
 +export const Shapes = ({ m, outline = false }: { m: string; outline?: boolean }) => (
 +  <>
-+    {shapesOf(m, BIRTH_FLOWER_PATHS).map((s, k) =>
++    {shapesOf(m, BIRTH_FLOWER_PATHS, BIRTH_FLOWER_SMALL).map((s, k) =>
 +      s.stroke ? (
 +        <path key={k} d={s.d} transform={s.transform} fill="none" stroke={s.cream ? IVORY : "currentColor"} strokeWidth={s.width ?? 2} strokeLinecap="round" strokeLinejoin="round" opacity={s.opacity} />
 +      ) : (
@@ -10300,10 +10326,10 @@ index 0000000..0517ba6
 +export default memo(RangoliArt);
 diff --git a/src/components/portal/RangoliDoor.test.tsx b/src/components/portal/RangoliDoor.test.tsx
 new file mode 100644
-index 0000000..05ac6e4
+index 0000000..8cacbb4
 --- /dev/null
 +++ b/src/components/portal/RangoliDoor.test.tsx
-@@ -0,0 +1,146 @@
+@@ -0,0 +1,152 @@
 +import { cleanup, render, screen, waitFor } from "@testing-library/react";
 +import { MemoryRouter } from "react-router-dom";
 +import { afterEach, describe, expect, it, vi } from "vitest";
@@ -10377,6 +10403,12 @@ index 0000000..05ac6e4
 +      expect(css).toMatch(/transform: perspective\(700px\) rotateX\(62deg\)/);
 +    }
 +    expect(readFileSync(resolve(__dirname, "RangoliDoor.tsx"), "utf8")).not.toMatch(/setTimeout|setInterval|requestAnimationFrame|\.animate\(|play\(/);
++  });
++
++  it("balances its link over two lines when it wraps, so no word is left alone under the step", () => {
++    const route = readFileSync(resolve(__dirname, "../../pages/members/members.css"), "utf8");
++    // (Matched as "text-wra[p]", so Tailwind's content scan reads no class in this test.)
++    expect(route).toMatch(/\.ig-door > \.ig-link \{ margin-top: 0\.2rem; text-wra[p]: balance; justify-content: center; \}/);
 +  });
 +});
 +
@@ -16101,15 +16133,15 @@ index 0000000..f925166
 +export default StoneLight;
 diff --git a/src/components/portal/TwinCard.test.tsx b/src/components/portal/TwinCard.test.tsx
 new file mode 100644
-index 0000000..ed59e4e
+index 0000000..d37efa5
 --- /dev/null
 +++ b/src/components/portal/TwinCard.test.tsx
-@@ -0,0 +1,77 @@
+@@ -0,0 +1,90 @@
 +import { act, cleanup, render } from "@testing-library/react";
 +import { afterEach, beforeEach, describe, expect, it } from "vitest";
 +import { jewellery } from "@/data/jewellery";
 +import type { TwinCard as Card } from "@/lib/portal/twins";
-+import TwinCard from "./TwinCard";
++import TwinCard, { nameParts } from "./TwinCard";
 +
 +/* One card's turn: two animations on one element, transform alone, the face swapped at the first one's end; under reduced motion, at once. */
 +
@@ -16175,6 +16207,19 @@ index 0000000..ed59e4e
 +    for (const k of fade[0].keyframes) expect(Object.keys(k)).toEqual(["opacity"]);
 +  });
 +
++  it("sets a variant after the design on a line of its own, so the word that tells two twins apart is never cut", () => {
++    expect(nameParts("Serpentine Whisper Chain — Silver")).toEqual(["Serpentine Whisper Chain", "Silver"]);
++    expect(nameParts("Serpentine Whisper Chain")).toEqual(["Serpentine Whisper Chain", ""]);
++    expect(nameParts("Duo Link Bracelet")).toEqual(["Duo Link Bracelet", ""]);
++    const twin = { ...jewellery[0], name: "Serpentine Whisper Chain — Silver" };
++    const { container } = render(<TwinCard card={{ ...card, piece: twin }} up paired={false} photo={null} decoded={false} label={twin.name} tabIndex={0} onTurn={() => {}} onKeyDown={() => {}} onFocus={() => {}} />);
++    expect(container.querySelector(".ig-tw-base")!.textContent).toBe("Serpentine Whisper Chain");
++    expect(container.querySelector(".ig-tw-variant")!.textContent).toBe("Silver");
++    // The button still says the whole name; the set name is for the eye alone.
++    expect(container.querySelector("button")!.getAttribute("aria-label")).toBe("Serpentine Whisper Chain — Silver");
++    expect(container.querySelector(".ig-tw-name")!.getAttribute("aria-hidden")).toBe("true");
++  });
++
 +  it("is a button with its name in words", () => {
 +    const { container } = render(draw(false));
 +    const b = container.querySelector("button")!;
@@ -16184,10 +16229,10 @@ index 0000000..ed59e4e
 +});
 diff --git a/src/components/portal/TwinCard.tsx b/src/components/portal/TwinCard.tsx
 new file mode 100644
-index 0000000..a11b8f3
+index 0000000..b6eb951
 --- /dev/null
 +++ b/src/components/portal/TwinCard.tsx
-@@ -0,0 +1,157 @@
+@@ -0,0 +1,166 @@
 +import { forwardRef, useEffect, useLayoutEffect, useRef, useState, type KeyboardEvent } from "react";
 +import { FlowerGlyph } from "./FlowerGlyph";
 +import { SPECIES } from "@/lib/portal/species";
@@ -16212,6 +16257,13 @@ index 0000000..a11b8f3
 +*/
 +
 +export type Photo = { src: string; srcSet?: string; sizes: string };
++
++/** A name as the card sets it: its design, and the variant after " — " ("Silver") on a line of its own, so a twin's one telling word is never cut. */
++// eslint-disable-next-line react-refresh/only-export-components -- read by its test
++export const nameParts = (name: string): [string, string] => {
++  const at = name.lastIndexOf(" — ");
++  return at > 0 ? [name.slice(0, at), name.slice(at + 3)] : [name, ""];
++};
 +
 +type Props = {
 +  card: Card;
@@ -16308,6 +16360,7 @@ index 0000000..a11b8f3
 +  }, [decoded, shown]);
 +
 +  const species = SPECIES[card.back] ?? SPECIES[0];
++  const [design, variant] = nameParts(card.piece.name);
 +  return (
 +    <button ref={ref} type="button" className={`ig-tw-card${shown ? " is-up" : ""}${paired ? " is-pair" : ""}`} aria-label={label} tabIndex={tabIndex} onClick={onTurn} onKeyDown={onKeyDown} onFocus={onFocus} data-card={card.key}>
 +      <span ref={leafRef} className="ig-tw-leaf">
@@ -16325,7 +16378,8 @@ index 0000000..a11b8f3
 +            </svg>
 +            <span className="ig-tw-photo">{photo && decoded && <img ref={imgRef} src={photo.src} srcSet={photo.srcSet} sizes={photo.sizes} width={360} height={360} alt="" decoding="async" />}</span>
 +            <span className="ig-tw-name" aria-hidden>
-+              {card.piece.name}
++              <span className={variant ? "ig-tw-base ig-tw-base--short" : "ig-tw-base"}>{design}</span>
++              {variant && <span className="ig-tw-variant">{variant}</span>}
 +            </span>
 +            <span ref={bloomRef} className="ig-tw-corner" aria-hidden>
 +              <FlowerGlyph species={card.back} accent={species.palette[0]} state={paired ? "bloom" : "pressed"} size={30} />
@@ -17010,10 +17064,10 @@ index 0000000..15ef760
 +};
 diff --git a/src/components/portal/herbarium.css b/src/components/portal/herbarium.css
 new file mode 100644
-index 0000000..26046f2
+index 0000000..3a68b16
 --- /dev/null
 +++ b/src/components/portal/herbarium.css
-@@ -0,0 +1,46 @@
+@@ -0,0 +1,54 @@
 +/* The herbarium frame: the pressed-flower wall of the Vault and the press in
 +   a drop's room. Loaded only with those rooms. */
 +
@@ -17045,6 +17099,14 @@ index 0000000..26046f2
 +}
 +.ig-herb-tape--a { left: 37%; top: 62%; transform: rotate(-8deg); }
 +.ig-herb-tape--b { left: 18%; top: 44%; width: 20%; transform: rotate(14deg); }
++/* Where a keepsake's own drawing wants its tape (the places above suit one flower on one stem). Twin Blooms: across both
++   stems below the gold bow, and across the right stem where its leaf joins. Rangoli: two short strips on the roundel's
++   gold rim, upper left and lower right, clear of every petal. */
++.ig-herb-flower--twins .ig-herb-tape--a { left: 37%; top: 77%; transform: rotate(-6deg); }
++.ig-herb-flower--twins .ig-herb-tape--b { left: 52%; top: 37.5%; transform: rotate(-10deg); }
++.ig-herb-flower--rangoli .ig-herb-tape { width: 18%; }
++.ig-herb-flower--rangoli .ig-herb-tape--a { left: 7.7%; top: 13.3%; transform: rotate(-45deg); }
++.ig-herb-flower--rangoli .ig-herb-tape--b { left: 74.2%; top: 79.7%; transform: rotate(-45deg); }
 +.ig-herb-label {
 +  display: flex;
 +  flex-direction: column;
@@ -29895,22 +29957,24 @@ index 0000000..cc18647
 +};
 diff --git a/src/lib/portal/rangoli.test.ts b/src/lib/portal/rangoli.test.ts
 new file mode 100644
-index 0000000..197a949
+index 0000000..fc86efc
 --- /dev/null
 +++ b/src/lib/portal/rangoli.test.ts
-@@ -0,0 +1,316 @@
+@@ -0,0 +1,395 @@
 +import { describe, expect, it } from "vitest";
-+import { BIRTH_FLOWER_PATHS } from "@/components/portal/BirthFlowers";
++import { BIRTH_FLOWER_PATHS, BIRTH_FLOWER_SMALL } from "@/components/portal/BirthFlowers";
 +import {
 +  CENTRE,
 +  EMPTY,
 +  FLOOR,
++  GUIDES,
 +  MOTIF_CHARS,
 +  PLACES,
 +  RINGS,
 +  RING_STEP,
 +  WORDS,
 +  colourHex,
++  colourChar,
 +  colourName,
 +  compose,
 +  copies,
@@ -29971,15 +30035,33 @@ index 0000000..197a949
 +
 +  it("keeps every ring at least 28 CSS px deep on a 288 px floor", () => {
 +    const px = 288 / FLOOR;
++    // A tap's ring is its band (fold): RING_STEP deep, the first running in to the bindu, the last out to the edge.
++    const last = RINGS.length - 1;
++    const band = (k: number) => [k ? RINGS[0].r + (k - 0.5) * RING_STEP : 0, k === last ? CENTRE : RINGS[0].r + (k + 0.5) * RING_STEP];
 +    RINGS.forEach((ring, k) => {
-+      if (k) expect((ring.r - RINGS[k - 1].r) * px).toBeGreaterThanOrEqual(28);
++      const [lo, hi] = band(k);
++      expect((hi - lo) * px).toBeGreaterThanOrEqual(28);
++      // Each ring's flowers sit inside its own band.
++      expect(ring.r).toBeGreaterThan(lo);
++      expect(ring.r).toBeLessThan(hi);
 +    });
 +    expect(RING_STEP * px).toBeGreaterThanOrEqual(28);
-+    // Its band (to the halfway mark on either side) is as deep; the first runs in to the bindu, the last out to the edge.
 +    expect((RINGS[0].r + RING_STEP / 2) * px).toBeGreaterThanOrEqual(28);
-+    expect((CENTRE - (RINGS[RINGS.length - 1].r - RING_STEP / 2)) * px).toBeGreaterThanOrEqual(28);
-+    // And every flower stays inside the floor.
-+    for (const ring of RINGS) expect(ring.r + ring.size / 2).toBeLessThanOrEqual(CENTRE);
++    expect((CENTRE - (RINGS[0].r + (last - 0.5) * RING_STEP)) * px).toBeGreaterThanOrEqual(28);
++    // And every flower stays inside the floor, inside its ring's guide (the hairline drawn round it as she keeps it).
++    RINGS.forEach((ring, k) => {
++      expect(ring.r + ring.size / 2).toBeLessThanOrEqual(CENTRE);
++      expect(ring.r + ring.size / 2).toBeLessThanOrEqual(GUIDES[k + 1]);
++    });
++  });
++
++  it("keeps the last ring and its hairline 4 px inside the floor's inner frame, even on a 288 px floor", () => {
++    // The floor's inner hairline is 6 CSS px in from its edge (rangoli.css); the last guide's 1-unit line clears it by 4 px.
++    const unitsPerPx = FLOOR / 288;
++    expect(GUIDES[GUIDES.length - 1] + 0.5).toBeLessThanOrEqual(CENTRE - (6 + 4) * unitsPerPx);
++    const ring = RINGS[RINGS.length - 1];
++    // The farthest a flower reaches out of its box is 48 of its 100 units (the Naira flower's head).
++    expect(ring.r + 0.48 * ring.size).toBeLessThan(GUIDES[GUIDES.length - 1]);
 +  });
 +
 +  it("folds every point of the floor onto exactly one place", () => {
@@ -30215,12 +30297,71 @@ index 0000000..197a949
 +    for (const w of said) expect(w, w).not.toMatch(/\d/);
 +  });
 +});
++
++describe("the tray's colours", () => {
++  /* CIELAB (D65) from sRGB, and the plain distance between two colours (Delta E 1976). */
++  const lab = (hex: string): [number, number, number] => {
++    const [r, g, b] = [1, 3, 5].map((i) => {
++      const c = parseInt(hex.slice(i, i + 2), 16) / 255;
++      return c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
++    });
++    const f = (t: number) => (t > 0.008856 ? Math.cbrt(t) : 7.787 * t + 16 / 116);
++    const x = f((0.4124 * r + 0.3576 * g + 0.1805 * b) / 0.95047);
++    const y = f(0.2126 * r + 0.7152 * g + 0.0722 * b);
++    const z = f((0.0193 * r + 0.1192 * g + 0.9505 * b) / 1.08883);
++    return [116 * y - 16, 500 * (x - y), 200 * (y - z)];
++  };
++  const apart = (a: string, b: string) => Math.hypot(...lab(a).map((v, i) => v - lab(b)[i]));
++
++  it("are each plainly their own colour, in every month's tray and on either floor", () => {
++    const fixed = ["b", "g", "s", "o", "y", "k", "u"] as const;
++    for (let month = 1; month <= 12; month++) {
++      for (const ink of [false, true]) {
++        const tray = [...fixed, "stone" as const].map((k) => colourHex(colourChar(k, month)!, ink));
++        for (let i = 0; i < tray.length; i++) {
++          for (let j = i + 1; j < tray.length; j++) expect(apart(tray[i], tray[j]), `${month} ${tray[i]} ${tray[j]}`).toBeGreaterThan(10);
++        }
++      }
++    }
++    // Kumkum is a warm sindoor red, never July's ruby again (they were about 6.5 apart).
++    expect(apart(colourHex("k", false), colourHex(monthChar(7), false))).toBeGreaterThan(20);
++  });
++});
++
++describe("her month's flower on the floor", () => {
++  it("draws the larkspur's florets filled, each with a cream eye, so they never close up into blocks at floor size", () => {
++    const july = shapesOf(monthChar(7), BIRTH_FLOWER_PATHS, BIRTH_FLOWER_SMALL);
++    expect(july).toHaveLength(3);
++    const [line, florets, eyes] = july;
++    // The stem and leaf stay lines, as heavy as every other month's.
++    expect(line).toMatchObject({ stroke: true, width: 2.4 });
++    // The florets are filled shapes (five petals each, five florets and a bud), never a stroke over loops narrower than it.
++    expect(florets.stroke).toBeFalsy();
++    expect(florets.cream).toBeFalsy();
++    expect(florets.d.match(/M/g)!.length).toBe(5 * 5 + 1);
++    expect(eyes).toMatchObject({ cream: true });
++    expect(eyes.d.match(/M/g)!.length).toBe(5);
++    // Every shape on the same sheet as the line drawing it replaces.
++    for (const s of july) expect(s.transform).toBe("scale(1.45) translate(-20 -32)");
++  });
++
++  it("keeps every other month's line drawing as it is", () => {
++    for (let month = 1; month <= 12; month++) {
++      if (BIRTH_FLOWER_SMALL[month]) continue;
++      expect(shapesOf(monthChar(month), BIRTH_FLOWER_PATHS, BIRTH_FLOWER_SMALL)).toEqual(shapesOf(monthChar(month), BIRTH_FLOWER_PATHS));
++      expect(shapesOf(monthChar(month), BIRTH_FLOWER_PATHS)).toEqual([{ d: BIRTH_FLOWER_PATHS[month - 1], transform: "scale(1.45) translate(-20 -32)", stroke: true, width: 2.4 }]);
++    }
++    expect(Object.keys(BIRTH_FLOWER_SMALL)).toEqual(["7"]);
++    // Without the line drawings, no small one is drawn either.
++    expect(shapesOf(monthChar(7), [], BIRTH_FLOWER_SMALL)).toEqual([]);
++  });
++});
 diff --git a/src/lib/portal/rangoli.ts b/src/lib/portal/rangoli.ts
 new file mode 100644
-index 0000000..311b73f
+index 0000000..e1688be
 --- /dev/null
 +++ b/src/lib/portal/rangoli.ts
-@@ -0,0 +1,426 @@
+@@ -0,0 +1,438 @@
 +import { FLOWER_PETALS, FLOWER_STEM } from "./brandFlower";
 +import { SPECIES } from "./species";
 +import { STONES } from "./stones";
@@ -30236,7 +30377,9 @@ index 0000000..311b73f
 +
 +  THE FLOOR is a square of 360 units with the bindu at its centre. Five
 +  rings of places sit 35 units apart (28 CSS px on the narrowest phone's
-+  288 px floor), the first round the bindu, the last just inside the edge.
++  288 px floor), the first round the bindu. The last ring's band runs out
++  to the edge, but its flowers are drawn a little further in and smaller,
++  so they and its gold hairline stay inside the floor's double frame.
 +  The rangoli has the symmetry of an eight-petalled flower with its mirror:
 +  eight turns of 45 degrees, and a mirror line on every spoke and halfway
 +  between them. So one sixteenth of the circle, from a spoke to the next
@@ -30264,8 +30407,9 @@ index 0000000..311b73f
 +export const BINDU_R = 2.6;
 +/** The space between rings: 28 CSS px on a 288 px floor. */
 +export const RING_STEP = 35;
-+/** The faint guide rings: one round the bindu, then the outer edge of each ring of places. */
-+export const GUIDES: readonly number[] = [12, 40, 75, 110, 145, 178];
++/** The faint guide rings: one round the bindu, then the outer edge of each ring of places (the last, also the round
++    ground of the door's step and the card, clear of the floor's inner hairline, 6 CSS px in, by 4 px at 288 px). */
++export const GUIDES: readonly number[] = [12, 40, 75, 110, 145, 167];
 +
 +export type Ring = { r: number; size: number; at: readonly number[] };
 +/* Each ring's radius, the size its flowers are drawn at, and its places' angles from a spoke (0 to 22.5 degrees). */
@@ -30274,7 +30418,7 @@ index 0000000..311b73f
 +  { r: 57.5, size: 30, at: [0, 22.5] },
 +  { r: 92.5, size: 30, at: [0, 11.25, 22.5] },
 +  { r: 127.5, size: 32, at: [0, 11.25, 22.5] },
-+  { r: 162.5, size: 28, at: [0, 7.5, 15, 22.5] },
++  { r: 155, size: 22, at: [0, 7.5, 15, 22.5] },
 +];
 +
 +export type Place = { ring: number; deg: number };
@@ -30377,12 +30521,13 @@ index 0000000..311b73f
 +export type ColourKey = "b" | "g" | "s" | "o" | "y" | "k" | "u" | "stone";
 +export const colourChar = (key: ColourKey, month: number | null): string | null => (key === "stone" ? (month ? monthChar(month) : null) : key);
 +
-+/* Flower colours only, never on a button or a word: blush, gold, sage, the floor's opposite, marigold, kumkum and turmeric. */
++/* Flower colours only, never on a button or a word: blush, gold, sage, the floor's opposite, marigold, kumkum and turmeric.
++   Kumkum is a warm sindoor red, so it never reads as July's ruby beside it in the tray or on the floor. */
 +export const INK = "#1A1614";
 +export const IVORY = "#FBF3EC";
 +export const VELLUM = "#FFF8F5";
 +export const GOLD = "#C99A4C";
-+const HEX: Record<string, string> = { b: "#F7AE98", g: GOLD, s: "#8FAAA4", y: "#E8892B", k: "#B3142F", u: "#E2B23A" };
++const HEX: Record<string, string> = { b: "#F7AE98", g: GOLD, s: "#8FAAA4", y: "#E8892B", k: "#D2381F", u: "#E2B23A" };
 +
 +/** A colour's hex on this floor ("o" is the floor's opposite: ink on ivory, ivory on ink). */
 +export const colourHex = (c: string, ink: boolean): string => (c === "o" ? (ink ? IVORY : INK) : (HEX[c] ?? STONES[monthOf(c) - 1]?.hue ?? GOLD));
@@ -30479,8 +30624,12 @@ index 0000000..311b73f
 +/* The Naira petal (the bloom's notched petal from the brand flower) and the whole flower, each fitted to the box. */
 +const PETAL = FLOWER_PETALS[2];
 +
-+/** Each flower's drawing, by its letter (`birth`: the twelve birth flowers' line drawings, BirthFlowers' BIRTH_FLOWER_PATHS). */
-+export const shapesOf = (m: string, birth: readonly string[]): Shape[] => {
++/** A birth flower's own small drawing (BirthFlowers' BIRTH_FLOWER_SMALL): its lines, its filled florets and their cream eyes. */
++export type SmallFlower = { line: string; fill: string; eyes: string };
++
++/** Each flower's drawing, by its letter (`birth`: the twelve birth flowers' line drawings, BirthFlowers' BIRTH_FLOWER_PATHS;
++    `small`: by month, a small drawing for one whose line drawing closes up at a floor's size). */
++export const shapesOf = (m: string, birth: readonly string[], small: Readonly<Record<number, SmallFlower>> = {}): Shape[] => {
 +  if (m === "p") return [{ d: PETAL, transform: "scale(535) translate(-0.38 -0.13)" }];
 +  if (m === "f") return [{ d: FLOWER_STEM, transform: "scale(96) translate(-0.3434 -0.5)", opacity: 0.62 }, ...FLOWER_PETALS.map((d) => ({ d, transform: "scale(96) translate(-0.3434 -0.5)" }))];
 +  if (m === "l") return [{ d: "M0,-46C20,-22 20,20 0,46C-20,20 -20,-22 0,-46Z" }, { d: "M0,-36L0,40", stroke: true, cream: true, width: 2.6, opacity: 0.6 }];
@@ -30488,8 +30637,12 @@ index 0000000..311b73f
 +  const species = SPECIES_CHARS.indexOf(m);
 +  if (species >= 0) return head(species);
 +  const month = monthOf(m);
-+  // Her month's flower: the Gifts room's gold line drawing, stem toward the bindu.
-+  if (month && birth[month - 1]) return [{ d: birth[month - 1], transform: "scale(1.45) translate(-20 -32)", stroke: true, width: 2.4 }];
++  // Her month's flower: the Gifts room's gold line drawing, stem toward the bindu (or its own small drawing, whose
++  // florets are filled, where the line drawing's loops would close up).
++  const sheet = "scale(1.45) translate(-20 -32)";
++  const own = month && birth[month - 1] ? small[month] : undefined;
++  if (own) return [{ d: own.line, transform: sheet, stroke: true, width: 2.4 }, { d: own.fill, transform: sheet }, { d: own.eyes, transform: sheet, cream: true, opacity: 0.85 }];
++  if (month && birth[month - 1]) return [{ d: birth[month - 1], transform: sheet, stroke: true, width: 2.4 }];
 +  return [];
 +};
 +
@@ -46551,10 +46704,10 @@ index 0000000..39c5722
 +export default Stone;
 diff --git a/src/pages/members/Twins.test.tsx b/src/pages/members/Twins.test.tsx
 new file mode 100644
-index 0000000..206b85e
+index 0000000..2665804
 --- /dev/null
 +++ b/src/pages/members/Twins.test.tsx
-@@ -0,0 +1,555 @@
+@@ -0,0 +1,566 @@
 +import { act, cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 +import { MemoryRouter } from "react-router-dom";
 +import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -46635,7 +46788,11 @@ index 0000000..206b85e
 +const cardFor = (key: string) => document.querySelector<HTMLButtonElement>(`.ig-tw-card[data-card="${key}"]`)!;
 +const status = () => document.querySelector(".ig-tw-said")!;
 +const leafOf = (b: Element) => b.querySelector(".ig-tw-leaf")!;
-+const nameOf = (b: Element) => b.querySelector(".ig-tw-name")!.textContent!;
++/* A face-up card's name, whole: its design, and " — " and its variant when the card sets one on its own line. */
++const nameOf = (b: Element) => {
++  const variant = b.querySelector(".ig-tw-variant")?.textContent;
++  return b.querySelector(".ig-tw-base")!.textContent! + (variant ? ` — ${variant}` : "");
++};
 +const pastimeWrites = () => writes.filter((u) => u(readNaira(null)).q !== undefined);
 +
 +/* Turns every pair face up by her taps alone. */
@@ -46964,6 +47121,10 @@ index 0000000..206b85e
 +    turnEveryPair();
 +    expect(kept()).toEqual([1]);
 +    expect(status()).toHaveTextContent(WORDS.allUp);
++    // Seen once: the gold finale under the table; the status line says it to a screen reader alone.
++    expect(status().querySelector(".sr-only")).toHaveTextContent(WORDS.allUp);
++    expect(document.querySelector(".ig-tw-done .ig-h2")).toHaveTextContent(WORDS.allUp);
++    expect(document.querySelector(".ig-tw-done .ig-h2")).toHaveAttribute("aria-hidden", "true");
 +    expect(screen.getByText(WORDS.keptHere)).toBeInTheDocument();
 +    finishAll();
 +    fireEvent.click(screen.getByRole("button", { name: WORDS.layAgain }));
@@ -47044,6 +47205,7 @@ index 0000000..206b85e
 +  it("&twins=last: one pair still face down, the rest listed", () => {
 +    setMember({ garden: { twins: "last" } });
 +    room();
++    expect(screen.getByText(WORDS.lede)).toBeInTheDocument();
 +    expect(cards().filter((c) => !c.classList.contains("is-up"))).toHaveLength(2);
 +    expect(document.querySelectorAll(".ig-tw-pair")).toHaveLength(5);
 +  });
@@ -47054,6 +47216,8 @@ index 0000000..206b85e
 +    expect(cards()).toHaveLength(0);
 +    expect(screen.getByRole("status")).toHaveTextContent(WORDS.resting);
 +    expect(screen.getByRole("list", { name: WORDS.restingPairs }).querySelectorAll("a")).toHaveLength(4);
++    // No play instructions over a room with no table.
++    expect(screen.queryByText(WORDS.lede)).toBeNull();
 +  });
 +});
 +
@@ -47112,10 +47276,10 @@ index 0000000..206b85e
 +});
 diff --git a/src/pages/members/Twins.tsx b/src/pages/members/Twins.tsx
 new file mode 100644
-index 0000000..d3a65ef
+index 0000000..64f2ca5
 --- /dev/null
 +++ b/src/pages/members/Twins.tsx
-@@ -0,0 +1,511 @@
+@@ -0,0 +1,514 @@
 +import { useEffect, useLayoutEffect, useMemo, useRef, useState, type KeyboardEvent } from "react";
 +import { Link } from "react-router-dom";
 +import PortalShell from "@/components/portal/PortalShell";
@@ -47520,7 +47684,8 @@ index 0000000..d3a65ef
 +          <h1 ref={h1Ref} tabIndex={-1} className="ig-h1 ig-tw-h1">
 +            <em>{WORDS.title}</em>
 +          </h1>
-+          <p className="ig-lede">{WORDS.lede}</p>
++          {/* Its play instructions, only while there is a table to play (resting, the room lays none). */}
++          {laying?.kind !== "rest" && <p className="ig-lede">{WORDS.lede}</p>}
 +        </div>
 +
 +        {laid && (
@@ -47567,8 +47732,10 @@ index 0000000..d3a65ef
 +          </div>
 +        ) : (
 +          <>
++            {/* With every pair up, the gold finale under the table is the one line she sees; this one says it to a screen
++                reader alone, and keeps its room, so the table never moves. */}
 +            <p className="ig-fineprint ig-tw-said" role="status">
-+              {said}
++              {done && said === WORDS.allUp ? <span className="sr-only">{said}</span> : said}
 +            </p>
 +            <div ref={tableRef} className="ig-tw-table">
 +              <div className="ig-tw-grid" role="group" aria-label={WORDS.tableName}>
@@ -47605,7 +47772,7 @@ index 0000000..d3a65ef
 +            )}
 +            {done && (
 +              <div className="ig-tw-done">
-+                {/* Its finale in the display italic, for her eyes (the status line over the table has said it). */}
++                {/* Its finale in the display italic, for her eyes (the status line over the table says it, unseen). */}
 +                <p className="ig-h2" aria-hidden>
 +                  <em style={GOLD_TEXT}>{WORDS.allUp}</em>
 +                </p>
@@ -49290,10 +49457,10 @@ index 0000000..cdb85c7
 +#ig-keepsakes:focus { outline: none; }
 diff --git a/src/pages/members/members.css b/src/pages/members/members.css
 new file mode 100644
-index 0000000..de53d4b
+index 0000000..1f14fa2
 --- /dev/null
 +++ b/src/pages/members/members.css
-@@ -0,0 +1,511 @@
+@@ -0,0 +1,512 @@
 +/*
 +  The Inner Garden. Imported only by MembersRoute, so Vite ships this as the
 +  route's own stylesheet: nothing here reaches the product page, the bag or
@@ -49804,7 +49971,8 @@ index 0000000..de53d4b
 +.ig-door::before { content: ""; display: block; padding-top: 38%; }
 +.ig-door-step { position: absolute; left: 0; top: 0; width: 100%; aspect-ratio: 1 / 1; margin-top: -62%; border: 1px solid var(--ig-gold-line); background: radial-gradient(circle, rgb(var(--nf-gold-rgb) / 0.6) 0 1.3px, transparent 1.8px) 50% 50% / 16px 16px, #fff8f5; transform: perspective(700px) rotateX(62deg); transform-origin: 50% 100%; }
 +.ig-door.is-night .ig-door-step { background-color: var(--nf-ink); }
-+.ig-door > .ig-link { margin-top: 0.2rem; }
++/* Its link balanced over two lines when it wraps, so "door →" is never left alone (as the night's lookup line). */
++.ig-door > .ig-link { margin-top: 0.2rem; text-wrap: balance; justify-content: center; }
 diff --git a/src/pages/members/orders.css b/src/pages/members/orders.css
 new file mode 100644
 index 0000000..9ec54aa
@@ -50174,10 +50342,10 @@ index 0000000..9300264
 +}
 diff --git a/src/pages/members/twins.css b/src/pages/members/twins.css
 new file mode 100644
-index 0000000..eeac04e
+index 0000000..310c80e
 --- /dev/null
 +++ b/src/pages/members/twins.css
-@@ -0,0 +1,130 @@
+@@ -0,0 +1,138 @@
 +/*
 +  Twin Blooms (/members/twins): the table of pressed flowers and the pairs
 +  she has turned. Imported by Twins.tsx alone, so it ships in that room's own
@@ -50261,19 +50429,25 @@ index 0000000..eeac04e
 +.ig-tw-gold .ig-tw-gold-fine { stroke: #b0843a; stroke-width: 0.8; stroke-opacity: 0.75; }
 +.ig-tw-photo { position: relative; flex: 1 1 auto; min-height: 0; display: block; }
 +.ig-tw-photo img { position: absolute; inset: 0; display: block; width: 100%; height: 100%; object-fit: contain; }
++/* Its name: the design whole in up to three lines (two over a variant), and a variant ("Silver") on its own line under
++   it, never cut; only a card with a long name gives its photo a line. */
 +.ig-tw-name {
-+  display: -webkit-box;
++  display: block;
 +  min-height: 2.6em;
 +  margin-top: 4px;
-+  overflow: hidden;
 +  font-family: var(--nf-font-label);
 +  font-size: 10px;
 +  line-height: 1.3;
 +  letter-spacing: 0.02em;
 +  text-align: center;
 +  color: var(--nf-ink);
-+  -webkit-line-clamp: 2;
-+  -webkit-box-orient: vertical;
++}
++.ig-tw-base { display: -webkit-box; overflow: hidden; -webkit-line-clamp: 3; -webkit-box-orient: vertical; }
++.ig-tw-base--short { -webkit-line-clamp: 2; }
++.ig-tw-variant { display: block; font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; color: rgb(var(--nf-ink-rgb) / 0.72); }
++@media (min-width: 600px) {
++  .ig-tw-name { font-size: 12px; }
++  .ig-tw-variant { font-size: 10px; }
 +}
 +.ig-tw-corner { position: absolute; top: 3px; right: 4px; display: block; line-height: 0; transform-origin: 70% 80%; }
 +.ig-tw-corner .ig-glyph { display: block; height: 26px; width: auto; }
@@ -50288,8 +50462,10 @@ index 0000000..eeac04e
 +.ig-tw-done { display: flex; flex-direction: column; align-items: center; gap: 0.25rem; width: 100%; margin-top: 0.5rem; }
 +.ig-tw-done .ig-btn { width: auto; min-width: 12rem; height: 44px; }
 +.ig-tw-rest { width: 100%; margin-top: 1rem; }
-+.ig-tw-links { display: grid; gap: 0.25rem; margin: 0.5rem 0 0; padding: 0; list-style: none; }
++/* Each twin pair its own item, set apart by a short gold hairline, its two names close together. */
++.ig-tw-links { display: grid; justify-items: center; margin: 0.5rem 0 0; padding: 0; list-style: none; }
 +.ig-tw-links li { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; column-gap: 0.5rem; }
++.ig-tw-links li + li { margin-top: 0.9rem; padding-top: 0.9rem; border-top: 1px solid var(--ig-gold-line); min-width: min(100%, 12rem); }
 +.ig-tw-amp { font-family: var(--nf-font-editorial); font-style: italic; font-size: 1.2rem; color: var(--nf-gold-text); }
 +
 +/* ── pairs you've turned ───────────────────────────── */

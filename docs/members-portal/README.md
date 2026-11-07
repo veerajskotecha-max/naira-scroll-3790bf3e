@@ -3,7 +3,7 @@
 Backup copies of the members' portal commits. They are **not on main** and must not be merged without the owner's review.
 
 - Base: `893d5be` on main ("Buy 2 takes 10% off and Buy 3 takes 20%").
-- Branch in the session container: `members-portal`, at `daeee6b` (Phase 7 'Pairs and Petals' in progress, interim: acceptance done, owner screens taken, visual QA under way; Phase 6 final is `fc54f58`; Phase 5 final is `1238125`, Phase 4 final is `64d992d`) (includes real merge commits, so the backup is a git bundle).
+- Branch in the session container: `members-portal`, at `2206027` (Phase 7 'Pairs and Petals' final; Phase 6 final is `fc54f58`; Phase 5 final is `1238125`, Phase 4 final is `64d992d`) (includes real merge commits, so the backup is a git bundle).
 - To restore: `git fetch docs/members-portal/members-portal.bundle members-portal:members-portal`
 - To read every change at once: `docs/members-portal/members-portal.diff` (against 893d5be).
 
@@ -136,6 +136,38 @@ Independent check by the lead on fc54f58, the final head (a separate detached wo
   - the iPhone Safari motion-permission prompt and real DeviceOrientation readings (tested only with a stubbed requestPermission and synthetic events);
   - a real member's 'Add the look to your bag' against the live Shopify cart, with the bag drawer over the room (covered by mocked tests only: real adds were not allowed here).
 
+## Phase 7: Pairs and Petals
+
+67 commits on top of fc54f58, including two real merges. Things she makes, finds and gives; nothing is a count, prize, discount, timer or scarcity, and nothing is lost if she ignores it.
+
+| Commit | What it adds |
+|---|---|
+| c3ac299, b192d80 | **Contract:** her account may keep one more small integer, `naira.q` (pastime bits: Twin Blooms finished, a rangoli laid; read only from 1 to 1023; `,"q":3` is 6 bytes, the worst case stays under the 1,200 B cap, and a keepsake write never trims a saved piece). `pastimes.ts` and the preview switches. |
+| b2c9229 to 65dced1, 9c6e525, 53f11fd, 64648da, 7e18ece, merged in 7820f4e | **Twin Blooms** (/members/twins): a calm memory table of pressed-flower cards over the shop's real twin families (the shop's own lookalike list). Each matched pair opens both live pieces side by side (live price, Available or Sold out, Add to bag with her size and metal), the line 'Matched from their photos as twins: one design, or made as one set.', and 'Twin with someone' (her own share sheet or WhatsApp, the two public links, no tracking). No timer, no score. A Herbarium keepsake. **Tonight's moon:** after dark the garden's moon wears tonight's real phase (Meeus), shape only, never animated; a full moon brings a soft moonlit light round it, a new moon leaves the sky to the stars. Twins and Rangoli join the More row. |
+| 89a7f00, 9c2068e, 9c7c317, b9f857b, 03080b2, 1d863b6, d916777, 49e974d, 8a53af9, 926454a, merged in c90a9ca | **Rangoli** (/members/rangoli): she lays petals (the brand's petal and flower, her month's birth flower, sage leaves) in 8- or 16-fold rings round a gold bindu, every tap blooming all the way round; 'Draw it for me', 'Take back', 'Sweep the floor', an ivory or ink ('By lamplight') floor, seven colours including kumkum and turmeric. 'Lay it at my door' keeps it on her phone and lays it, foreshortened, on a step under her garden bed; a 1080x1920 story card through the garden card's own renderer. |
+| 722c42f, ebe7602 | Phase 6's owner wording lifted out whole and laid back unchanged, so it still drops alone: **`git revert ebe7602`** (it replaces ac2cdbf). |
+| 9cbfa40 to 1ae1b6f, bb8973f, 92925b4 | Integration and polish after five reviews (phone and performance, engineering, brand and delight, data and privacy, journey) with adversarial checks: a phone-sized Twin table that keeps pairs together and focus where she is; 'Twin with someone' tells Meta nothing; the Rangoli room on a phone; the door's words apart from its link. |
+| f353142, 41c0aac, 89d5433 | Acceptance-critic fixes over four rounds: the full moon's moonlit wash back without greying the ink sky; a Bloom Field change to the drop room was tried (41c0aac) and lifted out whole (89d5433), so the drop room is exactly Phase 6's. |
+| daeee6b | **The shower, Phase 7's Tier 2 (droppable, owner question):** on a capable phone only, as she keeps her rangoli, Phase 5's Bloom Field (unchanged) lets the brand's five-petal flower fall over the room in her stone's colour, edged in gold, for about 6 s, then is gone. It waits for her hands to be still before preparing, and is put away when she sweeps, leaves, opens the bag, hides the tab or does nothing for 20 s. Never under reduced motion, Data Saver or a slow connection. **`git revert daeee6b`** drops all of it (it replaces 79b41a5, 6c12e3f, 4595cf9, 78e58ac and 9d509b1, each lifted out in history); the rangoli's own drawn finale stays. |
+| fe04eb9 | **Phase 7 owner wording (droppable):** the poetic names and lines for Twin Blooms, the moon and the rangoli. **`git revert fe04eb9`** leaves the plain words. |
+| 6951f5e to 2206027 | **Visual fixes after an independent review of the owner screens** (two viewers, skeptics per finding; 11 confirmed, all minor): the rangoli's outer ring inside the floor's frame; kumkum a warm sindoor red, plainly apart from July's ruby; the July larkspur drawn as florets at floor size; a twin card's variant ('Silver') on its own line, never cut; the finale said once; the resting table asks for no play; a Twins icon of two flowers (it read as scissors); the Herbarium's tape off the new drawings; the door's link balanced over two lines. |
+
+Preview switches (development only, absent from dist): `&twins=1` / `&twins=last`, `&deal=`, `&turned=1`, `&rangoli=1`, `&floor=1|lamp`, `&moon=new|crescent|quarter|gibbous|full|waning` or an age 0 to 29, with the earlier `&tier=2&probe=0`, `&hour=night`, `&hunt=`, `&stars=1`, `&look=1`, `&tilt=sweep`.
+
+Independent check by the lead on 2206027, the final head (a separate detached worktree):
+- 233 files and 2,314 tests pass; tsc is clean (app and node); eslint is clean on the 57 changed .ts/.tsx files; the build succeeds and leaves the tree clean.
+- The protected files are unchanged since 893d5be. Since fc54f58 (Phase 6) nothing changed outside src/pages/members, src/components/portal and src/lib/portal, and config.test.ts is untouched. The static three/gsap importers are the same six files as Phase 6 (no new one).
+- vendor, three, gsap, RoomEnvironment and the global CSS are byte-identical to 893d5be; Flip, Physics2D and RoomEnvironment to Phase 6. ProductDetail, CartDrawerNext, JewelDetailNext, Jewellery, JewelleryCategory and Index match 893d5be once hashes are masked; Account and Auth match Phase 6. The entry chunk is the same length with the same 117 exports (two masked lines differ: the route table); unboxGsap differs only in short minified names (its source is unchanged).
+- The dist grep is clean: no preview code or fixtures, none of the earlier switches, and none of Phase 7's (the same grep is clean on the Phase 6 build). `META_CAP_BYTES` is still 1200; `naira.q` is read only from 1 to 1023.
+- Sizes (gzip -9): MembersRoute 31.6 KB (budget 35; Phase 6 31.0), members.css 3.1 KB (budget 4). Twins 8.3 KB + 1.5 KB CSS; Rangoli 5.3 KB + 1.5 KB CSS, plus RangoliArt 5.0 KB shared with the door; RangoliDoor 0.5 KB + 0.3 KB CSS; RangoliField 1.3 KB + 0.2 KB CSS; SkyLayer 3.1 KB. Still four scene chunks and no new gsap chunk.
+- Reverts, each in its own throwaway worktree on 2206027, all clean with tsc (app and node) clean and the full suite passing: `git revert 7625aa2` (2,282 tests), `ebe7602` (2,313), both in either order (2,281), `38e854f` (2,317), `daeee6b` (2,291), `fe04eb9` (2,314), and `daeee6b` with `fe04eb9` (2,291).
+- Owner screens: 59 stills and 4 clips in the session's scratchpad (owner-phase7/, captions in screens.json), re-taken after the visual fixes.
+
+- Not done (needs a real device or a real member):
+  - the shower's real length and frame rate, the 60-frame probe and compile time on a mid-range Android and an iPhone (software GL measured about 9.6 s for the fall; about 6.5 s is expected on a phone);
+  - the real share sheets on iOS and Android and the Instagram / Facebook in-app browsers for 'Twin with someone' and the story card (stubbed here);
+  - a real member's Add to bag from a twin pair against the live Shopify cart, and real `naira.q` writes to an account (unit tests with Supabase mocked; no sign-in was allowed here).
+
 ## Phase 1 checks on 2f278c0
 
 - vitest: 150 files and 1,046 tests pass.
@@ -195,6 +227,21 @@ Independent check by the lead on fc54f58, the final head (a separate detached wo
 - Phase 6, small and later:
   - two necklaces less than about 5.5 cm apart (for example 40 and 42 cm) still let the higher pendant cover most of the lower one's photo in the Vanity; separating them needs a choice of bail length or depth
   - at 320 px the garden bed's edge trims the descenders of its labels ('Waiting', 'May · Emerald'); it predates Phase 6
+- Phase 7:
+  - her account keeping one more small number, `naira.q` (6 bytes now, never more than 9; it records only that she finished Twin Blooms and laid a rangoli, and gates nothing)
+  - the names 'Twin Blooms' (tab 'Twins') and 'Press new flowers', and the line under every pair: 'Matched from their photos as twins: one design, or made as one set.'
+  - whether the Carré bracelet's two colours (Amethyst and Champagne) count as a twin pair (they do today)
+  - 'Twin with someone': her share sheet or WhatsApp with the two public links and 'Two of a kind, from Naira Flore:', no tracking
+  - the shop's Buy 2 / Buy 3 line once under the twin pairs (read from promo.ts; since 7 Nov the shop also has Buy 4 = 30%, which this line will then show too)
+  - Add to bag from a twin pair sends one Meta AddToCart per piece, as everywhere else
+  - a rangoli at all, all year or only in festival weeks; its wording ('A rangoli of petals', 'Lay it at my door', 'Laid at your garden's door.', 'By lamplight', the card's 'A RANGOLI OF PETALS' and 'Made for you, in my garden'); kumkum (now a warm sindoor red, #D2381F) and turmeric as colours
+  - the door step under her garden bed on the home (an invitation until she makes a rangoli, then her rangoli lying there)
+  - while a drop is open, that drop's flower in the rangoli tray as 'This drop's flower'
+  - the shower: three.js in a third place, after the drop room and Stone Light (drop it with `git revert daeee6b`; the rangoli stays complete)
+  - the moon names only its shape; should it ever say purnima or amavasya?
+  - signing out does not forget her rangoli on that phone (like the Vanity's look); forgetting both needs the Account chunk edit (see 38e854f)
+  - the Phase 7 owner-wording commit fe04eb9 (droppable), including whether 'Show me every pair' should end on its own line instead of 'Every twin found.'
+  - Diwali's garden dressing (diyas, a marigold garland) is built and waits only for its IST date and hours in seasons.ts
 - Phase 6, for the lead (the acceptance critic's four lines, now held to the plan):
   - signing out on a phone does not forget the Vanity's look ('naira-vanity') or her gold-leaf mark (naira-portal.crown). Both are tagged with her id, so another member never sees them. Making sign-out forget them means editing the shop's Account chunk (src/lib/auth/forgetDevice.ts and its test). `git revert 38e854f` puts that change back, and it also clears naira-portal.grown, the Phase 5 roses
   - a later version that wants a seventh play bit must ship a reader that keeps it before any writer sets it, because today's reader drops any number above 63

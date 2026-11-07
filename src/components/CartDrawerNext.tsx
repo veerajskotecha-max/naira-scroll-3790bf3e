@@ -47,11 +47,15 @@ import { WHATSAPP_NUMBER, type JewelPiece, type JewelVariant } from "@/data/jewe
 */
 
 const formatPrice = (n: number) => `₹${Math.round(n).toLocaleString("en-IN")}`;
-/* A line of three pieces at 20% off divides its rounded total by three
-   (₹2,398 / 3 for three ₹999 pieces), and four at 30% by four (₹2,797 / 4):
-   "₹799.33 each" read like an error. Each
-   is shown in whole rupees, as the product page quotes it; the line's total
-   stays exact. */
+/* "Each" on a line of two or more is one piece at the bag's rate, rounded on
+   its own: the product page's figure for that rung (`pieceAtRung`) and, to
+   the rupee, the per-piece price Shopify charges. It used to be the line's
+   share of the bag's rounded total divided by its pieces, which gave
+   "₹799.33 each" for three ₹999 pieces at 20%, and, once rounded, put two
+   ₹1,499 pieces at 30% at "₹1,050 each" against ₹1,049 on the product page
+   (Shopify: ₹1,049.30) whenever the bag's leftover rupee landed on that line.
+   The line's total stays its share of the bag's total, so the lines still
+   add up to it. */
 const formatUnitPrice = (n: number) => `₹${Math.round(n).toLocaleString("en-IN")}`;
 const pct = (rate: number) => `${Math.round(rate * 100)}%`;
 
@@ -507,7 +511,9 @@ const CartDrawerNext = () => {
                         {discount.rate > 0 ? (
                           <>
                             <del className="text-[12px] text-nf-ink/50">{item.priceLabel}</del>
-                            <span className="font-medium text-nf-ink">{formatUnitPrice(linePrices[index].unit)}{item.quantity > 1 ? " each" : ""}</span>
+                            <span className="font-medium text-nf-ink">
+                              {item.quantity > 1 ? `${formatUnitPrice(discountedSubtotal(item.price, discount))} each` : formatUnitPrice(linePrices[index].unit)}
+                            </span>
                             <span className="text-[11px] text-nf-gold-text">{pct(discount.rate)} off</span>
                           </>
                         ) : item.priceLabel}

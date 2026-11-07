@@ -308,7 +308,10 @@ The live bag; `App.tsx` lazy-loads it and `CartDrawer.tsx` is kept so the switch
 back is one line. Since 16 Oct it is the bag of the "Naira Bag CRO Plan": the
 ladder sits on top (`SimpleLadder`), each line shows its price after the
 rung with the old one struck (`lib/cartPricing.ts` spreads the bag's one
-rounded total over the lines; "each" is whole rupees), one add-on carries its
+rounded total over the lines; "each", on a line of two or more, is one piece
+at the rate rounded on its own, the product page's `pieceAtRung` figure and
+Shopify's per-piece price, never the line's share divided, which read ₹1 over
+whenever the bag's leftover rupee landed on that line), one add-on carries its
 exact effect ("Adds ₹1,109 · saves ₹390" for a ₹1,499 piece beside a ₹2,399 one, `addOnEffect`: the checkout's resolver
 and rounding, so the total moves by exactly that), the gift box is one line that lifts open above itself on a tap,
 and Checkout has payment, returns, plating and "Next: a quick OTP…" under it.

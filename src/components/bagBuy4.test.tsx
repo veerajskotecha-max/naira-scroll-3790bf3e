@@ -106,6 +106,38 @@ describe("the bag at four and five pieces: Buy 4, 30%", () => {
     expect(text("[data-you-save]")).toBe("You save ₹2,398 · 30% for 5 pieces");
   });
 
+  /* Two ₹1,499 pieces on one line, with ₹2,399 and ₹1,199: ₹6,596 at 30% is
+     ₹4,617.20, so ₹4,617. The bag's leftover rupee lands on the pair (its
+     exact 2,098.60 has the largest fraction), so the pair's line is ₹2,099,
+     and "each" read ₹1,050 (2,099 / 2 = 1,049.50, rounded up) while the
+     product page's Buy 4 column says ₹1,049 and Shopify charges ₹1,049.30 a
+     piece. Each is now one piece at 30%, rounded on its own. */
+  it("prices each piece of a pair as the product page does", async () => {
+    const pair = [{ ...item(1499, 0), quantity: 2 }, item(2399, 1), item(1199, 2)];
+    localStorage.setItem("naira-shopify-cart", JSON.stringify({ cartId: "cart-1", checkoutUrl: "https://c/1", items: pair }));
+    mocks.fetch.mockResolvedValue({
+      checkoutUrl: "https://c/1",
+      lines: { edges: pair.map((p, i) => ({ node: { ...shopifyLine(p.price, i), quantity: p.quantity } })) },
+    });
+    render(
+      <MemoryRouter>
+        <CartProvider>
+          <OpenBag />
+          <CartDrawerNext />
+        </CartProvider>
+      </MemoryRouter>,
+    );
+    await waitFor(() => expect(mocks.fetch).toHaveBeenCalled());
+    await act(async () => {});
+    expect(text("[data-total]")).toBe("₹4,617");
+    const first = document.querySelector("[data-line]") as HTMLElement;
+    expect(first.querySelector("[data-line-total]")?.textContent).toBe("₹2,099");
+    expect(first.querySelector("[data-line-price]")?.textContent).toBe("₹1,499₹1,049 each30% off");
+    // The lines still add up to the bag's total.
+    const totals = [...document.querySelectorAll("[data-line-total]")].map((t) => Number(t.textContent?.replace(/[₹,]/g, "")));
+    expect(totals.reduce((a, b) => a + b, 0)).toBe(4617);
+  });
+
   /* Three pieces are 20%, and the fourth ring is still open. */
   it("shows 20% at three pieces, with Buy 4 still ahead", async () => {
     await openBagWith(PRICES.slice(0, 3));

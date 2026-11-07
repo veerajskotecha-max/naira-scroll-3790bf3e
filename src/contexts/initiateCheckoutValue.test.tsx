@@ -5,8 +5,9 @@ import { CartProvider, useCart } from "./CartContext";
 /*
   InitiateCheckout's value was the bag's sum before its discount: a two-piece
   bag (2399 + 999) told Meta 3398 while the bag showed, and the shopper was
-  charged, its Total after BUY2 (₹3,058 at today's 10%). It now reports the
-  bag's Total.
+  charged, its Total after BUY2 (₹3,058 at the then 10%). It now reports the
+  bag's Total. Since 7 Nov 2026 two pieces earn no rung (Buy 2 is gone), so
+  that bag is charged its full 3,398 unless a code is typed.
 */
 const mocks = vi.hoisted(() => ({ track: vi.fn(), start: vi.fn(), promo: { code: null as string | null } }));
 vi.mock("@/lib/shopify", () => ({
@@ -49,17 +50,28 @@ beforeEach(() => {
 describe("InitiateCheckout's value is what the shopper is charged", () => {
   it.each([
     ["one piece, no offer", [line("prism-riviere-bracelet", "47501788348578", 2399)], null, 2399, null],
-    ["two pieces, BUY2 (10%)", [line("prism-riviere-bracelet", "47501788348578", 2399), line("brushed-gold-huggies", "47501787594914", 999)], null, 3058, "BUY2"],
+    // Two pieces earn no rung since 7 Nov 2026: charged in full, no coupon.
+    ["two pieces, no rung", [line("prism-riviere-bracelet", "47501788348578", 2399), line("brushed-gold-huggies", "47501787594914", 999)], null, 3398, null],
+    // A BUY2 left in storage is no code: still the full 3,398, and Fastrr is handed nothing.
+    ["two pieces with BUY2 typed", [line("prism-riviere-bracelet", "47501788348578", 2399), line("brushed-gold-huggies", "47501787594914", 999)], "BUY2", 3398, null],
+    // 2 x 2,399 + 999 = 5,797; at 20% 4,637.60.
     ["three pieces, BUY3 (20%)", [line("prism-riviere-bracelet", "47501788348578", 2399, 2), line("brushed-gold-huggies", "47501787594914", 999)], null, 4638, "BUY3"],
     // 2,997 at 20% is 2,397.60: the bag rounds once, to 2,398.
     ["three of one piece, BUY3 (20%)", [line("brushed-gold-huggies", "47501787594914", 999, 3)], null, 2398, "BUY3"],
+    // 2,399 at 10% is 2,159.10.
     ["one piece with a typed 10% code", [line("prism-riviere-bracelet", "47501788348578", 2399)], "NAIRA10", 2159, "NAIRA10"],
-    // NAIRA10 (10%) ties BUY2 (10%) at two pieces: on a tie the rung goes, at the same charge.
-    ["two pieces with the typed 10% code", [line("prism-riviere-bracelet", "47501788348578", 2399), line("brushed-gold-huggies", "47501787594914", 999)], "NAIRA10", 3058, "BUY2"],
-    // FRIENDSANDFAMILY (20%) beats BUY2 (10%) at two pieces: the typed code goes, and the value is its 20% off.
+    // 2,399 at 20% is 1,919.20.
+    ["one piece with a typed 20% code", [line("prism-riviere-bracelet", "47501788348578", 2399)], "FRIENDSANDFAMILY", 1919, "FRIENDSANDFAMILY"],
+    // No rung at two pieces, so the typed NAIRA10 is the code: 3,398 at 10% is 3,058.20.
+    ["two pieces with the typed 10% code", [line("prism-riviere-bracelet", "47501788348578", 2399), line("brushed-gold-huggies", "47501787594914", 999)], "NAIRA10", 3058, "NAIRA10"],
+    // No rung at two pieces, so the typed FRIENDSANDFAMILY goes: 3,398 at 20% is 2,718.40.
     ["two pieces with the typed 20% code", [line("prism-riviere-bracelet", "47501788348578", 2399), line("brushed-gold-huggies", "47501787594914", 999)], "FRIENDSANDFAMILY", 2718, "FRIENDSANDFAMILY"],
     // FRIENDSANDFAMILY ties BUY3 at three pieces but covers only the jewellery in Shopify: the rung goes.
     ["three pieces with the typed 20% code", [line("prism-riviere-bracelet", "47501788348578", 2399, 2), line("brushed-gold-huggies", "47501787594914", 999)], "FRIENDSANDFAMILY", 4638, "BUY3"],
+    // BUY3's 20% beats the typed 10%.
+    ["three pieces with the typed 10% code", [line("prism-riviere-bracelet", "47501788348578", 2399, 2), line("brushed-gold-huggies", "47501787594914", 999)], "NAIRA10", 4638, "BUY3"],
+    // A BUY2 left in storage changes nothing at three pieces: BUY3 goes.
+    ["three pieces with BUY2 typed", [line("prism-riviere-bracelet", "47501788348578", 2399, 2), line("brushed-gold-huggies", "47501787594914", 999)], "BUY2", 4638, "BUY3"],
     // Buy 4 (7 Nov 2026): 1,499 + 2,399 + 1,799 + 1,299 = 6,996, at 30% 4,897.20.
     ["four pieces, BUY4 (30%)", FOUR, null, 4897, "BUY4"],
     // With ₹999 more, 7,995 at 30% is 5,596.50: the bag rounds once, half up, to 5,597.

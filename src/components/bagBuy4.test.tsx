@@ -94,8 +94,8 @@ describe("the bag at four and five pieces: Buy 4, 30%", () => {
     // Each line's offer price, from the bag's one rounded total: they add up to it.
     const totals = [...document.querySelectorAll("[data-line-total]")].map((t) => Number(t.textContent?.replace(/[₹,]/g, "")));
     expect(totals.reduce((a, b) => a + b, 0)).toBe(4897);
-    // Every rung is reached, and the track is full.
-    expect([...document.querySelectorAll("[data-rung-mark]")].map((m) => m.className.includes("bg-nf-ink"))).toEqual([true, true, true]);
+    // Both rungs are reached, and the track is full.
+    expect([...document.querySelectorAll("[data-rung-mark]")].map((m) => m.className.includes("bg-nf-ink"))).toEqual([true, true]);
     expect((document.querySelector('[data-ladder] [role="progressbar"] > span') as HTMLElement).style.width).toBe("100%");
     expect(text("[data-ladder] > p")).toContain("up to 30% off");
   });
@@ -138,12 +138,93 @@ describe("the bag at four and five pieces: Buy 4, 30%", () => {
     expect(totals.reduce((a, b) => a + b, 0)).toBe(4617);
   });
 
-  /* Three pieces are 20%, and the fourth ring is still open. */
+  /* Three pieces are 20%, the first ring (Buy 3, a quarter across) is
+     filled, and the Buy 4 ring is still open. 1,499 + 2,399 + 1,799 = 5,697;
+     at 20% 4,557.60, so ₹4,558, and ₹1,139 saved. */
   it("shows 20% at three pieces, with Buy 4 still ahead", async () => {
     await openBagWith(PRICES.slice(0, 3));
     expect(text("[data-total]")).toBe("₹4,558");
     expect(text("[data-you-save]")).toBe("You save ₹1,139 · 20% for 3 pieces");
-    expect([...document.querySelectorAll("[data-rung-mark]")].map((m) => m.className.includes("bg-nf-ink"))).toEqual([true, true, false]);
-    expect((document.querySelector('[data-ladder] [role="progressbar"] > span') as HTMLElement).style.width).toBe("50%");
+    expect(document.querySelector("[data-next-rung]")).toBeNull();
+    expect([...document.querySelectorAll("[data-rung-mark]")].map((m) => m.className.includes("bg-nf-ink"))).toEqual([true, false]);
+    expect((document.querySelector('[data-ladder] [role="progressbar"] > span') as HTMLElement).style.width).toBe("25%");
+  });
+});
+
+/*
+  The owner, 7 Nov 2026: "remove buy 2 10% from cart and offer too, we need
+  only buy 3 20% off and buy 4 30% off". A bag of one or two pieces takes no
+  rung: full price, no "You save", no line struck through, and nothing for
+  Fastrr. Where the saving would be, the bag says what the third piece does.
+  A typed NAIRA10 or FRIENDSANDFAMILY still discounts one or two pieces; a
+  BUY2 left in storage from an earlier visit is no code at all.
+
+  Worked by hand: ₹1,499 + ₹2,399 = ₹3,898. With NAIRA10, 3,898 at 10% is
+  3,508.20, so ₹3,508 and ₹390 saved; the lines at 10% are 1,349.10 and
+  2,159.10, so ₹1,349 and ₹2,159, which add up to it. With FRIENDSANDFAMILY,
+  3,898 at 20% is 3,118.40, so ₹3,118 and ₹780 saved.
+*/
+const rings = () => [...document.querySelectorAll("[data-rung-mark]")].map((m) => m.className.includes("bg-nf-ink"));
+const linePrices = () => [...document.querySelectorAll("[data-line-price]")].map((p) => p.textContent);
+const lineTotals = () => [...document.querySelectorAll("[data-line-total]")].map((t) => t.textContent);
+
+describe("the bag at one and two pieces: no rung yet", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    localStorage.clear();
+  });
+  afterEach(cleanup);
+
+  it("shows two pieces at full price and says what a third piece does", async () => {
+    await openBagWith(PRICES.slice(0, 2));
+    expect(text("[data-total]")).toBe("₹3,898");
+    expect(document.querySelector("[data-you-save]")).toBeNull();
+    expect(text("[data-next-rung]")).toBe("A third piece takes 20% off your bag");
+    expect(linePrices()).toEqual(["₹1,499", "₹2,399"]);
+    expect(lineTotals()).toEqual(["₹1,499", "₹2,399"]);
+    expect(document.querySelectorAll("[data-line-price] del")).toHaveLength(0);
+    // Neither ring is filled; the track is two thirds of the way to Buy 3.
+    expect(rings()).toEqual([false, false]);
+    expect(parseFloat((document.querySelector('[data-ladder] [role="progressbar"] > span') as HTMLElement).style.width).toFixed(3)).toBe("16.667");
+    expect([...document.querySelectorAll("[data-rung-label]")].map((l) => l.textContent)).toEqual(["Buy 320% off", "Buy 430% off"]);
+    // Nothing anywhere in the bag still offers Buy 2 or its 10%.
+    expect(document.body.textContent).not.toMatch(/Buy 2|BUY2|10%/);
+  });
+
+  it("shows one piece at full price and points at the third piece", async () => {
+    await openBagWith(PRICES.slice(0, 1));
+    expect(text("[data-total]")).toBe("₹1,499");
+    expect(document.querySelector("[data-you-save]")).toBeNull();
+    expect(text("[data-next-rung]")).toBe("Your third piece takes 20% off your bag");
+    expect(rings()).toEqual([false, false]);
+  });
+
+  it("takes a typed NAIRA10's 10% off two pieces, as the code's saving", async () => {
+    localStorage.setItem("naira-promo-code", "NAIRA10");
+    await openBagWith(PRICES.slice(0, 2));
+    expect(text("[data-total]")).toBe("₹3,508");
+    expect(text("[data-you-save]")).toBe("You save ₹390 · 10% with your code");
+    expect(document.querySelector("[data-next-rung]")).toBeNull();
+    expect(linePrices()).toEqual(["₹1,499₹1,34910% off", "₹2,399₹2,15910% off"]);
+    expect(lineTotals()).toEqual(["₹1,349", "₹2,159"]);
+  });
+
+  it("takes a typed FRIENDSANDFAMILY's 20% off two pieces", async () => {
+    localStorage.setItem("naira-promo-code", "FRIENDSANDFAMILY");
+    await openBagWith(PRICES.slice(0, 2));
+    expect(text("[data-total]")).toBe("₹3,118");
+    expect(text("[data-you-save]")).toBe("You save ₹780 · 20% with your code");
+  });
+
+  it("gives a stored BUY2 nothing on two pieces, and BUY3 on three", async () => {
+    localStorage.setItem("naira-promo-code", "BUY2");
+    const view = await openBagWith(PRICES.slice(0, 2));
+    expect(text("[data-total]")).toBe("₹3,898");
+    expect(document.querySelector("[data-you-save]")).toBeNull();
+    expect(text("[data-next-rung]")).toBe("A third piece takes 20% off your bag");
+    view.unmount();
+    await openBagWith(PRICES.slice(0, 3));
+    expect(text("[data-total]")).toBe("₹4,558");
+    expect(text("[data-you-save]")).toBe("You save ₹1,139 · 20% for 3 pieces");
   });
 });

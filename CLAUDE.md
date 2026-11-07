@@ -91,18 +91,21 @@ in your bag · no code" on the panel's top rule, and a line from
 already has, that line names the rate and leaves the price to the rung's
 column, because "adding this costs ₹840" under "₹839 each" read as an error),
 then the choices and Add
-to cart. Since 7 Nov 2026 it carries three rungs (Buy 4, 30%) and the owner's
-redesign: three equal columns between gold hairlines, the rate largest in
-Cormorant (lining figures), the piece's price and "each" under it, "Buy 2" as
-the 11px label beside the rate; the bag's rung takes the rate in gold and a
-2px gold rule under its column, a rung climbed past steps back. Nothing in
-it is under 11px. The panel is held to two rows, 56px, both rows pinned to
-fixed heights: Prism Rivière (its badges wrap to two lines) keeps Add to cart
-fully on the first screen of a 390x844 phone with 3px to spare (bottom at
-841px, measured before and after the redesign); a three-row version (label
-over rate, 70px) would push it off. Below 310px three columns cannot hold the
-label beside the rate, so there it stacks (70px), and "off" shows beside the
-rate only from 350px. The phone's buy bar shows whenever Add to
+to cart. Since 7 Nov 2026 it carries two rungs, Buy 3 (20%) and Buy 4 (30%):
+the owner added Buy 4 that morning and took Buy 2 (10%) away the same day.
+It wears the owner's redesign of that day: one equal column per rung
+(`RUNG_GRID_COLS`, never a fixed count) between gold hairlines, the rate
+largest in Cormorant (lining figures), the piece's price and "each" under it,
+"Buy 3" as the 11px label beside the rate; the bag's rung takes the rate in
+gold and a 2px gold rule (at most 108px wide) under its column, a rung
+climbed past steps back. Nothing in it is under 11px. The panel is held to
+two rows, 56px, both rows pinned to fixed heights: Prism Rivière (its badges
+wrap to two lines) keeps Add to cart fully on the first screen of a 390x844
+phone with 3px to spare (bottom at 841px, measured with three columns); a
+three-row version (label over rate, 70px) would push it off. Two columns hold
+the label, the rate and "off" on one line down to 280px, so there is one
+layout at every width (three columns had to stack below 310px and drop "off"
+below 350px). The phone's buy bar shows whenever Add to
 cart is not fully on screen, but never over the price, nor over the offer's
 rungs while they are fully on screen (it covered the per-piece prices on a
 360x780 phone). "The rungs" is the panel's `ul`, so anything that marks a
@@ -237,14 +240,24 @@ Shopify quotes a total the shopper is never charged.
    "BUY2,NAIRA10" as a single unknown code and applied NEITHER. So the resolver
    returns one code, never a pair, and nothing stacks.
 
-Live codes: `BUY2` (10%, min qty 2) and `BUY3` (20%, min qty 3), set back by
-the owner on 3 Nov 2026 to the rates they had before 25 Oct (20% and 30% on
-2-3 Nov, 15% and 25% from 25 Oct), and `BUY4` (30%, min qty 4), added by the
-owner on 7 Nov 2026 as BUY3's exact twin but for rate and minimum
+The ladder is two rungs since 7 Nov 2026: `BUY3` (20%, min qty 3), set back
+by the owner on 3 Nov 2026 to the rate it had before 25 Oct (30% on 2-3 Nov,
+25% from 25 Oct), and `BUY4` (30%, min qty 4), added by the owner on 7 Nov
+2026 as BUY3's exact twin but for rate and minimum
 (`gid://shopify/DiscountCodeNode/1846163964066`, combinesWith order and
-shipping discounts, not product ones; all buyers). All three are PRODUCT
-class scoped to the hidden auto-updating collection `discount-scope-all` — do
-not delete it or all three stop working.
+shipping discounts, not product ones; all buyers). Both are PRODUCT class
+scoped to the hidden auto-updating collection `discount-scope-all` — do not
+delete it or both stop working.
+
+`BUY2` (10%, min qty 2) is gone from the site. The owner, later on 7 Nov
+2026: "remove buy 2 10% from cart and offer too, we need only buy 3 20% off
+and buy 4 30% off". It is out of `QUANTITY_OFFERS` and `PROMO_DISCOUNTS`, so
+one or two pieces take no rung, nothing offers or shows a two-piece discount,
+and a typed BUY2 (or one left in storage) is worth nothing and is never
+handed to Fastrr; the bag clears any code left on a one- or two-piece
+Shopify cart at checkout. BUY2 is switched off in Shopify only AFTER the
+two-rung site is live, never before, so the live bag never promises more than
+the checkout gives.
 
 `NAIRA10` (10%) is LIVE again. It was retired, then brought back because two
 thirds of orders are a single piece, which the ladder gives nothing — before it
@@ -255,41 +268,41 @@ can offer it to anyone without quoting a discount the checkout would reject.
 
 NAIRA10 is typed; the rungs are earned, and the resolver returns the richer of
 the two. On an exact TIE the rung wins, unless the typed code is that rung's
-own code (BUY2 typed into a two-piece bag stays named as typed). Since 3 Nov
-2026 NAIRA10 (10%) TIES the two-piece rung (BUY2, 10%): a two-piece bag with
-NAIRA10 typed hands Fastrr BUY2 at the same 10%, the third piece takes over
-at 20% (BUY3) and the fourth at 30% (BUY4). So NAIRA10 is worth something
-only on a single piece. No typed code is worth 30%, so from four pieces the
-bag always hands Fastrr BUY4. The tie rule also matters for
-`FRIENDSANDFAMILY`, see below. A rung's code typed by hand counts only at the
-rung's own minimum, as Shopify holds it (BUY2 in a one-piece bag, or BUY4 in
-a three-piece one, is worth nothing; the three-piece bag keeps BUY3). Verified in
-the browser at these same 10%/20% rates (before 25 Oct): 2 pieces = BUY2 -₹430 on ₹4,298;
+own code (BUY3 typed into a three-piece bag stays named as typed). NAIRA10
+(10%) sits under both rungs, and since 7 Nov 2026 there is no two-piece rung
+for it to tie: on one or two pieces a typed NAIRA10 is the code Fastrr gets,
+the third piece takes over at 20% (BUY3) and the fourth at 30% (BUY4). No
+typed code is worth 30%, so from four pieces the bag always hands Fastrr
+BUY4. The tie rule also matters for `FRIENDSANDFAMILY`, see below. A rung's
+code typed by hand counts only at the rung's own minimum, as Shopify holds it
+(BUY3 in a two-piece bag, or BUY4 in a three-piece one, is worth nothing; the
+three-piece bag keeps BUY3). Verified in the browser at 10%/20% (before
+25 Oct, when Buy 2 was still a rung): 2 pieces = BUY2 -₹430 on ₹4,298;
 3 pieces = BUY3 -₹1,349 on ₹6,747, total ₹5,548 with shipping. It is NOT auto-applied: a shopper has to type it. The announcement
 strip used to carry it, but the owner asked for the code to come off the
-header: `AnnouncementBar.tsx` now leads with the buy-more offer ("BUY 2 GET
-10% OFF · BUY 3 GET 20% OFF · BUY 4 GET 30% OFF", read from `QUANTITY_OFFERS`;
-the owner, 2 Nov 2026, rates from 3 Nov, Buy 4 from 7 Nov), then the sale,
-free-shipping and limited-batch lines, and
+header: `AnnouncementBar.tsx` now leads with the buy-more offer ("BUY 3 GET
+20% OFF · BUY 4 GET 30% OFF", read from `QUANTITY_OFFERS`; the owner, 2 Nov
+2026, rates from 3 Nov, Buy 4 from 7 Nov, Buy 2 gone the same day), then the
+sale, free-shipping and limited-batch lines, and
 `AnnouncementBar.test.tsx` fails if NAIRA10 comes back. The run's duration
 grows with its length so it keeps its old pace. Do not put it back on the strip unprompted. Deciding to auto-apply it,
 or to show it somewhere else, is a margin call for the owner, not a code
 change to make unprompted.
 
-`FRIENDSANDFAMILY` (20%) BEATS the two-piece rung (10%), TIES the three-piece
-one (20%) since 3 Nov 2026, and LOSES to the four-piece one (BUY4, 30%) since
-7 Nov 2026. In Shopify it covers only the jewellery collections
-(shop-all, necklaces, earrings, bracelets, rings: 175 of 194 products), while
-BUY2 and BUY3 cover every product (`discount-scope-all`), read 2 Nov 2026. So
-on the three-piece tie the bag hands Fastrr BUY3, never FRIENDSANDFAMILY: an
-outfit in the bag would otherwise be charged full price against a bag quoting
-20% off it. On one or two pieces the typed 20% wins outright, so the bag hands
-Fastrr FRIENDSANDFAMILY, and an outfit among those pieces is NOT discounted by
-Shopify while the bag quotes 20% off it (on one piece that was always so; on
-two it is new since 3 Nov, when the code stopped tying BUY2). From four
-pieces the bag hands Fastrr BUY4, which covers every product. Anyone handing
-that code out should know it adds nothing from the third piece on. Each time
-the ladder moves, re-check this code against it.
+`FRIENDSANDFAMILY` (20%) TIES the three-piece rung (BUY3, 20%) since 3 Nov
+2026 and LOSES to the four-piece one (BUY4, 30%) since 7 Nov 2026; one or two
+pieces have no rung to beat since Buy 2 went the same day. In Shopify it
+covers only the jewellery collections (shop-all, necklaces, earrings,
+bracelets, rings: 175 of 194 products), while BUY3 and BUY4 cover every
+product (`discount-scope-all`), read 2 Nov 2026. So on the three-piece tie the
+bag hands Fastrr BUY3, never FRIENDSANDFAMILY: an outfit in the bag would
+otherwise be charged full price against a bag quoting 20% off it. On one or
+two pieces the typed 20% is the only discount, so the bag hands Fastrr
+FRIENDSANDFAMILY, and an outfit among those pieces is NOT discounted by
+Shopify while the bag quotes 20% off it. From four pieces the bag hands
+Fastrr BUY4, which covers every product. Anyone handing that code out should
+know it adds nothing from the third piece on. Each time the ladder moves,
+re-check this code against it.
 
 3. **The rates live in two places and must be changed together.** `QUANTITY_OFFERS`
    in `promo.ts` and the Shopify codes. `OfferProgress.test.tsx` asserts the
@@ -300,15 +313,18 @@ The ladder is applied by the bag, never typed. The live bag (`CartDrawerNext.tsx
 renders it as `SimpleLadder`: "✦ Sitewide sale live today · up to {top rung}
 off" (11px since 7 Nov 2026; it was 8.5px; on a phone too narrow for one
 line it breaks only after the dot) over a track with a ring per rung,
-then "Buy 2 / 10% off", "Buy 3 / 20% off" and "Buy 4 / 30% off" on two lines
-each. With three rungs each ring sits in the middle of its own third of the
-track (`rungPosition`: 1/6, 1/2, 5/6) with its label in that third under it;
-placed by piece count, Buy 3 and Buy 4 were a quarter of the width apart with
-Buy 4 at the very end, and at 280px their labels met. The fill
-(`quantityOfferProgress`) meets each ring as it is reached (one piece is half
-way to the first) and is full at four. `cart/OfferProgress.tsx` and
-`cart/LadderBand.tsx` serve only the old `CartDrawer.tsx`; both use the same
-geometry.
+then "Buy 3 / 20% off" and "Buy 4 / 30% off" on two lines each. Each ring
+sits in the middle of its own share of the track (`rungPosition`: 1/4 and 3/4
+with two rungs; it was 1/6, 1/2, 5/6 with three) with its label in that share
+under it, one grid column per rung (`RUNG_GRID_COLS`); placed by piece count,
+Buy 3 and Buy 4 were a quarter of the width apart with Buy 4 at the very end,
+and at 280px their labels met. The fill (`quantityOfferProgress`) meets each
+ring as it is reached (one piece is a third of the way to the first, two
+pieces two thirds) and is full at four. With one or two pieces nothing is
+off: no line is struck through, and where "You save" would be the bag says
+what the third piece does ("A third piece takes 20% off your bag", from
+`ladderHeadline`). `cart/OfferProgress.tsx` and `cart/LadderBand.tsx` serve
+only the old `CartDrawer.tsx`; both use the same geometry.
 
 ## The bag (`CartDrawerNext.tsx`)
 
@@ -320,8 +336,8 @@ rounded total over the lines; "each", on a line of two or more, is one piece
 at the rate rounded on its own, the product page's `pieceAtRung` figure and
 Shopify's per-piece price, never the line's share divided, which read ₹1 over
 whenever the bag's leftover rupee landed on that line), one add-on carries its
-exact effect ("Adds ₹1,109 · saves ₹390" for a ₹1,499 piece beside a ₹2,399 one, `addOnEffect`: the checkout's resolver
-and rounding, so the total moves by exactly that), the gift box is one line that lifts open above itself on a tap,
+exact effect ("Adds ₹360 · saves ₹1,139" for a ₹1,499 piece as the third beside ₹2,399 + ₹1,799, `addOnEffect`: the checkout's resolver
+and rounding, so the total moves by exactly that; beside one piece it adds its full price, as two pieces earn no rung), the gift box is one line that lifts open above itself on a tap,
 and Checkout has payment, returns, plating and "Next: a quick OTP…" under it.
 
 - The live bag no longer draws the add-on row (Project Shades' simpler bag);
@@ -402,7 +418,7 @@ to Shopify as a note on its size-6 variant, and silver showed the gold price.
 ## Verification expected before any push
 
 ```
-npx vitest run                          # currently 976 tests
+npx vitest run                          # currently 1013 tests
 npx tsc --noEmit -p tsconfig.app.json
 npx vite build
 ```

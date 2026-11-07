@@ -38,29 +38,37 @@ describe("SimpleLadder: the bag's offer track", () => {
     expect(line.textContent).toBe("✦ Sitewide sale live today · up to 30% off");
   });
 
-  it("states all three rungs under the track", () => {
+  /* Two rungs since 7 Nov 2026 (the owner: "we need only buy 3 20% off and
+     buy 4 30% off"): Buy 2 and its 10% are gone from the bag. */
+  it("states the two rungs under the track, and no Buy 2", () => {
     const { container } = render(<SimpleLadder totalItems={1} />);
     const labels = [...container.querySelectorAll("[data-rung-label]")].map((l) => [...l.children].map((c) => c.textContent).join(" "));
-    expect(labels).toEqual(["Buy 2 10% off", "Buy 3 20% off", "Buy 4 30% off"]);
+    expect(labels).toEqual(["Buy 3 20% off", "Buy 4 30% off"]);
+    expect(container.textContent).not.toMatch(/Buy 2|10%/);
   });
 
-  /* Each label sits in its own third, under its own ring (1/6, 1/2, 5/6): at
-     the rungs' piece counts Buy 3 and Buy 4 were a quarter apart, Buy 4 at the
-     very end, and their labels met on a 280px phone. */
-  it("centres each ring in its own third, over its label", () => {
+  /* Each label sits in its own half, under its own ring (1/4, 3/4): at the
+     rungs' piece counts Buy 3 and Buy 4 were a quarter apart, Buy 4 at the
+     very end, and their labels met on a 280px phone. A fixed grid-cols-3
+     would leave an empty third column, the labels off their rings. */
+  it("centres each ring in its own half, over its label", () => {
     const { container } = render(<SimpleLadder totalItems={2} />);
     const lefts = [...container.querySelectorAll("[data-rung-mark]")].map((m) => parseFloat((m as HTMLElement).style.left).toFixed(2));
-    expect(lefts).toEqual(["16.67", "50.00", "83.33"]);
-    expect(container.querySelector("[data-rung-label]")?.parentElement?.className).toMatch(/grid-cols-3/);
+    expect(lefts).toEqual(["25.00", "75.00"]);
+    const grid = container.querySelector("[data-rung-label]")?.parentElement?.className;
+    expect(grid).toMatch(/\bgrid-cols-2\b/);
+    expect(grid).not.toMatch(/grid-cols-3/);
   });
 
-  /* The track fills piece by piece and meets each ring as it is reached. */
+  /* The track fills piece by piece and meets each ring as it is reached: one
+     piece is a third of the way to Buy 3 (1/3 of 25%), two pieces two thirds
+     (16.667%), and neither fills a ring; three meet Buy 3 at 25%. */
   it.each([
-    [1, "8.333", [false, false, false]],
-    [2, "16.667", [true, false, false]],
-    [3, "50.000", [true, true, false]],
-    [4, "100.000", [true, true, true]],
-    [5, "100.000", [true, true, true]],
+    [1, "8.333", [false, false]],
+    [2, "16.667", [false, false]],
+    [3, "25.000", [true, false]],
+    [4, "100.000", [true, true]],
+    [5, "100.000", [true, true]],
   ])("at %i pieces fills %s%% and fills the rings it has reached", (n, width, reached) => {
     const { container } = render(<SimpleLadder totalItems={n} />);
     const fill = container.querySelector('[role="progressbar"] > span') as HTMLElement;

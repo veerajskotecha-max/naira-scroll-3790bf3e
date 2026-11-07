@@ -9,18 +9,20 @@ afterEach(cleanup);
 
 /* The owner (2 Nov 2026): the offer in the home page's headline too. One
    quiet label under the headline, rates from promo.ts, nothing to tap. Since
-   7 Nov 2026 the ladder has three rungs; it must name the new top (30%), never
-   leave 20% looking like the most it gives. */
+   7 Nov 2026 the ladder has two rungs, Buy 3 at 20% and Buy 4 at 30% (the
+   owner took Buy 2 away); it must name the top (30%), never leave 20% looking
+   like the most it gives, and never offer two pieces anything. */
 describe("HeroSection: the offer under the headline", () => {
-  it("states every rung under the headline, and the top of it on a phone", () => {
+  it("states both rungs under the headline, and the top of it on a phone", () => {
     const { container } = render(
       <MemoryRouter>
         <HeroSection />
       </MemoryRouter>,
     );
     const line = container.querySelector("[data-hero-offer]") as HTMLElement;
-    expect(line.querySelector("[data-hero-offer-ladder]")?.textContent?.trim()).toBe("Buy 2, 10% off · Buy 3, 20% off · Buy 4, 30% off");
+    expect(line.querySelector("[data-hero-offer-ladder]")?.textContent?.trim()).toBe("Buy 3, 20% off · Buy 4, 30% off");
     expect(line.querySelector("[data-hero-offer-short]")?.textContent).toBe("Up to 30% off when you buy more");
+    expect(line.textContent).not.toMatch(/Buy 2|10%/);
     expect(line.previousElementSibling?.tagName).toBe("H1");
     expect(line.querySelectorAll("a, button")).toHaveLength(0);
   });

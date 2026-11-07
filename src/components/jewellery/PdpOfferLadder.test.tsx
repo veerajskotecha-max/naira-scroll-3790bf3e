@@ -16,29 +16,32 @@ beforeEach(() => {
 });
 afterEach(cleanup);
 
-const rung = (n: 2 | 3 | 4) => document.querySelector(`[data-rung="${n}"]`) as HTMLElement;
+const rung = (n: 3 | 4) => document.querySelector(`[data-rung="${n}"]`) as HTMLElement;
 const marks = () =>
-  ([2, 3, 4] as const).map((n) => (rung(n).hasAttribute("data-current") ? "current" : rung(n).hasAttribute("data-reached") ? "reached" : "open"));
+  ([3, 4] as const).map((n) => (rung(n).hasAttribute("data-current") ? "current" : rung(n).hasAttribute("data-reached") ? "reached" : "open"));
 const status = (container: HTMLElement) => container.querySelector("[aria-live] > p")?.textContent;
 
-describe("PdpOfferLadder: Buy 2 / Buy 3 / Buy 4 on the product page", () => {
-  /* Rates are literals so this fails alongside OfferProgress.test.tsx if
+describe("PdpOfferLadder: Buy 3 / Buy 4 on the product page", () => {
+  /* Exactly two rungs since 7 Nov 2026 (the owner: "remove buy 2 10% from
+     cart and offer too, we need only buy 3 20% off and buy 4 30% off").
+     Rates are literals so this fails alongside OfferProgress.test.tsx if
      promo.ts moves without the Shopify codes. The figures are this piece's
      own price at each rung, rounded as the bag rounds, worked by hand: 999 x
-     0.9 / 0.8 / 0.7 = 899.10 / 799.20 / 699.30; 1,199: 1,079.10 / 959.20 /
-     839.30; 1,499: 1,349.10 / 1,199.20 / 1,049.30; 2,399: 2,159.10 /
-     1,919.20 / 1,679.30. */
+     0.8 / 0.7 = 799.20 / 699.30; 1,199: 959.20 / 839.30; 1,499: 1,199.20 /
+     1,049.30; 2,399: 1,919.20 / 1,679.30. */
   it.each([
-    [999, "₹899", "₹799", "₹699"],
-    [1199, "₹1,079", "₹959", "₹839"],
-    [1499, "₹1,349", "₹1,199", "₹1,049"],
-    [2399, "₹2,159", "₹1,919", "₹1,679"],
-  ])("prices a ₹%i piece at each of the three rungs", (price, two, three, four) => {
-    render(<PdpOfferLadder price={price} />);
-    expect(document.querySelectorAll("[data-rung]")).toHaveLength(3);
-    expect(rung(2).textContent).toBe(`Buy 210% off${two} each`);
+    [999, "₹799", "₹699"],
+    [1199, "₹959", "₹839"],
+    [1499, "₹1,199", "₹1,049"],
+    [2399, "₹1,919", "₹1,679"],
+  ])("prices a ₹%i piece at each of the two rungs, and offers no Buy 2", (price, three, four) => {
+    const { container } = render(<PdpOfferLadder price={price} />);
+    expect(document.querySelectorAll("[data-rung]")).toHaveLength(2);
+    expect([...document.querySelectorAll("[data-rung]")].map((r) => r.getAttribute("data-rung"))).toEqual(["3", "4"]);
     expect(rung(3).textContent).toBe(`Buy 320% off${three} each`);
     expect(rung(4).textContent).toBe(`Buy 430% off${four} each`);
+    expect(document.querySelector('[data-rung="2"]')).toBeNull();
+    expect(container.textContent).not.toMatch(/Buy 2|10%/);
   });
 
   /* Palmonas makes the shopper copy a code. Here there is none to copy: the
@@ -49,25 +52,32 @@ describe("PdpOfferLadder: Buy 2 / Buy 3 / Buy 4 on the product page", () => {
     expect(container.textContent).not.toMatch(/BUY2|BUY3|BUY4|NAIRA10|FRIENDSANDFAMILY/);
     expect(container.querySelectorAll("a, button")).toHaveLength(0);
     expect(container.querySelector("[data-offer-ladder]")?.getAttribute("data-state")).toBe("0");
-    expect(marks()).toEqual(["open", "open", "open"]);
+    expect(marks()).toEqual(["open", "open"]);
     // The live region is there from the start, empty, so later states are read out.
     expect(container.querySelector("[aria-live]")?.textContent).toBe("");
   });
 
-  it("follows the bag: one piece in it, this one prices as the second", () => {
+  /* One piece in the bag: this one would be the second, and two pieces earn
+     no rung, so the line quotes no saving and says what one more does. */
+  it("follows the bag: one piece in it, this one as the second earns nothing yet", () => {
     cart.totalItems = 1;
     cart.subtotal = 1199;
     const { container } = render(<PdpOfferLadder price={999} />);
-    expect(status(container)).toBe("Add to bag for 10% off everything: it adds ₹779, not ₹999.");
-    expect(marks()).toEqual(["open", "open", "open"]);
+    expect(status(container)).toBe("Add to bag, and one more piece takes 20% off everything.");
+    expect(marks()).toEqual(["open", "open"]);
   });
 
-  it("marks the rung the bag has reached and prices this piece as the third", () => {
+  /* Two pieces in the bag reach no rung: nothing is marked as the bag's.
+     This one as the third takes the bag to 20%: 2,198 at full price; 3,197
+     at 20% is 2,558 (2,557.60), so it adds 360. */
+  it("marks no rung at two pieces, and prices this piece as the third", () => {
     cart.totalItems = 2;
     cart.subtotal = 2198;
     const { container } = render(<PdpOfferLadder price={999} />);
-    expect(marks()).toEqual(["current", "open", "open"]);
-    expect(status(container)).toBe("Add to bag for 20% off everything: it adds ₹580, not ₹999.");
+    expect(marks()).toEqual(["open", "open"]);
+    expect(container.querySelector("[data-rung-rule]")).toBeNull();
+    expect(container.querySelector("[data-offer-ladder]")?.getAttribute("data-state")).toBe("2");
+    expect(status(container)).toBe("Add to bag for 20% off everything: it adds ₹360, not ₹999.");
   });
 
   /* Three pieces are no longer the top: the fourth takes the whole bag to
@@ -77,7 +87,7 @@ describe("PdpOfferLadder: Buy 2 / Buy 3 / Buy 4 on the product page", () => {
     cart.totalItems = 3;
     cart.subtotal = 2997;
     const { container } = render(<PdpOfferLadder price={999} />);
-    expect(marks()).toEqual(["reached", "current", "open"]);
+    expect(marks()).toEqual(["current", "open"]);
     expect(container.querySelector("[data-offer-ladder]")?.getAttribute("data-state")).toBe("3");
     expect(status(container)).toBe("Add to bag for 30% off everything: it adds ₹399, not ₹999.");
   });
@@ -90,7 +100,7 @@ describe("PdpOfferLadder: Buy 2 / Buy 3 / Buy 4 on the product page", () => {
     cart.totalItems = 4;
     cart.subtotal = 3996;
     const { container } = render(<PdpOfferLadder price={999} />);
-    expect(marks()).toEqual(["reached", "reached", "current"]);
+    expect(marks()).toEqual(["reached", "current"]);
     expect(container.querySelector("[data-offer-ladder]")?.getAttribute("data-state")).toBe("4");
     expect(status(container)).toBe("30% off is on your bag, this piece included.");
     expect(rung(4).textContent).toContain("₹699 each");
@@ -103,7 +113,7 @@ describe("PdpOfferLadder: Buy 2 / Buy 3 / Buy 4 on the product page", () => {
     cart.totalItems = 6;
     cart.subtotal = 5994;
     const { container } = render(<PdpOfferLadder price={999} />);
-    expect(marks()).toEqual(["reached", "reached", "current"]);
+    expect(marks()).toEqual(["reached", "current"]);
     expect(container.querySelector("[data-offer-ladder]")?.getAttribute("data-state")).toBe("4");
   });
 
@@ -118,10 +128,11 @@ describe("PdpOfferLadder: Buy 2 / Buy 3 / Buy 4 on the product page", () => {
     expect(cart.setDrawerOpen).toHaveBeenCalledWith(true);
   });
 
-  /* A typed code is never offered back as a saving the shopper has. Since
-     3 Nov 2026 NAIRA10 (10%) matches Buy 2, so the line names Buy 3;
-     FRIENDSANDFAMILY (20%) matches Buy 3, so since Buy 4 (7 Nov 2026) the
-     line names the four-piece 30% rather than calling 20% the best price. */
+  /* A typed code is never offered back as a saving the shopper has.
+     NAIRA10 (10%) is under both rungs, so the line names Buy 3;
+     FRIENDSANDFAMILY (20%) matches Buy 3, so the line names the four-piece
+     30% rather than calling 20% the best price. A BUY2 left in storage is no
+     code: the empty bag's box says nothing under it. */
   it("follows a typed code as it changes", () => {
     const { container } = render(<PdpOfferLadder price={999} />);
     act(() => {
@@ -134,6 +145,11 @@ describe("PdpOfferLadder: Buy 2 / Buy 3 / Buy 4 on the product page", () => {
       window.dispatchEvent(new CustomEvent(PROMO_EVENT));
     });
     expect(container.querySelector("[aria-live]")?.textContent).toBe("Your code takes 20% off. 4 pieces take 30%.");
+    act(() => {
+      localStorage.setItem("naira-promo-code", "BUY2");
+      window.dispatchEvent(new CustomEvent(PROMO_EVENT));
+    });
+    expect(container.querySelector("[aria-live]")?.textContent).toBe("");
   });
 
   /* A sold-out size or metal is reserved on WhatsApp and never reaches the
@@ -141,14 +157,14 @@ describe("PdpOfferLadder: Buy 2 / Buy 3 / Buy 4 on the product page", () => {
      buttons below do not jump under the finger), and no rung is marked as
      the bag's, since this choice cannot join it. */
   it("quotes no per-piece price for a pre-order choice", () => {
-    cart.totalItems = 2;
-    cart.subtotal = 1998;
+    cart.totalItems = 3;
+    cart.subtotal = 2997;
     const { container } = render(<PdpOfferLadder price={999} preorder />);
     expect(container.textContent).not.toMatch(/₹/);
     expect(screen.getByText("Not on pre-orders")).toBeTruthy();
     expect(screen.getAllByText("In-stock pieces only")).toHaveLength(1);
     expect(screen.getByText("In-stock pieces only").className).toMatch(/\bh-4\b/);
-    expect(marks()).toEqual(["open", "open", "open"]);
+    expect(marks()).toEqual(["open", "open"]);
     expect(container.querySelector("[aria-live]")?.textContent).toBe("");
     expect(container.querySelectorAll("button")).toHaveLength(0);
   });
@@ -158,10 +174,13 @@ describe("PdpOfferLadder: Buy 2 / Buy 3 / Buy 4 on the product page", () => {
     expect(container.innerHTML).toBe("");
   });
 
-  /* Equal columns, one per rung, so three rungs never wrap or crowd. */
-  it("lays the rungs out in three equal columns", () => {
+  /* Equal columns, one per rung: two since 7 Nov 2026. A fixed grid-cols-3
+     would leave a blank third of the box beside Buy 3 and Buy 4. */
+  it("lays the rungs out in two equal columns", () => {
     const { container } = render(<PdpOfferLadder price={999} />);
-    expect(container.querySelector("[data-offer-ladder] ul")?.className).toMatch(/\bgrid-cols-3\b/);
+    const grid = container.querySelector("[data-offer-ladder] ul")?.className;
+    expect(grid).toMatch(/\bgrid-cols-2\b/);
+    expect(grid).not.toMatch(/grid-cols-3/);
   });
 
   /* The owner asked for the box to be readable: nothing in it is set under
@@ -180,7 +199,9 @@ describe("PdpOfferLadder: Buy 2 / Buy 3 / Buy 4 on the product page", () => {
      very edge. The price row is held to 16px, the pre-order note's height. */
   it("holds both rows to fixed heights so the panel cannot grow", () => {
     const src = readFileSync(resolve(__dirname, "PdpOfferLadder.tsx"), "utf8");
-    expect(src).toMatch(/min-\[310px\]:h-\[22px\]/);
+    /* At every width since 7 Nov 2026: two columns hold the label beside the
+       rate down to 280px, so the stacked layout under 310px went. */
+    expect(src).toMatch(/className="flex h-\[22px\] flex-row/);
     expect(src.match(/\bh-4\b/g)?.length).toBeGreaterThanOrEqual(2);
   });
 
@@ -190,17 +211,21 @@ describe("PdpOfferLadder: Buy 2 / Buy 3 / Buy 4 on the product page", () => {
      phone (Prism Rivière, two pieces in the bag) the list ended at 775px,
      the bar began at 779px and covered the rule at 781-783px. It sits in the
      column's own 3px foot now, inside the list, and that foot comes out of
-     the panel's bottom padding (7px = 3 + 4), so the panel stays 56px. */
+     the panel's bottom padding (7px = 3 + 4), so the panel stays 56px. Three
+     pieces here: since 7 Nov 2026 Buy 3 is the first rung a bag can reach.
+     The rule is held to about the rung's own width (108px at most): across
+     half the box it read as a divider. */
   it("draws the reached rung's rule inside the list the buy bar keeps off", () => {
-    cart.totalItems = 2;
-    cart.subtotal = 1998;
+    cart.totalItems = 3;
+    cart.subtotal = 2997;
     const { container } = render(<PdpOfferLadder price={999} />);
     const rule = container.querySelector("[data-rung-rule]") as HTMLElement;
-    expect(rule.closest("li")).toBe(rung(2));
+    expect(rule.closest("li")).toBe(rung(3));
     expect(rule.closest("[data-offer-ladder] ul")).toBeTruthy();
     expect(rule.className).toMatch(/(^|\s)bottom-0(\s|$)/);
     expect(rule.className).not.toMatch(/-bottom-/);
-    expect(rung(2).className).toMatch(/\bpb-\[3px\]/);
+    expect(rule.className).toMatch(/\bmax-w-\[108px\]/);
+    expect(rung(3).className).toMatch(/\bpb-\[3px\]/);
     expect((container.querySelector("[data-offer-ladder] > div") as HTMLElement).className).toMatch(/\bpb-\[4px\]/);
     const page = readFileSync(resolve(__dirname, "../../pages/JewelDetailNext.tsx"), "utf8");
     expect(page).toContain('document.querySelector("[data-offer-ladder] ul")');

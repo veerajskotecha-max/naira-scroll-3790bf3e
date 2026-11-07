@@ -30,8 +30,8 @@ describe("the session's landing campaign", () => {
 
   it("puts the campaign on a checkout address, keeping its own query", () => {
     captureLandingUtm("?utm_source=facebook&utm_campaign=a b");
-    const url = new URL(withSessionUtm("https://payments.nairaflore.com/checkouts/cn/T?key=K&discount=BUY2"));
-    expect(Object.fromEntries(url.searchParams)).toEqual({ key: "K", discount: "BUY2", utm_source: "facebook", utm_campaign: "a b" });
+    const url = new URL(withSessionUtm("https://payments.nairaflore.com/checkouts/cn/T?key=K&discount=BUY3"));
+    expect(Object.fromEntries(url.searchParams)).toEqual({ key: "K", discount: "BUY3", utm_source: "facebook", utm_campaign: "a b" });
   });
 
   it("leaves an address alone when there is no campaign or it has its own", () => {

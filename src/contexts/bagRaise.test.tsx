@@ -4,7 +4,7 @@ import { CartProvider, useCart } from "./CartContext";
 
 /*
   "+" in the bag puts another piece in Shopify's cart, and is how a shopper
-  reaches the Buy 2 / Buy 3 saving, but Meta heard nothing of it: Woven Gold
+  reaches the Buy 3 / Buy 4 saving, but Meta heard nothing of it: Woven Gold
   Hoops went from 1 to 2 with one Add to cart in all (audit C63). A raise is
   told as an add of the pieces Shopify really added, through the same call
   (browser pixel and its server copy under one event id).

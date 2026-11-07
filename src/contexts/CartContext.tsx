@@ -437,8 +437,9 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     const lines = only?.items ?? latest.items;
     const value = Number(lines.reduce((sum, i) => sum + i.price * i.quantity, 0).toFixed(2));
 
-    /* The one discount the order actually gets. The bag earns BUY2 on two or
-       more pieces; a typed code can beat it. Resolved once here so the code
+    /* The one discount the order actually gets. The bag earns BUY2 on two
+       pieces, BUY3 on three and BUY4 on four or more; a typed code can beat
+       the first two, never BUY4. Resolved once here so the code
        put on the cart, the code handed to Fastrr, the total shown in the
        drawer and the value Meta is told are all the same discount. */
     const resolved = resolveCartDiscount({

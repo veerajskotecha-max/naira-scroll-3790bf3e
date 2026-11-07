@@ -204,8 +204,12 @@ describe("bagAddOns: the one piece the bag offers", () => {
     expect(pick(["prism-riviere-bracelet"], 1, soldOut)).not.toContain("woven-gold-hoops");
   });
 
-  it("offers nothing once the bag holds three pieces, or for a bag it cannot read", () => {
-    expect(bagAddOns(["prism-riviere-bracelet"], 3, live)).toBeNull();
+  /* The add-on stops at the ladder's top rung: four pieces since Buy 4 (30%)
+     joined on 7 Nov 2026. With three in the bag the fourth piece is the one
+     that takes the whole bag from 20% to 30%, so it is still offered. */
+  it("offers nothing once the bag holds four pieces, or for a bag it cannot read", () => {
+    expect(bagAddOns(["prism-riviere-bracelet"], 3, live)).not.toBeNull();
+    expect(bagAddOns(["prism-riviere-bracelet"], 4, live)).toBeNull();
     expect(bagAddOns(["not-in-catalogue"], 1, live)).toBeNull();
     expect(bagAddOns([], 0, live)).toBeNull();
   });

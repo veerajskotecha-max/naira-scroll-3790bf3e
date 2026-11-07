@@ -85,10 +85,11 @@ all sessions, ~640px of visible page on a 360px Android; measured 21–24 Sep,
 76% of product-page visits saw no second page. The routed page is
 `JewelDetailNext.tsx`: rating, name, price, the badges, the sold strip, then the
 buy-more offer (`jewellery/PdpOfferLadder.tsx`, the owner's ask of 2 Nov 2026:
-both rungs side by side, each priced for this piece by `pieceAtRung`, "Applied
+every rung side by side, each priced for this piece by `pieceAtRung`, "Applied
 in your bag · no code" on the panel's top rule, and a line from
 `pdpOfferStatus` under it once the bag holds a piece), then the choices and Add
-to cart. The panel is held to two rows: it moved Add to cart down 68px, which
+to cart. Since 7 Nov 2026 it carries three rungs (Buy 4, 30%), one column
+each. The panel is held to two rows: it moved Add to cart down 68px, which
 keeps it on the first screen of a 390x844 phone for a piece with no choices
 (a three-row version, 93px, did not). The phone's buy bar shows whenever Add to
 cart is not fully on screen, but never over the price, nor over the offer's
@@ -223,9 +224,12 @@ Shopify quotes a total the shopper is never charged.
 
 Live codes: `BUY2` (10%, min qty 2) and `BUY3` (20%, min qty 3), set back by
 the owner on 3 Nov 2026 to the rates they had before 25 Oct (20% and 30% on
-2-3 Nov, 15% and 25% from 25 Oct), both PRODUCT
+2-3 Nov, 15% and 25% from 25 Oct), and `BUY4` (30%, min qty 4), added by the
+owner on 7 Nov 2026 as BUY3's exact twin but for rate and minimum
+(`gid://shopify/DiscountCodeNode/1846163964066`, combinesWith order and
+shipping discounts, not product ones; all buyers). All three are PRODUCT
 class scoped to the hidden auto-updating collection `discount-scope-all` — do
-not delete it or both stop working.
+not delete it or all three stop working.
 
 `NAIRA10` (10%) is LIVE again. It was retired, then brought back because two
 thirds of orders are a single piece, which the ladder gives nothing — before it
@@ -238,24 +242,28 @@ NAIRA10 is typed; the rungs are earned, and the resolver returns the richer of
 the two. On an exact TIE the rung wins, unless the typed code is that rung's
 own code (BUY2 typed into a two-piece bag stays named as typed). Since 3 Nov
 2026 NAIRA10 (10%) TIES the two-piece rung (BUY2, 10%): a two-piece bag with
-NAIRA10 typed hands Fastrr BUY2 at the same 10%, and the third piece takes
-over at 20% (BUY3). So NAIRA10 is worth something only on a single piece. The
-tie rule also matters for `FRIENDSANDFAMILY`, see below. A rung's code
-typed by hand counts only at the rung's own minimum, as Shopify holds it (BUY2
-in a one-piece bag is worth nothing). Verified in
+NAIRA10 typed hands Fastrr BUY2 at the same 10%, the third piece takes over
+at 20% (BUY3) and the fourth at 30% (BUY4). So NAIRA10 is worth something
+only on a single piece. No typed code is worth 30%, so from four pieces the
+bag always hands Fastrr BUY4. The tie rule also matters for
+`FRIENDSANDFAMILY`, see below. A rung's code typed by hand counts only at the
+rung's own minimum, as Shopify holds it (BUY2 in a one-piece bag, or BUY4 in
+a three-piece one, is worth nothing; the three-piece bag keeps BUY3). Verified in
 the browser at these same 10%/20% rates (before 25 Oct): 2 pieces = BUY2 -₹430 on ₹4,298;
 3 pieces = BUY3 -₹1,349 on ₹6,747, total ₹5,548 with shipping. It is NOT auto-applied: a shopper has to type it. The announcement
 strip used to carry it, but the owner asked for the code to come off the
 header: `AnnouncementBar.tsx` now leads with the buy-more offer ("BUY 2 GET
-10% OFF · BUY 3 GET 20% OFF", read from `QUANTITY_OFFERS`; the owner, 2 Nov
-2026, rates from 3 Nov), then the sale, free-shipping and limited-batch lines, and
+10% OFF · BUY 3 GET 20% OFF · BUY 4 GET 30% OFF", read from `QUANTITY_OFFERS`;
+the owner, 2 Nov 2026, rates from 3 Nov, Buy 4 from 7 Nov), then the sale,
+free-shipping and limited-batch lines, and
 `AnnouncementBar.test.tsx` fails if NAIRA10 comes back. The run's duration
 grows with its length so it keeps its old pace. Do not put it back on the strip unprompted. Deciding to auto-apply it,
 or to show it somewhere else, is a margin call for the owner, not a code
 change to make unprompted.
 
-`FRIENDSANDFAMILY` (20%) BEATS the two-piece rung (10%) and TIES the top one
-(20%) since 3 Nov 2026. In Shopify it covers only the jewellery collections
+`FRIENDSANDFAMILY` (20%) BEATS the two-piece rung (10%), TIES the three-piece
+one (20%) since 3 Nov 2026, and LOSES to the four-piece one (BUY4, 30%) since
+7 Nov 2026. In Shopify it covers only the jewellery collections
 (shop-all, necklaces, earrings, bracelets, rings: 175 of 194 products), while
 BUY2 and BUY3 cover every product (`discount-scope-all`), read 2 Nov 2026. So
 on the three-piece tie the bag hands Fastrr BUY3, never FRIENDSANDFAMILY: an
@@ -263,7 +271,8 @@ outfit in the bag would otherwise be charged full price against a bag quoting
 20% off it. On one or two pieces the typed 20% wins outright, so the bag hands
 Fastrr FRIENDSANDFAMILY, and an outfit among those pieces is NOT discounted by
 Shopify while the bag quotes 20% off it (on one piece that was always so; on
-two it is new since 3 Nov, when the code stopped tying BUY2). Anyone handing
+two it is new since 3 Nov, when the code stopped tying BUY2). From four
+pieces the bag hands Fastrr BUY4, which covers every product. Anyone handing
 that code out should know it adds nothing from the third piece on. Each time
 the ladder moves, re-check this code against it.
 
@@ -274,9 +283,16 @@ the ladder moves, re-check this code against it.
 
 The ladder is applied by the bag, never typed. The live bag (`CartDrawerNext.tsx`)
 renders it as `SimpleLadder`: "✦ Sitewide sale live today · up to {top rung}
-off" over a track with a ring per rung, then "Buy 2 get 10% off" and "Buy 3
-get 20% off". `cart/OfferProgress.tsx` and `cart/LadderBand.tsx` serve only
-the old `CartDrawer.tsx`.
+off" (11px since 7 Nov 2026; it was 8.5px) over a track with a ring per rung,
+then "Buy 2 / 10% off", "Buy 3 / 20% off" and "Buy 4 / 30% off" on two lines
+each. With three rungs each ring sits in the middle of its own third of the
+track (`rungPosition`: 1/6, 1/2, 5/6) with its label in that third under it;
+placed by piece count, Buy 3 and Buy 4 were a quarter of the width apart with
+Buy 4 at the very end, and at 280px their labels met. The fill
+(`quantityOfferProgress`) meets each ring as it is reached (one piece is half
+way to the first) and is full at four. `cart/OfferProgress.tsx` and
+`cart/LadderBand.tsx` serve only the old `CartDrawer.tsx`; both use the same
+geometry.
 
 ## The bag (`CartDrawerNext.tsx`)
 
@@ -289,13 +305,17 @@ exact effect ("Adds ₹1,109 · saves ₹390" for a ₹1,499 piece beside a ₹2
 and rounding, so the total moves by exactly that), the gift box is one line that lifts open above itself on a tap,
 and Checkout has payment, returns, plating and "Next: a quick OTP…" under it.
 
+- The live bag no longer draws the add-on row (Project Shades' simpler bag);
+  `addOnEffect` still drives the product page's line (`pdpOfferStatus`), and
+  `bagAddOns` is kept for it.
 - The add-on comes from `bagAddOns` (`src/lib/pairings.ts`) and only ever from
   `DEEP_STOCK`, the 31 non-ring pieces Shopify held 20 or more of on 18 Oct, so
   a one-tap add never meets a piece about to sell out. Re-check the list when
   stock moves: the public Storefront token cannot read stock levels (it lacks
   `unauthenticated_read_product_inventory`), so the list cannot be live yet.
   Never a ring (it needs a size), never a piece tagged `pre-order` (the KAVNAR
-  Edition One pieces), nothing once the bag holds three.
+  Edition One pieces), nothing once the bag holds four (the top rung since
+  7 Nov 2026; it was three).
 - Each line in the bag, and the add-on and best-seller cards, link to the
   piece's page through `followOut`, so the bag closes on the way and back works.
 
@@ -363,7 +383,7 @@ to Shopify as a note on its size-6 variant, and silver showed the gold price.
 ## Verification expected before any push
 
 ```
-npx vitest run                          # currently 643 tests
+npx vitest run                          # currently 976 tests
 npx tsc --noEmit -p tsconfig.app.json
 npx vite build
 ```

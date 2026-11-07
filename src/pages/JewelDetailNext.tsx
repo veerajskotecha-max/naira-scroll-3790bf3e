@@ -478,7 +478,7 @@ const JewelDetailNext = () => {
      so a buy button is visible from the moment the page opens — but never
      over the price. It watches the button itself: the gift line below it
      reaching past the screen's edge put the bar over a button in full view.
-     Nor over the offer's two rungs while they are on screen: the panel sits
+     Nor over the offer's rungs while they are on screen: the panel sits
      right above Add to cart, so on a 360x780 phone the bar covered the
      per-piece prices on the first screen. Rungs reaching past the screen's
      edge do not hold it back (an Instagram-sized screen keeps its bar). */
@@ -1016,7 +1016,7 @@ const JewelDetailNext = () => {
               <span className="h-2 w-px shrink-0 bg-nf-gold/30" aria-hidden="true" />
             </p>
 
-            {/* Buy 2 / Buy 3, priced for this piece and following the bag. A
+            {/* Buy 2 / Buy 3 / Buy 4, priced for this piece and following the bag. A
                 piece sold out altogether is reserved on WhatsApp and never
                 reaches the bag, so it is offered nothing it cannot get. */}
             {!soldOut && <PdpOfferLadder price={shown.price} preorder={sizePreorder || variantSoldOut} />}

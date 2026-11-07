@@ -7,7 +7,8 @@ import { QUANTITY_OFFERS } from "@/lib/promo";
  *
  * It leads with the buy-more offer (the owner, 2 Nov 2026: "add the offer
  * smartly to ... website headline"), read from promo.ts so it moves with the
- * ladder and always names what the bag takes off. The owner had asked for the
+ * ladder and always names what the bag takes off: all three rungs since the
+ * owner added Buy 4 at 30% on 7 Nov 2026. The owner had asked for the
  * percentage to come off the strip on 25 Oct; this later ask puts it back.
  * Then the sale (owner asked for the exclamation mark), the shipping promise
  * and the small-run scarcity line. NAIRA10 used to alternate here too, but the
@@ -26,7 +27,7 @@ const MESSAGES = [OFFER_LINE, "SITEWIDE SALE LIVE TODAY!", "FREE INSURED SHIPPIN
 /* The run keeps the pace it had before the offer led it: 22 s for the three
    older lines, about 108 characters' worth once each line's padding and star
    are counted as 13. The duration grows with the run, so the letters move as
-   fast as they did, not faster. */
+   fast as they did, not faster (about 36 s with three rungs leading). */
 const SECONDS_PER_CHARACTER = 22 / 108;
 const SEPARATOR_CHARACTERS = 13;
 const RUN_SECONDS =

@@ -303,7 +303,9 @@ export const wornWithNoun = (piece: JewelPiece) => (/huggie/i.test(`${piece.name
  * photo check: its one offer is the shop's tested second piece (Woven Gold
  * Hoops in most bags), and the lookalikes already lead the product page. `inBag` holds handles in the order they were
  * added. Ties go to the deeper stock, then the handle, so the row never
- * reshuffles between renders.
+ * reshuffles between renders. It stops at the top rung of the ladder, which
+ * is four pieces since Buy 4 (7 Nov 2026): a third piece still has a richer
+ * rung ahead of it.
  */
 export const bagAddOns = (
   inBag: string[],

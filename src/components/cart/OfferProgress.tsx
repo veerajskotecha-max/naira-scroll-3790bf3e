@@ -5,6 +5,7 @@ import {
   itemsToQuantityOffer,
   nextQuantityOffer,
   quantityOfferProgress,
+  rungPosition,
 } from "@/lib/promo";
 
 const pct = (rate: number) => `${Math.round(rate * 100)}%`;
@@ -18,9 +19,11 @@ const pieces = (n: number) => (n === 1 ? "1 piece" : `${n} pieces`);
  *  - It wears the same gold-on-linen band as the offer block on the product
  *    page, so the promise a shopper read next to Add to Cart is recognisably
  *    the same promise in the bag rather than a second, unfamiliar one.
- *  - Both rungs sit on the track at their true positions, so a shopper can
- *    SEE that the richer rung is further along and how far. A list of two
- *    percentages states the offer; a track makes the third piece feel close.
+ *  - Every rung sits on the track, in order, so a shopper can SEE that the
+ *    richer rung is further along. A list of percentages states the offer; a
+ *    track makes the next piece feel close. Since Buy 4 (7 Nov 2026) the
+ *    three rungs each take a third of the track (`rungPosition`), so their
+ *    labels have room at any width.
  *  - The bar measures the whole ladder rather than the current rung, so
  *    adding a piece always moves it forward instead of resetting to empty
  *    each time a rung is cleared.
@@ -54,7 +57,7 @@ const OfferProgress = ({ totalItems, quiet = false, appliedRate }: { totalItems:
     <div className="shrink-0 border-y border-[color:rgb(var(--nf-gold-rgb)/0.38)] bg-[var(--nf-surface-raised)] px-4 py-2.5 sm:px-5 sm:pb-3.5 sm:pt-3">
       <div className="flex min-w-0 items-baseline justify-between gap-3">
         {!quiet && (
-          <p className="flex shrink-0 items-center gap-1 text-[9px] font-medium uppercase tracking-[var(--nf-track-16)] text-[var(--nf-accent-quiet)] sm:text-[10px] sm:tracking-[var(--nf-track-18)]">
+          <p className="flex shrink-0 items-center gap-1 text-[11px] font-medium uppercase tracking-[var(--nf-track-10)] text-[var(--nf-accent-quiet)] sm:tracking-[var(--nf-track-16)]">
             <span aria-hidden="true">&#10022;</span>
             Pairing Offer
           </p>
@@ -79,8 +82,8 @@ const OfferProgress = ({ totalItems, quiet = false, appliedRate }: { totalItems:
           className="block h-full bg-[var(--nf-accent-strong)] transition-[width] duration-500 ease-reveal motion-reduce:transition-none"
           style={{ width: `${progress * 100}%` }}
         />
-        {QUANTITY_OFFERS.map((offer) => {
-          const at = offer.minQuantity / TOP_QUANTITY_OFFER.minQuantity;
+        {QUANTITY_OFFERS.map((offer, i) => {
+          const at = rungPosition(i);
           const reached = totalItems >= offer.minQuantity;
           return (
             <span
@@ -97,37 +100,30 @@ const OfferProgress = ({ totalItems, quiet = false, appliedRate }: { totalItems:
         })}
       </div>
 
-      {/* Each rung is labelled where it actually sits on the track, so the
-          ladder reads as a distance rather than as two unrelated coupons.
-
-          Stacked over two short lines rather than one long one: side by side,
-          "2 · 10% off" and "3 · 20% off" run into each other at 390px, which
-          is most of the traffic. The last label right-aligns — centred on its
-          marker it would hang off the end of the bar. */}
+      {/* Each rung is labelled under its own marker, in that rung's third of
+          the width, so the ladder reads as a distance rather than as unrelated
+          coupons and no label can reach its neighbour's: with three rungs at
+          their piece counts, "3 pieces" and "4 pieces" overlapped at 280px.
+          Stacked over two short lines, at 11px, the least a phone reads. */}
       {!quiet && (
-        <div className="relative mt-1.5 h-[22px] sm:mt-2 sm:h-[26px]">
-          {QUANTITY_OFFERS.map((offer, i) => {
-            const at = offer.minQuantity / TOP_QUANTITY_OFFER.minQuantity;
+        <ul className="mt-1.5 grid grid-cols-3 text-center sm:mt-2">
+          {QUANTITY_OFFERS.map((offer) => {
             const reached = totalItems >= offer.minQuantity;
-            const last = i === QUANTITY_OFFERS.length - 1;
             return (
-              <span
+              <li
                 key={offer.code}
-                className={`absolute top-0 flex flex-col whitespace-nowrap leading-[1.25] transition-colors duration-300 ${
-                  last ? "items-end text-right" : "items-center text-center"
-                } ${reached ? "text-[var(--nf-accent-quiet)]" : "text-[color:rgb(var(--nf-ink-rgb)/0.45)]"}`}
-                style={{ left: `${at * 100}%`, transform: last ? "translateX(-100%)" : "translateX(-50%)" }}
+                className={`flex min-w-0 flex-col items-center whitespace-nowrap leading-[1.25] transition-colors duration-300 motion-reduce:transition-none ${
+                  reached ? "text-[var(--nf-accent-quiet)]" : "text-[color:rgb(var(--nf-ink-rgb)/0.65)]"
+                }`}
               >
-                <span className="text-[8px] uppercase tracking-[var(--nf-track-8)] sm:text-[9px] sm:tracking-[var(--nf-track-10)]">
-                  {offer.minQuantity} pieces
-                </span>
-                <span className={`text-[10px] uppercase tracking-[var(--nf-track-8)] sm:text-[11px] ${reached ? "font-semibold" : "font-medium"}`}>
+                <span className="text-[11px] uppercase tracking-[var(--nf-track-8)]">{offer.minQuantity} pieces</span>
+                <span className={`text-[11px] uppercase tracking-[var(--nf-track-8)] sm:text-[12px] ${reached ? "font-semibold" : "font-medium"}`}>
                   {pct(offer.rate)} off
                 </span>
-              </span>
+              </li>
             );
           })}
-        </div>
+        </ul>
       )}
     </div>
   );

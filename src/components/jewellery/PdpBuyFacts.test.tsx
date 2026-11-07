@@ -8,10 +8,11 @@ describe("PdpBuyFacts", () => {
   /* The ladder is the only discount most ad visitors never saw — it sat about
      one and a half screens down. Rates are literals so this fails alongside
      OfferProgress.test.tsx if promo.ts moves without the Shopify codes. */
-  it("states both rungs of the multi-buy ladder", () => {
+  it("states every rung of the multi-buy ladder, Buy 4 included", () => {
     render(<PdpBuyFacts arrivesBy="Thu, 1 Oct" />);
     expect(screen.getByText("Buy 2, save 10%")).toBeTruthy();
     expect(screen.getByText("Buy 3, save 20%")).toBeTruthy();
+    expect(screen.getByText("Buy 4, save 30%")).toBeTruthy();
   });
 
   /* The owner keeps the COD fee off the product page; the bag states it in

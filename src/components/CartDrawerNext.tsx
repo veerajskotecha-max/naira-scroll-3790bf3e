@@ -15,7 +15,9 @@ import {
   getPromoCode,
   PROMO_EVENT,
   QUANTITY_OFFERS,
+  quantityOfferProgress,
   resolveCartDiscount,
+  rungPosition,
   TOP_QUANTITY_OFFER,
 } from "@/lib/promo";
 import { SHIPPING_CHARGE, deliveryRangeFromNow } from "@/lib/serviceability";
@@ -32,7 +34,7 @@ import { WHATSAPP_NUMBER, type JewelPiece, type JewelVariant } from "@/data/jewe
   reasons to trust sit beside the button.
 
     ‹ Your bag · 1 piece
-    A second piece takes 10% off your bag      the ladder, rungs labelled
+    up to 30% off · Buy 2 · Buy 3 · Buy 4      the ladder, rungs labelled
     the piece, its MRP struck and "₹1,801 off"
     Wears well with your bracelet · one piece, "Adds ₹1,109 · saves ₹390", Add
     [the box] Comes with a Naira gift box     a tap lifts it open
@@ -46,7 +48,8 @@ import { WHATSAPP_NUMBER, type JewelPiece, type JewelVariant } from "@/data/jewe
 
 const formatPrice = (n: number) => `₹${Math.round(n).toLocaleString("en-IN")}`;
 /* A line of three pieces at 20% off divides its rounded total by three
-   (₹2,398 / 3 for three ₹999 pieces): "₹799.33 each" read like an error. Each
+   (₹2,398 / 3 for three ₹999 pieces), and four at 30% by four (₹2,797 / 4):
+   "₹799.33 each" read like an error. Each
    is shown in whole rupees, as the product page quotes it; the line's total
    stays exact. */
 const formatUnitPrice = (n: number) => `₹${Math.round(n).toLocaleString("en-IN")}`;
@@ -142,40 +145,51 @@ export const BagReturns = ({
 );
 
 /* Project Shades' ladder: a thin track, an open ring at each rung that fills
-   once reached, and the offer spelt out under it. */
+   once reached, and the offer spelt out under it. Three rungs since 7 Nov
+   2026 (Buy 4, 30%). Each rung is centred in its own third of the track
+   (`rungPosition`) with its label in that third under it, so "Buy 3" and
+   "Buy 4" can never run into each other: placed by piece count, they sat a
+   quarter of the width apart with Buy 4 at the very end, and at 280px the
+   labels met. */
 export const SimpleLadder = ({ totalItems }: { totalItems: number }) => {
-  const top = QUANTITY_OFFERS[QUANTITY_OFFERS.length - 1].minQuantity;
-  const fill = Math.min(totalItems, top) / top;
+  const top = TOP_QUANTITY_OFFER.minQuantity;
+  const fill = quantityOfferProgress(totalItems);
   return (
-    <div data-ladder className="shrink-0 bg-[var(--nf-surface)] px-5 pb-4 pt-4">
+    <div data-ladder className="shrink-0 bg-[var(--nf-surface)] px-5 pb-3.5 pt-3.5">
       {/* The explanation rides on top, where the eye lands first: the sale is
-          on right now, and what it is worth — kept small so it never crowds
-          the bag. The 24px rungs stand 10.5px above the track, so the line
-          keeps 20px clear of it: the rungs had been touching its letters on
-          every phone. On a cover screen narrower than the line it wraps,
-          balanced, instead of running off the edge. "Up to" is the top rung,
-          so the line moves when the ladder does. */}
-      <p className="mb-5 text-balance text-center font-nf-label text-[8.5px] font-medium uppercase leading-[1.5] tracking-nf-16 text-nf-ink/60">
+          on right now, and what it is worth, quiet in colour but at 11px, the
+          least a phone can read (it was 8.5px). The 24px rungs stand 10.5px
+          above the track, so the line keeps 20px clear of it: the rungs had
+          been touching its letters on every phone. On a phone narrower than
+          the line it wraps, balanced, instead of running off the edge. "Up
+          to" is the top rung, so the line moves when the ladder does. */}
+      <p className="mb-5 text-balance text-center font-nf-label text-[11px] font-medium uppercase leading-[1.45] tracking-nf-8 text-nf-ink/70">
         ✦ Sitewide sale live today · up to {pct(TOP_QUANTITY_OFFER.rate)} off
       </p>
-      <div className="relative mx-3 h-[3px] bg-nf-ink/25" role="progressbar" aria-valuemin={0} aria-valuemax={top} aria-valuenow={Math.min(totalItems, top)} aria-label={`${totalItems} of ${top} pieces`}>
+      <div className="relative h-[3px] bg-nf-ink/25" role="progressbar" aria-valuemin={0} aria-valuemax={top} aria-valuenow={Math.min(totalItems, top)} aria-label={`${totalItems} of ${top} pieces`}>
         <span className="block h-full bg-nf-ink transition-[width] duration-500 motion-reduce:transition-none" style={{ width: `${fill * 100}%` }} />
-        {QUANTITY_OFFERS.map((o) => (
+        {QUANTITY_OFFERS.map((o, i) => (
           <span
             key={o.code}
             aria-hidden="true"
-            className={`absolute top-1/2 h-6 w-6 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 transition-colors duration-300 ${totalItems >= o.minQuantity ? "border-nf-ink bg-nf-ink" : "border-nf-ink/40 bg-[var(--nf-surface)]"}`}
-            style={{ left: `${(o.minQuantity / top) * 100}%` }}
+            data-rung-mark={o.minQuantity}
+            className={`absolute top-1/2 h-6 w-6 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 transition-colors duration-300 motion-reduce:transition-none ${totalItems >= o.minQuantity ? "border-nf-ink bg-nf-ink" : "border-nf-ink/40 bg-[var(--nf-surface)]"}`}
+            style={{ left: `${rungPosition(i) * 100}%` }}
           />
         ))}
       </div>
-      <div className="mt-5 flex justify-around text-[12.5px] text-nf-ink">
-        {QUANTITY_OFFERS.map((o) => (
-          <span key={o.code} className={totalItems >= o.minQuantity ? "font-medium" : "text-nf-ink/75"}>
-            Buy {o.minQuantity} get {pct(o.rate)} off
-          </span>
-        ))}
-      </div>
+      {/* One equal column per rung, each label centred under its own ring. */}
+      <ul className="mt-[18px] grid grid-cols-3 text-center">
+        {QUANTITY_OFFERS.map((o) => {
+          const reached = totalItems >= o.minQuantity;
+          return (
+            <li key={o.code} data-rung-label={o.minQuantity} className="min-w-0 leading-[1.3]">
+              <span className={`block text-[12px] ${reached ? "text-nf-ink" : "text-nf-ink/70"}`}>Buy {o.minQuantity}</span>
+              <span className={`block text-[13px] ${reached ? "font-medium text-nf-ink" : "text-nf-ink/80"}`}>{pct(o.rate)} off</span>
+            </li>
+          );
+        })}
+      </ul>
     </div>
   );
 };
@@ -548,7 +562,7 @@ const CartDrawerNext = () => {
               </div>
               {discountAmount > 0 && (
                 <p data-you-save className="mt-1 text-[12.5px] font-medium text-nf-gold-text">
-                  You save {formatPrice(discountAmount)} · {pct(discount.rate)} {rung ? `for ${rung.minQuantity} pieces` : "with your code"}
+                  You save {formatPrice(discountAmount)} · {pct(discount.rate)} {rung ? `for ${lineCount} pieces` : "with your code"}
                 </p>
               )}
               <p className="mt-2 text-[12.5px] leading-[1.5] text-nf-ink/65">

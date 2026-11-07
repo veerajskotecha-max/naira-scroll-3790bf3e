@@ -1004,10 +1004,11 @@ const JewelDetail = () => {
                 <TicketPercent size={14} strokeWidth={1.6} aria-hidden="true" />
                 <span>The Naira Pairing Offer</span>
               </div>
-              <div className="mt-2.5 grid grid-cols-2 divide-x divide-[color:rgb(var(--nf-gold-rgb)/0.32)]">
+              {/* One column per rung: three since Buy 4 (7 Nov 2026). */}
+              <div className="mt-2.5 grid grid-cols-3 divide-x divide-[color:rgb(var(--nf-gold-rgb)/0.32)]">
                 {QUANTITY_OFFERS.map((offer) => (
-                  <div key={offer.code} className="px-3 first:pl-0 last:pr-0">
-                    <p className="text-[15px] font-semibold leading-none text-[var(--nf-text)]">
+                  <div key={offer.code} className="min-w-0 px-2.5 first:pl-0 last:pr-0">
+                    <p className="text-[14px] font-semibold leading-tight text-[var(--nf-text)]">
                       Buy {offer.minQuantity}, save {Math.round(offer.rate * 100)}%
                     </p>
                     <p className="mt-1.5 text-[10px] uppercase tracking-[var(--nf-track-16)] text-[var(--nf-accent-quiet)]">

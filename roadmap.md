@@ -57,8 +57,9 @@
 - [x] Restore the full mobile Shop the Reel section below the PDP press strip and remove its floating popup
 - [x] Recover from a page whose code never arrives: one-shot stale-build reload and a branded panel instead of a blank screen
 
-- Keep the bag offer explanation on TOP of the track: "✦ Sitewide sale live today · up to 20% off" (the figure is the top rung, read from promo.ts; 20% since 3 Nov 2026) — the owner's own wording, saving named.
-- Header strip leads with the offer, "BUY 2 GET 10% OFF · BUY 3 GET 20% OFF" (rates read from promo.ts; the owner, 2 Nov 2026, rates set back to 10%/20% on 3 Nov), then "SITEWIDE SALE LIVE TODAY!", "FREE INSURED SHIPPING", "MADE IN LIMITED BATCHES".
-- Bag offer line stays small and quiet on top of the track at 8.5px — do not let it clutter the bag.
+- Keep the bag offer explanation on TOP of the track: "✦ Sitewide sale live today · up to 30% off" (the figure is the top rung, read from promo.ts; 30% since Buy 4 joined on 7 Nov 2026, 20% from 3 Nov) — the owner's own wording, saving named.
+- Header strip leads with the offer, "BUY 2 GET 10% OFF · BUY 3 GET 20% OFF · BUY 4 GET 30% OFF" (rates read from promo.ts; the owner, 2 Nov 2026, rates set back to 10%/20% on 3 Nov, Buy 4 at 30% added 7 Nov), then "SITEWIDE SALE LIVE TODAY!", "FREE INSURED SHIPPING", "MADE IN LIMITED BATCHES".
+- Bag offer line stays small and quiet on top of the track — do not let it clutter the bag. It is 11px since 7 Nov 2026 (it was 8.5px, under what a phone can read), quiet in colour, and wraps to two balanced lines under 360px.
+- [x] Buy 4 = 30% off (BUY4 in Shopify, BUY3's twin): the ladder in promo.ts, the bag's three-rung track, the announcement strip, the home line ("Up to 30% off when you buy more" on a phone, every rung wider), and the product page's offer box redesigned in three columns; the bag still hands Fastrr one code, BUY4 from four pieces.
 - [x] Jewellery-only site: apparel removed from menu, footer, search and home/about wording; only the made-to-measure custom outfits section (/customize) remains; /shop/indo-western now opens /customize.
 - [x] State "Easy 7-day exchange & returns" in the bag, one quiet line under the checkout button linking to the policy; verified on phone and tablet.

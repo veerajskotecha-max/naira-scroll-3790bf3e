@@ -8,7 +8,7 @@ import look5 from "@/assets/exhibition/look-5.webp";
 import look6 from "@/assets/exhibition/look-6.webp";
 import look7 from "@/assets/exhibition/look-7.webp";
 import floralBg from "@/assets/floral-pattern-bg.webp";
-import { QUANTITY_OFFERS } from "@/lib/promo";
+import { QUANTITY_OFFERS, TOP_QUANTITY_OFFER } from "@/lib/promo";
 
 const exhibition = [
   { img: look1, name: "Lotus drape" },
@@ -217,13 +217,19 @@ const HeroSection = () => {
           </h1>
           {/* The buy-more offer, quietly, as a label under the headline (the
               owner, 2 Nov 2026). Rates from promo.ts, so it moves with the
-              ladder; it rises after "worn." lands. */}
+              ladder; it rises after "worn." lands. With three rungs (Buy 4 at
+              30%, 7 Nov 2026) the whole ladder is 47 capitals: a phone gets
+              the top of it in one line at 11px, the most it can read without
+              wrapping at 320px, and a wider screen gets every rung. */}
           <p
             data-hero-offer
             style={{ ...jost, animationDelay: "1.05s" }}
-            className="mt-4 lg:mt-6 text-[9px] lg:text-[11px] tracking-[0.28em] uppercase font-medium text-nf-gold-text"
+            className="mt-4 lg:mt-6 text-[11px] tracking-[0.16em] sm:tracking-[0.24em] uppercase font-medium text-nf-gold-text"
           >
-            {QUANTITY_OFFERS.map((offer) => `Buy ${offer.minQuantity}, ${Math.round(offer.rate * 100)}% off`).join(" · ")}
+            <span data-hero-offer-short className="sm:hidden">Up to {Math.round(TOP_QUANTITY_OFFER.rate * 100)}% off when you buy more</span>
+            <span data-hero-offer-ladder className="hidden sm:inline">
+              {QUANTITY_OFFERS.map((offer) => `Buy ${offer.minQuantity}, ${Math.round(offer.rate * 100)}% off`).join(" · ")}
+            </span>
           </p>
         </div>
 

@@ -19,6 +19,7 @@ export const PROMO_DISCOUNTS = {
   FRIENDSANDFAMILY: 0.2,
   BUY2: 0.1,
   BUY3: 0.2,
+  BUY4: 0.3,
   NAIRA10: 0.1,
 } as const;
 
@@ -38,10 +39,13 @@ export const getPromoDiscountRate = (code: string | null): number => {
 };
 
 /*
-  The buy-more ladder: two pieces take 10% off, three take 20% (the owner,
-  3 Nov 2026, back to the pre-25 Oct rates; it was 20% and 30% on 2-3 Nov,
-  and 15% and 25% from 25 Oct). BUY2 and
-  BUY3 in Shopify carry the same rates, so the bag quotes what Fastrr charges.
+  The buy-more ladder: two pieces take 10% off, three take 20%, four take 30%.
+  The owner added the fourth rung on 7 Nov 2026; the first two are the rates
+  of 3 Nov (back to the pre-25 Oct rates; it was 20% and 30% on 2-3 Nov, and
+  15% and 25% from 25 Oct). BUY2, BUY3 and BUY4 in Shopify carry the same
+  rates, so the bag quotes what Fastrr charges. BUY4 was made as BUY3's exact
+  twin, only the rate (30%) and the minimum (4 pieces) changed: the same
+  `discount-scope-all` collection, every buyer, and the same combinesWith.
 
   Both rungs are CODES in Shopify, not automatic discounts, and that is
   deliberate — Fastrr, which owns the payment page, ignores Shopify automatic
@@ -53,6 +57,7 @@ export const getPromoDiscountRate = (code: string | null): number => {
 export const QUANTITY_OFFERS = [
   { code: "BUY2", minQuantity: 2, rate: 0.1 },
   { code: "BUY3", minQuantity: 3, rate: 0.2 },
+  { code: "BUY4", minQuantity: 4, rate: 0.3 },
 ] as const;
 
 export type QuantityOffer = (typeof QUANTITY_OFFERS)[number];
@@ -75,14 +80,38 @@ export const itemsToQuantityOffer = (totalItems: number): number => {
 };
 
 /**
- * How full the offer bar should be, 0 to 1.
+ * Where the rung at `index` sits on a ladder track, 0 to 1: each rung at the
+ * middle of its own equal share of the track (1/6, 1/2 and 5/6 for three).
+ * A track that placed them by piece count put Buy 3 and Buy 4 a quarter of
+ * the width apart with Buy 4 at the very end, and on a 280px phone their
+ * labels ran into each other; centred in equal shares, a label always has a
+ * third of the width to itself.
+ */
+export const rungPosition = (index: number): number => (index + 0.5) / QUANTITY_OFFERS.length;
+
+/**
+ * How full the offer bar should be, 0 to 1, on the track `rungPosition` lays
+ * out: it meets each rung as the bag reaches that rung's pieces, runs evenly
+ * between them (one piece fills half the way to Buy 2), and is full once the
+ * top rung is reached.
  *
  * Measured across the WHOLE ladder rather than per rung, so the bar keeps
  * creeping forward as pieces go in instead of snapping back to empty each time
  * a rung is cleared.
  */
-export const quantityOfferProgress = (totalItems: number): number =>
-  Math.min(1, totalItems / TOP_QUANTITY_OFFER.minQuantity);
+export const quantityOfferProgress = (totalItems: number): number => {
+  const items = Math.max(0, totalItems);
+  if (items >= TOP_QUANTITY_OFFER.minQuantity) return 1;
+  let fromItems = 0;
+  let fromAt = 0;
+  for (const [index, offer] of QUANTITY_OFFERS.entries()) {
+    const at = rungPosition(index);
+    if (items <= offer.minQuantity) return fromAt + ((items - fromItems) / (offer.minQuantity - fromItems)) * (at - fromAt);
+    fromItems = offer.minQuantity;
+    fromAt = at;
+  }
+  return 1;
+};
 
 export type ResolvedDiscount = {
   /** The single code the checkout carries, or null when nothing applies. */
@@ -103,6 +132,12 @@ export type ResolvedDiscount = {
  * BUY3 since 3 Nov 2026, only to the jewellery collections (175 of 194
  * products, read 2 Nov). Handing Fastrr FRIENDSANDFAMILY on that tie would
  * charge an outfit in the bag full price while the bag quoted 20% off it.
+ *
+ * With BUY4 (30%, 7 Nov 2026) no typed code is worth as much as the top rung:
+ * from four pieces the bag always hands Fastrr BUY4, FRIENDSANDFAMILY and
+ * NAIRA10 included. So the typed codes now matter only below four pieces:
+ * FRIENDSANDFAMILY wins on one and two, ties BUY3 (BUY3 goes) on three;
+ * NAIRA10 wins on one and ties BUY2 (BUY2 goes) on two.
  */
 export const resolveCartDiscount = (input: {
   totalItems: number;
@@ -110,7 +145,8 @@ export const resolveCartDiscount = (input: {
 }): ResolvedDiscount => {
   const typed = normalizePromoCode(input.promoCode ?? "");
   /* A rung's code typed by hand still needs the rung's pieces: Shopify holds
-     BUY2 to 2 or more and BUY3 to 3 or more, so below that it is worth 0. */
+     BUY2 to 2 or more, BUY3 to 3 or more and BUY4 to 4 or more, so below that
+     it is worth 0 (BUY4 typed into a three-piece bag leaves it at BUY3). */
   const typedRung = QUANTITY_OFFERS.find((offer) => offer.code === typed);
   const typedRate = typedRung && input.totalItems < typedRung.minQuantity ? 0 : getPromoDiscountRate(typed);
   const earned = earnedQuantityOffer(input.totalItems);
@@ -129,7 +165,10 @@ export const discountedSubtotal = (subtotal: number, resolved: ResolvedDiscount)
 /**
  * What one more piece does to the bag: what it adds to the total and what the
  * bag then saves on it, by the same resolver and rounding as the checkout.
- * A ₹1,499 piece beside a ₹2,399 one adds ₹1,109 and saves ₹390.
+ * A ₹1,499 piece beside a ₹2,399 one adds ₹1,109 and saves ₹390. The same
+ * piece as a fourth, beside ₹2,399 + ₹1,499 + ₹1,799 (₹5,697, so ₹4,558 at
+ * 20%), adds ₹479 and saves ₹1,020: the whole bag moves from 20% to 30%
+ * (₹7,196 at 30% is ₹5,037).
  */
 export const addOnEffect = (bag: { subtotal: number; totalItems: number; promoCode?: string | null }, price: number) => {
   const now = discountedSubtotal(bag.subtotal, resolveCartDiscount({ totalItems: bag.totalItems, promoCode: bag.promoCode }));
@@ -165,9 +204,10 @@ export const ladderHeadline = (totalItems: number, appliedRate = 0): string => {
 /**
  * What one piece costs at a rung, rounded as the bag rounds its total
  * (`discountedSubtotal`). For every current price, two of a piece come to
- * exactly twice this. At three, a price ending in 99 can sit ₹1 under the
- * bag's total (3 × ₹799 = ₹2,397 against ₹2,398 for three ₹999 pieces): the
- * bag rounds the total once, this rounds the piece. Never more, never over.
+ * exactly twice this. At three or four, a price ending in 99 can sit ₹1 under
+ * the bag's total (3 × ₹799 = ₹2,397 against ₹2,398 for three ₹999 pieces;
+ * 4 × ₹699 = ₹2,796 against ₹2,797 for four): the bag rounds the total once,
+ * this rounds the piece. Never more than ₹1, never over.
  */
 export const pieceAtRung = (price: number, offer: { code: string; rate: number }): number =>
   discountedSubtotal(price, { code: offer.code, rate: offer.rate, automatic: true });

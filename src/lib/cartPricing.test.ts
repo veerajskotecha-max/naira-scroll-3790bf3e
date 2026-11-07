@@ -21,6 +21,19 @@ describe("individual bag offer prices", () => {
     ]);
   });
 
+  /* Four pieces take 30% (BUY4, 7 Nov 2026). 1,499 + 2,399 + 1,799 + 1,299 =
+     6,996, at 30% 4,897.20, so a 4,897 bag; the lines at 30% are 1,049.30,
+     1,679.30, 1,259.30 and 909.30, floored to 4,896 and the one rupee left
+     goes to the first of the equal fractions. */
+  it("lowers every individual price to 30% when four pieces earn BUY4", () => {
+    const four = [1499, 2399, 1799, 1299].map((price) => ({ price, quantity: 1 }));
+    const prices = discountedCartLines(four, resolveCartDiscount({ totalItems: 4 }));
+    expect(prices).toEqual([
+      { total: 1050, unit: 1050 }, { total: 1679, unit: 1679 }, { total: 1259, unit: 1259 }, { total: 909, unit: 909 },
+    ]);
+    expect(prices.reduce((sum, price) => sum + price.total, 0)).toBe(4897);
+  });
+
   // Independently rounding each ₹999 line would quote ₹2,397 against a ₹2,398 bag.
   it("keeps rounded line prices equal to the goods total", () => {
     const lines = Array.from({ length: 3 }, () => ({ price: 999, quantity: 1 }));

@@ -7,14 +7,15 @@ import {
   pieceAtRung,
   PROMO_EVENT,
   QUANTITY_OFFERS,
+  TOP_QUANTITY_OFFER,
 } from "@/lib/promo";
 
 /*
   The buy-more offer on the product page, under the price and the badges (the
   owner, 2 Nov 2026: "offer display on pdp too below price and features like
   Palmonas"). Palmonas shows three coupon cards on a rail, with bundle prices
-  that ignore the piece and a code to copy. Here both rungs are always in
-  view, priced for THIS piece (the chosen variant's price), and there is no
+  that ignore the piece and a code to copy. Here every rung is always in
+  view (three since Buy 4, 7 Nov 2026), priced for THIS piece (the chosen variant's price), and there is no
   code: the bag applies the rung itself and hands Fastrr the one code.
 
   Every figure comes from promo.ts: the rates from QUANTITY_OFFERS, the piece
@@ -55,13 +56,13 @@ const PdpOfferLadder = ({ price, preorder = false }: { price: number; preorder?:
   const top = Math.max(0, ...QUANTITY_OFFERS.filter((offer) => totalItems >= offer.minQuantity).map((offer) => offer.rate));
 
   return (
-    <section data-offer-ladder data-state={Math.min(totalItems, 3)} aria-label="Buy more, pay less" className="mt-3">
+    <section data-offer-ladder data-state={Math.min(totalItems, TOP_QUANTITY_OFFER.minQuantity)} aria-label="Buy more, pay less" className="mt-3">
       <div className="relative border border-nf-gold-deep/35 px-3 pb-[7px] pt-[9px]">
         {/* On the top rule, like a fieldset's legend: no row of its own. */}
         <p className="absolute -top-[7px] left-2 bg-nf-ivory px-1.5 font-nf-label text-[9.5px] font-medium uppercase leading-[13px] tracking-nf-16 text-nf-gold-text">
           {preorder ? "Not on pre-orders" : "Applied in your bag · no code"}
         </p>
-        <ul className="grid grid-cols-2">
+        <ul className="grid grid-cols-3">
           {QUANTITY_OFFERS.map((offer, i) => {
             const reached = totalItems >= offer.minQuantity;
             /* A lower rung the bag has climbed past steps back; the line says so in words. */

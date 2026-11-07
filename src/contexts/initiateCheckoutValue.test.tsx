@@ -28,6 +28,13 @@ vi.mock("@/lib/promo", async (importActual) => ({ ...(await importActual<typeof 
 const line = (id: string, variant: string, price: number, quantity = 1) => ({
   id, variantId: `gid://shopify/ProductVariant/${variant}`, name: id, price, priceLabel: `₹${price}`, currencyCode: "INR", image: "x.jpg", quantity, lineId: `line-${id}`,
 });
+/* The mixed four-piece bag of the money table: ₹1,499 + ₹2,399 + ₹1,799 + ₹1,299. */
+const FOUR = [
+  line("filigree-bloom-studs", "5001", 1499),
+  line("prism-riviere-bracelet", "47501788348578", 2399),
+  line("blush-cluster-ring", "5003", 1799),
+  line("duo-link-necklace", "5004", 1299),
+];
 const bag = (...items: ReturnType<typeof line>[]) =>
   localStorage.setItem("naira-shopify-cart", JSON.stringify({ cartId: "cart-1", checkoutUrl: "https://payments.nairaflore.com/cart/c/1", items }));
 const initiateCheckout = () => mocks.track.mock.calls.filter(([event]) => event === "InitiateCheckout").map(([, params]) => params);
@@ -53,6 +60,15 @@ describe("InitiateCheckout's value is what the shopper is charged", () => {
     ["two pieces with the typed 20% code", [line("prism-riviere-bracelet", "47501788348578", 2399), line("brushed-gold-huggies", "47501787594914", 999)], "FRIENDSANDFAMILY", 2718, "FRIENDSANDFAMILY"],
     // FRIENDSANDFAMILY ties BUY3 at three pieces but covers only the jewellery in Shopify: the rung goes.
     ["three pieces with the typed 20% code", [line("prism-riviere-bracelet", "47501788348578", 2399, 2), line("brushed-gold-huggies", "47501787594914", 999)], "FRIENDSANDFAMILY", 4638, "BUY3"],
+    // Buy 4 (7 Nov 2026): 1,499 + 2,399 + 1,799 + 1,299 = 6,996, at 30% 4,897.20.
+    ["four pieces, BUY4 (30%)", FOUR, null, 4897, "BUY4"],
+    // With ₹999 more, 7,995 at 30% is 5,596.50: the bag rounds once, half up, to 5,597.
+    ["five pieces, BUY4 (30%)", [...FOUR, line("tile-stone-bangle", "5005", 999)], null, 5597, "BUY4"],
+    // No typed code is worth 30%: from four pieces BUY4 goes, whatever was typed.
+    ["four pieces with the typed 20% code", FOUR, "FRIENDSANDFAMILY", 4897, "BUY4"],
+    ["four pieces with the typed 10% code", FOUR, "NAIRA10", 4897, "BUY4"],
+    // BUY4 typed into three pieces is worth nothing in Shopify (4 or more): BUY3 goes. 5,697 at 20% is 4,557.60.
+    ["three pieces with BUY4 typed", FOUR.slice(0, 3), "BUY4", 4558, "BUY3"],
   ])("%s", async (_bag, items, code, charged, coupon) => {
     bag(...items);
     mocks.promo.code = code;

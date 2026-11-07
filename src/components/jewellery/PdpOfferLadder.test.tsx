@@ -16,21 +16,24 @@ beforeEach(() => {
 });
 afterEach(cleanup);
 
-const rung = (n: 2 | 3) => document.querySelector(`[data-rung="${n}"]`) as HTMLElement;
+const rung = (n: 2 | 3 | 4) => document.querySelector(`[data-rung="${n}"]`) as HTMLElement;
 
-describe("PdpOfferLadder: Buy 2 / Buy 3 on the product page", () => {
+describe("PdpOfferLadder: Buy 2 / Buy 3 / Buy 4 on the product page", () => {
   /* Rates are literals so this fails alongside OfferProgress.test.tsx if
      promo.ts moves without the Shopify codes. The figures are this piece's
      own price at each rung, rounded as the bag rounds. */
+  /* By hand: 999 x 0.7 = 699.30; 1,199 x 0.7 = 839.30; 1,499 x 0.7 =
+     1,049.30; 2,399 x 0.7 = 1,679.30. */
   it.each([
-    [999, "₹899", "₹799"],
-    [1199, "₹1,079", "₹959"],
-    [1499, "₹1,349", "₹1,199"],
-    [2399, "₹2,159", "₹1,919"],
-  ])("prices a ₹%i piece at each rung", (price, two, three) => {
+    [999, "₹899", "₹799", "₹699"],
+    [1199, "₹1,079", "₹959", "₹839"],
+    [1499, "₹1,349", "₹1,199", "₹1,049"],
+    [2399, "₹2,159", "₹1,919", "₹1,679"],
+  ])("prices a ₹%i piece at each rung", (price, two, three, four) => {
     render(<PdpOfferLadder price={price} />);
     expect(rung(2).textContent).toBe(`Buy 2 · 10% off${two} each`);
     expect(rung(3).textContent).toBe(`Buy 3 · 20% off${three} each`);
+    expect(rung(4).textContent).toBe(`Buy 4 · 30% off${four} each`);
   });
 
   /* Palmonas makes the shopper copy a code. Here there is none to copy: the
@@ -38,7 +41,7 @@ describe("PdpOfferLadder: Buy 2 / Buy 3 on the product page", () => {
   it("says it is applied in the bag, names no code and has nothing to tap while the bag is empty", () => {
     const { container } = render(<PdpOfferLadder price={999} />);
     expect(screen.getByText("Applied in your bag · no code")).toBeTruthy();
-    expect(container.textContent).not.toMatch(/BUY2|BUY3|NAIRA10|FRIENDSANDFAMILY/);
+    expect(container.textContent).not.toMatch(/BUY2|BUY3|BUY4|NAIRA10|FRIENDSANDFAMILY/);
     expect(container.querySelectorAll("a, button")).toHaveLength(0);
     expect(container.querySelector("[data-offer-ladder]")?.getAttribute("data-state")).toBe("0");
     // The live region is there from the start, empty, so later states are read out.
@@ -62,14 +65,26 @@ describe("PdpOfferLadder: Buy 2 / Buy 3 on the product page", () => {
     expect(container.querySelector("[aria-live] > p")?.textContent).toBe("Add to bag for 20% off everything: it adds ₹580, not ₹999.");
   });
 
-  it("at three pieces, both rungs are reached and the line says the bag has 20%", () => {
+  /* 2,997 at 20% is 2,398; 3,996 at 30% is 2,797 (2,797.20): this piece adds 399. */
+  it("at three pieces, Buy 3 is reached and this piece prices as the fourth", () => {
     cart.totalItems = 3;
     cart.subtotal = 2997;
     const { container } = render(<PdpOfferLadder price={999} />);
     expect(rung(2).hasAttribute("data-reached")).toBe(true);
     expect(rung(3).hasAttribute("data-reached")).toBe(true);
+    expect(rung(4).hasAttribute("data-reached")).toBe(false);
     expect(container.querySelector("[data-offer-ladder]")?.getAttribute("data-state")).toBe("3");
-    expect(container.querySelector("[aria-live] > p")?.textContent).toBe("20% off is on your bag: adding this costs ₹799, not ₹999.");
+    expect(container.querySelector("[aria-live] > p")?.textContent).toBe("Add to bag for 30% off everything: it adds ₹399, not ₹999.");
+  });
+
+  /* 3,996 at 30% is 2,797; 4,995 at 30% is 3,497 (3,496.50): this piece costs 700. */
+  it("at four pieces, every rung is reached and the line says the bag has 30%", () => {
+    cart.totalItems = 4;
+    cart.subtotal = 3996;
+    const { container } = render(<PdpOfferLadder price={999} />);
+    expect(rung(4).hasAttribute("data-reached")).toBe(true);
+    expect(container.querySelector("[data-offer-ladder]")?.getAttribute("data-state")).toBe("4");
+    expect(container.querySelector("[aria-live] > p")?.textContent).toBe("30% off is on your bag: adding this costs ₹700, not ₹999.");
   });
 
   /* With pieces in the bag the one control is View bag, a full 44px target. */
@@ -84,8 +99,8 @@ describe("PdpOfferLadder: Buy 2 / Buy 3 on the product page", () => {
   });
 
   /* A typed code is never offered back as a saving the shopper has. Since
-     3 Nov 2026 NAIRA10 (10%) matches Buy 2, so the line names only Buy 3;
-     FRIENDSANDFAMILY (20%) matches Buy 3, so it names no rung at all. */
+     3 Nov 2026 NAIRA10 (10%) matches Buy 2, so the line names Buy 3;
+     FRIENDSANDFAMILY (20%) matches Buy 3, so it names Buy 4's 30%. */
   it("follows a typed code as it changes", () => {
     const { container } = render(<PdpOfferLadder price={999} />);
     act(() => {
@@ -97,7 +112,7 @@ describe("PdpOfferLadder: Buy 2 / Buy 3 on the product page", () => {
       localStorage.setItem("naira-promo-code", "FRIENDSANDFAMILY");
       window.dispatchEvent(new CustomEvent(PROMO_EVENT));
     });
-    expect(container.querySelector("[aria-live]")?.textContent).toBe("Your code takes 20% off, the best price.");
+    expect(container.querySelector("[aria-live]")?.textContent).toBe("Your code takes 20% off. 4 pieces take 30%.");
   });
 
   /* A sold-out size or metal is reserved on WhatsApp and never reaches the
@@ -109,7 +124,7 @@ describe("PdpOfferLadder: Buy 2 / Buy 3 on the product page", () => {
     const { container } = render(<PdpOfferLadder price={999} preorder />);
     expect(container.textContent).not.toMatch(/₹/);
     expect(screen.getByText("Not on pre-orders")).toBeTruthy();
-    expect(screen.getAllByText("In-stock pieces only")).toHaveLength(2);
+    expect(screen.getAllByText("In-stock pieces only")).toHaveLength(3);
     expect(container.querySelector("[aria-live]")?.textContent).toBe("");
     expect(container.querySelectorAll("button")).toHaveLength(0);
   });

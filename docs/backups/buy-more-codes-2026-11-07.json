@@ -1,0 +1,22 @@
+{
+  "note": "7 Nov 2026 (owner): Buy 4 = 30% off added as a fourth rung. BUY2 and BUY3 unchanged. To undo: delete BUY4 (discountCodeDelete on the id below) after the site stops handing it.",
+  "created": {
+    "id": "gid://shopify/DiscountCodeNode/1846163964066",
+    "code": "BUY4",
+    "title": "BUY4 — extra 30% off 4 or more items",
+    "percentage": 0.3,
+    "minimumQuantity": 4,
+    "collection": "gid://shopify/Collection/333512638626 (discount-scope-all, 208 of 208 products on 7 Nov)",
+    "combinesWith": { "orderDiscounts": true, "productDiscounts": false, "shippingDiscounts": true },
+    "context": "all buyers",
+    "appliesOncePerCustomer": false,
+    "usageLimit": null,
+    "startsAt": "2026-11-07T02:15:00Z"
+  },
+  "unchanged": [
+    { "id": "gid://shopify/DiscountCodeNode/1831564935330", "code": "BUY2", "percentage": 0.1, "minimumQuantity": 2, "collection": "discount-scope-all", "combinesWith": { "orderDiscounts": true, "productDiscounts": false, "shippingDiscounts": true } },
+    { "id": "gid://shopify/DiscountCodeNode/1831570571426", "code": "BUY3", "percentage": 0.2, "minimumQuantity": 3, "collection": "discount-scope-all", "combinesWith": { "orderDiscounts": true, "productDiscounts": false, "shippingDiscounts": true } },
+    { "id": "gid://shopify/DiscountCodeNode/1817382650018", "code": "NAIRA10", "percentage": 0.1, "minimumQuantity": null, "items": "all" },
+    { "id": "gid://shopify/DiscountCodeNode/1824070533282", "code": "FRIENDSANDFAMILY", "percentage": 0.2, "minimumQuantity": null, "items": "shop-all, necklaces, earrings, bracelets, rings" }
+  ]
+}

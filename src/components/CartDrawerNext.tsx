@@ -13,10 +13,12 @@ import { followOut, useBackToClose } from "@/hooks/useBackToClose";
 import {
   discountedSubtotal,
   getPromoCode,
+  ladderHeadline,
   PROMO_EVENT,
   QUANTITY_OFFERS,
   quantityOfferProgress,
   resolveCartDiscount,
+  RUNG_GRID_COLS,
   rungPosition,
   TOP_QUANTITY_OFFER,
 } from "@/lib/promo";
@@ -34,11 +36,11 @@ import { WHATSAPP_NUMBER, type JewelPiece, type JewelVariant } from "@/data/jewe
   reasons to trust sit beside the button.
 
     ‹ Your bag · 1 piece
-    up to 30% off · Buy 2 · Buy 3 · Buy 4      the ladder, rungs labelled
+    up to 30% off · Buy 3 · Buy 4              the ladder, rungs labelled
     the piece, its MRP struck and "₹1,801 off"
-    Wears well with your bracelet · one piece, "Adds ₹1,109 · saves ₹390", Add
+    Wears well with your bracelet · a third piece, "Adds ₹360 · saves ₹1,139", Add   (row no longer drawn)
     [the box] Comes with a Naira gift box     a tap lifts it open
-    Total · incl. taxes, one savings line, arrival date
+    Total · incl. taxes, one savings line (or what the next rung takes), arrival date
     Checkout · ₹2,399, then payment, returns and plating, and what comes next
 
   Same cart, discount resolver and checkout hand-off as before: every rupee
@@ -149,12 +151,13 @@ export const BagReturns = ({
 );
 
 /* Project Shades' ladder: a thin track, an open ring at each rung that fills
-   once reached, and the offer spelt out under it. Three rungs since 7 Nov
-   2026 (Buy 4, 30%). Each rung is centred in its own third of the track
-   (`rungPosition`) with its label in that third under it, so "Buy 3" and
-   "Buy 4" can never run into each other: placed by piece count, they sat a
-   quarter of the width apart with Buy 4 at the very end, and at 280px the
-   labels met. */
+   once reached, and the offer spelt out under it. Two rungs since 7 Nov 2026
+   (Buy 3 at 20%, Buy 4 at 30%; the owner took Buy 2 away the day Buy 4 came
+   in). Each rung is centred in its own share of the track (`rungPosition`:
+   a quarter and three quarters across) with its label in that share under
+   it, one column per rung (`RUNG_GRID_COLS`), so "Buy 3" and "Buy 4" can
+   never run into each other: placed by piece count, they sat a quarter of the
+   width apart with Buy 4 at the very end, and at 280px the labels met. */
 export const SimpleLadder = ({ totalItems }: { totalItems: number }) => {
   const top = TOP_QUANTITY_OFFER.minQuantity;
   const fill = quantityOfferProgress(totalItems);
@@ -186,7 +189,7 @@ export const SimpleLadder = ({ totalItems }: { totalItems: number }) => {
         ))}
       </div>
       {/* One equal column per rung, each label centred under its own ring. */}
-      <ul className="mt-[18px] grid grid-cols-3 text-center">
+      <ul className={`mt-[18px] grid ${RUNG_GRID_COLS} text-center`}>
         {QUANTITY_OFFERS.map((o) => {
           const reached = totalItems >= o.minQuantity;
           return (
@@ -290,6 +293,8 @@ const CartDrawerNext = () => {
   const goodsTotal = discountedSubtotal(lineSubtotal, discount);
   const linePrices = discountedCartLines(lines, discount);
   const discountAmount = lineSubtotal - goodsTotal;
+  /* What the next rung takes, said only while nothing is off yet. */
+  const nextRung = discountAmount > 0 ? "" : ladderHeadline(lineCount, discount.rate);
   const orderTotal = goodsTotal + SHIPPING_CHARGE;
   const busy = isLoading || isSyncing;
 
@@ -569,10 +574,22 @@ const CartDrawerNext = () => {
                 <span className="text-[15px] font-medium text-nf-ink">Total</span>
                 <span data-total className="text-[17px] font-medium text-nf-ink">{formatPrice(orderTotal)}</span>
               </div>
-              {discountAmount > 0 && (
+              {discountAmount > 0 ? (
                 <p data-you-save className="mt-1 text-[12.5px] font-medium text-nf-gold-text">
                   You save {formatPrice(discountAmount)} · {pct(discount.rate)} {rung ? `for ${lineCount} pieces` : "with your code"}
                 </p>
+              ) : (
+                /* Nothing off yet: one or two pieces since 7 Nov 2026, when
+                   the first rung became the third piece. A bag of two that
+                   used to take 10% now shows full price, so the line where the
+                   saving would be says which piece starts it ("A third piece
+                   takes 20% off your bag"), in the saving's own place, so the
+                   foot keeps its height as the bag grows. */
+                nextRung && (
+                  <p data-next-rung className="mt-1 text-[12.5px] font-medium text-nf-gold-text">
+                    {nextRung}
+                  </p>
+                )
               )}
               <p className="mt-2 text-[12.5px] leading-[1.5] text-nf-ink/65">
                 Tax included. Free insured shipping · arrives {arrivesBy}.

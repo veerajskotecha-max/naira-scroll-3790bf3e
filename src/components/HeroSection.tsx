@@ -217,10 +217,10 @@ const HeroSection = () => {
           </h1>
           {/* The buy-more offer, quietly, as a label under the headline (the
               owner, 2 Nov 2026). Rates from promo.ts, so it moves with the
-              ladder; it rises after "worn." lands. With three rungs (Buy 4 at
-              30%, 7 Nov 2026) the whole ladder is 47 capitals: a phone gets
-              the top of it in one line at 11px, the most it can read without
-              wrapping at 320px, and a wider screen gets every rung. */}
+              ladder; it rises after "worn." lands. Two rungs since 7 Nov 2026
+              (Buy 3 at 20%, Buy 4 at 30%; Buy 2 is gone): a phone gets the
+              top of the ladder in one line at 11px, the most it can read
+              without wrapping at 320px, and a wider screen gets every rung. */}
           <p
             data-hero-offer
             style={{ ...jost, animationDelay: "1.05s" }}

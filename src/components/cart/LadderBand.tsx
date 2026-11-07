@@ -4,12 +4,13 @@ const pct = (rate: number) => `${Math.round(rate * 100)}%`;
 
 /*
   The ladder across the top of the bag, as the CRO plan draws it: one line
-  saying what the discount applies to ("A second piece takes 10% off your
-  bag"), over a track whose rungs are labelled where they sit, 10% at the
-  second piece, 20% at the third and 30% at the fourth (7 Nov 2026). Each rung
-  is centred in its own third of the track (`rungPosition`), so its label
-  never meets the next one. The bar measures the whole ladder, so a piece
-  always moves it forward; one piece fills half the way to the first rung.
+  saying what the discount applies to ("A third piece takes 20% off your
+  bag"), over a track whose rungs are labelled where they sit, 20% at the
+  third piece and 30% at the fourth (two rungs since 7 Nov 2026; the 10% at
+  the second piece is gone). Each rung is centred in its own share of the
+  track (`rungPosition`), so its label never meets the next one. The bar
+  measures the whole ladder, so a piece always moves it forward; one piece
+  fills a third of the way to the first rung.
   `appliedRate` is the discount the bag actually gets (a typed code can give as
   much as a rung), so the line never offers a saving already in hand.
 */

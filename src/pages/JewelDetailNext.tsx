@@ -1020,7 +1020,7 @@ const JewelDetailNext = () => {
               <span className="h-2 w-px shrink-0 bg-nf-gold/30" aria-hidden="true" />
             </p>
 
-            {/* Buy 2 / Buy 3 / Buy 4, priced for this piece and following the bag. A
+            {/* Buy 3 / Buy 4, priced for this piece and following the bag. A
                 piece sold out altogether is reserved on WhatsApp and never
                 reaches the bag, so it is offered nothing it cannot get. */}
             {!soldOut && <PdpOfferLadder price={shown.price} preorder={sizePreorder || variantSoldOut} />}
@@ -1293,9 +1293,10 @@ const JewelDetailNext = () => {
               </details>
             </div>
 
-            {/* A second piece, one tap from the bag. The label is the ladder's
-                first rung, read from promo.ts, so it always quotes what the bag
-                takes off two pieces. */}
+            {/* Another piece, one tap from the bag. The label is the ladder's
+                first rung, read from promo.ts, so it always quotes the first
+                rung the bag really has: three pieces at 20% since 7 Nov 2026
+                (two pieces earn nothing now). */}
             {pairings.length > 0 && (
               <section className="mt-10" aria-labelledby="complete-the-look">
                 <div className="flex items-end justify-between gap-3">

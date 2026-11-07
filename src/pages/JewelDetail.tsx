@@ -4,7 +4,7 @@ import { Link, useParams, Navigate, useNavigate } from "react-router-dom";
 import { absoluteUrl } from "@/lib/absoluteUrl";
 import { shopifyOgImage, OG_IMAGE_SIZE } from "@/lib/shopifyImage";
 import { productParams, trackPixel } from "@/lib/pixel";
-import { QUANTITY_OFFERS, TOP_QUANTITY_OFFER } from "@/lib/promo";
+import { QUANTITY_OFFERS, RUNG_GRID_COLS, TOP_QUANTITY_OFFER } from "@/lib/promo";
 import { Helmet } from "react-helmet-async";
 import JsonLd from "@/components/JsonLd";
 import { Heart, Minus, Plus, Truck, MessageSquare, ArrowLeft, ZoomIn, ShoppingBag, TicketPercent } from "lucide-react";
@@ -1004,8 +1004,8 @@ const JewelDetail = () => {
                 <TicketPercent size={14} strokeWidth={1.6} aria-hidden="true" />
                 <span>The Naira Pairing Offer</span>
               </div>
-              {/* One column per rung: three since Buy 4 (7 Nov 2026). */}
-              <div className="mt-2.5 grid grid-cols-3 divide-x divide-[color:rgb(var(--nf-gold-rgb)/0.32)]">
+              {/* One column per rung, as many as promo.ts holds (two since 7 Nov 2026). */}
+              <div className={`mt-2.5 grid ${RUNG_GRID_COLS} divide-x divide-[color:rgb(var(--nf-gold-rgb)/0.32)]`}>
                 {QUANTITY_OFFERS.map((offer) => (
                   <div key={offer.code} className="min-w-0 px-2.5 first:pl-0 last:pr-0">
                     <p className="text-[14px] font-semibold leading-tight text-[var(--nf-text)]">

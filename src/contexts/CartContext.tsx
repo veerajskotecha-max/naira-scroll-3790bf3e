@@ -338,7 +338,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
           items: current.items.map((cartItem) => (keyOf(cartItem) === key ? withShopifyPrice({ ...cartItem, quantity: syncedQuantity }, result.price) : cartItem)),
         }));
         /* "+" in the bag puts another piece in Shopify's cart, an add to cart
-           like any other (it is how a shopper reaches Buy 2 / Buy 3), and Meta
+           like any other (it is how a shopper reaches Buy 3 / Buy 4), and Meta
            heard nothing of it. Each piece Shopify really added is told, never
            a raise it capped, never a "−". */
         const added = Math.min(quantity, syncedQuantity) - item.quantity;
@@ -437,9 +437,10 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     const lines = only?.items ?? latest.items;
     const value = Number(lines.reduce((sum, i) => sum + i.price * i.quantity, 0).toFixed(2));
 
-    /* The one discount the order actually gets. The bag earns BUY2 on two
-       pieces, BUY3 on three and BUY4 on four or more; a typed code can beat
-       the first two, never BUY4. Resolved once here so the code
+    /* The one discount the order actually gets. The bag earns BUY3 on three
+       pieces and BUY4 on four or more, nothing on one or two (Buy 2 went on
+       7 Nov 2026); a typed code can discount one or two pieces, tie BUY3 at
+       best, never beat BUY4. Resolved once here so the code
        put on the cart, the code handed to Fastrr, the total shown in the
        drawer and the value Meta is told are all the same discount. */
     const resolved = resolveCartDiscount({
@@ -447,8 +448,8 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       promoCode: getPromoCode(),
     });
     /* What the shopper is about to be charged: the bag's Total. It was the
-       sum before the discount (3398 for a two-piece bag that BUY2 charges
-       3058 at today's 10%). */
+       sum before the discount (4397 for a three-piece bag that BUY3 charges
+       3518 at 20%). */
     const charged = discountedSubtotal(value, resolved) + SHIPPING_CHARGE;
     trackPixel("InitiateCheckout", {
       currency: lines[0]?.currencyCode || "INR",
@@ -507,10 +508,14 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         setIsLoading(false);
       }
     } else if (cartId) {
-      /* One piece earns no code: take an earlier rung's off the cart (it
-         stayed there after a removal). Not awaited, so a one-piece checkout
-         is never held up; a rung's code never applies to one piece, so the
-         price cannot change whichever way the call lands. */
+      /* One or two pieces earn no code (the first rung is three pieces since
+         7 Nov 2026): take an earlier rung's off the cart (it stayed there
+         after a removal). Not awaited, so the checkout is never held up;
+         Shopify holds BUY3 and BUY4 to their own minimums, so the price
+         cannot change whichever way the call lands. A BUY2 left on a
+         two-piece cart from before that day could only take 10% off in
+         Shopify's own checkout (Fastrr builds its order from the products and
+         gets no coupon here), and only until BUY2 is switched off. */
       void (async () => {
         try {
           await applyCartDiscountCodes(cartId, []);
@@ -626,7 +631,8 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   /* One-tap "Pre-order now / Shop now": add to the Shopify cart, then go straight
      to Shopify checkout using the URL that add returned (no stale-state race).
      A line already in the bag goes as it is: adding again sent a shopper who
-     tapped Add and then Buy Now to pay for two (and earned BUY2 on the way).
+     tapped Add and then Buy Now to pay for two (and earned the two-piece
+     rung on the way, when there was one).
      A shopper who picked more than the bag holds (the outfit page's quantity
      stepper) gets the line raised to that many first, not that many more.
      With other pieces in the bag, only this one goes to checkout and the rest

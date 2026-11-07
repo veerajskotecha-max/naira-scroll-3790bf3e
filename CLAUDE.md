@@ -92,7 +92,7 @@ to cart. Since 7 Nov 2026 it carries three rungs (Buy 4, 30%) and the owner's
 redesign: three equal columns between gold hairlines, the rate largest in
 Cormorant (lining figures), the piece's price and "each" under it, "Buy 2" as
 the 11px label beside the rate; the bag's rung takes the rate in gold and a
-2px gold rule on the panel's foot, a rung climbed past steps back. Nothing in
+2px gold rule under its column, a rung climbed past steps back. Nothing in
 it is under 11px. The panel is held to two rows, 56px, both rows pinned to
 fixed heights: Prism Rivière (its badges wrap to two lines) keeps Add to cart
 fully on the first screen of a 390x844 phone with 3px to spare (bottom at
@@ -102,7 +102,11 @@ label beside the rate, so there it stacks (70px), and "off" shows beside the
 rate only from 350px. The phone's buy bar shows whenever Add to
 cart is not fully on screen, but never over the price, nor over the offer's
 rungs while they are fully on screen (it covered the per-piece prices on a
-360x780 phone). `PdpBuyFacts.tsx` (the old one-line ladder
+360x780 phone). "The rungs" is the panel's `ul`, so anything that marks a
+rung stays inside it: the reached rung's rule sits in a 3px foot of its own
+column, taken from the panel's bottom padding. Drawn on the panel's foot, 8px
+under the list, it was under the bar on a 390x844 phone with two pieces in
+the bag (list to 775px, bar from 779px). `PdpBuyFacts.tsx` (the old one-line ladder
 and the delivery + COD line) is used only by the unrouted `JewelDetail.tsx`. The PDP says only "COD available" — the owner's call. The fee is
 stated in the BAG instead, as its own line in rupees ("COD fee · none if paid
 online"): Fastrr adds 5% of the post-discount total to COD orders (verified on

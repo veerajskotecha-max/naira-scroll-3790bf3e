@@ -480,8 +480,12 @@ const JewelDetailNext = () => {
      reaching past the screen's edge put the bar over a button in full view.
      Nor over the offer's rungs while they are on screen: the panel sits
      right above Add to cart, so on a 360x780 phone the bar covered the
-     per-piece prices on the first screen. Rungs reaching past the screen's
-     edge do not hold it back (an Instagram-sized screen keeps its bar). */
+     per-piece prices on the first screen. "The rungs" is the offer panel's
+     list, and everything that marks a rung lives inside it, the reached
+     rung's gold rule included: drawn on the panel's foot 8px below the list,
+     that rule sat under the bar on a 390x844 phone while the list counted as
+     clear. Rungs reaching past the screen's edge do not hold it back (an
+     Instagram-sized screen keeps its bar). */
   useEffect(() => {
     const check = () => {
       const target = document.querySelector("#product-actions > button");

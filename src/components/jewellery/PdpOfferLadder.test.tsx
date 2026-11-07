@@ -180,6 +180,28 @@ describe("PdpOfferLadder: Buy 2 / Buy 3 / Buy 4 on the product page", () => {
     expect(src.match(/\bh-4\b/g)?.length).toBeGreaterThanOrEqual(2);
   });
 
+  /* The phone's buy bar keeps off the rungs' list while it is on screen
+     (JewelDetailNext reads `[data-offer-ladder] ul`). The reached rung's
+     rule used to hang 8px under that list, on the panel's foot: on a 390x844
+     phone (Prism Rivière, two pieces in the bag) the list ended at 775px,
+     the bar began at 779px and covered the rule at 781-783px. It sits in the
+     column's own 3px foot now, inside the list, and that foot comes out of
+     the panel's bottom padding (7px = 3 + 4), so the panel stays 56px. */
+  it("draws the reached rung's rule inside the list the buy bar keeps off", () => {
+    cart.totalItems = 2;
+    cart.subtotal = 1998;
+    const { container } = render(<PdpOfferLadder price={999} />);
+    const rule = container.querySelector("[data-rung-rule]") as HTMLElement;
+    expect(rule.closest("li")).toBe(rung(2));
+    expect(rule.closest("[data-offer-ladder] ul")).toBeTruthy();
+    expect(rule.className).toMatch(/(^|\s)bottom-0(\s|$)/);
+    expect(rule.className).not.toMatch(/-bottom-/);
+    expect(rung(2).className).toMatch(/\bpb-\[3px\]/);
+    expect((container.querySelector("[data-offer-ladder] > div") as HTMLElement).className).toMatch(/\bpb-\[4px\]/);
+    const page = readFileSync(resolve(__dirname, "../../pages/JewelDetailNext.tsx"), "utf8");
+    expect(page).toContain('document.querySelector("[data-offer-ladder] ul")');
+  });
+
   /* Nothing moves for a shopper who has asked for less motion. */
   it("stills its transitions under reduced motion", () => {
     const src = readFileSync(resolve(__dirname, "PdpOfferLadder.tsx"), "utf8").replace(/\/\*[\s\S]*?\*\//g, "");

@@ -28,8 +28,16 @@ import {
   hairlines, each read in one glance: the rate, largest, in the serif; the
   piece's price at that rung under it; "Buy 2" as the small label beside the
   rate. The rung the bag has reached takes the rate in gold and a gold rule
-  along the panel's foot, and a rung it has climbed past steps back. No fill
+  under its column, and a rung it has climbed past steps back. No fill
   behind the text, and nothing under 11px.
+
+  That rule is drawn INSIDE the list of rungs, in a 3px foot each column
+  keeps for it (taken from the panel's own bottom padding, so the panel's
+  height does not move). The phone's buy bar (JewelDetailNext) keeps off the
+  list while it is on screen; laid on the panel's foot 8px under the list,
+  the rule sat under the bar on a 390x844 phone (Prism Rivière, two pieces
+  in the bag: list to 775px, bar from 779px, rule at 781-783px) and the
+  reached rung lost its mark.
 
   Still two rows, because the panel sits right above Add to cart: on a 390x844
   phone the most-advertised piece (Prism Rivière, its badges on two lines)
@@ -73,7 +81,7 @@ const PdpOfferLadder = ({ price, preorder = false }: { price: number; preorder?:
       aria-label="Buy more, pay less"
       className="mt-3"
     >
-      <div className="relative border border-nf-gold-deep/45 px-1 pb-[7px] pt-[9px]">
+      <div className={`relative border border-nf-gold-deep/45 px-1 pt-[9px] ${preorder ? "pb-[7px]" : "pb-[4px]"}`}>
         {/* On the top rule, like a fieldset's legend: no row of its own. */}
         <p className="absolute -top-[7px] left-1/2 -translate-x-1/2 whitespace-nowrap bg-nf-ivory px-2 font-nf-label text-[11px] font-medium uppercase leading-[14px] tracking-nf-8 text-nf-gold-text">
           {preorder ? "Not on pre-orders" : "Applied in your bag · no code"}
@@ -89,7 +97,7 @@ const PdpOfferLadder = ({ price, preorder = false }: { price: number; preorder?:
                 data-rung={offer.minQuantity}
                 data-reached={reached ? "" : undefined}
                 data-current={isCurrent ? "" : undefined}
-                className={`relative min-w-0 px-0.5 text-center min-[310px]:px-1 ${i > 0 ? "border-l border-nf-gold-deep/25" : ""}`}
+                className={`relative min-w-0 px-0.5 text-center min-[310px]:px-1 ${preorder ? "" : "pb-[3px]"} ${i > 0 ? "border-l border-nf-gold-deep/25" : ""}`}
               >
                 <p className="flex flex-col items-center whitespace-nowrap min-[310px]:h-[22px] min-[310px]:flex-row min-[310px]:items-baseline min-[310px]:justify-center min-[310px]:gap-1.5">
                   <span className={`font-nf-label text-[11px] font-medium uppercase leading-[14px] tracking-nf-8 ${passed ? "text-nf-ink/65" : "text-nf-gold-text"}`}>
@@ -117,8 +125,9 @@ const PdpOfferLadder = ({ price, preorder = false }: { price: number; preorder?:
                 {isCurrent && (
                   <>
                     <span className="sr-only">, in your bag</span>
-                    {/* The reached rung's rule, laid over the panel's foot. */}
-                    <span aria-hidden="true" className="absolute inset-x-2 -bottom-[8px] h-[2px] bg-nf-gold-deep" />
+                    {/* The reached rung's rule, in the column's own foot: inside
+                        the list, so the buy bar never covers it. */}
+                    <span aria-hidden="true" data-rung-rule className="absolute inset-x-2 bottom-0 h-[2px] bg-nf-gold-deep" />
                   </>
                 )}
               </li>

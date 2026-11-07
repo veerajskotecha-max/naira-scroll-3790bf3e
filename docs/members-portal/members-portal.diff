@@ -10298,6 +10298,616 @@ index 0000000..0517ba6
 +RangoliArt.displayName = "RangoliArt";
 +
 +export default memo(RangoliArt);
+diff --git a/src/components/portal/RangoliBloom.test.tsx b/src/components/portal/RangoliBloom.test.tsx
+new file mode 100644
+index 0000000..14e1586
+--- /dev/null
++++ b/src/components/portal/RangoliBloom.test.tsx
+@@ -0,0 +1,338 @@
++import { act, cleanup, render } from "@testing-library/react";
++import { readFileSync } from "node:fs";
++import { resolve } from "node:path";
++import { createRef, type MutableRefObject } from "react";
++import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
++
++/* The shower's field (Phase 7, Tier 2), with the spectacle's loader and the
++   Bloom Field's scene stood in: BloomField.test's rules, over the rangoli.
++   Prepared unseen once the room has painted and held until she keeps her
++   rangoli (go); never mounted once told to go without it, nor when its
++   scene came past its mount deadline; put away (the scene disposed, the
++   canvas gone) when the fall ends, when it is stopped, when the room is
++   left, or when the probe finds the phone slow, and then no shower again
++   this visit. The gate (`ready`, `showerAllowed`) asks the spectacle. */
++
++type Options = { colours: string[]; seed: string; probe?: boolean; onEnd: (why: "done" | "slow" | "lost") => void; onStart?: () => void; onReady?: () => void };
++const scene = vi.hoisted(() => ({
++  options: null as null | Options,
++  handle: { pause: vi.fn(), resume: vi.fn(), dispose: vi.fn() },
++  throws: false,
++  delay: 0,
++}));
++const gate = vi.hoisted(() => ({ tier2: true, probe: true }));
++const loadBloomScene = vi.hoisted(() => vi.fn());
++vi.mock("@/lib/portal/spectacle", () => ({ loadBloomScene, spectacleAllowed: () => gate.tier2 }));
++vi.mock("@/lib/portal/tier", () => ({ probeWanted: () => gate.probe }));
++
++const mountBloomField = vi.fn((_canvas: HTMLCanvasElement, options: Options) => {
++  if (scene.throws) throw new Error("no context");
++  scene.options = options;
++  return scene.handle;
++});
++
++/* A fresh module for each test (its loaders and its "slow" are the visit's), the loaders asked for. */
++let shower: typeof import("./RangoliBloom");
++const idle = () => act(async () => void vi.advanceTimersByTime(5));
++const field = () => document.body.querySelector<HTMLCanvasElement>("canvas.ig-bloomfield");
++
++const show = (stop = false) => {
++  const Field = shower.default;
++  const anchor = createRef<HTMLDivElement>();
++  const onGone = vi.fn();
++  const onReady = vi.fn();
++  const go: MutableRefObject<() => void> = { current: () => {} };
++  const now = { stop };
++  const el = () => (
++    <div ref={anchor}>
++      <Field accent="#C20E3A" seed="u-1" anchor={anchor} go={go} stop={now.stop} onReady={onReady} onGone={onGone} />
++    </div>
++  );
++  const view = render(el());
++  return {
++    ...view,
++    onGone,
++    onReady,
++    anchor,
++    again: (s: boolean) => {
++      now.stop = s;
++      view.rerender(el());
++    },
++    /* She keeps her rangoli: the shower tells the field in the same task. */
++    keep: () => act(() => go.current()),
++  };
++};
++/* The scene says it is prepared (compiled, its unseen frame drawn). */
++const prepared = () => act(() => scene.options!.onReady!());
++/* Mounted, prepared, and kept: the fall may run. */
++const running = async () => {
++  const shown = show();
++  await idle();
++  prepared();
++  shown.keep();
++  return shown;
++};
++
++beforeEach(async () => {
++  vi.resetModules();
++  gate.tier2 = true;
++  gate.probe = true;
++  scene.options = null;
++  scene.throws = false;
++  scene.delay = 0;
++  Object.values(scene.handle).forEach((f) => f.mockClear());
++  mountBloomField.mockClear();
++  loadBloomScene.mockReset();
++  loadBloomScene.mockImplementation(() => new Promise((done) => setTimeout(() => done({ mountBloomField }), scene.delay)));
++  Object.defineProperty(document, "visibilityState", { configurable: true, value: "visible" });
++  shower = await import("./RangoliBloom");
++});
++afterEach(() => {
++  cleanup();
++  vi.useRealTimers();
++});
++
++describe("the shower's gate", () => {
++  it("asks the spectacle: a field only on Tier 2, not demoted this visit", async () => {
++    expect(shower.showerAllowed()).toBe(false);
++    expect(await shower.ready()).toBe(true);
++    expect(shower.showerAllowed()).toBe(true);
++    gate.tier2 = false;
++    expect(await shower.ready()).toBe(false);
++    expect(shower.showerAllowed()).toBe(false);
++    // Asking it is never fetching a scene.
++    expect(loadBloomScene).not.toHaveBeenCalled();
++  });
++});
++
++describe("the shower's field", () => {
++  beforeEach(async () => {
++    await shower.ready();
++    vi.useFakeTimers();
++  });
++
++  it("asks for the scene only once the room has painted, then lays a canvas over the screen that takes no tap", async () => {
++    const { onReady, keep } = show();
++    expect(loadBloomScene).not.toHaveBeenCalled();
++    await idle();
++    expect(loadBloomScene).toHaveBeenCalledTimes(1);
++    const canvas = field()!;
++    expect(canvas).not.toBeNull();
++    expect(canvas.getAttribute("aria-hidden")).toBe("true");
++    expect(canvas.parentElement).toBe(document.body);
++    expect(scene.options).toMatchObject({ colours: ["#C20E3A", expect.stringMatching(/^#[0-9a-f]{6}$/i)], seed: "u-1", probe: true });
++    // Prepared before she keeps it, and held: nothing falls until then.
++    expect(scene.handle.pause).toHaveBeenCalled();
++    expect(onReady).not.toHaveBeenCalled();
++    prepared();
++    expect(onReady).toHaveBeenCalledTimes(1);
++    expect(scene.handle.resume).not.toHaveBeenCalled();
++    keep();
++    expect(scene.handle.resume).toHaveBeenCalledTimes(1);
++    act(() => scene.options!.onStart!());
++    expect(canvas.classList.contains("is-on")).toBe(true);
++  });
++
++  it("makes nothing when the loader brings no scene (Tier 1, or it could not arrive)", async () => {
++    loadBloomScene.mockImplementation(() => Promise.resolve(null));
++    const { onGone, onReady } = show();
++    await idle();
++    expect(mountBloomField).not.toHaveBeenCalled();
++    expect(field()).toBeNull();
++    expect(onGone).toHaveBeenCalledTimes(1);
++    expect(onReady).toHaveBeenCalled();
++    expect(shower.showerAllowed()).toBe(true);
++  });
++
++  it("fades and puts everything away once the fall is done", async () => {
++    const { onGone } = await running();
++    const canvas = field()!;
++    act(() => scene.options!.onStart!());
++    act(() => scene.options!.onEnd("done"));
++    expect(canvas.classList.contains("is-on")).toBe(false);
++    expect(scene.handle.dispose).not.toHaveBeenCalled();
++    await act(async () => void vi.advanceTimersByTime(400));
++    expect(scene.handle.dispose).toHaveBeenCalledTimes(1);
++    expect(field()).toBeNull();
++    expect(onGone).toHaveBeenCalledTimes(1);
++    expect(shower.showerAllowed()).toBe(true);
++  });
++
++  it("fades when the probe finds the phone slow, and the shower keeps Tier 1 for the rest of her visit", async () => {
++    await running();
++    const canvas = field()!;
++    act(() => scene.options!.onStart!());
++    act(() => scene.options!.onEnd("slow"));
++    // It fades (its flowers do not vanish mid-air), then goes.
++    expect(canvas.classList.contains("is-on")).toBe(false);
++    expect(scene.handle.dispose).not.toHaveBeenCalled();
++    await act(async () => void vi.advanceTimersByTime(400));
++    expect(scene.handle.dispose).toHaveBeenCalledTimes(1);
++    expect(field()).toBeNull();
++    expect(shower.showerAllowed()).toBe(false);
++    expect(await shower.ready()).toBe(false);
++  });
++
++  it("goes at once when its context is lost (nothing is left to fade), and the shower keeps Tier 1", async () => {
++    await running();
++    act(() => scene.options!.onStart!());
++    act(() => scene.options!.onEnd("lost"));
++    expect(scene.handle.dispose).toHaveBeenCalledTimes(1);
++    expect(field()).toBeNull();
++    expect(shower.showerAllowed()).toBe(false);
++  });
++
++  it("keeps Tier 1 for the shower when the browser cannot make a WebGL context", async () => {
++    scene.throws = true;
++    const { onGone } = show();
++    await idle();
++    expect(field()).toBeNull();
++    expect(onGone).toHaveBeenCalledTimes(1);
++    expect(shower.showerAllowed()).toBe(false);
++  });
++
++  it("is put away at once when she leaves the room", async () => {
++    const { unmount } = show();
++    await idle();
++    expect(field()).not.toBeNull();
++    unmount();
++    expect(scene.handle.dispose).toHaveBeenCalledTimes(1);
++    expect(field()).toBeNull();
++  });
++
++  it("goes, faded, when it is stopped (her sweep, the bag, her 20 s away)", async () => {
++    const { again, onGone } = await running();
++    act(() => scene.options!.onStart!());
++    again(true);
++    await act(async () => void vi.advanceTimersByTime(400));
++    expect(scene.handle.dispose).toHaveBeenCalledTimes(1);
++    expect(onGone).toHaveBeenCalledTimes(1);
++  });
++
++  it("never mounts a scene that arrives past its mount deadline (a cold fetch); the phone keeps Tier 2", async () => {
++    scene.delay = 600;
++    const { onGone, onReady } = show();
++    await act(async () => void vi.advanceTimersByTime(700));
++    expect(mountBloomField).not.toHaveBeenCalled();
++    expect(field()).toBeNull();
++    expect(onGone).toHaveBeenCalledTimes(1);
++    expect(onReady).toHaveBeenCalled();
++    expect(shower.showerAllowed()).toBe(true);
++  });
++
++  it("is never mounted once told to go without it", async () => {
++    scene.delay = 400;
++    const { onGone, keep } = show();
++    await act(async () => void vi.advanceTimersByTime(100));
++    keep();
++    await act(async () => void vi.advanceTimersByTime(1000));
++    expect(mountBloomField).not.toHaveBeenCalled();
++    expect(field()).toBeNull();
++    expect(onGone).toHaveBeenCalledTimes(1);
++    expect(shower.showerAllowed()).toBe(true);
++  });
++
++  it("is put away, nothing falling, when told to go before it said it was ready", async () => {
++    const { onGone, keep } = show();
++    await idle();
++    expect(field()).not.toBeNull();
++    keep();
++    expect(scene.handle.resume).not.toHaveBeenCalled();
++    expect(scene.handle.dispose).toHaveBeenCalledTimes(1);
++    expect(field()).toBeNull();
++    expect(onGone).toHaveBeenCalledTimes(1);
++  });
++
++  it("is put away when it has not drawn 1.8 s after she kept it (the room off screen then)", async () => {
++    const { onGone } = await running();
++    await act(async () => void vi.advanceTimersByTime(1900));
++    expect(scene.handle.dispose).toHaveBeenCalledTimes(1);
++    expect(onGone).toHaveBeenCalledTimes(1);
++    expect(shower.showerAllowed()).toBe(true);
++  });
++
++  it("pauses, unseen, on a hidden tab, and goes on when she is back", async () => {
++    await running();
++    const canvas = field()!;
++    scene.handle.pause.mockClear();
++    scene.handle.resume.mockClear();
++    Object.defineProperty(document, "visibilityState", { configurable: true, value: "hidden" });
++    act(() => void document.dispatchEvent(new Event("visibilitychange")));
++    expect(scene.handle.pause).toHaveBeenCalled();
++    expect(canvas.classList.contains("is-away")).toBe(true);
++    Object.defineProperty(document, "visibilityState", { configurable: true, value: "visible" });
++    act(() => void document.dispatchEvent(new Event("visibilitychange")));
++    expect(scene.handle.resume).toHaveBeenCalled();
++    expect(canvas.classList.contains("is-away")).toBe(false);
++  });
++
++  it("pauses, unseen, while the room is off screen, and goes on when it is back", async () => {
++    let seen: ((entries: { isIntersecting: boolean }[]) => void) | null = null;
++    const observed: Element[] = [];
++    vi.stubGlobal(
++      "IntersectionObserver",
++      class {
++        constructor(cb: (entries: { isIntersecting: boolean }[]) => void) {
++          seen = cb;
++        }
++        observe(el: Element) {
++          observed.push(el);
++        }
++        disconnect() {}
++      },
++    );
++    const { anchor } = await running();
++    const canvas = field()!;
++    scene.handle.pause.mockClear();
++    scene.handle.resume.mockClear();
++    expect(observed).toEqual([anchor.current]);
++    act(() => seen!([{ isIntersecting: false }]));
++    expect(scene.handle.pause).toHaveBeenCalled();
++    expect(canvas.classList.contains("is-away")).toBe(true);
++    act(() => seen!([{ isIntersecting: true }]));
++    expect(scene.handle.resume).toHaveBeenCalled();
++    expect(canvas.classList.contains("is-away")).toBe(false);
++    vi.unstubAllGlobals();
++  });
++
++  it("is put away when paused for 10 s", async () => {
++    const { onGone } = await running();
++    act(() => scene.options!.onStart!());
++    Object.defineProperty(document, "visibilityState", { configurable: true, value: "hidden" });
++    act(() => void document.dispatchEvent(new Event("visibilitychange")));
++    await act(async () => void vi.advanceTimersByTime(10_100));
++    expect(scene.handle.dispose).toHaveBeenCalledTimes(1);
++    expect(onGone).toHaveBeenCalledTimes(1);
++  });
++});
++
++describe("the shower's field in the development preview's &probe=0", () => {
++  it("times no frames, and mounts a scene that came late (a software-GL machine)", async () => {
++    gate.probe = false;
++    await shower.ready();
++    vi.useFakeTimers();
++    scene.delay = 600;
++    show();
++    await act(async () => void vi.advanceTimersByTime(700));
++    expect(mountBloomField).toHaveBeenCalledTimes(1);
++    expect(scene.options).toMatchObject({ probe: false });
++  });
++});
++
++/* Its reach: the scene only through the spectacle's loader, the spectacle by import() alone. */
++describe("the shower's field's reach", () => {
++  const code = readFileSync(resolve(__dirname, "RangoliBloom.tsx"), "utf8");
++  const STATIC = /(?:^|\n)\s*import\s+(?!type\b)[^'";]*?from\s*["']([^"']+)["']|(?:^|\n)\s*import\s+["']([^"']+)["']/g;
++  const DYNAMIC = /(?<!typeof\s)import\s*\(\s*["']([^"']+)["']\s*\)/g;
++
++  it("imports nothing of the spectacle, tier, a scene, three or gsap statically, and its stylesheet is its own", () => {
++    expect([...code.matchAll(STATIC)].map((m) => m[1] ?? m[2])).toEqual(["react", "@/lib/portal/lazyRoom", "@/lib/portal/species", "./rangolifield.css"]);
++  });
++
++  it("reaches the spectacle by import() alone, and tier.ts only in development (the preview's &probe=0)", () => {
++    expect([...code.matchAll(DYNAMIC)].map((m) => m[1])).toEqual(["@/lib/portal/spectacle", "@/lib/portal/tier"]);
++    expect(code).toMatch(/if \(import\.meta\.env\.DEV\) probe = \(await import\("@\/lib\/portal\/tier"\)\)\.probeWanted\(\);/);
++    const every = [...[...code.matchAll(STATIC)].map((m) => m[1] ?? m[2]), ...[...code.matchAll(DYNAMIC)].map((m) => m[1])];
++    expect(every.filter((x) => /three|gsap|scene|BloomField/.test(x))).toEqual([]);
++  });
++});
+diff --git a/src/components/portal/RangoliBloom.tsx b/src/components/portal/RangoliBloom.tsx
+new file mode 100644
+index 0000000..c31256a
+--- /dev/null
++++ b/src/components/portal/RangoliBloom.tsx
+@@ -0,0 +1,260 @@
++import { useEffect, useRef, type MutableRefObject, type RefObject } from "react";
++import { whenIdle } from "@/lib/portal/lazyRoom";
++import { PAPER, mixHex } from "@/lib/portal/species";
++import type { BloomFieldHandle, BloomScene } from "@/lib/portal/spectacle";
++import "./rangolifield.css";
++
++/*
++  THE RANGOLI'S BLOOM FIELD, the shower's field (Phase 7, Tier 2; part of
++  the shower's one droppable commit): Phase 5's Bloom Field scene (lib/portal/scene's mountBloomField,
++  unchanged) laid over the rangoli room as she keeps her rangoli, hosted
++  here as BloomField.tsx hosts it over the drop room's unboxing, rule for
++  rule: prepared unseen once the room has painted (an idle callback), held
++  paused, drawn the moment it is told to go, its 60-frame probe, DPR cap and
++  forceContextLoss disposal the scene's own.
++
++  BloomField.tsx is not imported here or anywhere outside the drop room: a
++  second importer would split it out of DropRoom's chunk into a chunk of
++  its own, which DropRoom would then import statically, so every phone
++  opening a drop page would fetch it, a still one included. The scene comes
++  only through the spectacle's loader, spectacle.loadBloomScene, which asks
++  the gate first; this file reaches spectacle.ts by import() alone (its
++  static importers stay the drop room's and Stone Light's, isolation.test)
++  and never tier.ts (reaching tier.ts without the loaders would split it out
++  of the spectacle's chunk and change every scene's imports). `ready` asks
++  for the loaders once; `showerAllowed` is the gate the shower reads before
++  it mounts a field: Tier 2, not demoted this visit, and not found slow by
++  the shower itself.
++
++  Its cost comes before the moment, never in it. As it is mounted (the
++  shower mounts it only once her hands have been still a while) the scene
++  is fetched and prepared, unseen: the renderer and the room's light, the
++  shaders, one hidden frame. A scene that arrives more than MOUNT_BY_MS
++  after the mount (a cold fetch) is not mounted: its preparation could land
++  just after her next tap; the shower mounts another on her next placement,
++  the scene cached by then. Told to go before it said it was ready, it is
++  put away (the shower never does that). One not drawn LATE_MS after the go
++  is put away: the fall is for the keep, never after.
++
++  The canvas is fixed, pointer-events none, at z-index 37: under the room's
++  words and controls (38, rangolifield.css), the garden path (39), the
++  header and the bag (50); it never takes a tap. The flowers fall for 6 s;
++  then the canvas fades and everything is put away, the WebGL context with
++  it. A phone the probe finds too slow fades it too, and so does one whose
++  context is lost; either way, and when no context can be made, the shower
++  keeps Tier 1 for the rest of her visit. tier.ts's own demotion is not
++  called from here (that would mean importing tier.ts, above), so the drop
++  room and Stone Light keep their own probe, as each did in Phase 6.
++
++  The fall pauses, unseen, while the room is off screen or the tab is
++  hidden, and goes on when it is back; paused for 10 s, it is put away.
++  `stop` (her sweep, the bag opening, her 20 s away) ends it, faded; leaving
++  the room puts it away at once.
++*/
++
++type Props = {
++  accent: string;
++  seed: string;
++  /** The room's column: the fall runs while it is on screen. */
++  anchor: RefObject<Element>;
++  /** Filled by the field: the shower calls it in the very task she keeps her rangoli (the fall starts then). */
++  go: MutableRefObject<() => void>;
++  /** Put it away (faded, if it is falling). */
++  stop: boolean;
++  /** Prepared and ready to fall at once, or never to be. */
++  onReady: () => void;
++  /** It is over and put away, or was never started: unmount it. */
++  onGone: () => void;
++};
++
++/** Later than this after its mount, a scene that has only just arrived is not mounted (the drop room's own deadline). */
++const MOUNT_BY_MS = 500;
++const LATE_MS = 1800;
++const PAUSED_MAX_MS = 10_000;
++const FADE_MS = 320;
++
++/* The spectacle's loader of the Bloom Field's scene and its gate, once asked for. */
++let load: (() => Promise<BloomScene | null>) | null = null;
++let tier2: () => boolean = () => false;
++/* Whether the scene's first frames are timed: always, but for the development preview's &probe=0. */
++let probe = true;
++/* The shower's probe found this phone too slow, or it lost or never made a context: no shower again this visit. */
++let slow = false;
++const onSlow = () => {
++  slow = true;
++};
++
++/** Whether a field may be prepared now: Tier 2 (not demoted this visit), and the shower has not found this phone slow. */
++// eslint-disable-next-line react-refresh/only-export-components -- the field's gate, beside the field it lets mount
++export const showerAllowed = (): boolean => !slow && tier2();
++
++/** Asks for the spectacle's loaders (once), then says whether a field may be prepared now. */
++// eslint-disable-next-line react-refresh/only-export-components -- the field's gate, beside the field it lets mount
++export const ready = async (): Promise<boolean> => {
++  if (!load) {
++    const spectacle = await import("@/lib/portal/spectacle");
++    if (import.meta.env.DEV) probe = (await import("@/lib/portal/tier")).probeWanted();
++    tier2 = spectacle.spectacleAllowed;
++    load = spectacle.loadBloomScene;
++  }
++  return showerAllowed();
++};
++
++const RangoliBloom = ({ accent, seed, anchor, go, stop, onReady, onGone }: Props) => {
++  const gone = useRef(onGone);
++  gone.current = onGone;
++  const readyFn = useRef(onReady);
++  readyFn.current = onReady;
++  const endRef = useRef<() => void>(() => {});
++
++  useEffect(() => {
++    let cancelled = false;
++    let finished = false;
++    let started = false;
++    let going = false;
++    let prepared = false;
++    let canvas: HTMLCanvasElement | null = null;
++    let handle: BloomFieldHandle | null = null;
++    let io: IntersectionObserver | null = null;
++    let onScreen = true;
++    let pausedFor = 0;
++    let fadeTimer = 0;
++    let lateTimer = 0;
++    const shown = Date.now();
++
++    const putAway = () => {
++      window.clearTimeout(pausedFor);
++      window.clearTimeout(fadeTimer);
++      window.clearTimeout(lateTimer);
++      io?.disconnect();
++      document.removeEventListener("visibilitychange", onVisibility);
++      handle?.dispose();
++      handle = null;
++      canvas?.remove();
++      canvas = null;
++    };
++    // The canvas fades (opacity only), then everything is let go.
++    const finish = (fade: boolean) => {
++      if (finished) return;
++      finished = true;
++      readyFn.current();
++      if (fade && canvas?.classList.contains("is-on")) {
++        canvas.classList.remove("is-on");
++        handle?.pause();
++        fadeTimer = window.setTimeout(() => {
++          putAway();
++          if (!cancelled) gone.current();
++        }, FADE_MS);
++        return;
++      }
++      putAway();
++      if (!cancelled) gone.current();
++    };
++    endRef.current = () => finish(true);
++
++    const sync = () => {
++      if (!handle || finished) return;
++      // Held, prepared and unseen, until she keeps her rangoli.
++      if (!going) {
++        handle.pause();
++        return;
++      }
++      const showing = onScreen && document.visibilityState !== "hidden";
++      canvas?.classList.toggle("is-away", !showing);
++      window.clearTimeout(pausedFor);
++      if (showing) handle.resume();
++      else {
++        handle.pause();
++        pausedFor = window.setTimeout(() => finish(false), PAUSED_MAX_MS);
++      }
++    };
++    function onVisibility() {
++      sync();
++    }
++
++    // She keeps her rangoli: the fall now, if it is ready; else never.
++    go.current = () => {
++      if (going || finished) return;
++      going = true;
++      if (!prepared) {
++        finish(false);
++        return;
++      }
++      lateTimer = window.setTimeout(() => {
++        if (!started) finish(false);
++      }, LATE_MS);
++      sync();
++    };
++
++    const cancelIdle = whenIdle(() => {
++      void (load?.() ?? Promise.resolve(null)).then((mod) => {
++        if (cancelled || finished) return;
++        // Not here in time to be prepared in her pause (a cold fetch): never mounted late (the preview's &probe=0 waits for it).
++        if (!mod || going || (probe && Date.now() - shown > MOUNT_BY_MS)) {
++          finish(false);
++          return;
++        }
++        canvas = document.createElement("canvas");
++        canvas.className = "ig-bloomfield";
++        canvas.setAttribute("aria-hidden", "true");
++        document.body.appendChild(canvas);
++        try {
++          handle = mod.mountBloomField(canvas, {
++            colours: [accent, mixHex(accent, PAPER, 0.38)],
++            seed,
++            probe,
++            onReady: () => {
++              prepared = true;
++              if (!going) readyFn.current();
++              sync();
++            },
++            onStart: () => {
++              started = true;
++              canvas?.classList.add("is-on");
++            },
++            onEnd: (why) => {
++              // Too slow for this phone, or the context was lost: no shower again this visit.
++              if (why !== "done") onSlow();
++              // A finished fall and a slow phone's both fade; a lost context has nothing left to show.
++              finish(why !== "lost");
++            },
++          });
++        } catch {
++          // A browser with WebGL that cannot make a context: the room stays as it is.
++          onSlow();
++          finish(false);
++          return;
++        }
++        // Held until she keeps her rangoli.
++        handle.pause();
++        document.addEventListener("visibilitychange", onVisibility);
++        const room = anchor.current;
++        if (room && typeof IntersectionObserver !== "undefined") {
++          io = new IntersectionObserver(([entry]) => {
++            onScreen = entry.isIntersecting;
++            sync();
++          });
++          io.observe(room);
++        }
++        sync();
++      });
++    });
++
++    return () => {
++      cancelled = true;
++      cancelIdle();
++      finished = true;
++      putAway();
++    };
++    // Once, as the shower mounts it.
++    // eslint-disable-next-line react-hooks/exhaustive-deps
++  }, []);
++
++  useEffect(() => {
++    if (stop) endRef.current();
++  }, [stop]);
++
++  return null;
++};
++
++export default RangoliBloom;
 diff --git a/src/components/portal/RangoliDoor.test.tsx b/src/components/portal/RangoliDoor.test.tsx
 new file mode 100644
 index 0000000..05ac6e4
@@ -10507,12 +11117,12 @@ index 0000000..7345c74
 +export default RangoliDoor;
 diff --git a/src/components/portal/RangoliField.test.tsx b/src/components/portal/RangoliField.test.tsx
 new file mode 100644
-index 0000000..8be1cb1
+index 0000000..343554b
 --- /dev/null
 +++ b/src/components/portal/RangoliField.test.tsx
-@@ -0,0 +1,470 @@
+@@ -0,0 +1,527 @@
 +import { act, cleanup, render } from "@testing-library/react";
-+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
++import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 +import { readFileSync, readdirSync } from "node:fs";
 +import { join, relative, resolve } from "node:path";
 +import { createRef, type MutableRefObject } from "react";
@@ -10520,8 +11130,10 @@ index 0000000..8be1cb1
 +
 +/*
 +  The shower (Phase 7, Tier 2): the host of Phase 5's Bloom Field over the
-+  rangoli room, with the Bloom Field itself a stand-in here (its own tests
-+  are BloomField.test's). It is never fetched on Tier 1; a field is mounted
++  rangoli room, with its field (RangoliBloom, and the spectacle's gate behind
++  it) a stand-in here (its own tests are RangoliBloom.test's). Its field's
++  chunk is never fetched under reduced motion, Data Saver or a slow
++  connection, and on Tier 1 nothing is watched; a field is mounted
 +  (and so prepared) once the room is idle and her hands have been still a
 +  while, never in the moments after a tap or a change on the floor; it is
 +  held ready unseen; keeping her rangoli lets it fall only once it said it
@@ -10534,8 +11146,9 @@ index 0000000..8be1cb1
 +const state = vi.hoisted(() => ({
 +  tier: 2 as 1 | 2,
 +  drawer: false,
-+  demoted: 0,
 +}));
++/* The field's chunk: how often it was asked (once fetched) whether a field may be prepared. */
++const chunk = vi.hoisted(() => ({ asked: 0 }));
 +type FieldProps = {
 +  accent: string;
 +  seed: string;
@@ -10552,18 +11165,14 @@ index 0000000..8be1cb1
 +  gos: 0,
 +}));
 +
-+vi.mock("@/lib/portal/tier", () => ({
-+  portalTier: () => state.tier,
-+  demoteTier: () => {
-+    state.demoted += 1;
-+  },
-+}));
 +vi.mock("@/contexts/CartContext", () => ({
 +  useCart: () => ({ isDrawerOpen: state.drawer }),
 +}));
-+vi.mock("./BloomField", async () => {
++vi.mock("./RangoliBloom", async () => {
 +  const { useEffect } = await import("react");
-+  const FakeBloomField = (props: FieldProps) => {
++  // The spectacle's gate as RangoliBloom reads it: Tier 2 (motion on, not demoted), the shower not found slow.
++  const showerAllowed = () => state.tier === 2 && !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
++  const FakeField = (props: FieldProps) => {
 +    fields.props.push(props);
 +    // The real field fills `go` as it mounts.
 +    props.go.current = () => {
@@ -10577,10 +11186,18 @@ index 0000000..8be1cb1
 +    }, []);
 +    return null;
 +  };
-+  return { default: FakeBloomField };
++  return {
++    default: FakeField,
++    showerAllowed,
++    ready: async () => {
++      chunk.asked += 1;
++      return showerAllowed();
++    },
++  };
 +});
 +
 +import RangoliField, { QUIET_MS } from "./RangoliField";
++import { stillMotion } from "@/lib/portal/motion";
 +import { IDLE_MS } from "@/lib/portal/motion";
 +
 +const reduce = (on: boolean) => {
@@ -10631,12 +11248,20 @@ index 0000000..8be1cb1
 +const two: Rangoli = { ...one, at: one.at.map((s, i) => (i === 0 ? null : s)) };
 +const three: Rangoli = { ...one, at: one.at.map((s, i) => (i === 1 ? null : s)) };
 +
++/* The first room of her visit fetches the field's chunk and asks it (the gate's own tests are below);
++   later ones find it in, as every test here does. */
++beforeAll(async () => {
++  reduce(false);
++  const { unmount } = render(<RangoliField rangoli={EMPTY} accent="#C20E3A" seed="u-1" anchor={createRef()} go={{ current: () => {} }} />);
++  await vi.waitFor(() => expect(chunk.asked).toBe(1));
++  unmount();
++});
++
 +beforeEach(() => {
 +  vi.useFakeTimers();
 +  reduce(false);
 +  state.tier = 2;
 +  state.drawer = false;
-+  state.demoted = 0;
 +  fields.props = [];
 +  fields.mounts = 0;
 +  fields.unmounts = 0;
@@ -10648,7 +11273,7 @@ index 0000000..8be1cb1
 +});
 +
 +describe("the shower over her rangoli", () => {
-+  it("mounts no Bloom Field on Tier 1 or under reduced motion, and keeping it is the Tier 1 finale alone", async () => {
++  it("mounts no field on Tier 1 or under reduced motion, and keeping it is the Tier 1 finale alone", async () => {
 +    state.tier = 1;
 +    const a = host(one);
 +    await quiet();
@@ -10656,11 +11281,14 @@ index 0000000..8be1cb1
 +    a.unmount();
 +    state.tier = 2;
 +    reduce(true);
++    const asked = chunk.asked;
 +    const b = host(one);
 +    await quiet();
 +    b.go.current();
 +    expect(fields.mounts).toBe(0);
 +    expect(fields.gos).toBe(0);
++    // Under reduced motion it never even asks.
++    expect(chunk.asked).toBe(asked);
 +  });
 +
 +  it("holds a field ready, unseen, once her hands have been still a while, in her stone's hue and seeded by her id", async () => {
@@ -10714,15 +11342,13 @@ index 0000000..8be1cb1
 +    act(() => latest().onReady());
 +    act(() => void window.dispatchEvent(new Event("pointerdown")));
 +    expect(fields.unmounts).toBe(1);
-+    expect(state.demoted).toBe(0);
 +  });
 +
-+  it("lets it fall as she keeps it only once it said it was ready, and never demotes her for an early keep", async () => {
++  it("lets it fall as she keeps it only once it said it was ready: an early keep is the Tier 1 finale alone", async () => {
 +    const { go } = host(one);
 +    await quiet();
 +    go.current();
 +    expect(fields.gos).toBe(0);
-+    expect(state.demoted).toBe(0);
 +    act(() => latest().onReady());
 +    go.current();
 +    expect(fields.gos).toBe(1);
@@ -10734,7 +11360,7 @@ index 0000000..8be1cb1
 +  it("mounts a field whose scene came late once more on her next placement, in the quiet after it", async () => {
 +    const { redo } = host(one);
 +    await quiet();
-+    // The Bloom Field gave up (its scene arrived past its mount deadline): ready, then gone, at once.
++    // The field gave up (its scene arrived past its mount deadline): ready, then gone, at once.
 +    act(() => {
 +      latest().onReady();
 +      latest().onGone();
@@ -10750,7 +11376,6 @@ index 0000000..8be1cb1
 +    await wait(400);
 +    expect(fields.mounts).toBe(2);
 +    expect(latest().stop).toBe(false);
-+    expect(state.demoted).toBe(0);
 +  });
 +
 +  it("puts a held field away 20 s after her last touch, and mounts one again on her next placement", async () => {
@@ -10825,7 +11450,7 @@ index 0000000..8be1cb1
 +    expect(latest().stop).toBe(false);
 +  });
 +
-+  it("leaves a falling field to the Bloom Field's own rules: neither her stillness nor the hidden tab puts it away", async () => {
++  it("leaves a falling field to the field's own rules: neither her stillness nor the hidden tab puts it away", async () => {
 +    const { go } = host(one);
 +    await quiet();
 +    act(() => latest().onReady());
@@ -10908,7 +11533,49 @@ index 0000000..8be1cb1
 +  });
 +});
 +
-+/* Its reach: a host of the Bloom Field and nothing more. */
++/* The gate, in a room that has not fetched the field's chunk yet (a fresh module: the first room of her visit). */
++describe("the shower's gate", () => {
++  const fresh = async () => {
++    vi.useRealTimers();
++    vi.resetModules();
++    chunk.asked = 0;
++    return (await import("./RangoliField")).default;
++  };
++  const mountFresh = async () => {
++    const Fresh = await fresh();
++    const go = { current: () => {} } as MutableRefObject<() => void>;
++    const first = go.current;
++    render(<Fresh rangoli={one} accent="#C20E3A" seed="u-1" anchor={createRef()} go={go} />);
++    return { go, first };
++  };
++  const settle = () => act(async () => void (await new Promise((done) => setTimeout(done, 30))));
++
++  it("never asks for the field's chunk under reduced motion, Data Saver or a slow connection", async () => {
++    reduce(true);
++    expect(stillMotion()).toBe(true);
++    const { go, first } = await mountFresh();
++    await settle();
++    expect(chunk.asked).toBe(0);
++    expect(go.current).toBe(first);
++  });
++
++  it("on a capable phone fetches the field's chunk, asks it, and only then watches her hands", async () => {
++    const { go, first } = await mountFresh();
++    expect(go.current).toBe(first);
++    await vi.waitFor(() => expect(go.current).not.toBe(first));
++    expect(chunk.asked).toBe(1);
++  });
++
++  it("watches nothing on a phone the spectacle keeps at Tier 1 (demoted this visit)", async () => {
++    state.tier = 1;
++    const { go, first } = await mountFresh();
++    await vi.waitFor(() => expect(chunk.asked).toBe(1));
++    await settle();
++    expect(go.current).toBe(first);
++  });
++});
++
++/* Its reach: a host of the Bloom Field's scene and nothing more. */
 +describe("the shower's reach", () => {
 +  const src = resolve(__dirname, "../..");
 +  const files = (dir: string): string[] =>
@@ -10926,26 +11593,24 @@ index 0000000..8be1cb1
 +  const ANY =
 +    /(?:import|export)\s[^'";]*?from\s*["']([^"']+)["']|import\s*\(\s*["']([^"']+)["']\s*\)|import\s+["']([^"']+)["']/g;
 +
-+  /* BloomField and tier together keep tier.ts in the spectacle's own chunk (a host reaching tier without the
-+     loaders would split it out, and change the scenes' imports), so the scenes stay as the Phase 6 build has them. */
-+  it("statically imports only BloomField, tier and motion of the portal, the bag's own state, and its stylesheet", () => {
++  /* Neither tier.ts nor the spectacle statically: tier.ts reached without the loaders would split it out of the
++     spectacle's own chunk (and change the scenes' imports), and the spectacle's static importers are the drop
++     room's and Stone Light's (isolation.test). The field comes by import(), its chunk bringing the loaders. */
++  it("statically imports only motion of the portal, the bag's own state and React", () => {
 +    const own = [
 +      ...read("components/portal/RangoliField.tsx").matchAll(STATIC),
 +    ].map((m) => m[1] ?? m[2]);
-+    expect(own).toEqual([
-+      "react",
-+      "@/contexts/CartContext",
-+      "@/lib/portal/tier",
-+      "@/lib/portal/motion",
-+      "./BloomField",
-+      "./rangolifield.css",
-+    ]);
-+    // Never the spectacle's loaders, a scene, three.js or gsap, by any import.
++    expect(own).toEqual(["react", "@/contexts/CartContext", "@/lib/portal/motion"]);
++    // Never the spectacle's loaders, tier.ts, a scene, three.js, gsap or BloomField, by any import.
 +    const every = [...read("components/portal/RangoliField.tsx").matchAll(ANY)].map((m) => m[1] ?? m[2] ?? m[3]);
-+    expect(every.filter((x) => /spectacle|scene|three|gsap/.test(x))).toEqual([]);
++    expect(every.filter((x) => /spectacle|tier|scene|three|gsap|BloomField/.test(x))).toEqual([]);
++    expect(read("components/portal/RangoliField.tsx")).toMatch(/^ {4}import\("\.\/RangoliBloom"\)$/m);
 +  });
 +
-+  it("is reached only by lazyRoom from the rangoli room, and the Bloom Field only from the drop room's unboxing and here", () => {
++  /* BloomField stays the drop room's alone, so it rides inside DropRoom's chunk as Phase 6 built it: a second
++     importer would split it into a chunk of its own that DropRoom imports statically, fetched on every drop
++     page, a still phone's included. */
++  it("is reached only by lazyRoom from the rangoli room, its field only from here, and BloomField only from the drop room's unboxing", () => {
 +    const reaching = (re: RegExp) =>
 +      code
 +        .filter((f) =>
@@ -10958,10 +11623,12 @@ index 0000000..8be1cb1
 +    expect(read("pages/members/Rangoli.tsx")).toMatch(
 +      /^const RangoliField = lazyRoom\(\(\) => import\("@\/components\/portal\/RangoliField"\)\);/m,
 +    );
-+    expect(reaching(/(^|\/)BloomField$/)).toEqual([
-+      "components/portal/DropUnbox.tsx",
-+      "components/portal/RangoliField.tsx",
-+    ]);
++    expect(reaching(/(^|\/)RangoliBloom$/)).toEqual(["components/portal/RangoliField.tsx"]);
++    expect(reaching(/(^|\/)BloomField$/)).toEqual(["components/portal/DropUnbox.tsx"]);
++    // The spectacle by import() from the shower's field alone; its stylesheet the field's own.
++    const DYNAMIC = /(?<!typeof\s)import\s*\(\s*["']([^"']+)["']\s*\)/g;
++    expect(code.filter((f) => [...read(f).matchAll(DYNAMIC)].some((m) => /portal\/spectacle$/.test(m[1])))).toEqual(["components/portal/RangoliBloom.tsx"]);
++    expect(reaching(/rangolifield\.css$/)).toEqual(["components/portal/RangoliBloom.tsx"]);
 +  });
 +
 +  it("is fetched only where the gate lets Tier 2 run (in development, never under the preview's &tier=1), its canvas under the room's words and controls", () => {
@@ -10983,36 +11650,48 @@ index 0000000..8be1cb1
 +});
 diff --git a/src/components/portal/RangoliField.tsx b/src/components/portal/RangoliField.tsx
 new file mode 100644
-index 0000000..efef6e9
+index 0000000..79a20b7
 --- /dev/null
 +++ b/src/components/portal/RangoliField.tsx
-@@ -0,0 +1,233 @@
+@@ -0,0 +1,265 @@
 +import { useCallback, useEffect, useMemo, useRef, useState, type MutableRefObject, type RefObject } from "react";
 +import { useCart } from "@/contexts/CartContext";
-+import { portalTier } from "@/lib/portal/tier";
 +import { IDLE_MS, stillMotion } from "@/lib/portal/motion";
 +import type { Rangoli } from "@/lib/portal/rangoli";
-+import BloomField from "./BloomField";
-+import "./rangolifield.css";
 +
 +/*
 +  THE SHOWER (Phase 7, Tier 2; one droppable commit): on a capable phone,
-+  the moment she keeps her rangoli, Phase 5's Bloom Field (BloomField.tsx,
-+  unchanged) lets the brand's five-shape flower fall over the room in her
-+  stone's hue, edged in gold, for 6 s; then its canvas fades and is gone.
-+  On every other phone the rangoli's own finale (the ring hairlines and its
-+  petals) is the whole moment.
++  the moment she keeps her rangoli, Phase 5's Bloom Field (the scene in
++  lib/portal/scene, unchanged) lets the brand's five-shape flower fall over
++  the room in her stone's hue, edged in gold, for 6 s; then its canvas fades
++  and is gone. On every other phone the rangoli's own finale (the ring
++  hairlines and its petals) is the whole moment.
 +
-+  This host imports no scene and not the spectacle's loaders: the Bloom
-+  Field does its own gating and fetching (spectacle.loadBloomScene, on
-+  idle), and its 60-frame probe, DPR cap, pause rules, late deadline and
-+  forceContextLoss disposal all apply as they do over the drop room. Its
-+  canvas sits at z-index 37, under the room's words, controls and story
-+  card (38, rangolifield.css), over the floor, under the garden path and
-+  the bag. The room fetches this host only where the gate would let Tier 2
-+  run (Rangoli.tsx's mount: motion on, no Data Saver or slow connection,
-+  WebGL there, 4 GB or more where the phone says, and in development not
-+  the preview's &tier=1).
++  How it reaches the scene, and why: BloomField.tsx stays the drop room's
++  alone, inside DropRoom's chunk as Phase 6 built it (a second importer
++  would split it into a chunk DropRoom imports statically, fetched on every
++  drop page, a still phone's included). The field over the rangoli is
++  RangoliBloom.tsx, BloomField's rules hosted for this room, a chunk of its
++  own. Both it and the spectacle's loaders are reached by import() alone:
++  this host imports neither tier.ts nor spectacle.ts statically (reaching
++  tier.ts without the loaders would split it out of the spectacle's chunk
++  and change every scene's imports; spectacle.ts's static importers are
++  the drop room's and Stone Light's, isolation.test). Once the room is idle
++  and the gate in Rangoli.tsx let this chunk come (motion on, no Data Saver
++  or slow connection, WebGL there, 4 GB or more where the phone says, and
++  in development not the preview's &tier=1), it fetches the field's chunk
++  (with its stylesheet), which asks for the loaders; only if
++  spectacleAllowed() (Tier 2, not demoted this visit) and the shower has
++  not found this phone slow does it begin to watch. A phone demoted earlier
++  in her visit so fetches this chunk, the field's and the spectacle's and
++  watches nothing: knowing of the demotion before any fetch would mean
++  reading tier.ts here. The 60-frame probe, DPR cap, pause rules, late
++  deadline and forceContextLoss disposal all apply as they do over the drop
++  room. A phone the shower's probe finds too slow (or whose context is
++  lost, or never made) gets no shower again this visit; the drop room and
++  Stone Light keep their own probe, as in Phase 6. Its canvas sits at
++  z-index 37, under the room's words, controls and story card (38,
++  rangolifield.css), over the floor, under the garden path and the bag.
 +
 +  A field is mounted once the room has painted and gone idle, and its cost
 +  comes while her hands are still, never in the moments after a tap (Phase
@@ -11029,18 +11708,17 @@ index 0000000..efef6e9
 +  IDLE_MS (20 s) with no touch, scroll or key from her; at once on a hidden
 +  tab; as she sweeps the floor (or takes it back to nothing); as the bag
 +  opens; and as she leaves. A field that gave up because its scene came
-+  late (a cold fetch past BloomField's mount deadline) is put away by the
++  late (a cold fetch past the field's mount deadline) is put away by the
 +  field itself. Either way a field is wanted again only on her next
 +  placement (any change to a floor with something laid on it, the scene
 +  cached by then), and mounted in the quiet after it. One fall for each
 +  rangoli she keeps: after a fall, likewise, only the next placement wants
 +  another. Keeping her rangoli lets it fall in that very task, and only
-+  once it said it was ready: a go() before then would cost her Tier 2 for
-+  the visit, so before then the moment is Tier 1's alone. The fall runs
-+  while the room's column is on screen (not the floor alone, so it goes on
-+  as she scrolls to the buttons under the tray); a falling field keeps
-+  BloomField's own rules (paused off screen or on a hidden tab, put away
-+  after 10 s paused).
++  once it said it was ready; before then the moment is Tier 1's alone. The
++  fall runs while the room's column is on screen (not the floor alone, so
++  it goes on as she scrolls to the buttons under the tray); a falling field
++  keeps the field's own rules (paused off screen or on a hidden tab, put
++  away after 10 s paused).
 +*/
 +
 +type Props = {
@@ -11061,9 +11739,29 @@ index 0000000..efef6e9
 +/* Her being there at all (the ambient loop's own list): a held field is put away after IDLE_MS without any of these. */
 +const AWAKE = ["pointerdown", "pointermove", "scroll", "keydown", "touchstart"] as const;
 +
-+/* On a capable phone only: everything else keeps Tier 1, and nothing of the field is fetched or watched. */
++/* The field's chunk (RangoliBloom, with the spectacle's loaders behind it): reached by import() alone, on a capable phone only. */
++let shower: typeof import("./RangoliBloom") | null = null;
++
++/* Under reduced motion, Data Saver or a slow connection nothing of the field is fetched; elsewhere it watches her
++   hands only once the field's chunk says a field may be prepared (Tier 2, not demoted, not found slow). */
 +const RangoliField = (props: Props) => {
-+  const [capable] = useState(() => portalTier() === 2 && !stillMotion());
++  const [capable, setCapable] = useState(() => Boolean(shower?.showerAllowed()));
++  useEffect(() => {
++    if (capable || stillMotion()) return;
++    let live = true;
++    import("./RangoliBloom")
++      .then(async (m) => {
++        shower = m;
++        if ((await m.ready()) && live) setCapable(true);
++      })
++      // A chunk that cannot arrive: the room keeps its Tier 1 finale.
++      .catch(() => {});
++    return () => {
++      live = false;
++    };
++    // Once, as the room's idle has fetched this chunk.
++    // eslint-disable-next-line react-hooks/exhaustive-deps
++  }, []);
 +  return capable ? <Shower {...props} /> : null;
 +};
 +
@@ -11092,9 +11790,9 @@ index 0000000..efef6e9
 +    [anchor],
 +  );
 +
-+  // A new field, held unseen until she keeps her rangoli (never once the probe has said this phone keeps Tier 1).
++  // A new field, held unseen until she keeps her rangoli (never once a probe has said this phone keeps Tier 1).
 +  const mount = useCallback(() => {
-+    if (portalTier() !== 2) return;
++    if (!shower?.showerAllowed()) return;
 +    ready.current = false;
 +    falling.current = false;
 +    fieldGo.current = () => {};
@@ -11194,9 +11892,10 @@ index 0000000..efef6e9
 +    fieldGo.current();
 +  };
 +
-+  if (!held) return null;
++  const Field = shower?.default;
++  if (!held || !Field) return null;
 +  return (
-+    <BloomField
++    <Field
 +      key={held}
 +      accent={accent}
 +      seed={seed}
@@ -11207,7 +11906,7 @@ index 0000000..efef6e9
 +        ready.current = true;
 +      }}
 +      onGone={() => {
-+        // Put away, fallen, or given up (a scene too late, or a phone the probe kept at Tier 1): her next placement wants another.
++        // Put away, fallen, or given up (a scene too late, or a phone the probe found slow): her next placement wants another.
 +        ready.current = false;
 +        falling.current = false;
 +        live.current = 0;
@@ -17081,15 +17780,16 @@ index 0000000..715be72
 +.ig-door-said { margin: 0.2rem 0 0; font-family: var(--nf-font-editorial); font-style: italic; font-size: 1.05rem; line-height: 1.4; color: rgb(var(--nf-ink-rgb) / 0.78); }
 diff --git a/src/components/portal/rangolifield.css b/src/components/portal/rangolifield.css
 new file mode 100644
-index 0000000..0887026
+index 0000000..7baac46
 --- /dev/null
 +++ b/src/components/portal/rangolifield.css
-@@ -0,0 +1,13 @@
+@@ -0,0 +1,14 @@
 +/*
-+  The shower over the rangoli room (Tier 2): imported by RangoliField alone. The Bloom Field's canvas is
-+  droproom.css's own rule (that sheet rides with the drop room only), fixed at z-index 37, never taking
-+  a tap; the room's words, status line, controls and story card stand over it at 38, the garden path (39), the
-+  header and the bag (50) over both. Only its opacity moves.
++  The shower over the rangoli room (Tier 2): imported by RangoliBloom alone (the shower's field, fetched only
++  on a capable phone). The Bloom Field's canvas is droproom.css's own rule (that sheet rides with the drop
++  room only), fixed at z-index 37, never taking a tap; the room's words, status line, controls and story
++  card stand over it at 38, the garden path (39), the header and the bag (50) over both. Only its opacity
++  moves.
 +*/
 +.ig-bloomfield { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 37; pointer-events: none; opacity: 0; transition: opacity 0.32s var(--nf-ease-reveal); }
 +.ig-bloomfield.is-on { opacity: 1; }

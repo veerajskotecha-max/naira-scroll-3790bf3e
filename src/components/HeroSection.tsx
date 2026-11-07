@@ -224,7 +224,7 @@ const HeroSection = () => {
           <p
             data-hero-offer
             style={{ ...jost, animationDelay: "1.05s" }}
-            className="mt-4 lg:mt-6 text-[11px] tracking-[0.16em] sm:tracking-[0.24em] uppercase font-medium text-nf-gold-text"
+            className="mt-4 lg:mt-6 text-[11px] tracking-nf-16 sm:tracking-nf-24 uppercase font-medium text-nf-gold-text"
           >
             <span data-hero-offer-short className="sm:hidden">Up to {Math.round(TOP_QUANTITY_OFFER.rate * 100)}% off when you buy more</span>
             <span data-hero-offer-ladder className="hidden sm:inline">

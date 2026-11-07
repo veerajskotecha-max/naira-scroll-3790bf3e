@@ -38,6 +38,21 @@ describe("HeroSection: the offer under the headline", () => {
     sizes.forEach((px) => expect(px).toBeGreaterThanOrEqual(11));
   });
 
+  /* CLAUDE.md design rule 1: no arbitrary tracking-[...] where a token has
+     the value. The line came in with tracking-[0.16em] / [0.24em], which are
+     exactly tracking-nf-16 / nf-24. */
+  it("spaces the line with the letter-spacing tokens", () => {
+    const { container } = render(
+      <MemoryRouter>
+        <HeroSection />
+      </MemoryRouter>,
+    );
+    const line = container.querySelector("[data-hero-offer]") as HTMLElement;
+    expect(line.className).toMatch(/(^|\s)tracking-nf-16(\s|$)/);
+    expect(line.className).toMatch(/(^|\s)sm:tracking-nf-24(\s|$)/);
+    expect(line.className).not.toMatch(/tracking-\[/);
+  });
+
   it("reads the rates from promo.ts", () => {
     const src = readFileSync(resolve(__dirname, "HeroSection.tsx"), "utf8");
     const line = src.slice(src.indexOf("data-hero-offer"), src.indexOf("</p>", src.indexOf("data-hero-offer")));

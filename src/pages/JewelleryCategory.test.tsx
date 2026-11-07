@@ -78,3 +78,33 @@ describe("an empty collection landing", () => {
     await waitFor(() => expect(robots()).toBe("index, follow, max-image-preview:large"));
   });
 });
+
+describe("Back to a collection after 'Show more'", () => {
+  const many = Array.from({ length: 45 }, (_, i) => ({
+    ...bracelet,
+    handle: `bracelet-${i + 1}`,
+    name: `Bracelet ${i + 1}`,
+    number: String(i + 1).padStart(2, "0"),
+  })) as unknown as JewelPiece[];
+  const cards = () => document.querySelectorAll('a[href^="/jewellery/bracelet-"]').length;
+
+  afterEach(() => sessionStorage.clear());
+
+  /* Reset to 30, the grid came back too short for the scroll it returned to,
+     and the shopper was dropped higher up and carried down as it grew. */
+  it("shows as many cards as the shopper had opened on that history entry", () => {
+    Object.assign(live, { jewellery: many, isLive: true, isLoading: false });
+    sessionStorage.setItem("nf-collection-shown:default", "60");
+    open("bracelets");
+    expect(cards()).toBe(45);
+    expect(screen.queryByRole("button", { name: /Show more/ })).toBeNull();
+  });
+
+  it("opens a collection it has no count for at 30, with Show more", () => {
+    Object.assign(live, { jewellery: many, isLive: true, isLoading: false });
+    open("bracelets");
+    expect(cards()).toBe(30);
+    expect(screen.getByRole("button", { name: "Show more (15)" })).toBeTruthy();
+    expect(sessionStorage.getItem("nf-collection-shown:default")).toBe("30");
+  });
+});

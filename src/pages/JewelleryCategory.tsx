@@ -1,6 +1,6 @@
 import { useEffect, useMemo } from "react";
 import { reportShopperPerformance } from "@/lib/shopperPerformance";
-import { Link, useParams, Navigate } from "react-router-dom";
+import { Link, useParams, Navigate, useLocation, useNavigationType } from "react-router-dom";
 import Footer from "@/components/Footer";
 import PageSEO, { breadcrumbLd, faqLd } from "@/components/PageSEO";
 import JewelCard from "@/components/jewellery/JewelCard";
@@ -48,8 +48,23 @@ const JewelleryCategory = () => {
   const { slug } = useParams();
   const landing = categoryBySlug(slug);
   const { jewellery, isLive, isLoading } = useLiveJewellery();
-  const [visibleCount, setVisibleCount] = useState(30);
-  useEffect(() => setVisibleCount(30), [slug]);
+  /* The grid shows 30 cards and 'Show more' adds 30. The count is kept per
+     history entry, as on /jewellery, so Back from a piece opened past the
+     first 30 lands on the same expanded grid: reset to 30, the page was too
+     short for the scroll it came back to, and the shopper was dropped higher
+     up and then carried down as the grid grew. Each landing is its own mount
+     (CollectionRoute keys it by slug), so a new landing starts at 30. */
+  const { key: entryKey } = useLocation();
+  const navigationType = useNavigationType();
+  const storeKey = `nf-collection-shown:${entryKey}`;
+  const [visibleCount, setVisibleCount] = useState(() => {
+    let saved = 0;
+    try { saved = Number(sessionStorage.getItem(storeKey)); } catch { /* private mode */ }
+    return navigationType === "POP" && saved > 30 ? saved : 30;
+  });
+  useEffect(() => {
+    try { sessionStorage.setItem(storeKey, String(visibleCount)); } catch { /* private mode */ }
+  }, [storeKey, visibleCount]);
   useEffect(() => {
     if (!landing) reportShopperPerformance("unknown_page");
   }, [landing, slug]);

@@ -474,10 +474,38 @@ describe("pdpOfferStatus: the product page's offer line", () => {
     expect(pdpOfferStatus({ subtotal: 2997, totalItems: 3 }, 999)).toBe("Add to bag for 30% off everything: it adds ₹399, not ₹999.");
   });
 
-  /* 3,996 at 30% is 2,797 (2,797.20); with another 999 it is 4,995 at 30%,
-     3,497 (3,496.50, rounded half up), so this piece costs 700. */
-  it("at the top rung, says the bag has 30% and what this piece adds", () => {
-    expect(pdpOfferStatus({ subtotal: 3996, totalItems: 4 }, 999)).toBe("30% off is on your bag: adding this costs ₹700, not ₹999.");
+  /* At the top rung the box's gold Buy 4 column already prices this piece:
+     999 at 30% is ₹699 (699.30, as Shopify charges it). The bag's own maths
+     put it at ₹700 (3,996 at 30% is 2,797; with another 999, 4,995 at 30% is
+     3,497, from 3,496.50 rounded half up), and "adding this costs ₹700" one
+     line under "₹699 each" read as the same claim ₹1 apart. The line names
+     the rate and leaves the figure to the column. */
+  it("at the top rung, says the bag has 30% and leaves this piece's price to the box", () => {
+    expect(pdpOfferStatus({ subtotal: 3996, totalItems: 4 }, 999)).toBe("30% off is on your bag, this piece included.");
+  });
+
+  /* Every price the store sells at, in bags of four to eight: no second
+     rupee figure for this piece under the rung's column. At the old 20% top
+     rung the clash almost never reached the screen; at 30% it showed in most
+     four-piece bags (₹1,199: "₹839 each" over "costs ₹840"). */
+  it("never quotes a second price for this piece at a rung the bag already has", () => {
+    const prices = [599, 799, 999, 1199, 1299, 1499, 1799, 1899, 2399, 2499, 2749];
+    for (const price of prices) {
+      for (const other of prices) {
+        for (let n = 4; n <= 8; n++) {
+          expect(pdpOfferStatus({ subtotal: other * n, totalItems: n }, price)).toBe("30% off is on your bag, this piece included.");
+        }
+      }
+    }
+  });
+
+  /* A typed code that hands over to a rung at the same rate: NAIRA10 on one
+     piece becomes BUY2 (10%) with this one, FRIENDSANDFAMILY on two becomes
+     BUY3 (20%). The rate stays and it is that rung's column, so the line
+     leaves the figure to it. */
+  it("leaves the figure to the column when a typed code hands over to its rung", () => {
+    expect(pdpOfferStatus({ subtotal: 1199, totalItems: 1, promoCode: "NAIRA10" }, 999)).toBe("10% off is on your bag, this piece included.");
+    expect(pdpOfferStatus({ subtotal: 2398, totalItems: 2, promoCode: "FRIENDSANDFAMILY" }, 999)).toBe("20% off is on your bag, this piece included.");
   });
 
   /* A typed code is never offered back as a saving. FRIENDSANDFAMILY's 20%

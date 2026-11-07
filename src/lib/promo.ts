@@ -218,8 +218,10 @@ const rupees = (n: number) => `₹${Math.round(n).toLocaleString("en-IN")}`;
  * The product page's offer line, for this piece against the bag as Shopify
  * last confirmed it. Empty, it says the rungs need no code. Holding pieces, it
  * says what adding THIS one does to the bag's total, by the bag's own resolver
- * and rounding (`addOnEffect`), so the figure is the one the bag then shows. A
- * typed code is never offered back as a saving the shopper already has.
+ * and rounding (`addOnEffect`), so the figure is the one the bag then shows;
+ * at a rung the bag already has, it names the rate and leaves the figure to
+ * that rung's column in the box. A typed code is never offered back as a
+ * saving the shopper already has.
  */
 export const pdpOfferStatus = (
   bag: { subtotal: number; totalItems: number; promoCode?: string | null },
@@ -244,8 +246,18 @@ export const pdpOfferStatus = (
     return `Add to bag for ${percent(effect.rate)} off everything: ${drop}.`;
   }
   const adds = effect.adds < price ? `${rupees(effect.adds)}, not ${rupees(price)}` : rupees(effect.adds);
-  return effect.rate > now.rate
-    ? `Add to bag for ${percent(effect.rate)} off everything: it adds ${adds}.`
+  if (effect.rate > now.rate) return `Add to bag for ${percent(effect.rate)} off everything: it adds ${adds}.`;
+  /* The rate stays, and it is a rung's: the box above already prices this
+     piece at that rung (₹1,199 is "₹839 each" under Buy 4, the piece rounded
+     alone, as Shopify charges it, ₹839.30). "Adding this costs ₹840" (the
+     whole bag rounded again) one line under that gold column read as the same
+     claim ₹1 apart, and at 30% it was ₹1 apart in most four-piece bags. So the
+     line names the rate and leaves the figure to the box. A typed code's rate
+     (FRIENDSANDFAMILY on one piece) has no column of its own, so it keeps its
+     figure. */
+  const after = resolveCartDiscount({ totalItems: bag.totalItems + 1, promoCode: bag.promoCode });
+  return after.automatic
+    ? `${percent(now.rate)} off is on your bag, this piece included.`
     : `${percent(now.rate)} off is on your bag: adding this costs ${adds}.`;
 };
 

@@ -82,15 +82,19 @@ describe("PdpOfferLadder: Buy 2 / Buy 3 / Buy 4 on the product page", () => {
     expect(status(container)).toBe("Add to bag for 30% off everything: it adds ₹399, not ₹999.");
   });
 
-  /* 3,996 at 30% is 2,797 (2,797.20); 4,995 at 30% is 3,497 (3,496.50,
-     rounded half up), so this piece costs 700. */
+  /* The gold Buy 4 column prices this piece at ₹699 (999 at 30% is 699.30).
+     The line under it used to add "adding this costs ₹700" (the whole bag
+     rounded again: 4,995 at 30% is 3,497, from 3,496.50, less 2,797), two
+     figures for one piece a line apart. One figure now, in the column. */
   it("at four pieces, every rung is reached and the line says the bag has 30%", () => {
     cart.totalItems = 4;
     cart.subtotal = 3996;
     const { container } = render(<PdpOfferLadder price={999} />);
     expect(marks()).toEqual(["reached", "reached", "current"]);
     expect(container.querySelector("[data-offer-ladder]")?.getAttribute("data-state")).toBe("4");
-    expect(status(container)).toBe("30% off is on your bag: adding this costs ₹700, not ₹999.");
+    expect(status(container)).toBe("30% off is on your bag, this piece included.");
+    expect(rung(4).textContent).toContain("₹699 each");
+    expect(container.querySelector("[aria-live]")?.textContent).not.toMatch(/₹/);
     // The rung the bag has is said, not only drawn.
     expect(rung(4).textContent).toContain("in your bag");
   });

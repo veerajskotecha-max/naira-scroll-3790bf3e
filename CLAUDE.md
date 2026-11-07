@@ -87,7 +87,10 @@ all sessions, ~640px of visible page on a 360px Android; measured 21–24 Sep,
 buy-more offer (`jewellery/PdpOfferLadder.tsx`, the owner's ask of 2 Nov 2026:
 every rung side by side, each priced for this piece by `pieceAtRung`, "Applied
 in your bag · no code" on the panel's top rule, and a line from
-`pdpOfferStatus` under it once the bag holds a piece), then the choices and Add
+`pdpOfferStatus` under it once the bag holds a piece; at a rung the bag
+already has, that line names the rate and leaves the price to the rung's
+column, because "adding this costs ₹840" under "₹839 each" read as an error),
+then the choices and Add
 to cart. Since 7 Nov 2026 it carries three rungs (Buy 4, 30%) and the owner's
 redesign: three equal columns between gold hairlines, the rate largest in
 Cormorant (lining figures), the piece's price and "each" under it, "Buy 2" as

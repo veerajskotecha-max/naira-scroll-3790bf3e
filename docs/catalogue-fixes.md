@@ -1076,3 +1076,10 @@ note on how PVD differs from regular plating, and anti-tarnish.
   ₹4,337 (saves ₹1,859, 30%). Shopify refuses BUY2 now (two pieces: ₹0 off).
 - **Follow-up:** the test suite update and an independent review (money,
   layout, copy) are running; fixes, if any, follow as their own commits.
+- **Follow-up done (main 4de046d, tests and notes only, no publish needed):**
+  the test suite now follows the two rungs (73 stale expectations reworked by
+  hand, 26 new tests; 1,013 passing; tsc clean). The independent review
+  (money, phone layout, copy; one skeptic per finding) confirmed nothing in
+  the change; the two real points it raised were already on the site before
+  it and are owner questions: the "N pieces sold in the last 48 hours" line
+  and the strip's white-on-sage contrast.

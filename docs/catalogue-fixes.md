@@ -1056,3 +1056,23 @@ note on how PVD differs from regular plating, and anti-tarnish.
     as it grew).
 - **Checks:** tsc app + node clean, 987 tests (new tests for each case), build
   clean. Live after Publish → Update in Lovable.
+
+## 7 November — the offer is Buy 3 = 20% and Buy 4 = 30% only (Buy 2 removed)
+
+- **Owner:** "remove buy 2 10% from cart and offer too, we need only buy 3 20%
+  off and buy 4 30% off".
+- **Site (main b16d775, pushed before its test update on the owner's word;
+  published and live by 11:50 UTC):** BUY2 out of the ladder and the codes the
+  bag accepts. A 2-piece bag gets no buy-more discount and says what a third
+  piece does; a typed BUY2 is ignored and never handed to Fastrr. The bag's
+  ladder, the product page's box (two columns), the strip and the home line
+  show only Buy 3 and Buy 4.
+- **Shopify:** BUY2 deactivated at 11:50:56 UTC, after the live site stopped
+  handing it (BUY3, BUY4, NAIRA10 and FRIENDSANDFAMILY unchanged). Record:
+  `docs/backups/buy-more-codes-2026-11-07.json`.
+- **Checked on the live site** (iPhone emulation, no checkout opened):
+  1 piece ₹1,499 (no discount); 2 pieces ₹3,898 (no discount, "A third piece
+  takes 20% off your bag"); 3 pieces ₹4,158 (saves ₹1,039, 20%); 4 pieces
+  ₹4,337 (saves ₹1,859, 30%). Shopify refuses BUY2 now (two pieces: ₹0 off).
+- **Follow-up:** the test suite update and an independent review (money,
+  layout, copy) are running; fixes, if any, follow as their own commits.

@@ -26,6 +26,18 @@ describe("SimpleLadder: the bag's offer track", () => {
     expect((container.querySelector("[data-ladder] > p") as HTMLElement).className).toMatch(/text-\[11px\]/);
   });
 
+  /* At 11px a 280-320px phone broke the line mid-phrase: "Sitewide sale
+     live / today · up to 30% off". Each half is held together, with the dot
+     on the first, so the only break falls after the dot. */
+  it("breaks the line over the track only after the dot", () => {
+    const { container } = render(<SimpleLadder totalItems={1} />);
+    const line = container.querySelector("[data-ladder] > p") as HTMLElement;
+    const halves = [...line.children] as HTMLElement[];
+    expect(halves.map((h) => h.textContent)).toEqual(["✦ Sitewide sale live today ·", "up to 30% off"]);
+    halves.forEach((h) => expect(h.className).toMatch(/\bwhitespace-nowrap\b/));
+    expect(line.textContent).toBe("✦ Sitewide sale live today · up to 30% off");
+  });
+
   it("states all three rungs under the track", () => {
     const { container } = render(<SimpleLadder totalItems={1} />);
     const labels = [...container.querySelectorAll("[data-rung-label]")].map((l) => [...l.children].map((c) => c.textContent).join(" "));

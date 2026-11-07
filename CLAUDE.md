@@ -298,7 +298,8 @@ the ladder moves, re-check this code against it.
 
 The ladder is applied by the bag, never typed. The live bag (`CartDrawerNext.tsx`)
 renders it as `SimpleLadder`: "✦ Sitewide sale live today · up to {top rung}
-off" (11px since 7 Nov 2026; it was 8.5px) over a track with a ring per rung,
+off" (11px since 7 Nov 2026; it was 8.5px; on a phone too narrow for one
+line it breaks only after the dot) over a track with a ring per rung,
 then "Buy 2 / 10% off", "Buy 3 / 20% off" and "Buy 4 / 30% off" on two lines
 each. With three rungs each ring sits in the middle of its own third of the
 track (`rungPosition`: 1/6, 1/2, 5/6) with its label in that third under it;

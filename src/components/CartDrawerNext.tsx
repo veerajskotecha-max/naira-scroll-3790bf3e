@@ -165,10 +165,13 @@ export const SimpleLadder = ({ totalItems }: { totalItems: number }) => {
           least a phone can read (it was 8.5px). The 24px rungs stand 10.5px
           above the track, so the line keeps 20px clear of it: the rungs had
           been touching its letters on every phone. On a phone narrower than
-          the line it wraps, balanced, instead of running off the edge. "Up
-          to" is the top rung, so the line moves when the ladder does. */}
+          the line it wraps, and only after the dot: at 11px a 280-320px phone
+          broke it mid-phrase ("Sitewide sale live / today · up to 30% off"),
+          so each half is held together and the dot stays with the first.
+          "Up to" is the top rung, so the line moves when the ladder does. */}
       <p className="mb-5 text-balance text-center font-nf-label text-[11px] font-medium uppercase leading-[1.45] tracking-nf-8 text-nf-ink/70">
-        ✦ Sitewide sale live today · up to {pct(TOP_QUANTITY_OFFER.rate)} off
+        <span className="whitespace-nowrap">✦ Sitewide sale live today ·</span>{" "}
+        <span className="whitespace-nowrap">up to {pct(TOP_QUANTITY_OFFER.rate)} off</span>
       </p>
       <div className="relative h-[3px] bg-nf-ink/25" role="progressbar" aria-valuemin={0} aria-valuemax={top} aria-valuenow={Math.min(totalItems, top)} aria-label={`${totalItems} of ${top} pieces`}>
         <span className="block h-full bg-nf-ink transition-[width] duration-500 motion-reduce:transition-none" style={{ width: `${fill * 100}%` }} />

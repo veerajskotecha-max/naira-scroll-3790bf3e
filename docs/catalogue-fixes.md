@@ -980,3 +980,31 @@ note on how PVD differs from regular plating, and anti-tarnish.
   - Size guides were added to 11 listings, among them Lotus Pear Drop Studs
     and Watch Link Strap Bracelet, which also got photos here. They sit last,
     after these photos.
+
+## 7 November — Buy 4 = 30% off added (Buy 2 = 10%, Buy 3 = 20% unchanged)
+
+- **Shopify (live 02:15 UTC):** new code `BUY4`, made as `BUY3`'s exact twin
+  (`discount-scope-all`, all 208 products, all buyers, same combining rules),
+  only 30% and 4 or more pieces. Before/after with ids:
+  `docs/backups/buy-more-codes-2026-11-07.json`.
+  - Checked with Shopify's own price calculation (nothing created):
+    4 pieces ₹5,696 → BUY4 takes ₹1,708.80, pays ₹3,987.20 (30%);
+    3 pieces with BUY4 → refused ("isn't valid for the items"), so BUY3's 20%
+    stays; 3 pieces with BUY3 ₹4,797 → ₹3,837.60 (20%).
+- **Fastrr:** no change needed. The bag hands Fastrr one code and Fastrr
+  takes its rate from Shopify; from 4 pieces the bag hands `BUY4`, whatever
+  code was typed (none is worth 30%).
+- **Site (main 53b23e3; live after Publish → Update in Lovable):**
+  - `promo.ts`: BUY4 0.3 in PROMO_DISCOUNTS and QUANTITY_OFFERS. Bag ladder
+    (three rings, each label under its own ring at 280px), "up to 30% off",
+    "You save … · 30% for 4 pieces", line prices, add-on "Adds/saves",
+    announcement strip (Buy 2 · 10% · Buy 3 · 20% · Buy 4 · 30%), home line
+    ("Up to 30% off when you buy more" on phones) all follow.
+  - Product page offer box redesigned (53b23e3): three equal columns, the rate
+    first in the display serif, the per-piece price under it, the reached rung
+    underlined in gold, "Applied in your bag · no code" on the top rule.
+    Add to cart still on the first screen of a 390x844 phone.
+  - Checks: tsc app + node clean, 976 tests passing, build clean.
+- **Until it is published:** the live site still shows Buy 2 / Buy 3 and a
+  4-piece bag still hands BUY3 (20%). Nobody is charged more than shown.
+- **Screenshots:** `docs/images/offer-2026-11-07/`.

@@ -19,10 +19,12 @@ import ChunkErrorBoundary from "./components/ChunkErrorBoundary";
 import { clearFallbackMark } from "./lib/fallbackGuard";
 import { dropPrebuiltPage, PrebuiltPage } from "./lib/prebuiltPage";
 // Global "wow" animation layer — always mounted, so imported eagerly to avoid
-// a flash on first paint (film grain, page curtain, scroll bloom).
+// a flash on first paint (film grain, scroll bloom). The sage page curtain with
+// the flower that swept over category pages is gone (the owner, 7 Nov 2026):
+// going to or back from a product it covered the page for a second, and the
+// list jumped to its old place underneath it. Pages now change plainly.
 import FilmGrain from "./components/wow/FilmGrain";
 import ScrollBloom from "./components/wow/ScrollBloom";
-import PageCurtain from "./components/wow/PageCurtain";
 import {
   Index,
   ProductDetail,
@@ -104,7 +106,6 @@ const AppShell = () => {
       <ScrollToTop />
       <PixelEvents />
       <ShopperPerformance />
-      <PageCurtain />
       <FilmGrain />
       <ScrollBloom />
       

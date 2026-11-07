@@ -85,15 +85,50 @@ describe("ScrollToTop", () => {
     expect(scrollTo).toHaveBeenCalledWith(0, 1800);
   });
 
-  it("stops the browser restoring a product page's scroll, and only there", () => {
-    /* jsdom has no history.scrollRestoration; a browser does. */
+  it("keeps the browser's own scroll restore off on every page, product or listing", () => {
+    /* jsdom has no history.scrollRestoration; a browser does. Left on "auto"
+       for a listing, the browser restored it the moment Back was pressed,
+       under the product page still on screen, which glided to its foot. */
     Object.defineProperty(window.history, "scrollRestoration", { value: "auto", configurable: true, writable: true });
     vi.spyOn(window, "scrollTo").mockImplementation(() => {});
     mount("/jewellery/baroque-shell-bracelet");
     expect(window.history.scrollRestoration).toBe("manual");
     act(() => go("/jewellery/collections/bracelets"));
-    expect(window.history.scrollRestoration).toBe("auto");
+    expect(window.history.scrollRestoration).toBe("manual");
     delete (window.history as { scrollRestoration?: string }).scrollRestoration;
+  });
+
+  it("brings a reloaded listing back to the spot the shopper had", () => {
+    sessionStorage.setItem("nf-scroll:default", JSON.stringify({ p: "/jewellery/collections/rings", y: 1800 }));
+    vi.spyOn(performance, "getEntriesByType").mockReturnValue([{ type: "reload" }] as unknown as PerformanceEntryList);
+    const scrollTo = spyScroll();
+    mount("/jewellery/collections/rings");
+    expect(scrollTo).toHaveBeenCalledWith(0, 1800);
+    sessionStorage.clear();
+  });
+
+  it("does not move a freshly opened page to a spot kept from an earlier visit", () => {
+    sessionStorage.setItem("nf-scroll:default", JSON.stringify({ p: "/jewellery/collections/rings", y: 1800 }));
+    vi.spyOn(performance, "getEntriesByType").mockReturnValue([{ type: "navigate" }] as unknown as PerformanceEntryList);
+    const scrollTo = spyScroll();
+    mount("/jewellery/collections/rings");
+    expect(scrollTo).not.toHaveBeenCalled();
+    sessionStorage.clear();
+  });
+
+  it("stops re-applying the spot as soon as the shopper touches the page", async () => {
+    const scrollTo = spyScroll();
+    mount("/jewellery");
+    act(() => go("/jewellery/collections/rings"));
+    act(() => shopperScrollsTo(1800));
+    act(() => go("/jewellery/granule-dome-ring"));
+    scrollTo.mockClear();
+    act(() => back());
+    expect(scrollTo).toHaveBeenCalledWith(0, 1800);
+    const calls = scrollTo.mock.calls.length;
+    window.dispatchEvent(new Event("touchstart"));
+    await new Promise((r) => setTimeout(r, 120));
+    expect(scrollTo.mock.calls.length).toBe(calls);
   });
 
   it("jumps without the page's smooth scrolling", () => {

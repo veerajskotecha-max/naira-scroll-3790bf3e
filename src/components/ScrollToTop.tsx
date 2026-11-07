@@ -15,8 +15,16 @@ import { useLocation, useNavigationType } from "react-router-dom";
  * Every jump is instant and lands before the new page paints. Going from one
  * product to the next keeps the page component mounted at the old offset, so
  * a jump after paint showed the new piece's footer first.
+ *
+ * The browser's own scroll restoring is off on every page (the owner's video,
+ * 7 Nov 2026). It runs the moment Back is pressed, while the product page is
+ * still on screen for a few frames: with html's smooth scrolling the product
+ * page glided down to its foot, chasing the listing's old offset, before the
+ * listing appeared. The app restores instead, once the listing is drawn, and
+ * keeps the offsets in sessionStorage so a reload still comes back to the spot.
  */
 const positions = new Map<string, number>();
+const STORE = "nf-scroll:";
 
 /** A product page: /jewellery/<handle> or /jewelry/<handle> (not a collection), or /products/<id>. */
 // eslint-disable-next-line react-refresh/only-export-components -- exported for its unit test
@@ -36,6 +44,57 @@ const jumpTo = (top: number) => {
   html.style.scrollBehavior = prev;
 };
 
+const keep = (key: string, pathname: string, y: number) => {
+  try { sessionStorage.setItem(STORE + key, JSON.stringify({ p: pathname, y })); } catch { /* private mode */ }
+};
+const kept = (key: string, pathname: string): number => {
+  try {
+    const v = JSON.parse(sessionStorage.getItem(STORE + key) ?? "null") as { p?: string; y?: number } | null;
+    return v && v.p === pathname && typeof v.y === "number" ? v.y : 0;
+  } catch {
+    return 0;
+  }
+};
+/** How this document was reached: a reload or Back/Forward from another site may come back to a spot; a fresh visit never does. */
+const documentReturned = () => {
+  try {
+    const nav = performance.getEntriesByType("navigation")[0] as PerformanceNavigationTiming | undefined;
+    return nav?.type === "reload" || nav?.type === "back_forward";
+  } catch {
+    return false;
+  }
+};
+
+/* Content (grids, images) may still be mounting, so the offset is re-applied
+   for a short window and late layout shifts cannot win. The shopper's own
+   touch, wheel or key ends it at once: re-applying the offset under a finger
+   that has started to scroll fights her. */
+const restoreTo = (target: number) => {
+  const until = performance.now() + 900;
+  let raf = 0;
+  let stopped = false;
+  const stop = () => {
+    stopped = true;
+    cancelAnimationFrame(raf);
+  };
+  const opts = { passive: true, capture: true } as const;
+  window.addEventListener("touchstart", stop, opts);
+  window.addEventListener("wheel", stop, opts);
+  window.addEventListener("keydown", stop, opts);
+  const step = () => {
+    if (stopped) return;
+    jumpTo(target);
+    if (performance.now() < until) raf = requestAnimationFrame(step);
+  };
+  step();
+  return () => {
+    stop();
+    window.removeEventListener("touchstart", stop, opts);
+    window.removeEventListener("wheel", stop, opts);
+    window.removeEventListener("keydown", stop, opts);
+  };
+};
+
 const ScrollToTop = () => {
   const { pathname, key } = useLocation();
   const navigationType = useNavigationType();
@@ -50,26 +109,27 @@ const ScrollToTop = () => {
      from a product landed at that same clamped point. */
   useEffect(() => {
     let lastY = window.scrollY;
+    let pending = 0;
     const save = () => {
       const y = window.scrollY;
       if (y === 0 && lastY > 200) return;
       lastY = y;
       positions.set(key, y);
+      if (!pending) pending = window.setTimeout(() => { pending = 0; keep(key, pathname, lastY); }, 200);
     };
     window.addEventListener("scroll", save, { passive: true });
-    return () => window.removeEventListener("scroll", save);
-  }, [key]);
+    return () => {
+      window.removeEventListener("scroll", save);
+      if (pending) window.clearTimeout(pending);
+    };
+  }, [key, pathname]);
 
 
   useLayoutEffect(() => {
-    /* The browser also restores a page's scroll on back, after this has run,
-       and with html's smooth scrolling it glided a product page from its top
-       down to the rail the shopper had left from. The setting is kept per
-       history entry: product pages opt out, the rest keep the browser's
-       restore, which agrees with the one below. */
-    if ("scrollRestoration" in window.history) {
-      window.history.scrollRestoration = isProductPath(pathname) ? "manual" : "auto";
-    }
+    /* Off on every entry (see the note at the top): the setting is kept per
+       history entry, so a listing left on "auto" was restored by the browser
+       the moment Back was pressed, under the product page still on screen. */
+    if ("scrollRestoration" in window.history) window.history.scrollRestoration = "manual";
 
     /* The same entry again: closing the bag or wishlist with back steps onto
        the entry they were opened from. Nothing navigated, so leave the page
@@ -85,24 +145,22 @@ const ScrollToTop = () => {
        when the app takes over, seconds in on a slow connection. Jumping them
        to the top then would undo that, and it would also override the
        browser's own scroll restore on a reload. Only navigations scroll. */
-    if (firstMount) return;
+    if (firstMount) {
+      /* A reload, or Back from another site to a page that was not kept in
+         memory: with the browser's restore off, the app brings the listing
+         back to the spot itself, unless she is already scrolling it. */
+      if (navigationType === "POP" && !isProductPath(pathname) && documentReturned() && window.scrollY < 40) {
+        const target = kept(key, pathname);
+        if (target > 0) return restoreTo(target);
+      }
+      return;
+    }
 
     if (navigationType === "REPLACE") return;
 
     if (navigationType === "POP" && !isProductPath(pathname)) {
-      const target = positions.get(key);
-      if (target != null && target > 0) {
-        // Content (grids, images) may still be mounting — keep re-applying
-        // the offset for a short window so late layout shifts can't win.
-        const until = performance.now() + 900;
-        let raf = 0;
-        const restore = () => {
-          jumpTo(target);
-          if (performance.now() < until) raf = requestAnimationFrame(restore);
-        };
-        restore();
-        return () => cancelAnimationFrame(raf);
-      }
+      const target = positions.get(key) ?? kept(key, pathname);
+      if (target > 0) return restoreTo(target);
     }
 
     jumpTo(0);

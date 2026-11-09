@@ -375,8 +375,8 @@ describe("ladderHeadline: the band over the bag", () => {
      rung, so the line skips to the four-piece one. */
   it("never offers a saving already in hand from a code", () => {
     expect(ladderHeadline(1, 0.1)).toBe("10% off your bag · your third piece makes it 20%");
-    expect(ladderHeadline(1, 0.2)).toBe("20% off your bag · 4 pieces make it 30%");
-    expect(ladderHeadline(2, 0.2)).toBe("20% off your bag · 4 pieces make it 30%");
+    expect(ladderHeadline(1, 0.2)).toBe("20% off your bag · your fourth piece makes it 30%");
+    expect(ladderHeadline(2, 0.2)).toBe("20% off your bag · a fourth piece makes it 30%");
   });
 });
 

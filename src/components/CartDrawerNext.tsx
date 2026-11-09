@@ -172,7 +172,7 @@ export const SimpleLadder = ({ totalItems }: { totalItems: number }) => {
           broke it mid-phrase ("Sitewide sale live / today · up to 30% off"),
           so each half is held together and the dot stays with the first.
           "Up to" is the top rung, so the line moves when the ladder does. */}
-      <p className="mb-5 text-balance text-center font-nf-label text-[11px] font-medium uppercase leading-[1.45] tracking-nf-8 text-nf-ink/70">
+      <p className="mb-5 text-balance text-center font-nf-label text-[10px] font-medium uppercase leading-[1.4] tracking-nf-8 text-nf-ink/60">
         <span className="whitespace-nowrap">✦ Sitewide sale live today ·</span>{" "}
         <span className="whitespace-nowrap">up to {pct(TOP_QUANTITY_OFFER.rate)} off</span>
       </p>
@@ -183,19 +183,19 @@ export const SimpleLadder = ({ totalItems }: { totalItems: number }) => {
             key={o.code}
             aria-hidden="true"
             data-rung-mark={o.minQuantity}
-            className={`absolute top-1/2 h-6 w-6 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 transition-colors duration-300 motion-reduce:transition-none ${totalItems >= o.minQuantity ? "border-nf-ink bg-nf-ink" : "border-nf-ink/40 bg-[var(--nf-surface)]"}`}
+            className={`absolute top-1/2 h-4 w-4 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 transition-colors duration-300 motion-reduce:transition-none ${totalItems >= o.minQuantity ? "border-nf-ink bg-nf-ink" : "border-nf-ink/40 bg-[var(--nf-surface)]"}`}
             style={{ left: `${rungPosition(i) * 100}%` }}
           />
         ))}
       </div>
       {/* One equal column per rung, each label centred under its own ring. */}
-      <ul className={`mt-[18px] grid ${RUNG_GRID_COLS} text-center`}>
+      <ul className={`mt-[14px] grid ${RUNG_GRID_COLS} text-center`}>
         {QUANTITY_OFFERS.map((o) => {
           const reached = totalItems >= o.minQuantity;
           return (
             <li key={o.code} data-rung-label={o.minQuantity} className="min-w-0 leading-[1.3]">
-              <span className={`block text-[12px] ${reached ? "text-nf-ink" : "text-nf-ink/70"}`}>Buy {o.minQuantity}</span>
-              <span className={`block text-[13px] ${reached ? "font-medium text-nf-ink" : "text-nf-ink/80"}`}>{pct(o.rate)} off</span>
+              <span className={`block text-[10.5px] tracking-wide ${reached ? "text-nf-ink" : "text-nf-ink/70"}`}>Buy {o.minQuantity}</span>
+              <span className={`block text-[11px] ${reached ? "font-medium text-nf-ink" : "text-nf-ink/80"}`}>{pct(o.rate)} off</span>
             </li>
           );
         })}

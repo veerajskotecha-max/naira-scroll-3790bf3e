@@ -55,33 +55,14 @@ describe("Buy Now checks out only the piece being viewed", () => {
     expect(mocks.attrs).not.toHaveBeenCalled();
   });
 
-  /* The piece's own quantity, not the bag's, decides the rung: three of it
-     earn BUY3 (20%) on its own cart, whatever else the bag holds. */
   it("gives the piece's own cart the code its quantity earns", async () => {
-    bag([{ ...hoops, quantity: 1, lineId: "l-hoops" }, { ...prism, quantity: 3, lineId: "l-prism" }]);
-    mocks.create.mockResolvedValueOnce({ cartId: "own-cart", checkoutUrl: "https://example.com/own", lineId: "own-line", quantity: 3 });
-    const { result } = renderHook(() => useCart(), { wrapper: CartProvider });
-    await act(async () => { await result.current.buyNow(prism); });
-    expect(handedOff()).toEqual([["v-prism", 3]]);
-    expect(mocks.start.mock.calls[0][1].couponCode).toBe("BUY3");
-    expect(mocks.codes).toHaveBeenCalledWith("own-cart", ["BUY3"]);
-    // 3 x 1,499 = 4,497 at 20% is 3,597.60, so 3,598.
-    expect(initiated()).toMatchObject({ value: 3598, num_items: 3 });
-  });
-
-  /* Two of the piece earn no rung since 7 Nov 2026 (Buy 2 is gone): the own
-     cart gets no code, and any old one is cleared from it. Before, the bag
-     plus this piece made three, but the hand-off is the piece alone. */
-  it("gives two of the piece no code on their own cart", async () => {
     bag([{ ...hoops, quantity: 1, lineId: "l-hoops" }, { ...prism, quantity: 2, lineId: "l-prism" }]);
     mocks.create.mockResolvedValueOnce({ cartId: "own-cart", checkoutUrl: "https://example.com/own", lineId: "own-line", quantity: 2 });
     const { result } = renderHook(() => useCart(), { wrapper: CartProvider });
     await act(async () => { await result.current.buyNow(prism); });
     expect(handedOff()).toEqual([["v-prism", 2]]);
-    expect(mocks.start.mock.calls[0][1].couponCode).toBeNull();
-    expect(mocks.codes).toHaveBeenCalledWith("own-cart", []);
-    expect(mocks.codes).not.toHaveBeenCalledWith("own-cart", ["BUY2"]);
-    expect(initiated()).toMatchObject({ value: 2998, num_items: 2 });
+    expect(mocks.start.mock.calls[0][1].couponCode).toBe("BUY2");
+    expect(mocks.codes).toHaveBeenCalledWith("own-cart", ["BUY2"]);
   });
 
   it("checks out the bag as before when it holds only this piece", async () => {

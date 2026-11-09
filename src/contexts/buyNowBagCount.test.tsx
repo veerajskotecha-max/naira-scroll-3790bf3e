@@ -6,13 +6,11 @@ import { CartProvider, useCart } from "@/contexts/CartContext";
    scenarios plus-lostcart-buynow and plus-stale1-buynow): the bag shows 2 of
    a piece (+ tapped in the bag), then Shopify loses the cart or drops that
    line, then Buy Now. The piece went back in once, so checkout opened with 1
-   at full price and no Buy 2 code, and the bag then showed 1. Two pieces
-   earn no rung since 7 Nov 2026 (the owner took Buy 2 away), so the bag here
-   shows 3 of the piece: a piece lost on the way would cost the shopper
-   BUY3's 20%. With the cart alive the same tap hands off the bag's 3 with
-   BUY3. Real src/lib/shopify.ts, only fetch stubbed, with a small fake
-   Shopify cart behind it. Nothing here reads the checkout address, so it
-   holds whichever address form Shopify's checkout link takes. */
+   at full price and no Buy 2 code, and the bag then showed 1. With the cart
+   alive the same tap hands off the bag's 2 with Buy 2. Real
+   src/lib/shopify.ts, only fetch stubbed, with a small fake Shopify cart
+   behind it. Nothing here reads the checkout address, so it holds whichever
+   address form Shopify's checkout link takes. */
 const start = vi.hoisted(() => vi.fn());
 vi.mock("@/lib/fastrr", () => ({ isFastrrEnabled: () => true, primeFastrr: vi.fn(), startFastrrCheckout: start }));
 const track = vi.hoisted(() => vi.fn());
@@ -81,68 +79,54 @@ describe("Buy Now puts a piece back in as many times as the bag showed it", () =
   afterEach(() => vi.unstubAllGlobals());
 
   /* Guard: what a working cart hands off, which the two cases below match. */
-  it("hands off the bag's 3 with BUY3 when Shopify still has the line", async () => {
-    bag([[bracelet, "gid://shopify/CartLine/b", 3]]);
-    shopify([bagCart([line("gid://shopify/CartLine/b", bracelet.variantId, 3)])]);
-    const { result } = renderHook(() => useCart(), { wrapper: CartProvider });
-    await act(async () => { await result.current.buyNow(bracelet); });
-    expect(handedOff()).toEqual([["47501788348578", 3]]);
-    expect(coupon()).toBe("BUY3");
-    expect(events("AddToCart")).toHaveLength(0);
-  });
-
-  /* Two of a piece earn no rung since 7 Nov 2026: the same hand-off carries
-     no code at all, never BUY2. */
-  it("hands off the bag's 2 with no code when Shopify still has the line", async () => {
+  it("hands off the bag's 2 with Buy 2 when Shopify still has the line", async () => {
     bag([[bracelet, "gid://shopify/CartLine/b", 2]]);
     shopify([bagCart([line("gid://shopify/CartLine/b", bracelet.variantId, 2)])]);
     const { result } = renderHook(() => useCart(), { wrapper: CartProvider });
     await act(async () => { await result.current.buyNow(bracelet); });
     expect(handedOff()).toEqual([["47501788348578", 2]]);
-    expect(coupon()).toBeNull();
-    /* 2 x 2,399, charged in full. */
-    expect(events("InitiateCheckout")).toEqual([expect.objectContaining({ value: 4798, num_items: 2 })]);
+    expect(coupon()).toBe("BUY2");
+    expect(events("AddToCart")).toHaveLength(0);
   });
 
-  it("starts a new cart holding the bag's 3 when Shopify no longer has the cart", async () => {
-    bag([[bracelet, "gid://shopify/CartLine/b", 3]]);
+  it("starts a new cart holding the bag's 2 when Shopify no longer has the cart", async () => {
+    bag([[bracelet, "gid://shopify/CartLine/b", 2]]);
     const carts: Cart[] = [];
     const ops = shopify(carts);
     const { result } = renderHook(() => useCart(), { wrapper: CartProvider });
     await act(async () => { await result.current.buyNow(bracelet); });
-    expect(ops.slice(0, 2)).toEqual([["cartLinesUpdate", "gid://shopify/Cart/bag", 3], ["cartCreate", undefined, 3]]);
-    expect(handedOff()).toEqual([["47501788348578", 3]]);
-    expect(coupon()).toBe("BUY3");
-    expect(holds(carts.find((c) => c.id === stored().cartId))).toEqual([["47501788348578", 3]]);
-    expect(result.current.items.map((i) => [i.id, i.quantity])).toEqual([["prism-riviere-bracelet", 3]]);
-    expect(events("AddToCart")).toEqual([expect.objectContaining({ id: "prism-riviere-bracelet", price: 2399, quantity: 3 })]);
-    /* The bag's charged Total: 3 x 2,399 = 7,197 with BUY3's 20% off,
-       5,757.60, so 5,758 (baa72ac). */
-    expect(events("InitiateCheckout")).toEqual([expect.objectContaining({ value: 5758, num_items: 3 })]);
+    expect(ops.slice(0, 2)).toEqual([["cartLinesUpdate", "gid://shopify/Cart/bag", 2], ["cartCreate", undefined, 2]]);
+    expect(handedOff()).toEqual([["47501788348578", 2]]);
+    expect(coupon()).toBe("BUY2");
+    expect(holds(carts.find((c) => c.id === stored().cartId))).toEqual([["47501788348578", 2]]);
+    expect(result.current.items.map((i) => [i.id, i.quantity])).toEqual([["prism-riviere-bracelet", 2]]);
+    expect(events("AddToCart")).toEqual([expect.objectContaining({ id: "prism-riviere-bracelet", price: 2399, quantity: 2 })]);
+    /* The bag's charged Total: 2 x 2399 with Buy 2's 10% off (baa72ac). */
+    expect(events("InitiateCheckout")).toEqual([expect.objectContaining({ value: 4318, num_items: 2 })]);
     expect(toastError).not.toHaveBeenCalled();
   });
 
-  it("adds the bag's 3 back on the same cart when Shopify dropped only that line", async () => {
-    bag([[bracelet, "gid://shopify/CartLine/b", 3]]);
+  it("adds the bag's 2 back on the same cart when Shopify dropped only that line", async () => {
+    bag([[bracelet, "gid://shopify/CartLine/b", 2]]);
     const carts = [bagCart([])];
     const ops = shopify(carts);
     const { result } = renderHook(() => useCart(), { wrapper: CartProvider });
     await act(async () => { await result.current.buyNow(bracelet); });
-    expect(ops[0]).toEqual(["cartLinesUpdate", "gid://shopify/Cart/bag", 3]);
-    expect(handedOff()).toEqual([["47501788348578", 3]]);
-    expect(coupon()).toBe("BUY3");
-    expect(holds(carts.find((c) => c.id === stored().cartId))).toEqual([["47501788348578", 3]]);
-    expect(result.current.items.map((i) => [i.id, i.quantity])).toEqual([["prism-riviere-bracelet", 3]]);
-    expect(events("AddToCart")).toEqual([expect.objectContaining({ id: "prism-riviere-bracelet", price: 2399, quantity: 3 })]);
+    expect(ops[0]).toEqual(["cartLinesUpdate", "gid://shopify/Cart/bag", 2]);
+    expect(handedOff()).toEqual([["47501788348578", 2]]);
+    expect(coupon()).toBe("BUY2");
+    expect(holds(carts.find((c) => c.id === stored().cartId))).toEqual([["47501788348578", 2]]);
+    expect(result.current.items.map((i) => [i.id, i.quantity])).toEqual([["prism-riviere-bracelet", 2]]);
+    expect(events("AddToCart")).toEqual([expect.objectContaining({ id: "prism-riviere-bracelet", price: 2399, quantity: 2 })]);
   });
 
-  it("with the hoops also on a cart that is gone, the bracelet's 3 still go to checkout", async () => {
-    bag([[hoops, "gid://shopify/CartLine/h", 1], [bracelet, "gid://shopify/CartLine/b", 3]]);
+  it("with the hoops also on a cart that is gone, the bracelet's 2 still go to checkout", async () => {
+    bag([[hoops, "gid://shopify/CartLine/h", 1], [bracelet, "gid://shopify/CartLine/b", 2]]);
     shopify([]);
     const { result } = renderHook(() => useCart(), { wrapper: CartProvider });
     await act(async () => { await result.current.buyNow(bracelet); });
-    expect(handedOff()).toEqual([["47501788348578", 3]]);
-    expect(coupon()).toBe("BUY3");
-    expect(result.current.items.map((i) => [i.id, i.quantity])).toEqual([["prism-riviere-bracelet", 3]]);
+    expect(handedOff()).toEqual([["47501788348578", 2]]);
+    expect(coupon()).toBe("BUY2");
+    expect(result.current.items.map((i) => [i.id, i.quantity])).toEqual([["prism-riviere-bracelet", 2]]);
   });
 });

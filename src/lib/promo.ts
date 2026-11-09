@@ -24,6 +24,7 @@
    bag cannot quote 10% off two pieces whatever Shopify still holds. */
 export const PROMO_DISCOUNTS = {
   FRIENDSANDFAMILY: 0.2,
+  BUY2: 0.1,
   BUY3: 0.2,
   BUY4: 0.3,
   NAIRA10: 0.1,
@@ -68,7 +69,9 @@ export const getPromoDiscountRate = (code: string | null): number => {
   code travels with the bag and is honoured. The shopper never types one; the
   bag applies whichever rung it has reached.
 */
+/* Buy 2 (10%) is back since 9 Nov 2026, the owner's ask: three rungs. */
 export const QUANTITY_OFFERS = [
+  { code: "BUY2", minQuantity: 2, rate: 0.1 },
   { code: "BUY3", minQuantity: 3, rate: 0.2 },
   { code: "BUY4", minQuantity: 4, rate: 0.3 },
 ] as const;

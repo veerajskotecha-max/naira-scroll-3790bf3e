@@ -21,9 +21,9 @@ describe("SimpleLadder: the bag's offer track", () => {
   });
 
   /* 8.5px was dust on a phone; 11px is the least a shopper can read. */
-  it("sets the line over the track at 11px", () => {
+  it("sets the line over the track at 10px, small enough for three rungs", () => {
     const { container } = render(<SimpleLadder totalItems={1} />);
-    expect((container.querySelector("[data-ladder] > p") as HTMLElement).className).toMatch(/text-\[11px\]/);
+    expect((container.querySelector("[data-ladder] > p") as HTMLElement).className).toMatch(/text-\[10px\]/);
   });
 
   it("states all three rungs under the track", () => {

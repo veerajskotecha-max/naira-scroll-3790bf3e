@@ -7,7 +7,6 @@ import {
   pieceAtRung,
   PROMO_EVENT,
   QUANTITY_OFFERS,
-  RUNG_GRID_COLS,
   TOP_QUANTITY_OFFER,
 } from "@/lib/promo";
 
@@ -24,15 +23,13 @@ import {
   under the panel from `pdpOfferStatus`, which follows the bag as Shopify last
   confirmed it (a piece still on its way in does not count yet).
 
-  Two rungs since 7 Nov 2026: Buy 3 at 20% and Buy 4 at 30%. The owner added
-  Buy 4 that morning and asked for this box to be calmer and easier to read,
-  then took Buy 2 (10%) away the same day ("we need only buy 3 20% off and
-  buy 4 30% off"). One equal column per rung (`RUNG_GRID_COLS`, never a
-  fixed count) between gold hairlines, each read in one glance: the rate,
-  largest, in the serif; the piece's price at that rung under it; "Buy 3" as
-  the small label beside the rate. The rung the bag has reached takes the
-  rate in gold and a gold rule under its column, and a rung it has climbed
-  past steps back. No fill behind the text, and nothing under 11px.
+  Three rungs since 7 Nov 2026 (the owner added Buy 4 at 30%, and asked for
+  this box to be calmer and easier to read). Three equal columns between gold
+  hairlines, each read in one glance: the rate, largest, in the serif; the
+  piece's price at that rung under it; "Buy 2" as the small label beside the
+  rate. The rung the bag has reached takes the rate in gold and a gold rule
+  under its column, and a rung it has climbed past steps back. No fill
+  behind the text, and nothing under 11px.
 
   That rule is drawn INSIDE the list of rungs, in a 3px foot each column
   keeps for it (taken from the panel's own bottom padding, so the panel's
@@ -45,14 +42,13 @@ import {
   Still two rows, because the panel sits right above Add to cart: on a 390x844
   phone the most-advertised piece (Prism Rivière, its badges on two lines)
   kept Add to cart on the first screen with 3px to spare, so the panel holds
-  the height it had, 56px. That is why the label sits beside the rate rather
-  than over it. With three columns that took a stacked layout below 310px and
-  hid "off" below 350px; two columns hold the label, the rate and "off" on
-  one line down to 280px, so there is one layout at every width. "Applied in
-  your bag · no code" rides on the panel's top rule, costing no row. The line
-  saying what this piece does to the bag appears under it only once the bag
-  holds a piece (or a code is typed); that change happens behind the bag,
-  which opens at the tap.
+  the height it had. That is why the label sits beside the rate rather than
+  over it. Below 310px three columns cannot carry both on one line, so the
+  label stacks over the rate there and the price steps down a size (no
+  first-screen promise holds on so small a screen anyway). "Applied in your bag · no code" rides on the panel's top
+  rule, costing no row. The line saying what this piece does to the bag
+  appears under it only once the bag holds a piece (or a code is typed); that
+  change happens behind the bag, which opens at the tap.
 
   A pre-order choice (a size or metal Shopify has sold out of) is reserved on
   WhatsApp and never reaches the bag, so the per-piece figures would be a
@@ -90,7 +86,7 @@ const PdpOfferLadder = ({ price, preorder = false }: { price: number; preorder?:
         <p className="absolute -top-[7px] left-1/2 -translate-x-1/2 whitespace-nowrap bg-nf-ivory px-2 font-nf-label text-[11px] font-medium uppercase leading-[14px] tracking-nf-8 text-nf-gold-text">
           {preorder ? "Not on pre-orders" : "Applied in your bag · no code"}
         </p>
-        <ul className={`grid ${RUNG_GRID_COLS}`}>
+        <ul className="grid grid-cols-3">
           {QUANTITY_OFFERS.map((offer, i) => {
             const reached = !preorder && totalItems >= offer.minQuantity;
             const isCurrent = reached && offer.code === current?.code;
@@ -101,9 +97,9 @@ const PdpOfferLadder = ({ price, preorder = false }: { price: number; preorder?:
                 data-rung={offer.minQuantity}
                 data-reached={reached ? "" : undefined}
                 data-current={isCurrent ? "" : undefined}
-                className={`relative min-w-0 px-1 text-center ${preorder ? "" : "pb-[3px]"} ${i > 0 ? "border-l border-nf-gold-deep/25" : ""}`}
+                className={`relative min-w-0 px-0.5 text-center min-[310px]:px-1 ${preorder ? "" : "pb-[3px]"} ${i > 0 ? "border-l border-nf-gold-deep/25" : ""}`}
               >
-                <p className="flex h-[22px] flex-row items-baseline justify-center gap-1.5 whitespace-nowrap">
+                <p className="flex flex-col items-center whitespace-nowrap min-[310px]:h-[22px] min-[310px]:flex-row min-[310px]:items-baseline min-[310px]:justify-center min-[310px]:gap-1.5">
                   <span className={`font-nf-label text-[11px] font-medium uppercase leading-[14px] tracking-nf-8 ${passed ? "text-nf-ink/65" : "text-nf-gold-text"}`}>
                     Buy {offer.minQuantity}
                   </span>
@@ -113,25 +109,25 @@ const PdpOfferLadder = ({ price, preorder = false }: { price: number; preorder?:
                     }`}
                   >
                     {pct(offer.rate)}
-                    <span className="font-nf-label text-[11.5px] font-normal leading-none tracking-normal text-nf-ink/70"> off</span>
+                    {/* "off" fits beside the rate from 350px (every common
+                        phone); a narrower one still hears it. */}
+                    <span className="sr-only font-nf-label text-[11.5px] font-normal leading-none tracking-normal text-nf-ink/70 min-[350px]:not-sr-only"> off</span>
                   </span>
                 </p>
                 {!preorder && (
                   /* A fixed height: the figure and the pre-order note take the
                      same room, or picking a pre-order size moves the sizes. */
                   <p className={`h-4 whitespace-nowrap leading-4 ${passed ? "text-nf-ink/65" : "text-nf-ink"}`}>
-                    <span className="text-[13.5px] font-medium tabular-nums">{rupees(pieceAtRung(price, offer))}</span>
-                    <span className="font-nf-label text-[11.5px] text-nf-ink/65"> each</span>
+                    <span className="text-[12.5px] font-medium tabular-nums min-[310px]:text-[13.5px]">{rupees(pieceAtRung(price, offer))}</span>
+                    <span className="font-nf-label text-[11px] text-nf-ink/65 min-[310px]:text-[11.5px]"> each</span>
                   </p>
                 )}
                 {isCurrent && (
                   <>
                     <span className="sr-only">, in your bag</span>
                     {/* The reached rung's rule, in the column's own foot: inside
-                        the list, so the buy bar never covers it. Held to about
-                        the rung's own width: across a whole half of the box
-                        (two columns since 7 Nov 2026) it read as a divider. */}
-                    <span aria-hidden="true" data-rung-rule className="absolute inset-x-2 bottom-0 mx-auto h-[2px] max-w-[108px] bg-nf-gold-deep" />
+                        the list, so the buy bar never covers it. */}
+                    <span aria-hidden="true" data-rung-rule className="absolute inset-x-2 bottom-0 h-[2px] bg-nf-gold-deep" />
                   </>
                 )}
               </li>

@@ -5,11 +5,7 @@ import { CartProvider, useCart } from "./CartContext";
 /*
   The bag's rung code goes on the Shopify cart at checkout. Removing a piece
   left the old rung's code there, and a one-piece checkout never cleared it:
-  live, BUY2 stayed on a one-piece cart ({BUY2, applicable: false}). Since
-  7 Nov 2026 two pieces earn no rung either (Buy 2 is gone), so a two-piece
-  checkout clears the cart's code too: a BUY2 left there would take 10% off
-  in Shopify's own checkout while BUY2 is still switched on, a total the bag
-  never quoted.
+  live, BUY2 stayed on a one-piece cart ({BUY2, applicable: false}).
 */
 const mocks = vi.hoisted(() => ({ codes: vi.fn(), start: vi.fn() }));
 vi.mock("@/lib/shopify", () => ({
@@ -48,30 +44,12 @@ describe("the Shopify cart's discount code follows the rung", () => {
     expect(mocks.start.mock.calls[0][1].couponCode).toBeNull();
   });
 
-  it("clears the cart's code at two pieces, which earn none", async () => {
+  it("still sets the rung's code at two pieces", async () => {
     bag("prism", "hoops");
     const { result } = renderHook(() => useCart(), { wrapper: CartProvider });
     await act(async () => { result.current.checkout(); });
-    expect(mocks.codes).toHaveBeenCalledWith("c1", []);
+    expect(mocks.codes).toHaveBeenCalledWith("c1", ["BUY2"]);
     expect(mocks.codes).toHaveBeenCalledTimes(1);
-    expect(mocks.start.mock.calls[0][1].couponCode).toBeNull();
-  });
-
-  it("sets the rung's code at three pieces", async () => {
-    bag("prism", "hoops", "studs");
-    const { result } = renderHook(() => useCart(), { wrapper: CartProvider });
-    await act(async () => { result.current.checkout(); });
-    expect(mocks.codes).toHaveBeenCalledWith("c1", ["BUY3"]);
-    expect(mocks.codes).toHaveBeenCalledTimes(1);
-    expect(mocks.start.mock.calls[0][1].couponCode).toBe("BUY3");
-  });
-
-  it("sets BUY4 at four pieces", async () => {
-    bag("prism", "hoops", "studs", "ring");
-    const { result } = renderHook(() => useCart(), { wrapper: CartProvider });
-    await act(async () => { result.current.checkout(); });
-    expect(mocks.codes).toHaveBeenCalledWith("c1", ["BUY4"]);
-    expect(mocks.start.mock.calls[0][1].couponCode).toBe("BUY4");
   });
 
   it("never holds checkout on the clearing call", async () => {

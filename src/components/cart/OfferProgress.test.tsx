@@ -12,27 +12,22 @@ afterEach(cleanup);
   while both drifted away from the live Shopify codes — and the bag would
   promise a discount Fastrr never applies. Hard-coding them here means the
   rates cannot be moved without this file failing, which is the prompt to go
-  and change BUY3/BUY4 in Shopify at the same time.
+  and change BUY2/BUY3/BUY4 in Shopify at the same time.
 
-  Live at the time of writing: BUY3 = 20% at 3+ pieces (set back by the
-  owner on 3 Nov 2026 to the rate it had before 25 Oct) and BUY4 = 30% at 4+
-  (added by the owner on 7 Nov 2026). Buy 2 (10% at 2+) was taken away the
-  same day ("we need only buy 3 20% off and buy 4 30% off"): two pieces earn
-  nothing, and no rung for them is shown.
+  Live at the time of writing: BUY2 = 10% at 2+ pieces, BUY3 = 20% at 3+
+  (set back by the owner on 3 Nov 2026 to the rates they had before 25 Oct;
+  20% and 30% on 2-3 Nov, 15% and 25% from 25 Oct), and BUY4 = 30% at 4+
+  (added by the owner on 7 Nov 2026).
 */
 describe("OfferProgress", () => {
   it("pushes the shopper towards the first rung before they reach it", () => {
     render(<OfferProgress totalItems={1} />);
-    expect(screen.getByText("Add 2 pieces, save 20%")).toBeInTheDocument();
+    expect(screen.getByText("Add 1 piece, save 10%")).toBeInTheDocument();
   });
 
-  /* Two pieces earn nothing since 7 Nov 2026: the band names the third
-     piece's 20% and claims no saving yet. */
-  it("on two pieces, offers the third piece's 20% and claims nothing earned", () => {
+  it("confirms the earned rung and names the next one", () => {
     render(<OfferProgress totalItems={2} />);
-    expect(screen.getByText("Add 1 piece, save 20%")).toBeInTheDocument();
-    expect(screen.queryByText(/10%/)).not.toBeInTheDocument();
-    expect(screen.queryByText(/% off —/)).not.toBeInTheDocument();
+    expect(screen.getByText("10% off — add 1 piece for 20%")).toBeInTheDocument();
   });
 
   /* Three pieces are not the top any more: the band names the fourth. */
@@ -51,33 +46,32 @@ describe("OfferProgress", () => {
     expect(screen.getByText(/^30% off —/)).toBeInTheDocument();
   });
 
-  /* Both rungs stay on show at every state: the next one is the reason to
-     add another piece, so hiding it until it is earned defeats the ladder.
-     Two rungs only: no "2 pieces" or 10% rung since 7 Nov 2026. */
-  it.each([1, 2, 3, 4, 5])("shows both rungs, and only those, at %i pieces", (n) => {
-    const { container } = render(<OfferProgress totalItems={n} />);
+  /* Every rung stays on show at every state: the next one is the reason to
+     add another piece, so hiding it until it is earned defeats the ladder. */
+  it.each([1, 2, 3, 4, 5])("shows all three rungs at %i pieces", (n) => {
+    render(<OfferProgress totalItems={n} />);
+    expect(screen.getByText("2 pieces")).toBeInTheDocument();
     expect(screen.getByText("3 pieces")).toBeInTheDocument();
     expect(screen.getByText("4 pieces")).toBeInTheDocument();
+    expect(screen.getByText("10% off")).toBeInTheDocument();
     expect(screen.getByText("20% off")).toBeInTheDocument();
     expect(screen.getByText("30% off")).toBeInTheDocument();
-    expect(container.querySelectorAll("ul > li")).toHaveLength(2);
-    expect(screen.queryByText("2 pieces")).not.toBeInTheDocument();
-    expect(screen.queryByText("10% off")).not.toBeInTheDocument();
   });
 
-  /* Each label sits in its own half, under its own marker (1/4, 3/4): at
-     their piece counts "3 pieces" and "4 pieces" overlapped at 280px. */
-  it("puts each rung's marker at the centre of its own half", () => {
+  /* Each label sits in its own third, under its own marker (1/6, 1/2, 5/6):
+     at their piece counts "3 pieces" and "4 pieces" overlapped at 280px. */
+  it("puts each rung's marker at the centre of its own third", () => {
     const { container } = render(<OfferProgress totalItems={2} />);
     const marks = [...container.querySelectorAll('[role="progressbar"] > span[aria-hidden]')] as HTMLElement[];
-    expect(marks.map((m) => parseFloat(m.style.left).toFixed(2))).toEqual(["25.00", "75.00"]);
-    expect(container.querySelector("ul")?.className).toMatch(/\bgrid-cols-2\b/);
-    expect(container.querySelector("ul")?.className).not.toMatch(/grid-cols-3/);
+    expect(marks.map((m) => parseFloat(m.style.left).toFixed(2))).toEqual(["16.67", "50.00", "83.33"]);
+    expect(container.querySelector("ul")?.className).toMatch(/grid-cols-3/);
   });
 
-  /* A typed 10% code (NAIRA10) is already in hand. It is worth less than
-     either rung, so the band names the first rung worth more, BUY3's 20%,
-     two pieces away, and never offers the code's own 10% back. */
+  /* A typed 10% code (NAIRA10) is already in hand, and since 3 Nov 2026 it
+     matches the first rung (BUY2, 10%): the band must not offer that 10%
+     again, so it skips the rung the code matches and points at the next one
+     worth more, two pieces away. (No live code sits below the first rung any
+     more, so this is also the "skips a rung the code matches" case.) */
   it("never offers a saving the bag already has from a code", () => {
     render(<OfferProgress totalItems={1} appliedRate={0.1} quiet />);
     expect(screen.getByText("10% off — add 2 pieces for 20%")).toBeInTheDocument();
@@ -86,17 +80,17 @@ describe("OfferProgress", () => {
   });
 
   /* A 20% code (FRIENDSANDFAMILY) matches the three-piece rung (BUY3, 20%),
-     so on one piece the band skips Buy 3 and points at Buy 4, the only rung
-     worth more, three pieces away. */
+     so on one piece the band skips Buy 2 and Buy 3 and points at Buy 4, the
+     only rung worth more, three pieces away. */
   it("skips every rung the code already matches", () => {
     render(<OfferProgress totalItems={1} appliedRate={0.2} quiet />);
     expect(screen.getByText("20% off — add 3 pieces for 30%")).toBeInTheDocument();
     expect(screen.queryByText(/for 20%/)).not.toBeInTheDocument();
   });
 
-  /* Two pieces with FRIENDSANDFAMILY: two pieces earn no rung, so the bag's
-     rate is the code's 20%; the third piece's 20% adds nothing on top, and
-     the fourth's 30% does. */
+  /* Two pieces with FRIENDSANDFAMILY: the code (20%) beats the earned rung
+     (BUY2, 10%), so the bag's rate is the code's 20%; the third piece's 20%
+     adds nothing on top, and the fourth's 30% does. */
   it("skips the rung a code that beats the earned one already matches", () => {
     render(<OfferProgress totalItems={2} appliedRate={0.2} quiet />);
     expect(screen.getByText("20% off — add 2 pieces for 30%")).toBeInTheDocument();
@@ -104,8 +98,8 @@ describe("OfferProgress", () => {
 
   it("shows no rung labels in the quiet bag", () => {
     render(<OfferProgress totalItems={1} quiet />);
-    expect(screen.getByText("Add 2 pieces, save 20%")).toBeInTheDocument();
-    expect(screen.queryByText("3 pieces")).not.toBeInTheDocument();
+    expect(screen.getByText("Add 1 piece, save 10%")).toBeInTheDocument();
+    expect(screen.queryByText("2 pieces")).not.toBeInTheDocument();
   });
 
   it("reports progress across the whole ladder, not the current rung", () => {

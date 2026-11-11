@@ -1,0 +1,378 @@
+{
+ "date": "2026-11-11",
+ "source": "Owner's handwritten ring count (photo sent in chat, 11 Nov 2026), read independently three times",
+ "method": "inventorySetQuantities name=available reason=cycle_count_available, one call, idempotency key 6a9ab6eb-3349-469b-a2fd-72ed8ae63ac7, location Forest Colony Parijat Nagar. Committed (unshipped-order) quantities left as they were.",
+ "undo": "Run inventorySetQuantities name=available with quantity=available_before and changeFromQuantity=available_after for each row that changed.",
+ "not_on_sheet_left_unchanged": [
+  "Golden Duet Ring 9",
+  "Rose Verdant Band 0",
+  "Pavé Dome Ring 4",
+  "Petite Pavé Band 3",
+  "Baguette Eternity Band 27",
+  "Tubogas Dome Ring 21",
+  "Roman Numeral Trio Ring -1",
+  "Crystal Baguette Eternity Ring 6",
+  "Watch Link Ring 6",
+  "Mesh Band Ring 11",
+  "Asscher Solitaire Ring 0",
+  "Cushion Solitaire Ring 0",
+  "Lumière Oval Solitaire Ring -1",
+  "11 draft rings"
+ ],
+ "open_questions": [
+  "Granule Dome Ring Silver 3 on the sheet: the listing has no Silver option",
+  "Chain Drop Dome Ring 4 (size 6 x2, size 7 x2) put on Gold; sheet does not say the metal"
+ ],
+ "rows": [
+  {
+   "product": "Cushion Halo Ring",
+   "variant": "Default Title",
+   "inventoryItemId": "gid://shopify/InventoryItem/49654293069986",
+   "locationId": "gid://shopify/Location/76267389090",
+   "available_before": 51,
+   "available_after": 52,
+   "on_hand_before": 57,
+   "committed": 6
+  },
+  {
+   "product": "Chevron Whisper Ring",
+   "variant": "Default Title",
+   "inventoryItemId": "gid://shopify/InventoryItem/49654293102754",
+   "locationId": "gid://shopify/Location/76267389090",
+   "available_before": 5,
+   "available_after": 3,
+   "on_hand_before": 5,
+   "committed": 0
+  },
+  {
+   "product": "Pearl Ribbon Ring",
+   "variant": "Default Title",
+   "inventoryItemId": "gid://shopify/InventoryItem/49654293233826",
+   "locationId": "gid://shopify/Location/76267389090",
+   "available_before": 5,
+   "available_after": 4,
+   "on_hand_before": 5,
+   "committed": 0
+  },
+  {
+   "product": "Halo Curve Ring",
+   "variant": "Default Title",
+   "inventoryItemId": "gid://shopify/InventoryItem/49654293725346",
+   "locationId": "gid://shopify/Location/76267389090",
+   "available_before": 45,
+   "available_after": 29,
+   "on_hand_before": 45,
+   "committed": 0
+  },
+  {
+   "product": "Droplet Open Ring",
+   "variant": "Silver",
+   "inventoryItemId": "gid://shopify/InventoryItem/52773434884258",
+   "locationId": "gid://shopify/Location/76267389090",
+   "available_before": 10,
+   "available_after": 11,
+   "on_hand_before": 10,
+   "committed": 0
+  },
+  {
+   "product": "Droplet Open Ring",
+   "variant": "Gold",
+   "inventoryItemId": "gid://shopify/InventoryItem/52773434851490",
+   "locationId": "gid://shopify/Location/76267389090",
+   "available_before": 10,
+   "available_after": 9,
+   "on_hand_before": 10,
+   "committed": 0
+  },
+  {
+   "product": "Lilac Papillon Ring",
+   "variant": "Default Title",
+   "inventoryItemId": "gid://shopify/InventoryItem/49837468549282",
+   "locationId": "gid://shopify/Location/76267389090",
+   "available_before": 30,
+   "available_after": 21,
+   "on_hand_before": 30,
+   "committed": 0
+  },
+  {
+   "product": "Verdant Eternity Band",
+   "variant": "Default Title",
+   "inventoryItemId": "gid://shopify/InventoryItem/49654293430434",
+   "locationId": "gid://shopify/Location/76267389090",
+   "available_before": 57,
+   "available_after": 58,
+   "on_hand_before": 59,
+   "committed": 2
+  },
+  {
+   "product": "Chain Drop Dome Ring",
+   "variant": "Gold / 5",
+   "inventoryItemId": "gid://shopify/InventoryItem/52830675042466",
+   "locationId": "gid://shopify/Location/76267389090",
+   "available_before": 2,
+   "available_after": 0,
+   "on_hand_before": 2,
+   "committed": 0
+  },
+  {
+   "product": "Chain Drop Dome Ring",
+   "variant": "Gold / 6",
+   "inventoryItemId": "gid://shopify/InventoryItem/52773482037410",
+   "locationId": "gid://shopify/Location/76267389090",
+   "available_before": 3,
+   "available_after": 2,
+   "on_hand_before": 3,
+   "committed": 0
+  },
+  {
+   "product": "Chain Drop Dome Ring",
+   "variant": "Gold / 7",
+   "inventoryItemId": "gid://shopify/InventoryItem/52773482070178",
+   "locationId": "gid://shopify/Location/76267389090",
+   "available_before": 3,
+   "available_after": 2,
+   "on_hand_before": 3,
+   "committed": 0
+  },
+  {
+   "product": "Chain Drop Dome Ring",
+   "variant": "Gold / 8",
+   "inventoryItemId": "gid://shopify/InventoryItem/52773482102946",
+   "locationId": "gid://shopify/Location/76267389090",
+   "available_before": 2,
+   "available_after": 0,
+   "on_hand_before": 2,
+   "committed": 0
+  },
+  {
+   "product": "Vintage Halo Ring",
+   "variant": "Default Title",
+   "inventoryItemId": "gid://shopify/InventoryItem/49654293758114",
+   "locationId": "gid://shopify/Location/76267389090",
+   "available_before": 5,
+   "available_after": 9,
+   "on_hand_before": 5,
+   "committed": 0
+  },
+  {
+   "product": "Whisper Pavé Band",
+   "variant": "Default Title",
+   "inventoryItemId": "gid://shopify/InventoryItem/49654293823650",
+   "locationId": "gid://shopify/Location/76267389090",
+   "available_before": 1,
+   "available_after": 3,
+   "on_hand_before": 2,
+   "committed": 1
+  },
+  {
+   "product": "Pavé Zigzag Ring",
+   "variant": "Default Title",
+   "inventoryItemId": "gid://shopify/InventoryItem/52837620088994",
+   "locationId": "gid://shopify/Location/76267389090",
+   "available_before": 8,
+   "available_after": 8,
+   "on_hand_before": 8,
+   "committed": 0
+  },
+  {
+   "product": "Blush Cluster Ring",
+   "variant": "Default Title",
+   "inventoryItemId": "gid://shopify/InventoryItem/49654293299362",
+   "locationId": "gid://shopify/Location/76267389090",
+   "available_before": 0,
+   "available_after": 0,
+   "on_hand_before": 2,
+   "committed": 2
+  },
+  {
+   "product": "Granule Dome Ring",
+   "variant": "Default Title",
+   "inventoryItemId": "gid://shopify/InventoryItem/49654293364898",
+   "locationId": "gid://shopify/Location/76267389090",
+   "available_before": 4,
+   "available_after": 4,
+   "on_hand_before": 5,
+   "committed": 1
+  },
+  {
+   "product": "Linked Pair Ring",
+   "variant": "Gold / 5",
+   "inventoryItemId": "gid://shopify/InventoryItem/52830674944162",
+   "locationId": "gid://shopify/Location/76267389090",
+   "available_before": 2,
+   "available_after": 2,
+   "on_hand_before": 2,
+   "committed": 0
+  },
+  {
+   "product": "Linked Pair Ring",
+   "variant": "Gold / 6",
+   "inventoryItemId": "gid://shopify/InventoryItem/52773477810338",
+   "locationId": "gid://shopify/Location/76267389090",
+   "available_before": 3,
+   "available_after": 0,
+   "on_hand_before": 3,
+   "committed": 0
+  },
+  {
+   "product": "Linked Pair Ring",
+   "variant": "Gold / 7",
+   "inventoryItemId": "gid://shopify/InventoryItem/52773477843106",
+   "locationId": "gid://shopify/Location/76267389090",
+   "available_before": 1,
+   "available_after": 0,
+   "on_hand_before": 1,
+   "committed": 0
+  },
+  {
+   "product": "Linked Pair Ring",
+   "variant": "Gold / 8",
+   "inventoryItemId": "gid://shopify/InventoryItem/52773477875874",
+   "locationId": "gid://shopify/Location/76267389090",
+   "available_before": 1,
+   "available_after": 0,
+   "on_hand_before": 1,
+   "committed": 0
+  },
+  {
+   "product": "Linked Pair Ring",
+   "variant": "Silver / 5",
+   "inventoryItemId": "gid://shopify/InventoryItem/52830674976930",
+   "locationId": "gid://shopify/Location/76267389090",
+   "available_before": 2,
+   "available_after": 3,
+   "on_hand_before": 2,
+   "committed": 0
+  },
+  {
+   "product": "Linked Pair Ring",
+   "variant": "Silver / 6",
+   "inventoryItemId": "gid://shopify/InventoryItem/52773477908642",
+   "locationId": "gid://shopify/Location/76267389090",
+   "available_before": 2,
+   "available_after": 2,
+   "on_hand_before": 2,
+   "committed": 0
+  },
+  {
+   "product": "Linked Pair Ring",
+   "variant": "Silver / 7",
+   "inventoryItemId": "gid://shopify/InventoryItem/52773477941410",
+   "locationId": "gid://shopify/Location/76267389090",
+   "available_before": 3,
+   "available_after": 1,
+   "on_hand_before": 3,
+   "committed": 0
+  },
+  {
+   "product": "Linked Pair Ring",
+   "variant": "Silver / 8",
+   "inventoryItemId": "gid://shopify/InventoryItem/52773477974178",
+   "locationId": "gid://shopify/Location/76267389090",
+   "available_before": 3,
+   "available_after": 3,
+   "on_hand_before": 3,
+   "committed": 0
+  },
+  {
+   "product": "Star Point Band",
+   "variant": "Gold / 5",
+   "inventoryItemId": "gid://shopify/InventoryItem/52830302797986",
+   "locationId": "gid://shopify/Location/76267389090",
+   "available_before": 2,
+   "available_after": 0,
+   "on_hand_before": 2,
+   "committed": 0
+  },
+  {
+   "product": "Star Point Band",
+   "variant": "Gold / 6",
+   "inventoryItemId": "gid://shopify/InventoryItem/49654293266594",
+   "locationId": "gid://shopify/Location/76267389090",
+   "available_before": 2,
+   "available_after": 3,
+   "on_hand_before": 2,
+   "committed": 0
+  },
+  {
+   "product": "Star Point Band",
+   "variant": "Gold / 7",
+   "inventoryItemId": "gid://shopify/InventoryItem/52830302830754",
+   "locationId": "gid://shopify/Location/76267389090",
+   "available_before": 1,
+   "available_after": 1,
+   "on_hand_before": 1,
+   "committed": 0
+  },
+  {
+   "product": "Star Point Band",
+   "variant": "Gold / 8",
+   "inventoryItemId": "gid://shopify/InventoryItem/52830302863522",
+   "locationId": "gid://shopify/Location/76267389090",
+   "available_before": 3,
+   "available_after": 3,
+   "on_hand_before": 3,
+   "committed": 0
+  },
+  {
+   "product": "Star Point Band",
+   "variant": "Gold / 9",
+   "inventoryItemId": "gid://shopify/InventoryItem/52916310212770",
+   "locationId": "gid://shopify/Location/76267389090",
+   "available_before": 1,
+   "available_after": 0,
+   "on_hand_before": 1,
+   "committed": 0
+  },
+  {
+   "product": "Star Point Band",
+   "variant": "Silver / 5",
+   "inventoryItemId": "gid://shopify/InventoryItem/52830302896290",
+   "locationId": "gid://shopify/Location/76267389090",
+   "available_before": 1,
+   "available_after": 0,
+   "on_hand_before": 1,
+   "committed": 0
+  },
+  {
+   "product": "Star Point Band",
+   "variant": "Silver / 6",
+   "inventoryItemId": "gid://shopify/InventoryItem/52773608718498",
+   "locationId": "gid://shopify/Location/76267389090",
+   "available_before": 2,
+   "available_after": 3,
+   "on_hand_before": 2,
+   "committed": 0
+  },
+  {
+   "product": "Star Point Band",
+   "variant": "Silver / 7",
+   "inventoryItemId": "gid://shopify/InventoryItem/52830302929058",
+   "locationId": "gid://shopify/Location/76267389090",
+   "available_before": 2,
+   "available_after": 4,
+   "on_hand_before": 2,
+   "committed": 0
+  },
+  {
+   "product": "Star Point Band",
+   "variant": "Silver / 8",
+   "inventoryItemId": "gid://shopify/InventoryItem/52830302961826",
+   "locationId": "gid://shopify/Location/76267389090",
+   "available_before": 6,
+   "available_after": 5,
+   "on_hand_before": 6,
+   "committed": 0
+  },
+  {
+   "product": "Star Point Band",
+   "variant": "Silver / 9",
+   "inventoryItemId": "gid://shopify/InventoryItem/52919199858850",
+   "locationId": "gid://shopify/Location/76267389090",
+   "available_before": 2,
+   "available_after": 2,
+   "on_hand_before": 2,
+   "committed": 0
+  }
+ ]
+}

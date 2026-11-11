@@ -8,12 +8,8 @@
   "Rose Verdant Band 0",
   "Pavé Dome Ring 4",
   "Petite Pavé Band 3",
-  "Baguette Eternity Band 27",
-  "Tubogas Dome Ring 21",
   "Roman Numeral Trio Ring -1",
   "Crystal Baguette Eternity Ring 6",
-  "Watch Link Ring 6",
-  "Mesh Band Ring 11",
   "Asscher Solitaire Ring 0",
   "Cushion Solitaire Ring 0",
   "Lumière Oval Solitaire Ring -1",
@@ -374,5 +370,272 @@
    "on_hand_before": 2,
    "committed": 0
   }
- ]
+ ],
+ "sheets_2_and_3": {
+  "method": "inventorySetQuantities name=available reason=cycle_count_available (19 changes, idempotency key 0b7d1f3e-5a2c-4e8b-9c61-2f4d8a7e3b19); productVariantsBulkCreate added size 9 to Watch Link Ring (YF2645-G-9 3, YF2645-S-9 3; variants 50854512230562, 50854512263330) and Mesh Band Ring (YF3558-G-9 3, YF3558-S-9 2; variants 50854512394402, 50854512427170), same prices. Read independently three times; all agree.",
+  "undo": "Set available back to available_before; delete the four size 9 variants (productVariantsBulkDelete) if not wanted.",
+  "open": [
+   "Baguette Eternity Band 'White' 2 in size 7: the listing has no white stone; Crystal Baguette Eternity Ring (a different design, 8mm, tall claws) left unchanged at 5:2 6:2 7:2"
+  ],
+  "rows": [
+   {
+    "product": "Tubogas Dome Ring",
+    "variant": "Gold / 5",
+    "available_before": 2,
+    "available_after": 0
+   },
+   {
+    "product": "Tubogas Dome Ring",
+    "variant": "Gold / 6",
+    "available_before": 3,
+    "available_after": 3
+   },
+   {
+    "product": "Tubogas Dome Ring",
+    "variant": "Gold / 7",
+    "available_before": 3,
+    "available_after": 3
+   },
+   {
+    "product": "Tubogas Dome Ring",
+    "variant": "Gold / 8",
+    "available_before": 2,
+    "available_after": 2
+   },
+   {
+    "product": "Tubogas Dome Ring",
+    "variant": "Silver / 5",
+    "available_before": 2,
+    "available_after": 0
+   },
+   {
+    "product": "Tubogas Dome Ring",
+    "variant": "Silver / 6",
+    "available_before": 3,
+    "available_after": 3
+   },
+   {
+    "product": "Tubogas Dome Ring",
+    "variant": "Silver / 7",
+    "available_before": 3,
+    "available_after": 2
+   },
+   {
+    "product": "Tubogas Dome Ring",
+    "variant": "Silver / 8",
+    "available_before": 3,
+    "available_after": 3
+   },
+   {
+    "product": "Watch Link Ring",
+    "variant": "Gold / 5",
+    "available_before": 0,
+    "available_after": 0
+   },
+   {
+    "product": "Watch Link Ring",
+    "variant": "Gold / 6",
+    "available_before": 0,
+    "available_after": 0
+   },
+   {
+    "product": "Watch Link Ring",
+    "variant": "Gold / 7",
+    "available_before": 0,
+    "available_after": 1
+   },
+   {
+    "product": "Watch Link Ring",
+    "variant": "Gold / 8",
+    "available_before": 1,
+    "available_after": 1
+   },
+   {
+    "product": "Watch Link Ring",
+    "variant": "Gold / 9",
+    "available_before": null,
+    "available_after": 3
+   },
+   {
+    "product": "Watch Link Ring",
+    "variant": "Silver / 5",
+    "available_before": 2,
+    "available_after": 0
+   },
+   {
+    "product": "Watch Link Ring",
+    "variant": "Silver / 6",
+    "available_before": 1,
+    "available_after": 1
+   },
+   {
+    "product": "Watch Link Ring",
+    "variant": "Silver / 7",
+    "available_before": 1,
+    "available_after": 1
+   },
+   {
+    "product": "Watch Link Ring",
+    "variant": "Silver / 8",
+    "available_before": 1,
+    "available_after": 2
+   },
+   {
+    "product": "Watch Link Ring",
+    "variant": "Silver / 9",
+    "available_before": null,
+    "available_after": 3
+   },
+   {
+    "product": "Mesh Band Ring",
+    "variant": "Gold / 5",
+    "available_before": 1,
+    "available_after": 0
+   },
+   {
+    "product": "Mesh Band Ring",
+    "variant": "Gold / 6",
+    "available_before": 0,
+    "available_after": 0
+   },
+   {
+    "product": "Mesh Band Ring",
+    "variant": "Gold / 7",
+    "available_before": 2,
+    "available_after": 3
+   },
+   {
+    "product": "Mesh Band Ring",
+    "variant": "Gold / 8",
+    "available_before": 0,
+    "available_after": 1
+   },
+   {
+    "product": "Mesh Band Ring",
+    "variant": "Gold / 9",
+    "available_before": null,
+    "available_after": 3
+   },
+   {
+    "product": "Mesh Band Ring",
+    "variant": "Silver / 5",
+    "available_before": 2,
+    "available_after": 0
+   },
+   {
+    "product": "Mesh Band Ring",
+    "variant": "Silver / 6",
+    "available_before": 2,
+    "available_after": 3
+   },
+   {
+    "product": "Mesh Band Ring",
+    "variant": "Silver / 7",
+    "available_before": 2,
+    "available_after": 3
+   },
+   {
+    "product": "Mesh Band Ring",
+    "variant": "Silver / 8",
+    "available_before": 2,
+    "available_after": 3
+   },
+   {
+    "product": "Mesh Band Ring",
+    "variant": "Silver / 9",
+    "available_before": null,
+    "available_after": 2
+   },
+   {
+    "product": "Baguette Eternity Band",
+    "variant": "Ruby / 5",
+    "available_before": 0,
+    "available_after": 0
+   },
+   {
+    "product": "Baguette Eternity Band",
+    "variant": "Ruby / 6",
+    "available_before": 0,
+    "available_after": 0
+   },
+   {
+    "product": "Baguette Eternity Band",
+    "variant": "Ruby / 7",
+    "available_before": 1,
+    "available_after": 1
+   },
+   {
+    "product": "Baguette Eternity Band",
+    "variant": "Ruby / 8",
+    "available_before": 1,
+    "available_after": 0
+   },
+   {
+    "product": "Baguette Eternity Band",
+    "variant": "Ruby / 9",
+    "available_before": 1,
+    "available_after": 2
+   },
+   {
+    "product": "Baguette Eternity Band",
+    "variant": "Emerald / 5",
+    "available_before": 2,
+    "available_after": 0
+   },
+   {
+    "product": "Baguette Eternity Band",
+    "variant": "Emerald / 6",
+    "available_before": 2,
+    "available_after": 2
+   },
+   {
+    "product": "Baguette Eternity Band",
+    "variant": "Emerald / 7",
+    "available_before": 2,
+    "available_after": 0
+   },
+   {
+    "product": "Baguette Eternity Band",
+    "variant": "Emerald / 8",
+    "available_before": 2,
+    "available_after": 2
+   },
+   {
+    "product": "Baguette Eternity Band",
+    "variant": "Emerald / 9",
+    "available_before": 2,
+    "available_after": 3
+   },
+   {
+    "product": "Baguette Eternity Band",
+    "variant": "Amethyst / 5",
+    "available_before": 2,
+    "available_after": 0
+   },
+   {
+    "product": "Baguette Eternity Band",
+    "variant": "Amethyst / 6",
+    "available_before": 3,
+    "available_after": 3
+   },
+   {
+    "product": "Baguette Eternity Band",
+    "variant": "Amethyst / 7",
+    "available_before": 3,
+    "available_after": 3
+   },
+   {
+    "product": "Baguette Eternity Band",
+    "variant": "Amethyst / 8",
+    "available_before": 3,
+    "available_after": 3
+   },
+   {
+    "product": "Baguette Eternity Band",
+    "variant": "Amethyst / 9",
+    "available_before": 3,
+    "available_after": 3
+   }
+  ]
+ }
 }

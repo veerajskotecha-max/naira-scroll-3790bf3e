@@ -24,7 +24,6 @@ export interface Reel {
   products: ReelProduct[];
 }
 
-const SIGN_TTL = 60 * 60 * 6; // 6h — long enough for a browsing session
 // Bump when media paths change so returning shoppers never keep a stale,
 // lower-quality signed URL in session storage.
 // v4 clears signed URLs cached before the seeded objects were corrected from
@@ -88,11 +87,13 @@ const signAll = async (paths: string[]) => {
   if (!unique.length) return map;
   try {
     const supabase = await getSupabase();
-    const signing = supabase.storage.from("reels").createSignedUrls(unique, SIGN_TTL);
+    // Storage has no public read rule: the server signs published reels only.
+    const signing = supabase.functions.invoke<{ urls?: Record<string, string> }>("reel-media");
     const timeout = new Promise<null>((resolve) => setTimeout(() => resolve(null), SIGN_TIMEOUT_MS));
     const result = await Promise.race([signing, timeout]);
-    result?.data?.forEach((row) => {
-      if (row.path && row.signedUrl) map.set(row.path, row.signedUrl);
+    const urls = result?.data?.urls ?? {};
+    unique.forEach((path) => {
+      if (urls[path]) map.set(path, urls[path]);
     });
   } catch {
     /* Unsigned is survivable; empty is not. */

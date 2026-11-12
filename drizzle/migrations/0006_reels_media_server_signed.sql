@@ -1,0 +1,1 @@
+DROP POLICY IF EXISTS "Public can read published reel media" ON storage.objects;

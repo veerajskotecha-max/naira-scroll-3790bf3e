@@ -90,7 +90,7 @@ describe("a sold-out piece's product page before the catalogue arrives", () => {
     await screen.findByRole("heading", { level: 1, name: /Molten Bloom Hoops/ });
     expect(actions()).toEqual(["Reserve now"]);
     expect(screen.queryByRole("button", { name: /Buy Now/i })).toBeNull();
-    expect(document.querySelector("#product-price")?.textContent).toMatch(/₹1,300.*₹2,359/);
+    expect(document.querySelector("#product-price")?.textContent).toMatch(/₹1,300.*₹1,859/);
     expect(document.querySelector("#product-actions")?.textContent).toMatch(/Hand-finished for you and shipped within 2 weeks, gift-boxed/);
     const ld = [...document.querySelectorAll('script[type="application/ld+json"]')].map((s) => s.textContent ?? "").join(" ");
     expect(ld).toMatch(/schema\.org\/OutOfStock/);

@@ -15,10 +15,10 @@ export const jewellerySnapshot: JewelPiece[] = [
     "category": "Necklaces",
     "sku": "YF3925-NEC",
     "number": "22",
-    "price": 1999,
-    "priceLabel": "₹1,999",
-    "compareAtPrice": 3500,
-    "compareAtLabel": "₹3,500",
+    "price": 2200,
+    "priceLabel": "₹2,200",
+    "compareAtPrice": 3149,
+    "compareAtLabel": "₹3,149",
     "variantId": "gid://shopify/ProductVariant/47501786579106",
     "availableForSale": true,
     "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/hf_20260829_210929_aec8f93f-574c-4925-8d00-b81adc2858f6.png?v=1788038303",
@@ -63,10 +63,10 @@ export const jewellerySnapshot: JewelPiece[] = [
     "category": "Necklaces",
     "sku": "YF5244",
     "number": "23",
-    "price": 1599,
-    "priceLabel": "₹1,599",
-    "compareAtPrice": 2999,
-    "compareAtLabel": "₹2,999",
+    "price": 1499,
+    "priceLabel": "₹1,499",
+    "compareAtPrice": 2149,
+    "compareAtLabel": "₹2,149",
     "variantId": "gid://shopify/ProductVariant/47501786644642",
     "availableForSale": true,
     "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/marquise-layering-set-2.jpg?v=1787277329",
@@ -113,10 +113,10 @@ export const jewellerySnapshot: JewelPiece[] = [
     "category": "Necklaces",
     "sku": "YF5143",
     "number": "24",
-    "price": 1199,
-    "priceLabel": "₹1,199",
-    "compareAtPrice": 2900,
-    "compareAtLabel": "₹2,900",
+    "price": 999,
+    "priceLabel": "₹999",
+    "compareAtPrice": 1429,
+    "compareAtLabel": "₹1,429",
     "variantId": "gid://shopify/ProductVariant/47501786742946",
     "availableForSale": true,
     "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/toggle-link-chain-1.jpg?v=1787277342",
@@ -163,8 +163,8 @@ export const jewellerySnapshot: JewelPiece[] = [
     "number": "25",
     "price": 1599,
     "priceLabel": "₹1,599",
-    "compareAtPrice": 3829,
-    "compareAtLabel": "₹3,829",
+    "compareAtPrice": 1779,
+    "compareAtLabel": "₹1,779",
     "variantId": "gid://shopify/ProductVariant/47501786775714",
     "availableForSale": false,
     "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/baroque-pearl-lariat-2.jpg?v=1787277347",
@@ -212,8 +212,8 @@ export const jewellerySnapshot: JewelPiece[] = [
     "number": "26",
     "price": 1299,
     "priceLabel": "₹1,299",
-    "compareAtPrice": 2599,
-    "compareAtLabel": "₹2,599",
+    "compareAtPrice": 1449,
+    "compareAtLabel": "₹1,449",
     "variantId": "gid://shopify/ProductVariant/47501786808482",
     "availableForSale": false,
     "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/petite-pearl-chain-1.jpg?v=1787277353",
@@ -259,10 +259,10 @@ export const jewellerySnapshot: JewelPiece[] = [
     "category": "Earrings",
     "sku": "E21572E1",
     "number": "27",
-    "price": 1459,
-    "priceLabel": "₹1,459",
-    "compareAtPrice": 2429,
-    "compareAtLabel": "₹2,429",
+    "price": 1299,
+    "priceLabel": "₹1,299",
+    "compareAtPrice": 1449,
+    "compareAtLabel": "₹1,449",
     "variantId": "gid://shopify/ProductVariant/47501786939554",
     "availableForSale": true,
     "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/hf_20260807_193030_5a9252be-61ad-41d8-b412-31422860c3b5.png?v=1789558321",
@@ -310,8 +310,8 @@ export const jewellerySnapshot: JewelPiece[] = [
     "number": "28",
     "price": 1899,
     "priceLabel": "₹1,899",
-    "compareAtPrice": 2800,
-    "compareAtLabel": "₹2,800",
+    "compareAtPrice": 2119,
+    "compareAtLabel": "₹2,119",
     "variantId": "gid://shopify/ProductVariant/47501787136162",
     "availableForSale": true,
     "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/baguette-arc-hoops-2.jpg?v=1787277472",
@@ -360,8 +360,8 @@ export const jewellerySnapshot: JewelPiece[] = [
     "number": "29",
     "price": 1499,
     "priceLabel": "₹1,499",
-    "compareAtPrice": 2999,
-    "compareAtLabel": "₹2,999",
+    "compareAtPrice": 1669,
+    "compareAtLabel": "₹1,669",
     "variantId": "gid://shopify/ProductVariant/47501787234466",
     "availableForSale": true,
     "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/filigree-bloom-studs-2.jpg?v=1787277480",
@@ -410,8 +410,8 @@ export const jewellerySnapshot: JewelPiece[] = [
     "number": "30",
     "price": 1199,
     "priceLabel": "₹1,199",
-    "compareAtPrice": 2919,
-    "compareAtLabel": "₹2,919",
+    "compareAtPrice": 1719,
+    "compareAtLabel": "₹1,719",
     "variantId": "gid://shopify/ProductVariant/47501787300002",
     "availableForSale": true,
     "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/pearl-drop-studs-on-model.jpg?v=1792570154",
@@ -458,10 +458,10 @@ export const jewellerySnapshot: JewelPiece[] = [
     "category": "Earrings",
     "sku": "E14776S",
     "number": "31",
-    "price": 799,
-    "priceLabel": "₹799",
-    "compareAtPrice": 1799,
-    "compareAtLabel": "₹1,799",
+    "price": 699,
+    "priceLabel": "₹699",
+    "compareAtPrice": 999,
+    "compareAtLabel": "₹999",
     "variantId": "gid://shopify/ProductVariant/47501787594914",
     "availableForSale": true,
     "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/brushed-gold-huggies-1.jpg?v=1787277497",
@@ -508,8 +508,8 @@ export const jewellerySnapshot: JewelPiece[] = [
     "number": "32",
     "price": 1499,
     "priceLabel": "₹1,499",
-    "compareAtPrice": 3000,
-    "compareAtLabel": "₹3,000",
+    "compareAtPrice": 2149,
+    "compareAtLabel": "₹2,149",
     "variantId": "gid://shopify/ProductVariant/47501787693218",
     "availableForSale": true,
     "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/silver-drop-earrings-3.jpg?v=1787277503",
@@ -553,10 +553,10 @@ export const jewellerySnapshot: JewelPiece[] = [
     "category": "Earrings",
     "sku": "E20997C",
     "number": "33",
-    "price": 1499,
-    "priceLabel": "₹1,499",
-    "compareAtPrice": 3279,
-    "compareAtLabel": "₹3,279",
+    "price": 999,
+    "priceLabel": "₹999",
+    "compareAtPrice": 1110,
+    "compareAtLabel": "₹1,110",
     "variantId": "gid://shopify/ProductVariant/47501787725986",
     "availableForSale": true,
     "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/pearl-blossom-earrings-1.jpg?v=1787277507",
@@ -602,10 +602,10 @@ export const jewellerySnapshot: JewelPiece[] = [
     "category": "Earrings",
     "sku": "E19263B",
     "number": "34",
-    "price": 1499,
-    "priceLabel": "₹1,499",
-    "compareAtPrice": 3139,
-    "compareAtLabel": "₹3,139",
+    "price": 1299,
+    "priceLabel": "₹1,299",
+    "compareAtPrice": 1449,
+    "compareAtLabel": "₹1,449",
     "variantId": "gid://shopify/ProductVariant/47501787758754",
     "availableForSale": true,
     "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/hf_20260807_175638_a45c223a-0d14-4854-918b-de2513964874.png?v=1789558319",
@@ -652,10 +652,10 @@ export const jewellerySnapshot: JewelPiece[] = [
     "category": "Bracelets",
     "sku": "YF7085",
     "number": "35",
-    "price": 1449,
-    "priceLabel": "₹1,449",
-    "compareAtPrice": 2899,
-    "compareAtLabel": "₹2,899",
+    "price": 1299,
+    "priceLabel": "₹1,299",
+    "compareAtPrice": 1859,
+    "compareAtLabel": "₹1,859",
     "variantId": "gid://shopify/ProductVariant/47501787889826",
     "availableForSale": true,
     "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF7085_2_worn.png?v=1786122748",
@@ -699,8 +699,8 @@ export const jewellerySnapshot: JewelPiece[] = [
     "number": "36",
     "price": 899,
     "priceLabel": "₹899",
-    "compareAtPrice": 1899,
-    "compareAtLabel": "₹1,899",
+    "compareAtPrice": 1289,
+    "compareAtLabel": "₹1,289",
     "variantId": "gid://shopify/ProductVariant/47501787955362",
     "availableForSale": true,
     "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/pearl-reverie-bracelet-2.jpg?v=1787277572",
@@ -748,8 +748,8 @@ export const jewellerySnapshot: JewelPiece[] = [
     "number": "37",
     "price": 2299,
     "priceLabel": "₹2,299",
-    "compareAtPrice": 4599,
-    "compareAtLabel": "₹4,599",
+    "compareAtPrice": 2559,
+    "compareAtLabel": "₹2,559",
     "variantId": "gid://shopify/ProductVariant/47501787988130",
     "availableForSale": false,
     "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/triple-dawn-cuff-2.jpg?v=1787277578",
@@ -790,8 +790,8 @@ export const jewellerySnapshot: JewelPiece[] = [
     "number": "38",
     "price": 1899,
     "priceLabel": "₹1,899",
-    "compareAtPrice": 2900,
-    "compareAtLabel": "₹2,900",
+    "compareAtPrice": 3169,
+    "compareAtLabel": "₹3,169",
     "variantId": "gid://shopify/ProductVariant/47501788184738",
     "availableForSale": true,
     "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/hf_20260829_210929_40637e96-f7ab-4f9d-9813-10d9f4f218b3.png?v=1788038260",
@@ -841,8 +841,8 @@ export const jewellerySnapshot: JewelPiece[] = [
     "number": "39",
     "price": 1900,
     "priceLabel": "₹1,900",
-    "compareAtPrice": 3449,
-    "compareAtLabel": "₹3,449",
+    "compareAtPrice": 2719,
+    "compareAtLabel": "₹2,719",
     "variantId": "gid://shopify/ProductVariant/47501788315810",
     "availableForSale": false,
     "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/naira-u08-blush-station-bracelet.jpg?v=1789559488",
@@ -894,8 +894,8 @@ export const jewellerySnapshot: JewelPiece[] = [
     "number": "40",
     "price": 2399,
     "priceLabel": "₹2,399",
-    "compareAtPrice": 4200,
-    "compareAtLabel": "₹4,200",
+    "compareAtPrice": 3999,
+    "compareAtLabel": "₹3,999",
     "variantId": "gid://shopify/ProductVariant/47501788348578",
     "availableForSale": true,
     "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/naira-u11-prism-riviere-bracelet.jpg?v=1789656222",
@@ -944,10 +944,10 @@ export const jewellerySnapshot: JewelPiece[] = [
     "category": "Bracelets",
     "sku": "YF5215",
     "number": "41",
-    "price": 1199,
-    "priceLabel": "₹1,199",
-    "compareAtPrice": 2329,
-    "compareAtLabel": "₹2,329",
+    "price": 999,
+    "priceLabel": "₹999",
+    "compareAtPrice": 1429,
+    "compareAtLabel": "₹1,429",
     "variantId": "gid://shopify/ProductVariant/47501788414114",
     "availableForSale": true,
     "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/heartbead-bracelet-0_0b5bf644-b12f-4dac-b3c4-86b40c5b1718.jpg?v=1787524295",
@@ -994,10 +994,10 @@ export const jewellerySnapshot: JewelPiece[] = [
     "category": "Bracelets",
     "sku": "YF8156",
     "number": "42",
-    "price": 799,
-    "priceLabel": "₹799",
-    "compareAtPrice": 1629,
-    "compareAtLabel": "₹1,629",
+    "price": 699,
+    "priceLabel": "₹699",
+    "compareAtPrice": 999,
+    "compareAtLabel": "₹999",
     "variantId": "gid://shopify/ProductVariant/47501788479650",
     "availableForSale": true,
     "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/ribbon-bead-bracelet-1.jpg?v=1787277616",
@@ -1049,10 +1049,10 @@ export const jewellerySnapshot: JewelPiece[] = [
     "category": "Rings",
     "sku": "JDR0104342",
     "number": "43",
-    "price": 1399,
-    "priceLabel": "₹1,399",
-    "compareAtPrice": 2799,
-    "compareAtLabel": "₹2,799",
+    "price": 999,
+    "priceLabel": "₹999",
+    "compareAtPrice": 1429,
+    "compareAtLabel": "₹1,429",
     "variantId": "gid://shopify/ProductVariant/50646802137250",
     "availableForSale": true,
     "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/hf_20261021_080819_6d67a9f3-1e22-4b69-8c4b-c14bd3d604db.png?v=1792570481",
@@ -1102,8 +1102,8 @@ export const jewellerySnapshot: JewelPiece[] = [
     "number": "44",
     "price": 1799,
     "priceLabel": "₹1,799",
-    "compareAtPrice": 3079,
-    "compareAtLabel": "₹3,079",
+    "compareAtPrice": 1999,
+    "compareAtLabel": "₹1,999",
     "variantId": "gid://shopify/ProductVariant/47501788807330",
     "availableForSale": true,
     "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/FullSizeRender_e93ba70d-63e0-417c-8979-673905c75fbb.jpg?v=1788986456",
@@ -1151,8 +1151,8 @@ export const jewellerySnapshot: JewelPiece[] = [
     "number": "45",
     "price": 1599,
     "priceLabel": "₹1,599",
-    "compareAtPrice": 3329,
-    "compareAtLabel": "₹3,329",
+    "compareAtPrice": 1779,
+    "compareAtLabel": "₹1,779",
     "variantId": "gid://shopify/ProductVariant/47501788840098",
     "availableForSale": true,
     "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/rose-verdant-band-2.jpg?v=1787277717",
@@ -1198,10 +1198,10 @@ export const jewellerySnapshot: JewelPiece[] = [
     "category": "Rings",
     "sku": "JDR0104337",
     "number": "46",
-    "price": 1199,
-    "priceLabel": "₹1,199",
-    "compareAtPrice": 3249,
-    "compareAtLabel": "₹3,249",
+    "price": 999,
+    "priceLabel": "₹999",
+    "compareAtPrice": 1669,
+    "compareAtLabel": "₹1,669",
     "variantId": "gid://shopify/ProductVariant/47501788872866",
     "availableForSale": true,
     "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/granule-dome-ring-0_b16739f1-1513-46e1-9a4c-bae0d6a9c53e.jpg?v=1787524294",
@@ -1247,10 +1247,10 @@ export const jewellerySnapshot: JewelPiece[] = [
     "category": "Rings",
     "sku": "WR23024K",
     "number": "47",
-    "price": 1099,
-    "priceLabel": "₹1,099",
-    "compareAtPrice": 2500,
-    "compareAtLabel": "₹2,500",
+    "price": 1049,
+    "priceLabel": "₹1,049",
+    "compareAtPrice": 1499,
+    "compareAtLabel": "₹1,499",
     "variantId": "gid://shopify/ProductVariant/47501788938402",
     "availableForSale": true,
     "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/verdant-eternity-band-0_5b5a3c58-f0cf-4657-a580-9cff7067e54a.jpg?v=1787524535",
@@ -1295,10 +1295,10 @@ export const jewellerySnapshot: JewelPiece[] = [
     "category": "Earrings",
     "sku": "FE02847B",
     "number": "48",
-    "price": 1099,
-    "priceLabel": "₹1,099",
-    "compareAtPrice": 2200,
-    "compareAtLabel": "₹2,200",
+    "price": 899,
+    "priceLabel": "₹899",
+    "compareAtPrice": 1289,
+    "compareAtLabel": "₹1,289",
     "variantId": "gid://shopify/ProductVariant/47501788971170",
     "availableForSale": true,
     "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/verdant-circlet-studs-1.jpg?v=1787277733",
@@ -1342,10 +1342,10 @@ export const jewellerySnapshot: JewelPiece[] = [
     "category": "Rings",
     "sku": "YF8453",
     "number": "49",
-    "price": 1199,
-    "priceLabel": "₹1,199",
-    "compareAtPrice": 3419,
-    "compareAtLabel": "₹3,419",
+    "price": 899,
+    "priceLabel": "₹899",
+    "compareAtPrice": 1499,
+    "compareAtLabel": "₹1,499",
     "variantId": "gid://shopify/ProductVariant/47501789233314",
     "availableForSale": true,
     "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/4532987C-A2DA-4C8E-A706-E1140E5FF8BD.jpg?v=1788986862",
@@ -1394,8 +1394,8 @@ export const jewellerySnapshot: JewelPiece[] = [
     "number": "50",
     "price": 999,
     "priceLabel": "₹999",
-    "compareAtPrice": 2599,
-    "compareAtLabel": "₹2,599",
+    "compareAtPrice": 1429,
+    "compareAtLabel": "₹1,429",
     "variantId": "gid://shopify/ProductVariant/47501789266082",
     "availableForSale": true,
     "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/vintage-halo-ring-0_388cc36f-c489-49b8-9150-dfbb20286647.jpg?v=1787524535",
@@ -1442,8 +1442,8 @@ export const jewellerySnapshot: JewelPiece[] = [
     "number": "51",
     "price": 1099,
     "priceLabel": "₹1,099",
-    "compareAtPrice": 2999,
-    "compareAtLabel": "₹2,999",
+    "compareAtPrice": 1579,
+    "compareAtLabel": "₹1,579",
     "variantId": "gid://shopify/ProductVariant/47501789298850",
     "availableForSale": true,
     "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/hf_20260808_025509_9365ce82-6fd2-4896-8cd1-d9d5aedb04b3.png?v=1789558321",
@@ -1492,8 +1492,8 @@ export const jewellerySnapshot: JewelPiece[] = [
     "number": "52",
     "price": 899,
     "priceLabel": "₹899",
-    "compareAtPrice": 1799,
-    "compareAtLabel": "₹1,799",
+    "compareAtPrice": 999,
+    "compareAtLabel": "₹999",
     "variantId": "gid://shopify/ProductVariant/47501789331618",
     "availableForSale": true,
     "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/hf_20261021_080819_23dfe788-b115-41ee-9e62-e08b9ab0bf41.png?v=1792570482",
@@ -1541,8 +1541,8 @@ export const jewellerySnapshot: JewelPiece[] = [
     "number": "53",
     "price": 899,
     "priceLabel": "₹899",
-    "compareAtPrice": 1819,
-    "compareAtLabel": "₹1,819",
+    "compareAtPrice": 999,
+    "compareAtLabel": "₹999",
     "variantId": "gid://shopify/ProductVariant/47501789364386",
     "availableForSale": true,
     "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/petite-pave-band-macro.jpg?v=1792603645",
@@ -1592,8 +1592,8 @@ export const jewellerySnapshot: JewelPiece[] = [
     "number": "54",
     "price": 2749,
     "priceLabel": "₹2,749",
-    "compareAtPrice": 5499,
-    "compareAtLabel": "₹5,499",
+    "compareAtPrice": 3059,
+    "compareAtLabel": "₹3,059",
     "variantId": "gid://shopify/ProductVariant/47501789429922",
     "availableForSale": true,
     "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF8396_2_worn.png?v=1786122968",
@@ -1644,8 +1644,8 @@ export const jewellerySnapshot: JewelPiece[] = [
     "number": "55",
     "price": 1299,
     "priceLabel": "₹1,299",
-    "compareAtPrice": 2599,
-    "compareAtLabel": "₹2,599",
+    "compareAtPrice": 1449,
+    "compareAtLabel": "₹1,449",
     "variantId": "gid://shopify/ProductVariant/47501789462690",
     "availableForSale": false,
     "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/clover-charm-necklace-1.jpg?v=1787277772",
@@ -1693,8 +1693,8 @@ export const jewellerySnapshot: JewelPiece[] = [
     "number": "56",
     "price": 1499,
     "priceLabel": "₹1,499",
-    "compareAtPrice": 2800,
-    "compareAtLabel": "₹2,800",
+    "compareAtPrice": 2149,
+    "compareAtLabel": "₹2,149",
     "variantId": "gid://shopify/ProductVariant/47599618588834",
     "availableForSale": false,
     "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/hf_20260829_211043_3c63d783-9dc6-47e2-be96-6eec3f506709.png?v=1788038321",
@@ -1741,8 +1741,8 @@ export const jewellerySnapshot: JewelPiece[] = [
     "number": "57",
     "price": 1099,
     "priceLabel": "₹1,099",
-    "compareAtPrice": 2599,
-    "compareAtLabel": "₹2,599",
+    "compareAtPrice": 1579,
+    "compareAtLabel": "₹1,579",
     "variantId": "gid://shopify/ProductVariant/47599620096162",
     "availableForSale": true,
     "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/hf_20260829_211041_fc236d1a-b3b6-4bc4-8d96-2c8db3903cdc.png?v=1788038366",
@@ -1787,10 +1787,10 @@ export const jewellerySnapshot: JewelPiece[] = [
     "category": "Necklaces",
     "sku": "YF8439-SLV",
     "number": "58",
-    "price": 1199,
-    "priceLabel": "₹1,199",
-    "compareAtPrice": 3359,
-    "compareAtLabel": "₹3,359",
+    "price": 899,
+    "priceLabel": "₹899",
+    "compareAtPrice": 1499,
+    "compareAtLabel": "₹1,499",
     "variantId": "gid://shopify/ProductVariant/47599742615714",
     "availableForSale": true,
     "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/hf_20260829_211552_3848381a-9e8a-4a96-acae-c7051d07f8eb.png?v=1788038402",
@@ -1839,8 +1839,8 @@ export const jewellerySnapshot: JewelPiece[] = [
     "number": "59",
     "price": 999,
     "priceLabel": "₹999",
-    "compareAtPrice": 2100,
-    "compareAtLabel": "₹2,100",
+    "compareAtPrice": 1429,
+    "compareAtLabel": "₹1,429",
     "variantId": "gid://shopify/ProductVariant/47679510184098",
     "availableForSale": true,
     "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/E200570_5.jpg?v=1789724035",
@@ -1880,10 +1880,10 @@ export const jewellerySnapshot: JewelPiece[] = [
     "category": "Earrings",
     "sku": "FE03783B",
     "number": "60",
-    "price": 1299,
-    "priceLabel": "₹1,299",
-    "compareAtPrice": 2300,
-    "compareAtLabel": "₹2,300",
+    "price": 1099,
+    "priceLabel": "₹1,099",
+    "compareAtPrice": 1579,
+    "compareAtLabel": "₹1,579",
     "variantId": "gid://shopify/ProductVariant/47679510216866",
     "availableForSale": true,
     "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/FE03783B_4.jpg?v=1789724036",
@@ -1923,8 +1923,8 @@ export const jewellerySnapshot: JewelPiece[] = [
     "category": "Earrings",
     "sku": "E19712C",
     "number": "61",
-    "price": 1199,
-    "priceLabel": "₹1,199",
+    "price": 1099,
+    "priceLabel": "₹1,099",
     "variantId": "gid://shopify/ProductVariant/47679510282402",
     "availableForSale": true,
     "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/E19712C_2.jpg?v=1789724037",
@@ -1958,7 +1958,8 @@ export const jewellerySnapshot: JewelPiece[] = [
       "Edition One",
       "KAVNAR",
       "pre-order"
-    ]
+    ],
+    "compareAtPrice": 1579
   },
   {
     "handle": "baguette-halo-drops",
@@ -1966,10 +1967,10 @@ export const jewellerySnapshot: JewelPiece[] = [
     "category": "Earrings",
     "sku": "WE23818B",
     "number": "62",
-    "price": 1399,
-    "priceLabel": "₹1,399",
-    "compareAtPrice": 2200,
-    "compareAtLabel": "₹2,200",
+    "price": 1199,
+    "priceLabel": "₹1,199",
+    "compareAtPrice": 1719,
+    "compareAtLabel": "₹1,719",
     "variantId": "gid://shopify/ProductVariant/47679511494818",
     "availableForSale": true,
     "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/WE23818B_2.jpg?v=1789724102",
@@ -2007,10 +2008,10 @@ export const jewellerySnapshot: JewelPiece[] = [
     "category": "Earrings",
     "sku": "E156970",
     "number": "63",
-    "price": 1199,
-    "priceLabel": "₹1,199",
-    "compareAtPrice": 1800,
-    "compareAtLabel": "₹1,800",
+    "price": 999,
+    "priceLabel": "₹999",
+    "compareAtPrice": 1429,
+    "compareAtLabel": "₹1,429",
     "variantId": "gid://shopify/ProductVariant/47679511625890",
     "availableForSale": true,
     "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/E156970_5.jpg?v=1789724103",
@@ -2049,8 +2050,8 @@ export const jewellerySnapshot: JewelPiece[] = [
     "category": "Earrings",
     "sku": "WE25284B1",
     "number": "64",
-    "price": 999,
-    "priceLabel": "₹999",
+    "price": 899,
+    "priceLabel": "₹899",
     "variantId": "gid://shopify/ProductVariant/47681779531938",
     "availableForSale": true,
     "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/WE25284B1_5.jpg?v=1789762732",
@@ -2082,7 +2083,8 @@ export const jewellerySnapshot: JewelPiece[] = [
       "Edition One",
       "KAVNAR",
       "pre-order"
-    ]
+    ],
+    "compareAtPrice": 1289
   },
   {
     "handle": "petite-bow-studs",
@@ -2090,10 +2092,10 @@ export const jewellerySnapshot: JewelPiece[] = [
     "category": "Earrings",
     "sku": "E17967C",
     "number": "65",
-    "price": 1099,
-    "priceLabel": "₹1,099",
-    "compareAtPrice": 2300,
-    "compareAtLabel": "₹2,300",
+    "price": 999,
+    "priceLabel": "₹999",
+    "compareAtPrice": 1669,
+    "compareAtLabel": "₹1,669",
     "variantId": "gid://shopify/ProductVariant/47681780252834",
     "availableForSale": true,
     "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/E17967C_2.jpg?v=1789762733",
@@ -2135,8 +2137,8 @@ export const jewellerySnapshot: JewelPiece[] = [
     "number": "66",
     "price": 1499,
     "priceLabel": "₹1,499",
-    "compareAtPrice": 2600,
-    "compareAtLabel": "₹2,600",
+    "compareAtPrice": 2149,
+    "compareAtLabel": "₹2,149",
     "variantId": "gid://shopify/ProductVariant/47681780646050",
     "availableForSale": true,
     "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/riviere-huggies-silver_2_worn.jpg?v=1792711501",
@@ -2176,10 +2178,10 @@ export const jewellerySnapshot: JewelPiece[] = [
     "category": "Bracelets",
     "sku": "BSS00066",
     "number": "67",
-    "price": 1399,
-    "priceLabel": "₹1,399",
-    "compareAtPrice": 2600,
-    "compareAtLabel": "₹2,600",
+    "price": 1099,
+    "priceLabel": "₹1,099",
+    "compareAtPrice": 1579,
+    "compareAtLabel": "₹1,579",
     "variantId": "gid://shopify/ProductVariant/47681794244770",
     "availableForSale": true,
     "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/BSS00066_2.jpg?v=1789762797",
@@ -2220,10 +2222,10 @@ export const jewellerySnapshot: JewelPiece[] = [
     "category": "Bracelets",
     "sku": "BSS00028",
     "number": "68",
-    "price": 1299,
-    "priceLabel": "₹1,299",
-    "compareAtPrice": 2300,
-    "compareAtLabel": "₹2,300",
+    "price": 999,
+    "priceLabel": "₹999",
+    "compareAtPrice": 1669,
+    "compareAtLabel": "₹1,669",
     "variantId": "gid://shopify/ProductVariant/47681794670754",
     "availableForSale": true,
     "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/BSS00028_2.jpg?v=1792962414",
@@ -2261,10 +2263,10 @@ export const jewellerySnapshot: JewelPiece[] = [
     "category": "Earrings",
     "sku": "E15838C1",
     "number": "69",
-    "price": 1499,
-    "priceLabel": "₹1,499",
-    "compareAtPrice": 2400,
-    "compareAtLabel": "₹2,400",
+    "price": 1299,
+    "priceLabel": "₹1,299",
+    "compareAtPrice": 1859,
+    "compareAtLabel": "₹1,859",
     "variantId": "gid://shopify/ProductVariant/47681794703522",
     "availableForSale": true,
     "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/E15838C1_2.jpg?v=1789762799",
@@ -2307,10 +2309,10 @@ export const jewellerySnapshot: JewelPiece[] = [
     "category": "Earrings",
     "sku": "WE22108C3",
     "number": "70",
-    "price": 1499,
-    "priceLabel": "₹1,499",
-    "compareAtPrice": 2400,
-    "compareAtLabel": "₹2,400",
+    "price": 1299,
+    "priceLabel": "₹1,299",
+    "compareAtPrice": 1859,
+    "compareAtLabel": "₹1,859",
     "variantId": "gid://shopify/ProductVariant/47681794736290",
     "availableForSale": true,
     "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/WE22108C3_2.jpg?v=1789762799",
@@ -2354,10 +2356,10 @@ export const jewellerySnapshot: JewelPiece[] = [
     "category": "Rings",
     "sku": "WR11674B2",
     "number": "71",
-    "price": 1299,
-    "priceLabel": "₹1,299",
-    "compareAtPrice": 2400,
-    "compareAtLabel": "₹2,400",
+    "price": 1199,
+    "priceLabel": "₹1,199",
+    "compareAtPrice": 1999,
+    "compareAtLabel": "₹1,999",
     "variantId": "gid://shopify/ProductVariant/47682253750434",
     "availableForSale": true,
     "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/WR11674B2_5.jpg?v=1789764014",
@@ -2400,8 +2402,8 @@ export const jewellerySnapshot: JewelPiece[] = [
     "number": "72",
     "price": 1399,
     "priceLabel": "₹1,399",
-    "compareAtPrice": 2500,
-    "compareAtLabel": "₹2,500",
+    "compareAtPrice": 2349,
+    "compareAtLabel": "₹2,349",
     "variantId": "gid://shopify/ProductVariant/50651894546594",
     "availableForSale": true,
     "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/50a1fddc-3fde-4961-bea9-1709c109165c.jpg?v=1792191015",
@@ -2452,7 +2454,7 @@ export const jewellerySnapshot: JewelPiece[] = [
         "title": "Gold",
         "availableForSale": true,
         "price": 1399,
-        "compareAtPrice": 2500,
+        "compareAtPrice": 2349,
         "options": {
           "Metal": "Gold"
         },
@@ -2463,7 +2465,7 @@ export const jewellerySnapshot: JewelPiece[] = [
         "title": "Silver",
         "availableForSale": true,
         "price": 1399,
-        "compareAtPrice": 2500,
+        "compareAtPrice": 2349,
         "options": {
           "Metal": "Silver"
         },
@@ -2488,8 +2490,8 @@ export const jewellerySnapshot: JewelPiece[] = [
     "number": "73",
     "price": 1399,
     "priceLabel": "₹1,399",
-    "compareAtPrice": 2299,
-    "compareAtLabel": "₹2,299",
+    "compareAtPrice": 2349,
+    "compareAtLabel": "₹2,349",
     "variantId": "gid://shopify/ProductVariant/50651931607202",
     "availableForSale": true,
     "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/0897fe7c-e191-4717-a50e-27d7661ad641.jpg?v=1792192354",
@@ -2534,10 +2536,10 @@ export const jewellerySnapshot: JewelPiece[] = [
     "category": "Bracelets",
     "sku": "YF3937-G",
     "number": "74",
-    "price": 1399,
-    "priceLabel": "₹1,399",
-    "compareAtPrice": 2299,
-    "compareAtLabel": "₹2,299",
+    "price": 1149,
+    "priceLabel": "₹1,149",
+    "compareAtPrice": 1919,
+    "compareAtLabel": "₹1,919",
     "variantId": "gid://shopify/ProductVariant/50651931639970",
     "availableForSale": true,
     "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/triple-coil-wrap-bangle-gold-macro.jpg?v=1792617493",
@@ -2586,8 +2588,8 @@ export const jewellerySnapshot: JewelPiece[] = [
         "id": "gid://shopify/ProductVariant/50651931639970",
         "title": "Gold",
         "availableForSale": true,
-        "price": 1399,
-        "compareAtPrice": 2299,
+        "price": 1149,
+        "compareAtPrice": 1919,
         "options": {
           "Metal": "Gold"
         },
@@ -2597,8 +2599,8 @@ export const jewellerySnapshot: JewelPiece[] = [
         "id": "gid://shopify/ProductVariant/50651931672738",
         "title": "Silver",
         "availableForSale": true,
-        "price": 1399,
-        "compareAtPrice": 2299,
+        "price": 1149,
+        "compareAtPrice": 1919,
         "options": {
           "Metal": "Silver"
         },
@@ -2621,10 +2623,10 @@ export const jewellerySnapshot: JewelPiece[] = [
     "category": "Bracelets",
     "sku": "YF3508",
     "number": "75",
-    "price": 1699,
-    "priceLabel": "₹1,699",
-    "compareAtPrice": 2200,
-    "compareAtLabel": "₹2,200",
+    "price": 1549,
+    "priceLabel": "₹1,549",
+    "compareAtPrice": 2599,
+    "compareAtLabel": "₹2,599",
     "variantId": "gid://shopify/ProductVariant/50651931705506",
     "availableForSale": true,
     "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/marquise-wheat-cuff_2_worn.jpg?v=1792711343",
@@ -2674,10 +2676,10 @@ export const jewellerySnapshot: JewelPiece[] = [
     "category": "Bracelets",
     "sku": "YF3165-BR-CR",
     "number": "76",
-    "price": 1499,
-    "priceLabel": "₹1,499",
-    "compareAtPrice": 2500,
-    "compareAtLabel": "₹2,500",
+    "price": 1249,
+    "priceLabel": "₹1,249",
+    "compareAtPrice": 2099,
+    "compareAtLabel": "₹2,099",
     "variantId": "gid://shopify/ProductVariant/50651931738274",
     "availableForSale": true,
     "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/1a764637-5cc7-4cf1-8590-c29cc33dcfa0.jpg?v=1792192358",
@@ -2732,8 +2734,8 @@ export const jewellerySnapshot: JewelPiece[] = [
         "id": "gid://shopify/ProductVariant/50651931738274",
         "title": "Crystal",
         "availableForSale": true,
-        "price": 1499,
-        "compareAtPrice": 2500,
+        "price": 1249,
+        "compareAtPrice": 2099,
         "options": {
           "Stone": "Crystal"
         },
@@ -2743,8 +2745,8 @@ export const jewellerySnapshot: JewelPiece[] = [
         "id": "gid://shopify/ProductVariant/50651931771042",
         "title": "Ruby",
         "availableForSale": true,
-        "price": 1499,
-        "compareAtPrice": 2500,
+        "price": 1249,
+        "compareAtPrice": 2099,
         "options": {
           "Stone": "Ruby"
         },
@@ -2754,8 +2756,8 @@ export const jewellerySnapshot: JewelPiece[] = [
         "id": "gid://shopify/ProductVariant/50651931803810",
         "title": "Emerald",
         "availableForSale": true,
-        "price": 1499,
-        "compareAtPrice": 2500,
+        "price": 1249,
+        "compareAtPrice": 2099,
         "options": {
           "Stone": "Emerald"
         },
@@ -2779,8 +2781,8 @@ export const jewellerySnapshot: JewelPiece[] = [
     "category": "Rings",
     "sku": "YF3791-R-G",
     "number": "77",
-    "price": 1199,
-    "priceLabel": "₹1,199",
+    "price": 899,
+    "priceLabel": "₹899",
     "variantId": "gid://shopify/ProductVariant/50651931836578",
     "availableForSale": true,
     "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/droplet-open-ring_4_macro.jpg?v=1792711526",
@@ -2826,21 +2828,23 @@ export const jewellerySnapshot: JewelPiece[] = [
         "id": "gid://shopify/ProductVariant/50651931836578",
         "title": "Gold",
         "availableForSale": true,
-        "price": 1199,
+        "price": 899,
         "options": {
           "Metal": "Gold"
         },
-        "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/droplet-open-ring_1_main.jpg?v=1792711526"
+        "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/droplet-open-ring_1_main.jpg?v=1792711526",
+        "compareAtPrice": 1499
       },
       {
         "id": "gid://shopify/ProductVariant/50651931869346",
         "title": "Silver",
         "availableForSale": true,
-        "price": 1199,
+        "price": 899,
         "options": {
           "Metal": "Silver"
         },
-        "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/droplet-open-ring_3_silver.jpg?v=1792711527"
+        "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/droplet-open-ring_3_silver.jpg?v=1792711527",
+        "compareAtPrice": 1499
       }
     ],
     "options": [
@@ -2851,7 +2855,8 @@ export const jewellerySnapshot: JewelPiece[] = [
           "Silver"
         ]
       }
-    ]
+    ],
+    "compareAtPrice": 1499
   },
   {
     "handle": "north-star-bangle",
@@ -2859,10 +2864,10 @@ export const jewellerySnapshot: JewelPiece[] = [
     "category": "Bracelets",
     "sku": "YF5204-S",
     "number": "78",
-    "price": 999,
-    "priceLabel": "₹999",
-    "compareAtPrice": 2200,
-    "compareAtLabel": "₹2,200",
+    "price": 799,
+    "priceLabel": "₹799",
+    "compareAtPrice": 1149,
+    "compareAtLabel": "₹1,149",
     "variantId": "gid://shopify/ProductVariant/50651938783394",
     "availableForSale": true,
     "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/b6a37868-58d8-4972-8c9b-c51b08de71cc.jpg?v=1792192529",
@@ -2908,8 +2913,8 @@ export const jewellerySnapshot: JewelPiece[] = [
         "id": "gid://shopify/ProductVariant/50651938783394",
         "title": "Silver",
         "availableForSale": true,
-        "price": 999,
-        "compareAtPrice": 2200,
+        "price": 799,
+        "compareAtPrice": 1149,
         "options": {
           "Metal": "Silver"
         },
@@ -2919,8 +2924,8 @@ export const jewellerySnapshot: JewelPiece[] = [
         "id": "gid://shopify/ProductVariant/50651938816162",
         "title": "Gold",
         "availableForSale": true,
-        "price": 999,
-        "compareAtPrice": 2200,
+        "price": 799,
+        "compareAtPrice": 1149,
         "options": {
           "Metal": "Gold"
         },
@@ -2943,10 +2948,10 @@ export const jewellerySnapshot: JewelPiece[] = [
     "category": "Bracelets",
     "sku": "N10-TILE",
     "number": "79",
-    "price": 999,
-    "priceLabel": "₹999",
-    "compareAtPrice": 2100,
-    "compareAtLabel": "₹2,100",
+    "price": 1099,
+    "priceLabel": "₹1,099",
+    "compareAtPrice": 1225,
+    "compareAtLabel": "₹1,225",
     "variantId": "gid://shopify/ProductVariant/50651938848930",
     "availableForSale": true,
     "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/847be5d8-532e-43d5-adaf-a965114e1b28.jpg?v=1792192530",
@@ -2989,8 +2994,8 @@ export const jewellerySnapshot: JewelPiece[] = [
     "number": "80",
     "price": 1199,
     "priceLabel": "₹1,199",
-    "compareAtPrice": 2108,
-    "compareAtLabel": "₹2,108",
+    "compareAtPrice": 1999,
+    "compareAtLabel": "₹1,999",
     "variantId": "gid://shopify/ProductVariant/50651938881698",
     "availableForSale": true,
     "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/a8ca1bb0-e182-4b05-9713-3bea77a22c38.jpg?v=1792192531",
@@ -3038,7 +3043,7 @@ export const jewellerySnapshot: JewelPiece[] = [
         "title": "Gold",
         "availableForSale": true,
         "price": 1199,
-        "compareAtPrice": 2108,
+        "compareAtPrice": 1999,
         "options": {
           "Metal": "Gold"
         },
@@ -3049,7 +3054,7 @@ export const jewellerySnapshot: JewelPiece[] = [
         "title": "Silver",
         "availableForSale": true,
         "price": 1199,
-        "compareAtPrice": 2108,
+        "compareAtPrice": 1999,
         "options": {
           "Metal": "Silver"
         },
@@ -3072,10 +3077,10 @@ export const jewellerySnapshot: JewelPiece[] = [
     "category": "Earrings",
     "sku": "YF7034",
     "number": "81",
-    "price": 1199,
-    "priceLabel": "₹1,199",
-    "compareAtPrice": 1900,
-    "compareAtLabel": "₹1,900",
+    "price": 1049,
+    "priceLabel": "₹1,049",
+    "compareAtPrice": 1499,
+    "compareAtLabel": "₹1,499",
     "variantId": "gid://shopify/ProductVariant/50651938947234",
     "availableForSale": true,
     "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/3620633c-c3dc-47b9-893e-7aa011d9d616.jpg?v=1792192531",
@@ -3121,10 +3126,10 @@ export const jewellerySnapshot: JewelPiece[] = [
     "category": "Necklaces",
     "sku": "YF8079-NEC",
     "number": "82",
-    "price": 1299,
-    "priceLabel": "₹1,299",
-    "compareAtPrice": 2100,
-    "compareAtLabel": "₹2,100",
+    "price": 1099,
+    "priceLabel": "₹1,099",
+    "compareAtPrice": 1579,
+    "compareAtLabel": "₹1,579",
     "variantId": "gid://shopify/ProductVariant/50651938980002",
     "availableForSale": true,
     "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/22d589df-c119-4c2e-a6ff-aa52f2fd6b9b.jpg?v=1792192533",
@@ -3171,8 +3176,8 @@ export const jewellerySnapshot: JewelPiece[] = [
     "number": "83",
     "price": 999,
     "priceLabel": "₹999",
-    "compareAtPrice": 1900,
-    "compareAtLabel": "₹1,900",
+    "compareAtPrice": 1429,
+    "compareAtLabel": "₹1,429",
     "variantId": "gid://shopify/ProductVariant/50651962015906",
     "availableForSale": true,
     "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/ad28df0a-ae8a-4ff1-aee1-d4fb29d1529f.jpg?v=1792193003",
@@ -3219,10 +3224,10 @@ export const jewellerySnapshot: JewelPiece[] = [
     "category": "Rings",
     "sku": "YF3143-RU-6",
     "number": "84",
-    "price": 1149,
-    "priceLabel": "₹1,149",
-    "compareAtPrice": 2000,
-    "compareAtLabel": "₹2,000",
+    "price": 899,
+    "priceLabel": "₹899",
+    "compareAtPrice": 1499,
+    "compareAtLabel": "₹1,499",
     "variantId": "gid://shopify/ProductVariant/50651962048674",
     "availableForSale": true,
     "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/af259fb9-85af-427c-b280-ceccc26fc85f.jpg?v=1792193005",
@@ -3270,8 +3275,8 @@ export const jewellerySnapshot: JewelPiece[] = [
         "id": "gid://shopify/ProductVariant/50710035136674",
         "title": "Ruby / 5",
         "availableForSale": false,
-        "price": 1149,
-        "compareAtPrice": 2000,
+        "price": 899,
+        "compareAtPrice": 1499,
         "options": {
           "Stone": "Ruby",
           "Size": "5"
@@ -3282,8 +3287,8 @@ export const jewellerySnapshot: JewelPiece[] = [
         "id": "gid://shopify/ProductVariant/50651962048674",
         "title": "Ruby / 6",
         "availableForSale": true,
-        "price": 1149,
-        "compareAtPrice": 2000,
+        "price": 899,
+        "compareAtPrice": 1499,
         "options": {
           "Stone": "Ruby",
           "Size": "6"
@@ -3294,8 +3299,8 @@ export const jewellerySnapshot: JewelPiece[] = [
         "id": "gid://shopify/ProductVariant/50651962081442",
         "title": "Ruby / 7",
         "availableForSale": false,
-        "price": 1149,
-        "compareAtPrice": 2000,
+        "price": 899,
+        "compareAtPrice": 1499,
         "options": {
           "Stone": "Ruby",
           "Size": "7"
@@ -3306,8 +3311,8 @@ export const jewellerySnapshot: JewelPiece[] = [
         "id": "gid://shopify/ProductVariant/50651962114210",
         "title": "Ruby / 8",
         "availableForSale": true,
-        "price": 1149,
-        "compareAtPrice": 2000,
+        "price": 899,
+        "compareAtPrice": 1499,
         "options": {
           "Stone": "Ruby",
           "Size": "8"
@@ -3318,8 +3323,8 @@ export const jewellerySnapshot: JewelPiece[] = [
         "id": "gid://shopify/ProductVariant/50710035169442",
         "title": "Emerald / 5",
         "availableForSale": true,
-        "price": 1149,
-        "compareAtPrice": 2000,
+        "price": 899,
+        "compareAtPrice": 1499,
         "options": {
           "Stone": "Emerald",
           "Size": "5"
@@ -3330,8 +3335,8 @@ export const jewellerySnapshot: JewelPiece[] = [
         "id": "gid://shopify/ProductVariant/50651962146978",
         "title": "Emerald / 6",
         "availableForSale": true,
-        "price": 1149,
-        "compareAtPrice": 2000,
+        "price": 899,
+        "compareAtPrice": 1499,
         "options": {
           "Stone": "Emerald",
           "Size": "6"
@@ -3342,8 +3347,8 @@ export const jewellerySnapshot: JewelPiece[] = [
         "id": "gid://shopify/ProductVariant/50651962179746",
         "title": "Emerald / 7",
         "availableForSale": true,
-        "price": 1149,
-        "compareAtPrice": 2000,
+        "price": 899,
+        "compareAtPrice": 1499,
         "options": {
           "Stone": "Emerald",
           "Size": "7"
@@ -3354,8 +3359,8 @@ export const jewellerySnapshot: JewelPiece[] = [
         "id": "gid://shopify/ProductVariant/50651962212514",
         "title": "Emerald / 8",
         "availableForSale": true,
-        "price": 1149,
-        "compareAtPrice": 2000,
+        "price": 899,
+        "compareAtPrice": 1499,
         "options": {
           "Stone": "Emerald",
           "Size": "8"
@@ -3366,8 +3371,8 @@ export const jewellerySnapshot: JewelPiece[] = [
         "id": "gid://shopify/ProductVariant/50710035202210",
         "title": "Amethyst / 5",
         "availableForSale": true,
-        "price": 1149,
-        "compareAtPrice": 2000,
+        "price": 899,
+        "compareAtPrice": 1499,
         "options": {
           "Stone": "Amethyst",
           "Size": "5"
@@ -3378,8 +3383,8 @@ export const jewellerySnapshot: JewelPiece[] = [
         "id": "gid://shopify/ProductVariant/50651962245282",
         "title": "Amethyst / 6",
         "availableForSale": true,
-        "price": 1149,
-        "compareAtPrice": 2000,
+        "price": 899,
+        "compareAtPrice": 1499,
         "options": {
           "Stone": "Amethyst",
           "Size": "6"
@@ -3390,8 +3395,8 @@ export const jewellerySnapshot: JewelPiece[] = [
         "id": "gid://shopify/ProductVariant/50651962278050",
         "title": "Amethyst / 7",
         "availableForSale": true,
-        "price": 1149,
-        "compareAtPrice": 2000,
+        "price": 899,
+        "compareAtPrice": 1499,
         "options": {
           "Stone": "Amethyst",
           "Size": "7"
@@ -3402,8 +3407,8 @@ export const jewellerySnapshot: JewelPiece[] = [
         "id": "gid://shopify/ProductVariant/50651962310818",
         "title": "Amethyst / 8",
         "availableForSale": true,
-        "price": 1149,
-        "compareAtPrice": 2000,
+        "price": 899,
+        "compareAtPrice": 1499,
         "options": {
           "Stone": "Amethyst",
           "Size": "8"
@@ -3437,10 +3442,10 @@ export const jewellerySnapshot: JewelPiece[] = [
     "category": "Earrings",
     "sku": "N20-PEARL",
     "number": "85",
-    "price": 1199,
-    "priceLabel": "₹1,199",
-    "compareAtPrice": 1800,
-    "compareAtLabel": "₹1,800",
+    "price": 1049,
+    "priceLabel": "₹1,049",
+    "compareAtPrice": 1499,
+    "compareAtLabel": "₹1,499",
     "variantId": "gid://shopify/ProductVariant/50651962343586",
     "availableForSale": true,
     "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/62694769-f633-42d9-8f17-86950a8fe6b4.jpg?v=1792193006",
@@ -3485,8 +3490,8 @@ export const jewellerySnapshot: JewelPiece[] = [
     "number": "86",
     "price": 1199,
     "priceLabel": "₹1,199",
-    "compareAtPrice": 2200,
-    "compareAtLabel": "₹2,200",
+    "compareAtPrice": 1719,
+    "compareAtLabel": "₹1,719",
     "variantId": "gid://shopify/ProductVariant/50651962376354",
     "availableForSale": true,
     "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/d3e2702c-5d2a-4b8d-bb97-baf4a58f257b.jpg?v=1792193007",
@@ -3528,10 +3533,10 @@ export const jewellerySnapshot: JewelPiece[] = [
     "category": "Necklaces",
     "sku": "YF3165-NE-RU",
     "number": "87",
-    "price": 2099,
-    "priceLabel": "₹2,099",
-    "compareAtPrice": 3500,
-    "compareAtLabel": "₹3,500",
+    "price": 1799,
+    "priceLabel": "₹1,799",
+    "compareAtPrice": 2999,
+    "compareAtLabel": "₹2,999",
     "variantId": "gid://shopify/ProductVariant/50651962409122",
     "availableForSale": true,
     "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/42fb467f-1368-4074-b8b5-fcb0594f8d98.jpg?v=1792193008",
@@ -3580,8 +3585,8 @@ export const jewellerySnapshot: JewelPiece[] = [
         "id": "gid://shopify/ProductVariant/50651962409122",
         "title": "Ruby",
         "availableForSale": true,
-        "price": 2099,
-        "compareAtPrice": 3500,
+        "price": 1799,
+        "compareAtPrice": 2999,
         "options": {
           "Stone": "Ruby"
         },
@@ -3591,8 +3596,8 @@ export const jewellerySnapshot: JewelPiece[] = [
         "id": "gid://shopify/ProductVariant/50651962441890",
         "title": "Crystal",
         "availableForSale": true,
-        "price": 2099,
-        "compareAtPrice": 3500,
+        "price": 1799,
+        "compareAtPrice": 2999,
         "options": {
           "Stone": "Crystal"
         },
@@ -3602,8 +3607,8 @@ export const jewellerySnapshot: JewelPiece[] = [
         "id": "gid://shopify/ProductVariant/50651962474658",
         "title": "Emerald",
         "availableForSale": true,
-        "price": 2099,
-        "compareAtPrice": 3500,
+        "price": 1799,
+        "compareAtPrice": 2999,
         "options": {
           "Stone": "Emerald"
         },
@@ -3629,8 +3634,8 @@ export const jewellerySnapshot: JewelPiece[] = [
     "number": "88",
     "price": 1199,
     "priceLabel": "₹1,199",
-    "compareAtPrice": 1900,
-    "compareAtLabel": "₹1,900",
+    "compareAtPrice": 1999,
+    "compareAtLabel": "₹1,999",
     "variantId": "gid://shopify/ProductVariant/50651968929954",
     "availableForSale": true,
     "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/c3ad7bfa-7b97-4712-b86f-cc06ee1225f0.jpg?v=1792193135",
@@ -3680,7 +3685,7 @@ export const jewellerySnapshot: JewelPiece[] = [
         "title": "Ruby",
         "availableForSale": true,
         "price": 1199,
-        "compareAtPrice": 1900,
+        "compareAtPrice": 1999,
         "options": {
           "Stone": "Ruby"
         },
@@ -3691,7 +3696,7 @@ export const jewellerySnapshot: JewelPiece[] = [
         "title": "Crystal",
         "availableForSale": true,
         "price": 1199,
-        "compareAtPrice": 1900,
+        "compareAtPrice": 1999,
         "options": {
           "Stone": "Crystal"
         },
@@ -3702,7 +3707,7 @@ export const jewellerySnapshot: JewelPiece[] = [
         "title": "Emerald",
         "availableForSale": true,
         "price": 1199,
-        "compareAtPrice": 1900,
+        "compareAtPrice": 1999,
         "options": {
           "Stone": "Emerald"
         },
@@ -3713,7 +3718,7 @@ export const jewellerySnapshot: JewelPiece[] = [
         "title": "Amethyst",
         "availableForSale": true,
         "price": 1199,
-        "compareAtPrice": 1900,
+        "compareAtPrice": 1999,
         "options": {
           "Stone": "Amethyst"
         },
@@ -3738,10 +3743,10 @@ export const jewellerySnapshot: JewelPiece[] = [
     "category": "Earrings",
     "sku": "N24-DECO",
     "number": "89",
-    "price": 1249,
-    "priceLabel": "₹1,249",
-    "compareAtPrice": 2000,
-    "compareAtLabel": "₹2,000",
+    "price": 999,
+    "priceLabel": "₹999",
+    "compareAtPrice": 1429,
+    "compareAtLabel": "₹1,429",
     "variantId": "gid://shopify/ProductVariant/50651969061026",
     "availableForSale": true,
     "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/67a9a867-ec89-4288-ae31-abae55c188b2.jpg?v=1792193136",
@@ -3787,8 +3792,8 @@ export const jewellerySnapshot: JewelPiece[] = [
     "number": "90",
     "price": 699,
     "priceLabel": "₹699",
-    "compareAtPrice": 1200,
-    "compareAtLabel": "₹1,200",
+    "compareAtPrice": 999,
+    "compareAtLabel": "₹999",
     "variantId": "gid://shopify/ProductVariant/50651969093794",
     "availableForSale": true,
     "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/3f9a7808-ddd5-4bce-b777-85a6c6102c74.jpg?v=1792193137",
@@ -3840,7 +3845,7 @@ export const jewellerySnapshot: JewelPiece[] = [
         "title": "January · Garnet",
         "availableForSale": true,
         "price": 699,
-        "compareAtPrice": 1200,
+        "compareAtPrice": 999,
         "options": {
           "Month": "January · Garnet"
         },
@@ -3851,7 +3856,7 @@ export const jewellerySnapshot: JewelPiece[] = [
         "title": "February · Amethyst",
         "availableForSale": true,
         "price": 699,
-        "compareAtPrice": 1200,
+        "compareAtPrice": 999,
         "options": {
           "Month": "February · Amethyst"
         },
@@ -3862,7 +3867,7 @@ export const jewellerySnapshot: JewelPiece[] = [
         "title": "March · Aquamarine",
         "availableForSale": true,
         "price": 699,
-        "compareAtPrice": 1200,
+        "compareAtPrice": 999,
         "options": {
           "Month": "March · Aquamarine"
         },
@@ -3873,7 +3878,7 @@ export const jewellerySnapshot: JewelPiece[] = [
         "title": "April · Crystal",
         "availableForSale": true,
         "price": 699,
-        "compareAtPrice": 1200,
+        "compareAtPrice": 999,
         "options": {
           "Month": "April · Crystal"
         },
@@ -3884,7 +3889,7 @@ export const jewellerySnapshot: JewelPiece[] = [
         "title": "May · Emerald",
         "availableForSale": true,
         "price": 699,
-        "compareAtPrice": 1200,
+        "compareAtPrice": 999,
         "options": {
           "Month": "May · Emerald"
         },
@@ -3895,7 +3900,7 @@ export const jewellerySnapshot: JewelPiece[] = [
         "title": "June · Light Amethyst",
         "availableForSale": true,
         "price": 699,
-        "compareAtPrice": 1200,
+        "compareAtPrice": 999,
         "options": {
           "Month": "June · Light Amethyst"
         },
@@ -3906,7 +3911,7 @@ export const jewellerySnapshot: JewelPiece[] = [
         "title": "July · Ruby",
         "availableForSale": true,
         "price": 699,
-        "compareAtPrice": 1200,
+        "compareAtPrice": 999,
         "options": {
           "Month": "July · Ruby"
         },
@@ -3917,7 +3922,7 @@ export const jewellerySnapshot: JewelPiece[] = [
         "title": "August · Peridot",
         "availableForSale": true,
         "price": 699,
-        "compareAtPrice": 1200,
+        "compareAtPrice": 999,
         "options": {
           "Month": "August · Peridot"
         },
@@ -3928,7 +3933,7 @@ export const jewellerySnapshot: JewelPiece[] = [
         "title": "September · Sapphire",
         "availableForSale": true,
         "price": 699,
-        "compareAtPrice": 1200,
+        "compareAtPrice": 999,
         "options": {
           "Month": "September · Sapphire"
         },
@@ -3939,7 +3944,7 @@ export const jewellerySnapshot: JewelPiece[] = [
         "title": "October · Rose",
         "availableForSale": true,
         "price": 699,
-        "compareAtPrice": 1200,
+        "compareAtPrice": 999,
         "options": {
           "Month": "October · Rose"
         },
@@ -3950,7 +3955,7 @@ export const jewellerySnapshot: JewelPiece[] = [
         "title": "November · Topaz",
         "availableForSale": true,
         "price": 699,
-        "compareAtPrice": 1200,
+        "compareAtPrice": 999,
         "options": {
           "Month": "November · Topaz"
         },
@@ -3961,7 +3966,7 @@ export const jewellerySnapshot: JewelPiece[] = [
         "title": "December · Blue Zircon",
         "availableForSale": true,
         "price": 699,
-        "compareAtPrice": 1200,
+        "compareAtPrice": 999,
         "options": {
           "Month": "December · Blue Zircon"
         },
@@ -3994,8 +3999,8 @@ export const jewellerySnapshot: JewelPiece[] = [
     "category": "Rings",
     "sku": "YF3608-G-5",
     "number": "91",
-    "price": 1099,
-    "priceLabel": "₹1,099",
+    "price": 999,
+    "priceLabel": "₹999",
     "variantId": "gid://shopify/ProductVariant/50710035234978",
     "availableForSale": true,
     "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/02ea7c30-e4d6-4a01-be94-178e0ebc9dee.jpg?v=1792193188",
@@ -4039,89 +4044,97 @@ export const jewellerySnapshot: JewelPiece[] = [
         "id": "gid://shopify/ProductVariant/50710035234978",
         "title": "Gold / 5",
         "availableForSale": true,
-        "price": 1099,
+        "price": 999,
         "options": {
           "Metal": "Gold",
           "Size": "5"
         },
-        "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/tubogas-dome-ring-on-hand-true-size.jpg?v=1792615240"
+        "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/tubogas-dome-ring-on-hand-true-size.jpg?v=1792615240",
+        "compareAtPrice": 1429
       },
       {
         "id": "gid://shopify/ProductVariant/50651969978530",
         "title": "Gold / 6",
         "availableForSale": true,
-        "price": 1099,
+        "price": 999,
         "options": {
           "Metal": "Gold",
           "Size": "6"
         },
-        "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/tubogas-dome-ring-on-hand-true-size.jpg?v=1792615240"
+        "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/tubogas-dome-ring-on-hand-true-size.jpg?v=1792615240",
+        "compareAtPrice": 1429
       },
       {
         "id": "gid://shopify/ProductVariant/50651970011298",
         "title": "Gold / 7",
         "availableForSale": true,
-        "price": 1099,
+        "price": 999,
         "options": {
           "Metal": "Gold",
           "Size": "7"
         },
-        "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/tubogas-dome-ring-on-hand-true-size.jpg?v=1792615240"
+        "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/tubogas-dome-ring-on-hand-true-size.jpg?v=1792615240",
+        "compareAtPrice": 1429
       },
       {
         "id": "gid://shopify/ProductVariant/50651970044066",
         "title": "Gold / 8",
         "availableForSale": true,
-        "price": 1099,
+        "price": 999,
         "options": {
           "Metal": "Gold",
           "Size": "8"
         },
-        "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/tubogas-dome-ring-on-hand-true-size.jpg?v=1792615240"
+        "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/tubogas-dome-ring-on-hand-true-size.jpg?v=1792615240",
+        "compareAtPrice": 1429
       },
       {
         "id": "gid://shopify/ProductVariant/50710035267746",
         "title": "Silver / 5",
         "availableForSale": true,
-        "price": 1099,
+        "price": 999,
         "options": {
           "Metal": "Silver",
           "Size": "5"
         },
-        "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/0d36743d-5310-47d4-8221-c6e1331b6c95.jpg?v=1792193187"
+        "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/0d36743d-5310-47d4-8221-c6e1331b6c95.jpg?v=1792193187",
+        "compareAtPrice": 1429
       },
       {
         "id": "gid://shopify/ProductVariant/50651970076834",
         "title": "Silver / 6",
         "availableForSale": true,
-        "price": 1099,
+        "price": 999,
         "options": {
           "Metal": "Silver",
           "Size": "6"
         },
-        "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/0d36743d-5310-47d4-8221-c6e1331b6c95.jpg?v=1792193187"
+        "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/0d36743d-5310-47d4-8221-c6e1331b6c95.jpg?v=1792193187",
+        "compareAtPrice": 1429
       },
       {
         "id": "gid://shopify/ProductVariant/50651970109602",
         "title": "Silver / 7",
         "availableForSale": true,
-        "price": 1099,
+        "price": 999,
         "options": {
           "Metal": "Silver",
           "Size": "7"
         },
-        "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/0d36743d-5310-47d4-8221-c6e1331b6c95.jpg?v=1792193187"
+        "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/0d36743d-5310-47d4-8221-c6e1331b6c95.jpg?v=1792193187",
+        "compareAtPrice": 1429
       },
       {
         "id": "gid://shopify/ProductVariant/50651970142370",
         "title": "Silver / 8",
         "availableForSale": true,
-        "price": 1099,
+        "price": 999,
         "options": {
           "Metal": "Silver",
           "Size": "8"
         },
-        "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/0d36743d-5310-47d4-8221-c6e1331b6c95.jpg?v=1792193187"
+        "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/0d36743d-5310-47d4-8221-c6e1331b6c95.jpg?v=1792193187",
+        "compareAtPrice": 1429
       }
     ],
     "options": [
@@ -4141,7 +4154,8 @@ export const jewellerySnapshot: JewelPiece[] = [
           "8"
         ]
       }
-    ]
+    ],
+    "compareAtPrice": 1429
   },
   {
     "handle": "fine-tennis-bracelet",
@@ -4149,10 +4163,10 @@ export const jewellerySnapshot: JewelPiece[] = [
     "category": "Bracelets",
     "sku": "YF7116",
     "number": "92",
-    "price": 1199,
-    "priceLabel": "₹1,199",
-    "compareAtPrice": 1800,
-    "compareAtLabel": "₹1,800",
+    "price": 999,
+    "priceLabel": "₹999",
+    "compareAtPrice": 1429,
+    "compareAtLabel": "₹1,429",
     "variantId": "gid://shopify/ProductVariant/50651970207906",
     "availableForSale": true,
     "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/7737f41a-0601-4f88-b4b3-52993e452a7d.jpg?v=1792193189",
@@ -4200,10 +4214,10 @@ export const jewellerySnapshot: JewelPiece[] = [
     "category": "Earrings",
     "sku": "YF7126-G",
     "number": "93",
-    "price": 999,
-    "priceLabel": "₹999",
-    "compareAtPrice": 1800,
-    "compareAtLabel": "₹1,800",
+    "price": 899,
+    "priceLabel": "₹899",
+    "compareAtPrice": 1289,
+    "compareAtLabel": "₹1,289",
     "variantId": "gid://shopify/ProductVariant/50651971125410",
     "availableForSale": true,
     "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/63ca5b07-ca61-44fa-b90d-ed1375f7601a.jpg?v=1792193273",
@@ -4250,8 +4264,8 @@ export const jewellerySnapshot: JewelPiece[] = [
         "id": "gid://shopify/ProductVariant/50651971125410",
         "title": "Gold",
         "availableForSale": true,
-        "price": 999,
-        "compareAtPrice": 1800,
+        "price": 899,
+        "compareAtPrice": 1289,
         "options": {
           "Metal": "Gold"
         },
@@ -4261,8 +4275,8 @@ export const jewellerySnapshot: JewelPiece[] = [
         "id": "gid://shopify/ProductVariant/50651971158178",
         "title": "Silver",
         "availableForSale": true,
-        "price": 999,
-        "compareAtPrice": 1800,
+        "price": 899,
+        "compareAtPrice": 1289,
         "options": {
           "Metal": "Silver"
         },
@@ -4285,8 +4299,8 @@ export const jewellerySnapshot: JewelPiece[] = [
     "category": "Bracelets",
     "sku": "YF3791-B-G",
     "number": "94",
-    "price": 1499,
-    "priceLabel": "₹1,499",
+    "price": 1199,
+    "priceLabel": "₹1,199",
     "variantId": "gid://shopify/ProductVariant/50651971190946",
     "availableForSale": true,
     "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/droplet-open-cuff_4_macro.jpg?v=1792711518",
@@ -4334,21 +4348,23 @@ export const jewellerySnapshot: JewelPiece[] = [
         "id": "gid://shopify/ProductVariant/50651971190946",
         "title": "Gold",
         "availableForSale": true,
-        "price": 1499,
+        "price": 1199,
         "options": {
           "Metal": "Gold"
         },
-        "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/droplet-open-cuff_1_main.jpg?v=1792711519"
+        "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/droplet-open-cuff_1_main.jpg?v=1792711519",
+        "compareAtPrice": 1999
       },
       {
         "id": "gid://shopify/ProductVariant/50651971223714",
         "title": "Silver",
         "availableForSale": true,
-        "price": 1499,
+        "price": 1199,
         "options": {
           "Metal": "Silver"
         },
-        "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/droplet-open-cuff_3_silver.jpg?v=1792711518"
+        "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/droplet-open-cuff_3_silver.jpg?v=1792711518",
+        "compareAtPrice": 1999
       }
     ],
     "options": [
@@ -4359,7 +4375,8 @@ export const jewellerySnapshot: JewelPiece[] = [
           "Silver"
         ]
       }
-    ]
+    ],
+    "compareAtPrice": 1999
   },
   {
     "handle": "roman-numeral-trio-ring",
@@ -4369,8 +4386,8 @@ export const jewellerySnapshot: JewelPiece[] = [
     "number": "95",
     "price": 1899,
     "priceLabel": "₹1,899",
-    "compareAtPrice": 3500,
-    "compareAtLabel": "₹3,500",
+    "compareAtPrice": 3169,
+    "compareAtLabel": "₹3,169",
     "variantId": "gid://shopify/ProductVariant/50651971256482",
     "availableForSale": false,
     "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/8659a0ee-1117-468b-8743-6b2573d750ea.jpg?v=1792193275",
@@ -4418,7 +4435,7 @@ export const jewellerySnapshot: JewelPiece[] = [
         "title": "6",
         "availableForSale": false,
         "price": 1899,
-        "compareAtPrice": 3500,
+        "compareAtPrice": 3169,
         "options": {
           "Size": "6"
         },
@@ -4429,7 +4446,7 @@ export const jewellerySnapshot: JewelPiece[] = [
         "title": "7",
         "availableForSale": false,
         "price": 1899,
-        "compareAtPrice": 3500,
+        "compareAtPrice": 3169,
         "options": {
           "Size": "7"
         },
@@ -4440,7 +4457,7 @@ export const jewellerySnapshot: JewelPiece[] = [
         "title": "8",
         "availableForSale": false,
         "price": 1899,
-        "compareAtPrice": 3500,
+        "compareAtPrice": 3169,
         "options": {
           "Size": "8"
         },
@@ -4451,7 +4468,7 @@ export const jewellerySnapshot: JewelPiece[] = [
         "title": "9",
         "availableForSale": false,
         "price": 1900,
-        "compareAtPrice": 3500,
+        "compareAtPrice": 3169,
         "options": {
           "Size": "9"
         },
@@ -4532,7 +4549,8 @@ export const jewellerySnapshot: JewelPiece[] = [
           "Metal": "Gold",
           "Size": "5"
         },
-        "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/linked-trio-ring_1_main.jpg?v=1792711255"
+        "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/linked-trio-ring_1_main.jpg?v=1792711255",
+        "compareAtPrice": 1999
       },
       {
         "id": "gid://shopify/ProductVariant/50651974795426",
@@ -4543,7 +4561,8 @@ export const jewellerySnapshot: JewelPiece[] = [
           "Metal": "Gold",
           "Size": "6"
         },
-        "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/linked-trio-ring_1_main.jpg?v=1792711255"
+        "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/linked-trio-ring_1_main.jpg?v=1792711255",
+        "compareAtPrice": 1999
       },
       {
         "id": "gid://shopify/ProductVariant/50651974828194",
@@ -4554,7 +4573,8 @@ export const jewellerySnapshot: JewelPiece[] = [
           "Metal": "Gold",
           "Size": "7"
         },
-        "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/linked-trio-ring_1_main.jpg?v=1792711255"
+        "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/linked-trio-ring_1_main.jpg?v=1792711255",
+        "compareAtPrice": 1999
       },
       {
         "id": "gid://shopify/ProductVariant/50651974860962",
@@ -4565,7 +4585,8 @@ export const jewellerySnapshot: JewelPiece[] = [
           "Metal": "Gold",
           "Size": "8"
         },
-        "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/linked-trio-ring_1_main.jpg?v=1792711255"
+        "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/linked-trio-ring_1_main.jpg?v=1792711255",
+        "compareAtPrice": 1999
       },
       {
         "id": "gid://shopify/ProductVariant/50710035333282",
@@ -4576,7 +4597,8 @@ export const jewellerySnapshot: JewelPiece[] = [
           "Metal": "Silver",
           "Size": "5"
         },
-        "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/linked-trio-ring_3_silver.jpg?v=1792711255"
+        "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/linked-trio-ring_3_silver.jpg?v=1792711255",
+        "compareAtPrice": 1999
       },
       {
         "id": "gid://shopify/ProductVariant/50651974893730",
@@ -4587,7 +4609,8 @@ export const jewellerySnapshot: JewelPiece[] = [
           "Metal": "Silver",
           "Size": "6"
         },
-        "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/linked-trio-ring_3_silver.jpg?v=1792711255"
+        "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/linked-trio-ring_3_silver.jpg?v=1792711255",
+        "compareAtPrice": 1999
       },
       {
         "id": "gid://shopify/ProductVariant/50651974926498",
@@ -4598,7 +4621,8 @@ export const jewellerySnapshot: JewelPiece[] = [
           "Metal": "Silver",
           "Size": "7"
         },
-        "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/linked-trio-ring_3_silver.jpg?v=1792711255"
+        "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/linked-trio-ring_3_silver.jpg?v=1792711255",
+        "compareAtPrice": 1999
       },
       {
         "id": "gid://shopify/ProductVariant/50651974959266",
@@ -4609,7 +4633,8 @@ export const jewellerySnapshot: JewelPiece[] = [
           "Metal": "Silver",
           "Size": "8"
         },
-        "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/linked-trio-ring_3_silver.jpg?v=1792711255"
+        "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/linked-trio-ring_3_silver.jpg?v=1792711255",
+        "compareAtPrice": 1999
       }
     ],
     "options": [
@@ -4629,7 +4654,8 @@ export const jewellerySnapshot: JewelPiece[] = [
           "8"
         ]
       }
-    ]
+    ],
+    "compareAtPrice": 1999
   },
   {
     "handle": "crystal-baguette-eternity-ring",
@@ -4687,7 +4713,8 @@ export const jewellerySnapshot: JewelPiece[] = [
         "options": {
           "Size": "5"
         },
-        "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/3bedf26d-84de-4497-bda9-bfd45d44afa3.jpg?v=1792193346"
+        "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/3bedf26d-84de-4497-bda9-bfd45d44afa3.jpg?v=1792193346",
+        "compareAtPrice": 1999
       },
       {
         "id": "gid://shopify/ProductVariant/50651974992034",
@@ -4697,7 +4724,8 @@ export const jewellerySnapshot: JewelPiece[] = [
         "options": {
           "Size": "6"
         },
-        "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/3bedf26d-84de-4497-bda9-bfd45d44afa3.jpg?v=1792193346"
+        "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/3bedf26d-84de-4497-bda9-bfd45d44afa3.jpg?v=1792193346",
+        "compareAtPrice": 1999
       },
       {
         "id": "gid://shopify/ProductVariant/50651975024802",
@@ -4707,7 +4735,8 @@ export const jewellerySnapshot: JewelPiece[] = [
         "options": {
           "Size": "7"
         },
-        "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/3bedf26d-84de-4497-bda9-bfd45d44afa3.jpg?v=1792193346"
+        "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/3bedf26d-84de-4497-bda9-bfd45d44afa3.jpg?v=1792193346",
+        "compareAtPrice": 1999
       },
       {
         "id": "gid://shopify/ProductVariant/50651975057570",
@@ -4717,7 +4746,8 @@ export const jewellerySnapshot: JewelPiece[] = [
         "options": {
           "Size": "8"
         },
-        "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/3bedf26d-84de-4497-bda9-bfd45d44afa3.jpg?v=1792193346"
+        "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/3bedf26d-84de-4497-bda9-bfd45d44afa3.jpg?v=1792193346",
+        "compareAtPrice": 1999
       }
     ],
     "options": [
@@ -4730,7 +4760,8 @@ export const jewellerySnapshot: JewelPiece[] = [
           "8"
         ]
       }
-    ]
+    ],
+    "compareAtPrice": 1999
   },
   {
     "handle": "chain-drop-dome-ring",
@@ -4738,8 +4769,8 @@ export const jewellerySnapshot: JewelPiece[] = [
     "category": "Rings",
     "sku": "YF8086-G-5",
     "number": "98",
-    "price": 1199,
-    "priceLabel": "₹1,199",
+    "price": 1099,
+    "priceLabel": "₹1,099",
     "variantId": "gid://shopify/ProductVariant/50710035398818",
     "availableForSale": true,
     "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/27b284d9-522f-4707-b74f-be7f95505920.jpg?v=1792193423",
@@ -4784,89 +4815,97 @@ export const jewellerySnapshot: JewelPiece[] = [
         "id": "gid://shopify/ProductVariant/50710035398818",
         "title": "Gold / 5",
         "availableForSale": true,
-        "price": 1199,
+        "price": 1099,
         "options": {
           "Metal": "Gold",
           "Size": "5"
         },
-        "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/9c16b3d6-21af-41ed-8618-86c425893d23.jpg?v=1792193423"
+        "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/9c16b3d6-21af-41ed-8618-86c425893d23.jpg?v=1792193423",
+        "compareAtPrice": 1579
       },
       {
         "id": "gid://shopify/ProductVariant/50651979022498",
         "title": "Gold / 6",
         "availableForSale": true,
-        "price": 1199,
+        "price": 1099,
         "options": {
           "Metal": "Gold",
           "Size": "6"
         },
-        "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/9c16b3d6-21af-41ed-8618-86c425893d23.jpg?v=1792193423"
+        "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/9c16b3d6-21af-41ed-8618-86c425893d23.jpg?v=1792193423",
+        "compareAtPrice": 1579
       },
       {
         "id": "gid://shopify/ProductVariant/50651979055266",
         "title": "Gold / 7",
         "availableForSale": true,
-        "price": 1199,
+        "price": 1099,
         "options": {
           "Metal": "Gold",
           "Size": "7"
         },
-        "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/9c16b3d6-21af-41ed-8618-86c425893d23.jpg?v=1792193423"
+        "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/9c16b3d6-21af-41ed-8618-86c425893d23.jpg?v=1792193423",
+        "compareAtPrice": 1579
       },
       {
         "id": "gid://shopify/ProductVariant/50651979088034",
         "title": "Gold / 8",
         "availableForSale": true,
-        "price": 1199,
+        "price": 1099,
         "options": {
           "Metal": "Gold",
           "Size": "8"
         },
-        "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/9c16b3d6-21af-41ed-8618-86c425893d23.jpg?v=1792193423"
+        "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/9c16b3d6-21af-41ed-8618-86c425893d23.jpg?v=1792193423",
+        "compareAtPrice": 1579
       },
       {
         "id": "gid://shopify/ProductVariant/50710035431586",
         "title": "Silver / 5",
         "availableForSale": true,
-        "price": 1199,
+        "price": 1099,
         "options": {
           "Metal": "Silver",
           "Size": "5"
         },
-        "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/423bdee1-4788-40f8-8ef4-903f8076b270.jpg?v=1792193423"
+        "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/423bdee1-4788-40f8-8ef4-903f8076b270.jpg?v=1792193423",
+        "compareAtPrice": 1579
       },
       {
         "id": "gid://shopify/ProductVariant/50651979120802",
         "title": "Silver / 6",
         "availableForSale": true,
-        "price": 1199,
+        "price": 1099,
         "options": {
           "Metal": "Silver",
           "Size": "6"
         },
-        "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/423bdee1-4788-40f8-8ef4-903f8076b270.jpg?v=1792193423"
+        "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/423bdee1-4788-40f8-8ef4-903f8076b270.jpg?v=1792193423",
+        "compareAtPrice": 1579
       },
       {
         "id": "gid://shopify/ProductVariant/50651979153570",
         "title": "Silver / 7",
         "availableForSale": true,
-        "price": 1199,
+        "price": 1099,
         "options": {
           "Metal": "Silver",
           "Size": "7"
         },
-        "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/423bdee1-4788-40f8-8ef4-903f8076b270.jpg?v=1792193423"
+        "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/423bdee1-4788-40f8-8ef4-903f8076b270.jpg?v=1792193423",
+        "compareAtPrice": 1579
       },
       {
         "id": "gid://shopify/ProductVariant/50651979186338",
         "title": "Silver / 8",
         "availableForSale": true,
-        "price": 1199,
+        "price": 1099,
         "options": {
           "Metal": "Silver",
           "Size": "8"
         },
-        "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/423bdee1-4788-40f8-8ef4-903f8076b270.jpg?v=1792193423"
+        "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/423bdee1-4788-40f8-8ef4-903f8076b270.jpg?v=1792193423",
+        "compareAtPrice": 1579
       }
     ],
     "options": [
@@ -4886,7 +4925,8 @@ export const jewellerySnapshot: JewelPiece[] = [
           "8"
         ]
       }
-    ]
+    ],
+    "compareAtPrice": 1579
   },
   {
     "handle": "watch-link-ring",
@@ -4894,8 +4934,8 @@ export const jewellerySnapshot: JewelPiece[] = [
     "category": "Rings",
     "sku": "YF2645-G-5",
     "number": "99",
-    "price": 999,
-    "priceLabel": "₹999",
+    "price": 899,
+    "priceLabel": "₹899",
     "variantId": "gid://shopify/ProductVariant/50710035464354",
     "availableForSale": true,
     "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/ca7dfcfc-1689-4a5b-a3c9-6eec533680bb.jpg?v=1792193424",
@@ -4941,89 +4981,97 @@ export const jewellerySnapshot: JewelPiece[] = [
         "id": "gid://shopify/ProductVariant/50710035464354",
         "title": "Gold / 5",
         "availableForSale": true,
-        "price": 999,
+        "price": 899,
         "options": {
           "Metal": "Gold",
           "Size": "5"
         },
-        "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/f665150b-1791-4a8f-bf65-e87cfd6e8a69.jpg?v=1792193424"
+        "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/f665150b-1791-4a8f-bf65-e87cfd6e8a69.jpg?v=1792193424",
+        "compareAtPrice": 1499
       },
       {
         "id": "gid://shopify/ProductVariant/50651979219106",
         "title": "Gold / 6",
         "availableForSale": true,
-        "price": 999,
+        "price": 899,
         "options": {
           "Metal": "Gold",
           "Size": "6"
         },
-        "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/f665150b-1791-4a8f-bf65-e87cfd6e8a69.jpg?v=1792193424"
+        "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/f665150b-1791-4a8f-bf65-e87cfd6e8a69.jpg?v=1792193424",
+        "compareAtPrice": 1499
       },
       {
         "id": "gid://shopify/ProductVariant/50651979251874",
         "title": "Gold / 7",
         "availableForSale": true,
-        "price": 999,
+        "price": 899,
         "options": {
           "Metal": "Gold",
           "Size": "7"
         },
-        "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/f665150b-1791-4a8f-bf65-e87cfd6e8a69.jpg?v=1792193424"
+        "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/f665150b-1791-4a8f-bf65-e87cfd6e8a69.jpg?v=1792193424",
+        "compareAtPrice": 1499
       },
       {
         "id": "gid://shopify/ProductVariant/50651979284642",
         "title": "Gold / 8",
         "availableForSale": true,
-        "price": 999,
+        "price": 899,
         "options": {
           "Metal": "Gold",
           "Size": "8"
         },
-        "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/f665150b-1791-4a8f-bf65-e87cfd6e8a69.jpg?v=1792193424"
+        "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/f665150b-1791-4a8f-bf65-e87cfd6e8a69.jpg?v=1792193424",
+        "compareAtPrice": 1499
       },
       {
         "id": "gid://shopify/ProductVariant/50710035497122",
         "title": "Silver / 5",
         "availableForSale": true,
-        "price": 999,
+        "price": 899,
         "options": {
           "Metal": "Silver",
           "Size": "5"
         },
-        "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/b6212874-cef2-498e-b659-dc2828078cc0.jpg?v=1792193424"
+        "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/b6212874-cef2-498e-b659-dc2828078cc0.jpg?v=1792193424",
+        "compareAtPrice": 1499
       },
       {
         "id": "gid://shopify/ProductVariant/50651979317410",
         "title": "Silver / 6",
         "availableForSale": true,
-        "price": 999,
+        "price": 899,
         "options": {
           "Metal": "Silver",
           "Size": "6"
         },
-        "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/b6212874-cef2-498e-b659-dc2828078cc0.jpg?v=1792193424"
+        "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/b6212874-cef2-498e-b659-dc2828078cc0.jpg?v=1792193424",
+        "compareAtPrice": 1499
       },
       {
         "id": "gid://shopify/ProductVariant/50651979350178",
         "title": "Silver / 7",
         "availableForSale": true,
-        "price": 999,
+        "price": 899,
         "options": {
           "Metal": "Silver",
           "Size": "7"
         },
-        "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/b6212874-cef2-498e-b659-dc2828078cc0.jpg?v=1792193424"
+        "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/b6212874-cef2-498e-b659-dc2828078cc0.jpg?v=1792193424",
+        "compareAtPrice": 1499
       },
       {
         "id": "gid://shopify/ProductVariant/50651979382946",
         "title": "Silver / 8",
         "availableForSale": true,
-        "price": 999,
+        "price": 899,
         "options": {
           "Metal": "Silver",
           "Size": "8"
         },
-        "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/b6212874-cef2-498e-b659-dc2828078cc0.jpg?v=1792193424"
+        "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/b6212874-cef2-498e-b659-dc2828078cc0.jpg?v=1792193424",
+        "compareAtPrice": 1499
       }
     ],
     "options": [
@@ -5043,7 +5091,8 @@ export const jewellerySnapshot: JewelPiece[] = [
           "8"
         ]
       }
-    ]
+    ],
+    "compareAtPrice": 1499
   },
   {
     "handle": "marquise-drop-choker",
@@ -5051,10 +5100,10 @@ export const jewellerySnapshot: JewelPiece[] = [
     "category": "Necklaces",
     "sku": "YF7059",
     "number": "100",
-    "price": 1199,
-    "priceLabel": "₹1,199",
-    "compareAtPrice": 2388,
-    "compareAtLabel": "₹2,388",
+    "price": 999,
+    "priceLabel": "₹999",
+    "compareAtPrice": 1429,
+    "compareAtLabel": "₹1,429",
     "variantId": "gid://shopify/ProductVariant/50651979415714",
     "availableForSale": true,
     "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/marquise-drop-choker_2_worn.jpg?v=1792711535",
@@ -5153,7 +5202,8 @@ export const jewellerySnapshot: JewelPiece[] = [
           "Metal": "Gold",
           "Size": "5"
         },
-        "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/d09d09ef-1fee-4149-9b0c-4faa7092ae35.jpg?v=1792193518"
+        "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/d09d09ef-1fee-4149-9b0c-4faa7092ae35.jpg?v=1792193518",
+        "compareAtPrice": 1339
       },
       {
         "id": "gid://shopify/ProductVariant/50651983184034",
@@ -5164,7 +5214,8 @@ export const jewellerySnapshot: JewelPiece[] = [
           "Metal": "Gold",
           "Size": "6"
         },
-        "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/d09d09ef-1fee-4149-9b0c-4faa7092ae35.jpg?v=1792193518"
+        "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/d09d09ef-1fee-4149-9b0c-4faa7092ae35.jpg?v=1792193518",
+        "compareAtPrice": 1339
       },
       {
         "id": "gid://shopify/ProductVariant/50651983216802",
@@ -5175,7 +5226,8 @@ export const jewellerySnapshot: JewelPiece[] = [
           "Metal": "Gold",
           "Size": "7"
         },
-        "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/d09d09ef-1fee-4149-9b0c-4faa7092ae35.jpg?v=1792193518"
+        "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/d09d09ef-1fee-4149-9b0c-4faa7092ae35.jpg?v=1792193518",
+        "compareAtPrice": 1339
       },
       {
         "id": "gid://shopify/ProductVariant/50651983249570",
@@ -5186,7 +5238,8 @@ export const jewellerySnapshot: JewelPiece[] = [
           "Metal": "Gold",
           "Size": "8"
         },
-        "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/d09d09ef-1fee-4149-9b0c-4faa7092ae35.jpg?v=1792193518"
+        "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/d09d09ef-1fee-4149-9b0c-4faa7092ae35.jpg?v=1792193518",
+        "compareAtPrice": 1339
       },
       {
         "id": "gid://shopify/ProductVariant/50710035562658",
@@ -5197,7 +5250,8 @@ export const jewellerySnapshot: JewelPiece[] = [
           "Metal": "Silver",
           "Size": "5"
         },
-        "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/c742356d-bc04-4907-ac4c-fa31c6828ad6.jpg?v=1792193517"
+        "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/c742356d-bc04-4907-ac4c-fa31c6828ad6.jpg?v=1792193517",
+        "compareAtPrice": 1339
       },
       {
         "id": "gid://shopify/ProductVariant/50651983282338",
@@ -5208,7 +5262,8 @@ export const jewellerySnapshot: JewelPiece[] = [
           "Metal": "Silver",
           "Size": "6"
         },
-        "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/c742356d-bc04-4907-ac4c-fa31c6828ad6.jpg?v=1792193517"
+        "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/c742356d-bc04-4907-ac4c-fa31c6828ad6.jpg?v=1792193517",
+        "compareAtPrice": 1339
       },
       {
         "id": "gid://shopify/ProductVariant/50651983315106",
@@ -5219,7 +5274,8 @@ export const jewellerySnapshot: JewelPiece[] = [
           "Metal": "Silver",
           "Size": "7"
         },
-        "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/c742356d-bc04-4907-ac4c-fa31c6828ad6.jpg?v=1792193517"
+        "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/c742356d-bc04-4907-ac4c-fa31c6828ad6.jpg?v=1792193517",
+        "compareAtPrice": 1339
       },
       {
         "id": "gid://shopify/ProductVariant/50651983347874",
@@ -5230,7 +5286,8 @@ export const jewellerySnapshot: JewelPiece[] = [
           "Metal": "Silver",
           "Size": "8"
         },
-        "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/c742356d-bc04-4907-ac4c-fa31c6828ad6.jpg?v=1792193517"
+        "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/c742356d-bc04-4907-ac4c-fa31c6828ad6.jpg?v=1792193517",
+        "compareAtPrice": 1339
       }
     ],
     "options": [
@@ -5250,7 +5307,8 @@ export const jewellerySnapshot: JewelPiece[] = [
           "8"
         ]
       }
-    ]
+    ],
+    "compareAtPrice": 1339
   },
   {
     "handle": "bold-nocturne-drops",
@@ -5297,7 +5355,8 @@ export const jewellerySnapshot: JewelPiece[] = [
       "Naira Petite",
       "Tarnish Free",
       "Waterproof"
-    ]
+    ],
+    "compareAtPrice": 1859
   },
   {
     "handle": "pear-point-open-cuff",
@@ -5305,10 +5364,10 @@ export const jewellerySnapshot: JewelPiece[] = [
     "category": "Bracelets",
     "sku": "YF8221",
     "number": "103",
-    "price": 1499,
-    "priceLabel": "₹1,499",
-    "compareAtPrice": 3100,
-    "compareAtLabel": "₹3,100",
+    "price": 1599,
+    "priceLabel": "₹1,599",
+    "compareAtPrice": 2669,
+    "compareAtLabel": "₹2,669",
     "variantId": "gid://shopify/ProductVariant/50651983413410",
     "availableForSale": true,
     "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/62b1fe01-882d-413a-aa05-9154c4bead10.jpg?v=1792193520",
@@ -5355,8 +5414,8 @@ export const jewellerySnapshot: JewelPiece[] = [
     "category": "Earrings",
     "sku": "YF3652-GRN",
     "number": "104",
-    "price": 999,
-    "priceLabel": "₹999",
+    "price": 899,
+    "priceLabel": "₹899",
     "variantId": "gid://shopify/ProductVariant/50651983446178",
     "availableForSale": true,
     "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/emerald-square-ear-cuff_2_worn.jpg?v=1792711286",
@@ -5399,7 +5458,8 @@ export const jewellerySnapshot: JewelPiece[] = [
       "Naira Petite",
       "Tarnish Free",
       "Waterproof"
-    ]
+    ],
+    "compareAtPrice": 1289
   },
   {
     "handle": "crystal-pear-ear-cuff",
@@ -5446,7 +5506,8 @@ export const jewellerySnapshot: JewelPiece[] = [
       "Naira Petite",
       "Tarnish Free",
       "Waterproof"
-    ]
+    ],
+    "compareAtPrice": 1429
   },
   {
     "handle": "sorbet-riviere-bracelet",
@@ -5456,8 +5517,8 @@ export const jewellerySnapshot: JewelPiece[] = [
     "number": "106",
     "price": 999,
     "priceLabel": "₹999",
-    "compareAtPrice": 2200,
-    "compareAtLabel": "₹2,200",
+    "compareAtPrice": 1110,
+    "compareAtLabel": "₹1,110",
     "variantId": "gid://shopify/ProductVariant/50714566230178",
     "availableForSale": true,
     "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/90fd0ae5-9e36-4f6b-bd00-0f95c8336b66.jpg?v=1792873976",
@@ -5501,10 +5562,10 @@ export const jewellerySnapshot: JewelPiece[] = [
     "category": "Bracelets",
     "sku": "ADT03",
     "number": "107",
-    "price": 1299,
-    "priceLabel": "₹1,299",
-    "compareAtPrice": 2500,
-    "compareAtLabel": "₹2,500",
+    "price": 799,
+    "priceLabel": "₹799",
+    "compareAtPrice": 1149,
+    "compareAtLabel": "₹1,149",
     "variantId": "gid://shopify/ProductVariant/50714566262946",
     "availableForSale": true,
     "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/a8f405e8-ccf0-492b-937a-35f0769d4be7.jpg?v=1792873977",
@@ -5548,10 +5609,10 @@ export const jewellerySnapshot: JewelPiece[] = [
     "category": "Bracelets",
     "sku": "ADT05",
     "number": "108",
-    "price": 999,
-    "priceLabel": "₹999",
-    "compareAtPrice": 2100,
-    "compareAtLabel": "₹2,100",
+    "price": 899,
+    "priceLabel": "₹899",
+    "compareAtPrice": 1289,
+    "compareAtLabel": "₹1,289",
     "variantId": "gid://shopify/ProductVariant/50714620068002",
     "availableForSale": true,
     "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/a5a95bb2-a2e7-45dc-ab44-c150c9f1a003.jpg?v=1792876279",
@@ -5593,10 +5654,10 @@ export const jewellerySnapshot: JewelPiece[] = [
     "category": "Bracelets",
     "sku": "ADT06-RB",
     "number": "109",
-    "price": 1299,
-    "priceLabel": "₹1,299",
-    "compareAtPrice": 1800,
-    "compareAtLabel": "₹1,800",
+    "price": 899,
+    "priceLabel": "₹899",
+    "compareAtPrice": 1289,
+    "compareAtLabel": "₹1,289",
     "variantId": "gid://shopify/ProductVariant/50714620100770",
     "availableForSale": true,
     "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/ee4adbf6-2bab-4df6-8107-ae3641bb29d6.jpg?v=1792876280",
@@ -5646,8 +5707,8 @@ export const jewellerySnapshot: JewelPiece[] = [
         "id": "gid://shopify/ProductVariant/50714620100770",
         "title": "Royal Blue",
         "availableForSale": true,
-        "price": 1299,
-        "compareAtPrice": 1800,
+        "price": 899,
+        "compareAtPrice": 1289,
         "options": {
           "Colour": "Royal Blue"
         },
@@ -5657,8 +5718,8 @@ export const jewellerySnapshot: JewelPiece[] = [
         "id": "gid://shopify/ProductVariant/50714620133538",
         "title": "Lavender",
         "availableForSale": false,
-        "price": 1299,
-        "compareAtPrice": 1800,
+        "price": 899,
+        "compareAtPrice": 1289,
         "options": {
           "Colour": "Lavender"
         },
@@ -5668,8 +5729,8 @@ export const jewellerySnapshot: JewelPiece[] = [
         "id": "gid://shopify/ProductVariant/50749309649058",
         "title": "White",
         "availableForSale": true,
-        "price": 1299,
-        "compareAtPrice": 1800,
+        "price": 899,
+        "compareAtPrice": 1289,
         "options": {
           "Colour": "White"
         },
@@ -5679,8 +5740,8 @@ export const jewellerySnapshot: JewelPiece[] = [
         "id": "gid://shopify/ProductVariant/50749309681826",
         "title": "Pink",
         "availableForSale": true,
-        "price": 1299,
-        "compareAtPrice": 1800,
+        "price": 899,
+        "compareAtPrice": 1289,
         "options": {
           "Colour": "Pink"
         },
@@ -5705,10 +5766,10 @@ export const jewellerySnapshot: JewelPiece[] = [
     "category": "Bracelets",
     "sku": "ADT07-FU",
     "number": "110",
-    "price": 999,
-    "priceLabel": "₹999",
-    "compareAtPrice": 2000,
-    "compareAtLabel": "₹2,000",
+    "price": 799,
+    "priceLabel": "₹799",
+    "compareAtPrice": 1149,
+    "compareAtLabel": "₹1,149",
     "variantId": "gid://shopify/ProductVariant/50714620166306",
     "availableForSale": true,
     "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/1ad3313a-7c6b-44e6-b2e5-aba25d3768b8.jpg?v=1793085197",
@@ -5754,8 +5815,8 @@ export const jewellerySnapshot: JewelPiece[] = [
         "id": "gid://shopify/ProductVariant/50714620166306",
         "title": "Fuchsia",
         "availableForSale": true,
-        "price": 999,
-        "compareAtPrice": 2000,
+        "price": 799,
+        "compareAtPrice": 1149,
         "options": {
           "Colour": "Fuchsia"
         },
@@ -5765,8 +5826,8 @@ export const jewellerySnapshot: JewelPiece[] = [
         "id": "gid://shopify/ProductVariant/50714620199074",
         "title": "Violet",
         "availableForSale": true,
-        "price": 999,
-        "compareAtPrice": 2000,
+        "price": 799,
+        "compareAtPrice": 1149,
         "options": {
           "Colour": "Violet"
         },
@@ -5776,8 +5837,8 @@ export const jewellerySnapshot: JewelPiece[] = [
         "id": "gid://shopify/ProductVariant/50730904191138",
         "title": "White",
         "availableForSale": true,
-        "price": 999,
-        "compareAtPrice": 2000,
+        "price": 799,
+        "compareAtPrice": 1149,
         "options": {
           "Colour": "White"
         },
@@ -5803,8 +5864,8 @@ export const jewellerySnapshot: JewelPiece[] = [
     "number": "111",
     "price": 1199,
     "priceLabel": "₹1,199",
-    "compareAtPrice": 2300,
-    "compareAtLabel": "₹2,300",
+    "compareAtPrice": 1339,
+    "compareAtLabel": "₹1,339",
     "variantId": "gid://shopify/ProductVariant/50714620231842",
     "availableForSale": true,
     "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/08b9f7f8-0b87-47df-bb43-fce9f9e17381.jpg?v=1792876282",
@@ -5848,10 +5909,10 @@ export const jewellerySnapshot: JewelPiece[] = [
     "category": "Necklaces",
     "sku": "ADT09",
     "number": "112",
-    "price": 999,
-    "priceLabel": "₹999",
-    "compareAtPrice": 1999,
-    "compareAtLabel": "₹1,999",
+    "price": 799,
+    "priceLabel": "₹799",
+    "compareAtPrice": 1149,
+    "compareAtLabel": "₹1,149",
     "variantId": "gid://shopify/ProductVariant/50716471230626",
     "availableForSale": true,
     "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/8ba4b624-8f1d-4773-ae8c-ae06dcb7e5e2.jpg?v=1792938394",
@@ -5895,10 +5956,10 @@ export const jewellerySnapshot: JewelPiece[] = [
     "category": "Earrings",
     "sku": "ADT10",
     "number": "113",
-    "price": 999,
-    "priceLabel": "₹999",
-    "compareAtPrice": 1500,
-    "compareAtLabel": "₹1,500",
+    "price": 699,
+    "priceLabel": "₹699",
+    "compareAtPrice": 999,
+    "compareAtLabel": "₹999",
     "variantId": "gid://shopify/ProductVariant/50716471263394",
     "availableForSale": true,
     "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/cf8c70a1-8f85-498c-a5e1-6f84bd340aea.jpg?v=1792938394",
@@ -5940,10 +6001,10 @@ export const jewellerySnapshot: JewelPiece[] = [
     "category": "Bracelets",
     "sku": "ADT11",
     "number": "114",
-    "price": 799,
-    "priceLabel": "₹799",
-    "compareAtPrice": 1500,
-    "compareAtLabel": "₹1,500",
+    "price": 699,
+    "priceLabel": "₹699",
+    "compareAtPrice": 779,
+    "compareAtLabel": "₹779",
     "variantId": "gid://shopify/ProductVariant/50716475228322",
     "availableForSale": true,
     "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/1f7ce63a-76a4-42fd-8c6b-035165ee9165.jpg?v=1792938394",
@@ -5988,8 +6049,8 @@ export const jewellerySnapshot: JewelPiece[] = [
     "number": "115",
     "price": 999,
     "priceLabel": "₹999",
-    "compareAtPrice": 2000,
-    "compareAtLabel": "₹2,000",
+    "compareAtPrice": 1110,
+    "compareAtLabel": "₹1,110",
     "variantId": "gid://shopify/ProductVariant/50716703195298",
     "availableForSale": true,
     "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/387bc7b8-6bfd-48cd-9961-ecc12ba7afb9.jpg?v=1792921661",
@@ -6068,7 +6129,8 @@ export const jewellerySnapshot: JewelPiece[] = [
       "Demi Fine",
       "Naira Petite",
       "Necklace"
-    ]
+    ],
+    "compareAtPrice": 1110
   },
   {
     "handle": "twin-heart-studs",
@@ -6076,10 +6138,10 @@ export const jewellerySnapshot: JewelPiece[] = [
     "category": "Earrings",
     "sku": "ADT14",
     "number": "117",
-    "price": 999,
-    "priceLabel": "₹999",
-    "compareAtPrice": 1608,
-    "compareAtLabel": "₹1,608",
+    "price": 749,
+    "priceLabel": "₹749",
+    "compareAtPrice": 1070,
+    "compareAtLabel": "₹1,070",
     "variantId": "gid://shopify/ProductVariant/50716709912738",
     "availableForSale": true,
     "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/e7771a3d-da68-4a1e-b5f1-029e30526f88.jpg?v=1793044004",
@@ -6124,8 +6186,8 @@ export const jewellerySnapshot: JewelPiece[] = [
     "category": "Necklaces",
     "sku": "ADT15",
     "number": "118",
-    "price": 999,
-    "priceLabel": "₹999",
+    "price": 749,
+    "priceLabel": "₹749",
     "variantId": "gid://shopify/ProductVariant/50716710502562",
     "availableForSale": true,
     "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/88fba78f-b9d5-41de-82c9-ad20a4866d8d.jpg?v=1792938394",
@@ -6160,7 +6222,8 @@ export const jewellerySnapshot: JewelPiece[] = [
       "Demi Fine",
       "Naira Petite",
       "Necklace"
-    ]
+    ],
+    "compareAtPrice": 1249
   },
   {
     "handle": "open-heart-layered-bracelet",
@@ -6170,8 +6233,8 @@ export const jewellerySnapshot: JewelPiece[] = [
     "number": "119",
     "price": 599,
     "priceLabel": "₹599",
-    "compareAtPrice": 1200,
-    "compareAtLabel": "₹1,200",
+    "compareAtPrice": 669,
+    "compareAtLabel": "₹669",
     "variantId": "gid://shopify/ProductVariant/50716710568098",
     "availableForSale": true,
     "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/6d77465c-3b80-4fc1-a906-4ef297f16a54.jpg?v=1792922033",
@@ -6212,10 +6275,10 @@ export const jewellerySnapshot: JewelPiece[] = [
     "category": "Earrings",
     "sku": "ADT19",
     "number": "120",
-    "price": 599,
-    "priceLabel": "₹599",
-    "compareAtPrice": 1300,
-    "compareAtLabel": "₹1,300",
+    "price": 449,
+    "priceLabel": "₹449",
+    "compareAtPrice": 645,
+    "compareAtLabel": "₹645",
     "variantId": "gid://shopify/ProductVariant/50716711485602",
     "availableForSale": true,
     "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/3ba28b03-f1db-4df0-a68a-3c08083f6872.jpg?v=1792938394",
@@ -6261,8 +6324,8 @@ export const jewellerySnapshot: JewelPiece[] = [
     "number": "121",
     "price": 700,
     "priceLabel": "₹700",
-    "compareAtPrice": 2000,
-    "compareAtLabel": "₹2,000",
+    "compareAtPrice": 779,
+    "compareAtLabel": "₹779",
     "variantId": "gid://shopify/ProductVariant/50716711518370",
     "availableForSale": true,
     "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/840c7d21-2080-4e4c-a5f4-5e267d800341.jpg?v=1792922728",
@@ -6306,8 +6369,8 @@ export const jewellerySnapshot: JewelPiece[] = [
     "number": "122",
     "price": 899,
     "priceLabel": "₹899",
-    "compareAtPrice": 1600,
-    "compareAtLabel": "₹1,600",
+    "compareAtPrice": 1499,
+    "compareAtLabel": "₹1,499",
     "variantId": "gid://shopify/ProductVariant/50716711551138",
     "availableForSale": true,
     "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/26696f88-7b84-4472-b6b7-d4f123ef20aa.jpg?v=1792922728",
@@ -6383,7 +6446,8 @@ export const jewellerySnapshot: JewelPiece[] = [
       "Demi Fine",
       "Naira Petite",
       "Ring"
-    ]
+    ],
+    "compareAtPrice": 779
   },
   {
     "handle": "pearl-heart-layered-necklace",
@@ -6393,8 +6457,8 @@ export const jewellerySnapshot: JewelPiece[] = [
     "number": "124",
     "price": 999,
     "priceLabel": "₹999",
-    "compareAtPrice": 1999,
-    "compareAtLabel": "₹1,999",
+    "compareAtPrice": 1110,
+    "compareAtLabel": "₹1,110",
     "variantId": "gid://shopify/ProductVariant/50716711616674",
     "availableForSale": true,
     "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/6c8abef2-7a07-4c67-9b3a-9c697e94ecac.jpg?v=1792922732",
@@ -6437,8 +6501,8 @@ export const jewellerySnapshot: JewelPiece[] = [
     "number": "125",
     "price": 599,
     "priceLabel": "₹599",
-    "compareAtPrice": 999,
-    "compareAtLabel": "₹999",
+    "compareAtPrice": 859,
+    "compareAtLabel": "₹859",
     "variantId": "gid://shopify/ProductVariant/50716942925986",
     "availableForSale": true,
     "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/e7860cbe-e716-4632-99cd-9415f46feac2.jpg?v=1792930333",
@@ -6480,10 +6544,10 @@ export const jewellerySnapshot: JewelPiece[] = [
     "category": "Necklaces",
     "sku": "ADT24",
     "number": "126",
-    "price": 1199,
-    "priceLabel": "₹1,199",
-    "compareAtPrice": 1908,
-    "compareAtLabel": "₹1,908",
+    "price": 999,
+    "priceLabel": "₹999",
+    "compareAtPrice": 1110,
+    "compareAtLabel": "₹1,110",
     "variantId": "gid://shopify/ProductVariant/50716942958754",
     "availableForSale": true,
     "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/32d9721b-64dc-4ab0-86a0-17ebea3fb92a.jpg?v=1792940053",
@@ -6526,10 +6590,10 @@ export const jewellerySnapshot: JewelPiece[] = [
     "category": "Earrings",
     "sku": "ADT25",
     "number": "127",
-    "price": 999,
-    "priceLabel": "₹999",
-    "compareAtPrice": 1600,
-    "compareAtLabel": "₹1,600",
+    "price": 899,
+    "priceLabel": "₹899",
+    "compareAtPrice": 999,
+    "compareAtLabel": "₹999",
     "variantId": "gid://shopify/ProductVariant/50716942991522",
     "availableForSale": true,
     "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/f48a3745-7b11-47f6-b988-6175813aff40.jpg?v=1792940053",
@@ -6571,10 +6635,10 @@ export const jewellerySnapshot: JewelPiece[] = [
     "category": "Bracelets",
     "sku": "ADT03-BL",
     "number": "128",
-    "price": 999,
-    "priceLabel": "₹999",
-    "compareAtPrice": 2200,
-    "compareAtLabel": "₹2,200",
+    "price": 899,
+    "priceLabel": "₹899",
+    "compareAtPrice": 999,
+    "compareAtLabel": "₹999",
     "variantId": "gid://shopify/ProductVariant/50725447893154",
     "availableForSale": true,
     "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/blush-carre-bracelet-02.jpg?v=1793027357",
@@ -6619,8 +6683,8 @@ export const jewellerySnapshot: JewelPiece[] = [
     "number": "129",
     "price": 999,
     "priceLabel": "₹999",
-    "compareAtPrice": 2500,
-    "compareAtLabel": "₹2,500",
+    "compareAtPrice": 1429,
+    "compareAtLabel": "₹1,429",
     "variantId": "gid://shopify/ProductVariant/50725447925922",
     "availableForSale": true,
     "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/sapphire-carre-bracelet-02.jpg?v=1793027359",
@@ -6664,10 +6728,10 @@ export const jewellerySnapshot: JewelPiece[] = [
     "category": "Bracelets",
     "sku": "ADT03-CH",
     "number": "130",
-    "price": 1299,
-    "priceLabel": "₹1,299",
-    "compareAtPrice": 2500,
-    "compareAtLabel": "₹2,500",
+    "price": 899,
+    "priceLabel": "₹899",
+    "compareAtPrice": 1289,
+    "compareAtLabel": "₹1,289",
     "variantId": "gid://shopify/ProductVariant/50725447958690",
     "availableForSale": true,
     "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/champagne-carre-bracelet-02.jpg?v=1793027361",
@@ -6710,10 +6774,10 @@ export const jewellerySnapshot: JewelPiece[] = [
     "category": "Bracelets",
     "sku": "ADT03-AM",
     "number": "131",
-    "price": 999,
-    "priceLabel": "₹999",
-    "compareAtPrice": 2200,
-    "compareAtLabel": "₹2,200",
+    "price": 899,
+    "priceLabel": "₹899",
+    "compareAtPrice": 999,
+    "compareAtLabel": "₹999",
     "variantId": "gid://shopify/ProductVariant/50725447991458",
     "availableForSale": true,
     "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/amethyst-carre-bracelet-02.jpg?v=1793027363",
@@ -6757,10 +6821,10 @@ export const jewellerySnapshot: JewelPiece[] = [
     "category": "Earrings",
     "sku": "ADT27",
     "number": "132",
-    "price": 799,
-    "priceLabel": "₹799",
-    "compareAtPrice": 1300,
-    "compareAtLabel": "₹1,300",
+    "price": 999,
+    "priceLabel": "₹999",
+    "compareAtPrice": 1429,
+    "compareAtLabel": "₹1,429",
     "variantId": "gid://shopify/ProductVariant/50730836852898",
     "availableForSale": true,
     "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/a741d432-884d-4a54-9736-f5e9d7776ef9.jpg?v=1793084429",
@@ -6799,8 +6863,8 @@ export const jewellerySnapshot: JewelPiece[] = [
     "category": "Earrings",
     "sku": "ADT28",
     "number": "133",
-    "price": 1099,
-    "priceLabel": "₹1,099",
+    "price": 999,
+    "priceLabel": "₹999",
     "variantId": "gid://shopify/ProductVariant/50730841112738",
     "availableForSale": true,
     "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/d33f3cb6-1781-40f9-9094-5f92be1c7ba8.jpg?v=1793084453",
@@ -6837,7 +6901,8 @@ export const jewellerySnapshot: JewelPiece[] = [
       "Demi Fine",
       "Earrings",
       "Naira Petite"
-    ]
+    ],
+    "compareAtPrice": 1429
   },
   {
     "handle": "watch-link-strap-bracelet",
@@ -6847,8 +6912,8 @@ export const jewellerySnapshot: JewelPiece[] = [
     "number": "134",
     "price": 1199,
     "priceLabel": "₹1,199",
-    "compareAtPrice": 2000,
-    "compareAtLabel": "₹2,000",
+    "compareAtPrice": 1339,
+    "compareAtLabel": "₹1,339",
     "variantId": "gid://shopify/ProductVariant/50730842751138",
     "availableForSale": false,
     "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/da4e34c2-5431-4ec6-9a69-30f1a5058098.jpg?v=1793084481",

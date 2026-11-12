@@ -333,5 +333,148 @@
   }
  ],
  "offer_codes": "BUY2/BUY3/BUY4 were briefly set to 15/25/25% and set back the same hour, at the owner's word ('Keep offer the same on live website'), to match the live site: BUY2 10% (active again; it had expired on 7 Nov while the site still offered Buy 2), BUY3 20%, BUY4 30%.",
- "undo": "Run inventorySetQuantities with name available, quantity = available_before and changeFromQuantity = available_after for each row in 'applied'."
+ "undo": "Run inventorySetQuantities with name available, quantity = available_before and changeFromQuantity = available_after for each row in 'applied'.",
+ "second_update_same_day": {
+  "what": "Owner's updated earring sheets (new stock added, lines 38-44 added)",
+  "applied": [
+   {
+    "product": "Verdant Cushion Studs",
+    "sku": "E19712C",
+    "inventoryItemId": "gid://shopify/InventoryItem/49834713448610",
+    "sheet": "6 + 24 = 30",
+    "available_before": 6,
+    "available_after": 30
+   },
+   {
+    "product": "Emerald Halo C-Hoops",
+    "sku": "N21-HALO",
+    "inventoryItemId": "gid://shopify/InventoryItem/52773465391266",
+    "sheet": "4 + 3 = 7",
+    "available_before": 4,
+    "available_after": 7
+   },
+   {
+    "product": "Prism Cluster Studs",
+    "sku": "E15838C1",
+    "inventoryItemId": "gid://shopify/InventoryItem/49837009502370",
+    "sheet": "7 + 19 = 26",
+    "available_before": 7,
+    "available_after": 26
+   },
+   {
+    "product": "Baguette Halo Drops",
+    "sku": "WE23818B",
+    "inventoryItemId": "gid://shopify/InventoryItem/49834714661026",
+    "sheet": "5 + 19 = 24",
+    "available_before": 5,
+    "available_after": 24
+   },
+   {
+    "product": "Prism Pear Drop Hoops",
+    "sku": "ADT25",
+    "inventoryItemId": "gid://shopify/InventoryItem/52837620154530",
+    "sheet": "4",
+    "available_before": 3,
+    "available_after": 4
+   },
+   {
+    "product": "Lotus Pear Drop Studs",
+    "sku": "ADT28",
+    "inventoryItemId": "gid://shopify/InventoryItem/52851585515682",
+    "sheet": "4 + 2 = 6",
+    "available_before": 4,
+    "available_after": 6
+   },
+   {
+    "product": "Petal Flower Studs / Gold",
+    "sku": "YF7126-G",
+    "inventoryItemId": "gid://shopify/InventoryItem/52773474140322",
+    "sheet": "6 + 3 = 9",
+    "available_before": 6,
+    "available_after": 9
+   },
+   {
+    "product": "Twin Heart Studs",
+    "sku": "ADT14",
+    "inventoryItemId": "gid://shopify/InventoryItem/52837387075746",
+    "sheet": "5 + 10 = 15",
+    "available_before": 5,
+    "available_after": 15
+   },
+   {
+    "product": "Bold Dome Huggies",
+    "sku": "E200570",
+    "inventoryItemId": "gid://shopify/InventoryItem/49834713350306",
+    "sheet": "9 + 15 = 23 (written total used; the sum is 24)",
+    "available_before": 9,
+    "available_after": 23
+   },
+   {
+    "product": "Pearl Blossom Earrings",
+    "sku": "E20997C",
+    "inventoryItemId": "gid://shopify/InventoryItem/49654292218018",
+    "sheet": "2",
+    "available_before": 3,
+    "available_after": 2
+   },
+   {
+    "product": "Quatrefoil Éclat Studs",
+    "sku": "FE03783B",
+    "inventoryItemId": "gid://shopify/InventoryItem/49834713383074",
+    "sheet": "18 + 5 = 23",
+    "available_before": 18,
+    "available_after": 23
+   },
+   {
+    "product": "Aqua Heart Drops",
+    "sku": "WE22108C3",
+    "inventoryItemId": "gid://shopify/InventoryItem/49837009535138",
+    "sheet": "22 + 2 = 24",
+    "available_before": 28,
+    "available_after": 24
+   },
+   {
+    "product": "Molten Wave Ear Cuff",
+    "sku": "ADT19",
+    "inventoryItemId": "gid://shopify/InventoryItem/52837388648610",
+    "sheet": "8",
+    "available_before": 9,
+    "available_after": 8
+   },
+   {
+    "product": "Emerald Square Ear Cuff",
+    "sku": "YF3652-GRN",
+    "inventoryItemId": "gid://shopify/InventoryItem/52773486461090",
+    "sheet": "8 pairs",
+    "available_before": 5,
+    "available_after": 8
+   },
+   {
+    "product": "Crystal Pear Ear Cuff",
+    "sku": "YF3652-WHT",
+    "inventoryItemId": "gid://shopify/InventoryItem/52773486493858",
+    "sheet": "9 pairs",
+    "available_before": 5,
+    "available_after": 9
+   },
+   {
+    "product": "Clover Drop Earrings",
+    "sku": "ADT10",
+    "inventoryItemId": "gid://shopify/InventoryItem/52837148426402",
+    "sheet": "7",
+    "available_before": 6,
+    "available_after": 7
+   },
+   {
+    "product": "Woven Gold Hoops (sheet: Mesh Hoops)",
+    "sku": "E20267O",
+    "inventoryItemId": "gid://shopify/InventoryItem/49654291398818",
+    "sheet": "89",
+    "available_before": 48,
+    "available_after": 89
+   }
+  ],
+  "already_matching": "Emerald Deco 8, Pearl Point 2, Mint Pear 17, Pearl Nugget 5, Petal Silver 9, Textured Gold 3, Clover Trio 1, Baguette Arc 1, Verdant Drop 2, Brushed Gold 58, Baguette Huggies 2/8/12/13, Petite Square 20, Torsade 25, Pearl Drop 3, Bold Nocturne 22, Petite Bow 16, Trio Oval 3, Verdant Circlet 32",
+  "still_to_confirm": "Riviera Hoops Silver (no count), Black White Earring 5, Solitaire Huggies 5, Rainbow/Colour Hoops multi 9, Triple line diamond studs 28, Drop Studs Plain 3; not listed: Clover Huggies 3, Pearl Earring with diamond 29"
+ }
 }

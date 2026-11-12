@@ -21,6 +21,7 @@ import {
 
 import { productParams, trackPixel } from "@/lib/pixel";
 import { availabilityByOption, formatShopifyPrice, type ShopifyProductNode, type ShopifyProductVariant } from "@/lib/shopify";
+import { GST_LABEL } from "@/lib/gst";
 
 const fallbackSizes = ["XS", "S", "M", "L", "XL"];
 
@@ -209,7 +210,7 @@ const ProductDetails = ({
           className="ml-2 text-[11px] tracking-[0.04em]"
           style={{ color: "hsl(0 0% 55%)" }}
         >
-          Taxes included
+          Incl. {GST_LABEL}
         </span>
       </div>
 
@@ -242,8 +243,8 @@ const ProductDetails = ({
         style={{ color: "hsl(0 0% 50%)" }}
       >
         {isJewellery
-          ? "*Prices are inclusive of GST. Delivery in 3–5 working days, insured in transit, with free shipping across India."
-          : "*Prices are inclusive of GST. Ready-to-ship pieces deliver within 3–7 working days; made-to-measure pieces take 4–8 weeks."}
+          ? `*Prices are inclusive of ${GST_LABEL}. Delivery in 3–5 working days, insured in transit, with free shipping across India.`
+          : `*Prices are inclusive of ${GST_LABEL}. Ready-to-ship pieces deliver within 3–7 working days; made-to-measure pieces take 4–8 weeks.`}
       </p>
 
       {/* Trust badges */}

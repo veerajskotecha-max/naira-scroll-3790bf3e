@@ -29,6 +29,7 @@ import { getSupabase } from "@/integrations/supabase/lazy";
 import { shopifyImage } from "@/lib/shopifyImage";
 import { clarityEvent } from "@/lib/clarity";
 import { WHATSAPP_NUMBER, type JewelPiece, type JewelVariant } from "@/data/jewellery";
+import { GST_LABEL } from "@/lib/gst";
 
 /*
   The bag, on every page, as the CRO plan of 16 October draws it ("Naira Bag
@@ -40,7 +41,7 @@ import { WHATSAPP_NUMBER, type JewelPiece, type JewelVariant } from "@/data/jewe
     the piece, its MRP struck and "₹1,801 off"
     Wears well with your bracelet · a third piece, "Adds ₹360 · saves ₹1,139", Add   (row no longer drawn)
     [the box] Comes with a Naira gift box     a tap lifts it open
-    Total · incl. taxes, one savings line (or what the next rung takes), arrival date
+    Total · incl. 3% GST, one savings line (or what the next rung takes), arrival date
     Checkout · ₹2,399, then payment, returns and plating, and what comes next
 
   Same cart, discount resolver and checkout hand-off as before: every rupee
@@ -592,7 +593,7 @@ const CartDrawerNext = () => {
                 )
               )}
               <p className="mt-2 text-[12.5px] leading-[1.5] text-nf-ink/65">
-                Tax included. Free insured shipping · arrives {arrivesBy}.
+                Incl. {GST_LABEL}. Free insured shipping · arrives {arrivesBy}.
               </p>
               <button
                 type="button"

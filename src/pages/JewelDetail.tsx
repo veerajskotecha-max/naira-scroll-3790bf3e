@@ -36,6 +36,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { deliveryRangeFromNow } from "@/lib/serviceability";
 import { clipText, fitTitle } from "@/lib/clipText";
 import { jewellery as staticJewellery, jewelleryEnquiryUrl, preorderWhatsAppUrl, WHATSAPP_NUMBER, PREORDER_NOTE, type JewelPiece } from "@/data/jewellery";
+import { GST_LABEL } from "@/lib/gst";
 
 const CustomerReviews = lazy(() => import("@/components/CustomerReviews"));
 const MobileReelShop = lazy(() => import("@/components/reels/MobileReelShop"));
@@ -780,7 +781,7 @@ const JewelDetail = () => {
                   </span>
                 </>
               )}
-              <span className="text-[11px] tracking-[var(--nf-track-4)] text-[color:rgb(var(--nf-ink-rgb)/0.62)]">incl. taxes</span>
+              <span className="text-[11px] tracking-[var(--nf-track-4)] text-[color:rgb(var(--nf-ink-rgb)/0.62)]">incl. {GST_LABEL}</span>
             </div>
             {/* Offer ladder, delivery date and COD, in the first screen with the
                 price. Returns and plating assurance moved to the line under Add

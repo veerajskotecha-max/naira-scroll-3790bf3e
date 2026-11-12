@@ -43,6 +43,7 @@ import { reportShopperPerformance } from "@/lib/shopperPerformance";
 import { QUANTITY_OFFERS } from "@/lib/promo";
 import { clipText, fitTitle } from "@/lib/clipText";
 import UpiBadges from "@/components/checkout/UpiBadges";
+import { GST_LABEL } from "@/lib/gst";
 
 /*
   The product page, at /jewellery/<handle> (and at /preview/jewellery/<handle>,
@@ -984,7 +985,7 @@ const JewelDetailNext = () => {
                   </span>
                 </>
               )}
-              <span className="text-[10.5px] tracking-nf-4 text-nf-ink/65">incl. taxes</span>
+              <span className="text-[10.5px] tracking-nf-4 text-nf-ink/65">incl. {GST_LABEL}</span>
             </div>
 
             {/* Stone evidence comes from the listing, not the generic summary. */}

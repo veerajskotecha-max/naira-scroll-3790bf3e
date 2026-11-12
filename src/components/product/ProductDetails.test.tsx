@@ -82,7 +82,7 @@ describe("ProductDetails stock gating", () => {
 
   it("still renders the price and delivery promise when sold out", () => {
     renderPDP(makeProduct([{ value: "S", ok: false }]));
-    expect(screen.getByText(/Taxes included/)).toBeTruthy();
+    expect(screen.getByText(/Incl\. 3% GST/)).toBeTruthy();
     // The fixture is productType "Ring", so this renders the jewellery window.
     expect(screen.getAllByText(/3–5 working days/).length).toBeGreaterThan(0);
   });

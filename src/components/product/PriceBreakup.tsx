@@ -1,4 +1,5 @@
 import { SHIPPING_CHARGE } from "@/lib/serviceability";
+import { GST_RATE } from "@/lib/gst";
 
 interface Props {
   total: number;
@@ -9,9 +10,9 @@ const format = (n: number, symbol = "₹") =>
   `${symbol}${Math.round(n).toLocaleString("en-IN")}`;
 
 const PriceBreakup = ({ total, currencySymbol = "₹" }: Props) => {
-  // Prices are tax-inclusive. Compute base and GST for transparency.
-  // Apparel GST: 5% below ₹1000, else 12%.
-  const gstRate = total < 1000 ? 0.05 : 0.12;
+  // Prices are tax-inclusive. Compute base and GST for transparency, at the
+  // one rate the store charges (lib/gst.ts).
+  const gstRate = GST_RATE;
   const base = total / (1 + gstRate);
   const gst = total - base;
   // Shipping is free across India; the figure still reads from the one

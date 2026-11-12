@@ -7,6 +7,7 @@ import type { JewelPiece } from "@/data/jewellery";
 
 const live = vi.hoisted(() => ({ jewellery: [] as JewelPiece[], isLive: true, isLoading: false }));
 vi.mock("@/hooks/useLiveJewellery", () => ({ useLiveJewellery: () => live }));
+vi.mock("@/hooks/usePieceVisits", () => ({ usePieceVisits: () => ({}) }));
 vi.mock("@/lib/shopperPerformance", () => ({ reportShopperPerformance: () => undefined }));
 vi.mock("@/components/Footer", () => ({ default: () => null }));
 vi.mock("@/components/jewellery/RingAtelierBackdrop", () => ({ default: () => null }));

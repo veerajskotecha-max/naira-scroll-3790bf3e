@@ -35,7 +35,7 @@ const jost = { fontFamily: "var(--nf-font-label)" } as const;
 /* A demi-gold jewellery product card: photoreal packshot with a 3D
    cursor-tilt + glass sheen, a tag, price, a WhatsApp
    enquiry, and a click-to-open quick-view (PDP-lite) modal. */
-const JewelCard = ({ piece, index = 0 }: { piece: JewelPiece; index?: number }) => {
+const JewelCard = ({ piece, index = 0, bestseller = false }: { piece: JewelPiece; index?: number; bestseller?: boolean }) => {
   const tiltRef = useRef<HTMLDivElement>(null);
   const sheenRef = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
@@ -190,7 +190,12 @@ const JewelCard = ({ piece, index = 0 }: { piece: JewelPiece; index?: number }) 
             </span>
           )}
           <div ref={sheenRef} aria-hidden className="pointer-events-none absolute inset-0 opacity-0 mix-blend-soft-light transition-opacity duration-300" />
-          {piece.tag && (
+          {bestseller && !soldOut && (
+            <span className="pointer-events-none absolute bottom-3 left-3 border border-nf-ink/10 bg-nf-ivory/95 px-2 py-1 text-[10px] leading-4 text-nf-ink/70 sm:bottom-4 sm:left-4" style={jost}>
+              Bestseller
+            </span>
+          )}
+          {piece.tag && piece.tag !== "BESTSELLER" && (
             <span
               className={`absolute left-3 top-3 border bg-nf-ivory/95 px-2.5 py-1 text-[8.5px] tracking-nf-24 sm:left-4 sm:top-4 sm:px-3 sm:text-[9px] sm:tracking-nf-30 ${
                 piece.tag === "NEW" || piece.tag === "BESTSELLER"

@@ -11,7 +11,7 @@
  * before sending, and the schema rejects anything that is not a SHA-256 hex.
  */
 import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
-import { z } from "npm:zod@3";
+import { z } from "npm:zod@4.6.7";
 import { isRelayedEvent, isShopOrigin, isShopPage } from "./guard.ts";
 
 const PIXEL_ID = "1232524215695667";
@@ -31,7 +31,7 @@ const BodySchema = z.object({
   event_name: z.string().min(1).max(60),
   event_id: z.string().min(1).max(120),
   event_source_url: z.string().url().max(2000).optional(),
-  custom_data: z.record(z.unknown()).optional(),
+  custom_data: z.record(z.string(), z.unknown()).optional(),
   user_data: z
     .object({
       external_id: z.string().max(200).optional(),

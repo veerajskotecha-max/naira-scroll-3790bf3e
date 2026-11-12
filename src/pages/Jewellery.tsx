@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { orderByVisits, readCachedVisits, fetchVisits, type VisitCounts } from "@/lib/shopOrder";
+import { orderByVisits, placeSoldOut, bestsellerHandles } from "@/lib/shopOrder";
+import { usePieceVisits } from "@/hooks/usePieceVisits";
 import Footer from "@/components/Footer";
 import PageSEO from "@/components/PageSEO";
 import JewelCard from "@/components/jewellery/JewelCard";
@@ -163,13 +164,13 @@ const Jewellery = () => {
     () => colourCards(active === "All" ? jewellery : jewellery.filter((p) => p.category === active)),
     [active, jewellery]
   );
-  const [visits, setVisits] = useState<VisitCounts>(readCachedVisits);
-  useEffect(() => { fetchVisits().then((v) => v && setVisits(v)); }, []);
+  const visits = usePieceVisits();
+  const popularHandles = useMemo(() => bestsellerHandles(jewellery, visits), [jewellery, visits]);
   const pieces = useMemo(() => {
     const filtered = applyJewelFilters(inCategory, activeFilters);
-    if (activeFilters.sort !== "featured") return filtered;
-    const leads = FEATURED_LEADS.flatMap((handle) => filtered.filter((p) => p.handle === handle));
-    return [...leads, ...orderByVisits(filtered.filter((p) => !FEATURED_LEADS.includes(p.handle)), visits)];
+    if (activeFilters.sort !== "featured") return placeSoldOut(filtered);
+    const leads = FEATURED_LEADS.flatMap((handle) => filtered.filter((p) => p.handle === handle && p.availableForSale !== false));
+    return placeSoldOut([...leads, ...orderByVisits(filtered.filter((p) => !leads.includes(p)), visits)]);
   }, [inCategory, activeFilters, visits]);
 
   /* Decorative backdrop on larger screens only. */
@@ -400,7 +401,7 @@ const Jewellery = () => {
           <>
             <div className="mx-auto grid max-w-6xl grid-cols-2 gap-4 px-4 pt-10 sm:gap-6 sm:px-6 lg:grid-cols-3 lg:gap-8">
               {visiblePieces.map((piece, i) => (
-                <JewelCard key={cardKey(piece)} piece={piece} index={i} />
+                <JewelCard key={cardKey(piece)} piece={piece} index={i} bestseller={isLive && popularHandles.has(piece.handle)} />
               ))}
             </div>
             {visibleCount < pieces.length && (

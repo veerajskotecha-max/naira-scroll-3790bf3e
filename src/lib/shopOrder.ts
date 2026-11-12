@@ -1,7 +1,4 @@
-/* Shop All order: the most-visited pieces lead; pieces nobody has opened yet
-   (new listings) and sold-out pieces are scattered at random positions rather
-   than dumped at the end. The shuffle is seeded per day so Back from a product
-   returns to the same grid. */
+/* Daily seeds keep new-piece placement stable when returning from a PDP. */
 
 export type VisitCounts = Record<string, number>;
 
@@ -25,6 +22,31 @@ const mulberry = (seed: number) => () => {
 
 export const daySeed = (d = new Date()) => d.getFullYear() * 1000 + Math.floor((+d - +new Date(d.getFullYear(), 0, 0)) / 864e5);
 
+type StockPiece = { handle: string; availableForSale?: boolean };
+
+export function bestsellerHandles(pieces: StockPiece[], visits: VisitCounts, limit = 10): Set<string> {
+  return new Set(pieces.filter((p) => p.availableForSale === true && (visits[p.handle] ?? 0) > 0)
+    .sort((a, b) => (visits[b.handle] ?? 0) - (visits[a.handle] ?? 0))
+    .map((p) => p.handle).filter((h, i, all) => all.indexOf(h) === i).slice(0, limit));
+}
+
+/* Only every twentieth slot may interrupt buyable pieces; surplus sold-out
+   cards follow the entire buyable edit, including pinned and colour cards. */
+export function placeSoldOut<T extends StockPiece>(pieces: T[]): T[] {
+  const available = pieces.filter((p) => p.availableForSale !== false);
+  const sold = pieces.filter((p) => p.availableForSale === false);
+  const result: T[] = [];
+  let soldIndex = 0;
+  for (const piece of available) {
+    result.push(piece);
+    if (result.length % 20 === 19 && soldIndex < sold.length) {
+      result.push(sold[soldIndex]);
+      soldIndex += 1;
+    }
+  }
+  return [...result, ...sold.slice(soldIndex)];
+}
+
 export function orderByVisits<T extends { handle: string; availableForSale?: boolean }>(
   pieces: T[], visits: VisitCounts, seed = daySeed(),
 ): T[] {
@@ -32,9 +54,9 @@ export function orderByVisits<T extends { handle: string; availableForSale?: boo
   const ranked = pieces
     .filter((p) => p.availableForSale !== false && (visits[p.handle] ?? 0) > 0)
     .sort((a, b) => (visits[b.handle] ?? 0) - (visits[a.handle] ?? 0));
-  const scattered = pieces.filter((p) => !ranked.includes(p));
+  const scattered = pieces.filter((p) => p.availableForSale !== false && !ranked.includes(p));
   for (const p of scattered) ranked.splice(Math.floor(rand() * (ranked.length + 1)), 0, p);
-  return ranked;
+  return placeSoldOut([...ranked, ...pieces.filter((p) => p.availableForSale === false)]);
 }
 
 export function readCachedVisits(): VisitCounts {

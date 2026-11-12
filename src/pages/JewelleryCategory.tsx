@@ -13,6 +13,8 @@ import { WHATSAPP_NUMBER, type JewelPiece } from "@/data/jewellery";
 import { collectionPieces, stockedLandings } from "@/lib/jewelleryCollections";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
+import { usePieceVisits } from "@/hooks/usePieceVisits";
+import { bestsellerHandles, placeSoldOut } from "@/lib/shopOrder";
 
 const velista = { fontFamily: "var(--font-cormorant), 'Velista', Georgia, serif" } as const;
 const editorial = { fontFamily: "'Cormorant Garamond', Georgia, serif" } as const;
@@ -48,6 +50,8 @@ const JewelleryCategory = () => {
   const { slug } = useParams();
   const landing = categoryBySlug(slug);
   const { jewellery, isLive, isLoading } = useLiveJewellery();
+  const visits = usePieceVisits();
+  const popularHandles = useMemo(() => bestsellerHandles(jewellery, visits), [jewellery, visits]);
   /* The grid shows 30 cards and 'Show more' adds 30. The count is kept per
      history entry, as on /jewellery, so Back from a piece opened past the
      first 30 lands on the same expanded grid: reset to 30, the page was too
@@ -75,7 +79,7 @@ const JewelleryCategory = () => {
     [jewellery, landing]
   );
   /* Each metal or stone of a piece is its own card (see colourCards). */
-  const pieces = useMemo(() => orderForLanding(inCategory), [inCategory]);
+  const pieces = useMemo(() => placeSoldOut(orderForLanding(inCategory)), [inCategory]);
   /* The count and the structured data name each product once, whatever its colours. */
   const products = useMemo(() => pieces.filter((p, i) => pieces.findIndex((q) => q.handle === p.handle) === i), [pieces]);
   const fromPrice = useMemo(
@@ -233,7 +237,7 @@ const JewelleryCategory = () => {
           >
             {pieces.slice(0, visibleCount).map((piece, i) => (
               <Reveal key={cardKey(piece)} delay={Math.min(i, 5) * 60}>
-                <JewelCard piece={piece} index={i} />
+                <JewelCard piece={piece} index={i} bestseller={isLive && popularHandles.has(piece.handle)} />
               </Reveal>
             ))}
           </section>

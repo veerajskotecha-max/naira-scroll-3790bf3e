@@ -65,3 +65,5 @@
 - [ ] Switch BUY2 off in Shopify once the two-rung bag is live (the lead, never before, so the live bag never promises more than checkout gives).
 - [x] Jewellery-only site: apparel removed from menu, footer, search and home/about wording; only the made-to-measure custom outfits section (/customize) remains; /shop/indo-western now opens /customize.
 - [x] State "Easy 7-day exchange & returns" in the bag, one quiet line under the checkout button linking to the policy; verified on phone and tablet.
+
+- [x] Add soft popularity-based bestseller badges to Shop All and menu category cards; cap mixed sold-out cards at one per 20 and put the rest last. Verified live cards on phone/tablet/desktop and 19 browsing tests.

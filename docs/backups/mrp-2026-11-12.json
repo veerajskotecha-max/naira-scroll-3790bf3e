@@ -2,6 +2,7 @@
 {
 "handle": "blush-of-dawn",
 "status": "active",
+"rule": "couture",
 "variantId": "gid://shopify/ProductVariant/45794971222178",
 "variant": "S",
 "price": 44000,
@@ -13,6 +14,7 @@
 {
 "handle": "blush-of-dawn",
 "status": "active",
+"rule": "couture",
 "variantId": "gid://shopify/ProductVariant/45794971254946",
 "variant": "M",
 "price": 44000,
@@ -24,6 +26,7 @@
 {
 "handle": "blush-of-dawn",
 "status": "active",
+"rule": "couture",
 "variantId": "gid://shopify/ProductVariant/45794971287714",
 "variant": "L",
 "price": 44000,
@@ -35,6 +38,7 @@
 {
 "handle": "blush-of-dawn",
 "status": "active",
+"rule": "couture",
 "variantId": "gid://shopify/ProductVariant/45794971320482",
 "variant": "XL",
 "price": 44000,
@@ -46,6 +50,7 @@
 {
 "handle": "ethereal-lilac",
 "status": "active",
+"rule": "couture",
 "variantId": "gid://shopify/ProductVariant/45824616693922",
 "variant": "Default Title",
 "price": 33000,
@@ -57,6 +62,7 @@
 {
 "handle": "royal-enigma",
 "status": "active",
+"rule": "couture",
 "variantId": "gid://shopify/ProductVariant/45824621150370",
 "variant": "Default Title",
 "price": 24000,
@@ -68,6 +74,7 @@
 {
 "handle": "amber-bloom-set",
 "status": "active",
+"rule": "couture",
 "variantId": "gid://shopify/ProductVariant/45824625049762",
 "variant": "Default Title",
 "price": 48000,
@@ -79,6 +86,7 @@
 {
 "handle": "amber-radiance",
 "status": "active",
+"rule": "couture",
 "variantId": "gid://shopify/ProductVariant/45824631931042",
 "variant": "Default Title",
 "price": 49000,
@@ -90,6 +98,7 @@
 {
 "handle": "golden-blossom",
 "status": "active",
+"rule": "couture",
 "variantId": "gid://shopify/ProductVariant/45824637370530",
 "variant": "Default Title",
 "price": 41000,
@@ -101,6 +110,7 @@
 {
 "handle": "midnight-bloom",
 "status": "active",
+"rule": "couture",
 "variantId": "gid://shopify/ProductVariant/45824910229666",
 "variant": "Default Title",
 "price": 18000,
@@ -112,6 +122,7 @@
 {
 "handle": "ivory-whisper-co-ord-set",
 "status": "active",
+"rule": "couture",
 "variantId": "gid://shopify/ProductVariant/45824921370786",
 "variant": "Default Title",
 "price": 12000,
@@ -123,6 +134,7 @@
 {
 "handle": "sunset-reverie",
 "status": "active",
+"rule": "couture",
 "variantId": "gid://shopify/ProductVariant/45824934379682",
 "variant": "S",
 "price": 16000,
@@ -134,6 +146,7 @@
 {
 "handle": "sunset-reverie",
 "status": "active",
+"rule": "couture",
 "variantId": "gid://shopify/ProductVariant/45824934412450",
 "variant": "M",
 "price": 16000,
@@ -145,6 +158,7 @@
 {
 "handle": "sunset-reverie",
 "status": "active",
+"rule": "couture",
 "variantId": "gid://shopify/ProductVariant/45824934445218",
 "variant": "L",
 "price": 16000,
@@ -156,6 +170,7 @@
 {
 "handle": "sunset-reverie",
 "status": "active",
+"rule": "couture",
 "variantId": "gid://shopify/ProductVariant/45824934477986",
 "variant": "XL",
 "price": 16000,
@@ -167,6 +182,7 @@
 {
 "handle": "lilac-whisper",
 "status": "active",
+"rule": "couture",
 "variantId": "gid://shopify/ProductVariant/45824953286818",
 "variant": "Default Title",
 "price": 19500,
@@ -178,6 +194,7 @@
 {
 "handle": "crimson-legacy-set",
 "status": "active",
+"rule": "couture",
 "variantId": "gid://shopify/ProductVariant/45824962068642",
 "variant": "Default Title",
 "price": 47000,
@@ -189,6 +206,7 @@
 {
 "handle": "heritage-mosaic",
 "status": "active",
+"rule": "couture",
 "variantId": "gid://shopify/ProductVariant/45824968360098",
 "variant": "Default Title",
 "price": 32000,
@@ -200,6 +218,7 @@
 {
 "handle": "noir-mela",
 "status": "active",
+"rule": "couture",
 "variantId": "gid://shopify/ProductVariant/45877883273378",
 "variant": "Default Title",
 "price": 9500,
@@ -211,6 +230,7 @@
 {
 "handle": "tangerine-bloom",
 "status": "active",
+"rule": "couture",
 "variantId": "gid://shopify/ProductVariant/45877901099170",
 "variant": "Default Title",
 "price": 42000,
@@ -222,6 +242,7 @@
 {
 "handle": "gulaal-mirage",
 "status": "active",
+"rule": "couture",
 "variantId": "gid://shopify/ProductVariant/45878072377506",
 "variant": "Default Title",
 "price": 11000,
@@ -233,6 +254,7 @@
 {
 "handle": "midnight-eclat",
 "status": "active",
+"rule": "couture",
 "variantId": "gid://shopify/ProductVariant/45878081323170",
 "variant": "Default Title",
 "price": 48000,
@@ -244,6 +266,7 @@
 {
 "handle": "nocturne-veil",
 "status": "active",
+"rule": "couture",
 "variantId": "gid://shopify/ProductVariant/45878099181730",
 "variant": "Default Title",
 "price": 55000,
@@ -255,6 +278,7 @@
 {
 "handle": "celeste-bloom",
 "status": "active",
+"rule": "couture",
 "variantId": "gid://shopify/ProductVariant/45878104359074",
 "variant": "Default Title",
 "price": 29000,
@@ -266,28 +290,31 @@
 {
 "handle": "riviere-eternal-necklace",
 "status": "active",
+"rule": "last few",
 "variantId": "gid://shopify/ProductVariant/47501786480802",
 "variant": "Default Title",
 "price": 1799,
 "mrp_before": 3269,
-"mrp_after": 2999,
+"mrp_after": 1999,
 "shown_before": 45,
-"shown_after": 40
+"shown_after": 10
 },
 {
 "handle": "heartline-paperclip-necklace",
 "status": "active",
+"rule": "last few",
 "variantId": "gid://shopify/ProductVariant/47501786513570",
 "variant": "Default Title",
 "price": 1499,
 "mrp_before": 3499,
-"mrp_after": 2499,
+"mrp_after": 1669,
 "shown_before": 57,
-"shown_after": 40
+"shown_after": 10
 },
 {
 "handle": "bold-nocturne-chain",
 "status": "active",
+"rule": "bestseller",
 "variantId": "gid://shopify/ProductVariant/47501786546338",
 "variant": "Default Title",
 "price": 1799,
@@ -299,17 +326,19 @@
 {
 "handle": "pearl-legacy-necklace",
 "status": "active",
+"rule": "steady",
 "variantId": "gid://shopify/ProductVariant/47501786579106",
 "variant": "Default Title",
 "price": 2200,
 "mrp_before": 3500,
-"mrp_after": 3669,
+"mrp_after": 3149,
 "shown_before": 37,
-"shown_after": 40
+"shown_after": 30
 },
 {
 "handle": "serpentine-whisper-chain",
 "status": "active",
+"rule": "deep stock, not moving",
 "variantId": "gid://shopify/ProductVariant/47501786611874",
 "variant": "Default Title",
 "price": 1299,
@@ -321,17 +350,19 @@
 {
 "handle": "marquise-layering-set",
 "status": "active",
+"rule": "steady",
 "variantId": "gid://shopify/ProductVariant/47501786644642",
 "variant": "Default Title",
 "price": 1499,
 "mrp_before": 2999,
-"mrp_after": 2499,
+"mrp_after": 2149,
 "shown_before": 50,
-"shown_after": 40
+"shown_after": 30
 },
 {
 "handle": "dewdrop-bezel-necklace",
 "status": "active",
+"rule": "steady",
 "variantId": "gid://shopify/ProductVariant/47501786677410",
 "variant": "Default Title",
 "price": 999,
@@ -343,17 +374,19 @@
 {
 "handle": "charm-box-chain",
 "status": "active",
+"rule": "steady",
 "variantId": "gid://shopify/ProductVariant/47501786710178",
 "variant": "Default Title",
 "price": 1199,
 "mrp_before": 3309,
-"mrp_after": 1999,
+"mrp_after": 1719,
 "shown_before": 64,
-"shown_after": 40
+"shown_after": 30
 },
 {
 "handle": "toggle-link-chain",
 "status": "active",
+"rule": "steady",
 "variantId": "gid://shopify/ProductVariant/47501786742946",
 "variant": "Default Title",
 "price": 999,
@@ -365,204 +398,223 @@
 {
 "handle": "baroque-pearl-lariat",
 "status": "active",
+"rule": "last few",
 "variantId": "gid://shopify/ProductVariant/47501786775714",
 "variant": "Default Title",
 "price": 1599,
 "mrp_before": 3829,
-"mrp_after": 2669,
+"mrp_after": 1779,
 "shown_before": 58,
-"shown_after": 40
+"shown_after": 10
 },
 {
 "handle": "petite-pearl-chain",
 "status": "active",
+"rule": "last few",
 "variantId": "gid://shopify/ProductVariant/47501786808482",
 "variant": "Default Title",
 "price": 1299,
 "mrp_before": 2599,
-"mrp_after": 2169,
+"mrp_after": 1449,
 "shown_before": 50,
-"shown_after": 40
+"shown_after": 10
 },
 {
 "handle": "molten-bloom-hoops",
 "status": "active",
+"rule": "steady",
 "variantId": "gid://shopify/ProductVariant/47501786841250",
 "variant": "Default Title",
 "price": 1300,
 "mrp_before": 2359,
-"mrp_after": 2169,
+"mrp_after": 1859,
 "shown_before": 45,
-"shown_after": 40
+"shown_after": 30
 },
 {
 "handle": "clover-trio-edit",
 "status": "active",
+"rule": "last few",
 "variantId": "gid://shopify/ProductVariant/47501786874018",
 "variant": "Default Title",
 "price": 1499,
 "mrp_before": 3929,
-"mrp_after": 2499,
+"mrp_after": 1669,
 "shown_before": 62,
-"shown_after": 40
+"shown_after": 10
 },
 {
 "handle": "woven-gold-hoops",
 "status": "active",
+"rule": "bestseller",
 "variantId": "gid://shopify/ProductVariant/47501786906786",
 "variant": "Default Title",
 "price": 1049,
 "mrp_before": 2769,
-"mrp_after": 1499,
+"mrp_after": 1749,
 "shown_before": 62,
-"shown_after": 30
+"shown_after": 40
 },
 {
 "handle": "verdant-drop-earrings",
 "status": "active",
+"rule": "last few",
 "variantId": "gid://shopify/ProductVariant/47501786939554",
 "variant": "Default Title",
 "price": 1299,
 "mrp_before": 2429,
-"mrp_after": 2169,
+"mrp_after": 1449,
 "shown_before": 47,
-"shown_after": 40
+"shown_after": 10
 },
 {
 "handle": "ribbon-bow-earrings",
 "status": "active",
+"rule": "last few",
 "variantId": "gid://shopify/ProductVariant/47501787005090",
 "variant": "Default Title",
 "price": 1199,
 "mrp_before": 2000,
-"mrp_after": 1999,
+"mrp_after": 1339,
 "shown_before": 40,
-"shown_after": 40
+"shown_after": 10
 },
 {
 "handle": "textured-gold-hoops",
 "status": "active",
+"rule": "last few",
 "variantId": "gid://shopify/ProductVariant/47501787070626",
 "variant": "Default Title",
 "price": 1699,
 "mrp_before": 3669,
-"mrp_after": 2849,
+"mrp_after": 1889,
 "shown_before": 54,
-"shown_after": 40
+"shown_after": 10
 },
 {
 "handle": "baguette-arc-hoops",
 "status": "active",
+"rule": "last few",
 "variantId": "gid://shopify/ProductVariant/47501787136162",
 "variant": "Default Title",
 "price": 1899,
 "mrp_before": 2800,
-"mrp_after": 3169,
+"mrp_after": 2119,
 "shown_before": 32,
-"shown_after": 40
+"shown_after": 10
 },
 {
 "handle": "filigree-bloom-studs",
 "status": "active",
+"rule": "last few",
 "variantId": "gid://shopify/ProductVariant/47501787234466",
 "variant": "Default Title",
 "price": 1499,
 "mrp_before": 2999,
-"mrp_after": 2499,
+"mrp_after": 1669,
 "shown_before": 50,
-"shown_after": 40
+"shown_after": 10
 },
 {
 "handle": "solitaire-whisper-studs",
 "status": "active",
+"rule": "last few",
 "variantId": "gid://shopify/ProductVariant/47501787267234",
 "variant": "Default Title",
 "price": 1099,
 "mrp_before": 1900,
-"mrp_after": 1579,
+"mrp_after": 1225,
 "shown_before": 42,
-"shown_after": 30
+"shown_after": 10
 },
 {
 "handle": "pearl-drop-studs",
 "status": "active",
+"rule": "steady",
 "variantId": "gid://shopify/ProductVariant/47501787300002",
 "variant": "Default Title",
 "price": 1199,
 "mrp_before": 2919,
-"mrp_after": 1999,
+"mrp_after": 1719,
 "shown_before": 59,
-"shown_after": 40
+"shown_after": 30
 },
 {
 "handle": "brushed-gold-huggies",
 "status": "active",
+"rule": "steady",
 "variantId": "gid://shopify/ProductVariant/47501787594914",
 "variant": "Default Title",
 "price": 699,
 "mrp_before": 1799,
-"mrp_after": 879,
+"mrp_after": 999,
 "shown_before": 61,
-"shown_after": 20
+"shown_after": 30
 },
 {
 "handle": "silver-drop-earrings",
 "status": "active",
+"rule": "steady",
 "variantId": "gid://shopify/ProductVariant/47501787693218",
 "variant": "Default Title",
 "price": 1499,
 "mrp_before": 3000,
-"mrp_after": 2499,
+"mrp_after": 2149,
 "shown_before": 50,
-"shown_after": 40
+"shown_after": 30
 },
 {
 "handle": "pearl-blossom-earrings",
 "status": "active",
+"rule": "last few",
 "variantId": "gid://shopify/ProductVariant/47501787725986",
 "variant": "Default Title",
 "price": 999,
 "mrp_before": 3279,
-"mrp_after": 1429,
+"mrp_after": 1110,
 "shown_before": 70,
-"shown_after": 30
+"shown_after": 10
 },
 {
 "handle": "pearl-point-studs",
 "status": "active",
+"rule": "last few",
 "variantId": "gid://shopify/ProductVariant/47501787758754",
 "variant": "Default Title",
 "price": 1299,
 "mrp_before": 3139,
-"mrp_after": 2169,
+"mrp_after": 1449,
 "shown_before": 59,
-"shown_after": 40
+"shown_after": 10
 },
 {
 "handle": "riviere-eternal-bracelet",
 "status": "active",
+"rule": "steady",
 "variantId": "gid://shopify/ProductVariant/47501787889826",
 "variant": "Default Title",
 "price": 1299,
 "mrp_before": 2899,
-"mrp_after": 2169,
+"mrp_after": 1859,
 "shown_before": 55,
-"shown_after": 40
+"shown_after": 30
 },
 {
 "handle": "riviere-of-light-bracelet",
 "status": "active",
+"rule": "steady",
 "variantId": "gid://shopify/ProductVariant/47501787922594",
 "variant": "Default Title",
 "price": 1249,
 "mrp_before": 2269,
-"mrp_after": 2099,
+"mrp_after": 1789,
 "shown_before": 45,
-"shown_after": 40
+"shown_after": 30
 },
 {
 "handle": "pearl-reverie-bracelet",
 "status": "active",
+"rule": "steady",
 "variantId": "gid://shopify/ProductVariant/47501787955362",
 "variant": "Default Title",
 "price": 899,
@@ -574,28 +626,31 @@
 {
 "handle": "triple-dawn-cuff",
 "status": "active",
+"rule": "last few",
 "variantId": "gid://shopify/ProductVariant/47501787988130",
 "variant": "Default Title",
 "price": 2299,
 "mrp_before": 4599,
-"mrp_after": 3849,
+"mrp_after": 2559,
 "shown_before": 50,
-"shown_after": 40
+"shown_after": 10
 },
 {
 "handle": "bold-nocturne-bracelet",
 "status": "active",
+"rule": "steady",
 "variantId": "gid://shopify/ProductVariant/47501788020898",
 "variant": "Default Title",
 "price": 1599,
 "mrp_before": 3200,
-"mrp_after": 2669,
+"mrp_after": 2299,
 "shown_before": 50,
-"shown_after": 40
+"shown_after": 30
 },
 {
 "handle": "baroque-bloom-cuff",
 "status": "active",
+"rule": "deep stock, not moving",
 "variantId": "gid://shopify/ProductVariant/47501788086434",
 "variant": "Default Title",
 "price": 1399,
@@ -607,17 +662,19 @@
 {
 "handle": "pearl-link-bracelet",
 "status": "active",
+"rule": "last few",
 "variantId": "gid://shopify/ProductVariant/47501788119202",
 "variant": "Default Title",
 "price": 1649,
 "mrp_before": 3299,
-"mrp_after": 2749,
+"mrp_after": 1839,
 "shown_before": 50,
-"shown_after": 40
+"shown_after": 10
 },
 {
 "handle": "baroque-shell-bracelet",
 "status": "active",
+"rule": "deep stock, not moving",
 "variantId": "gid://shopify/ProductVariant/47501788184738",
 "variant": "Default Title",
 "price": 1899,
@@ -629,17 +686,19 @@
 {
 "handle": "blush-station-bracelet",
 "status": "active",
+"rule": "steady",
 "variantId": "gid://shopify/ProductVariant/47501788315810",
 "variant": "Default Title",
 "price": 1900,
 "mrp_before": 3449,
-"mrp_after": 3169,
+"mrp_after": 2719,
 "shown_before": 45,
-"shown_after": 40
+"shown_after": 30
 },
 {
 "handle": "prism-riviere-bracelet",
 "status": "active",
+"rule": "bestseller",
 "variantId": "gid://shopify/ProductVariant/47501788348578",
 "variant": "Default Title",
 "price": 2399,
@@ -651,6 +710,7 @@
 {
 "handle": "heartbead-bracelet",
 "status": "active",
+"rule": "steady",
 "variantId": "gid://shopify/ProductVariant/47501788414114",
 "variant": "Default Title",
 "price": 999,
@@ -662,39 +722,43 @@
 {
 "handle": "ribbon-bead-bracelet",
 "status": "active",
+"rule": "steady",
 "variantId": "gid://shopify/ProductVariant/47501788479650",
 "variant": "Default Title",
 "price": 699,
 "mrp_before": 1629,
-"mrp_after": 879,
+"mrp_after": 999,
 "shown_before": 57,
-"shown_after": 20
+"shown_after": 30
 },
 {
 "handle": "cushion-halo-ring",
 "status": "active",
+"rule": "bestseller",
 "variantId": "gid://shopify/ProductVariant/47501788577954",
 "variant": "Default Title",
 "price": 999,
 "mrp_before": 2200,
-"mrp_after": 1429,
-"shown_before": 55,
-"shown_after": 30
-},
-{
-"handle": "chevron-whisper-ring",
-"status": "active",
-"variantId": "gid://shopify/ProductVariant/47501788610722",
-"variant": "Default Title",
-"price": 1299,
-"mrp_before": 2899,
-"mrp_after": 2169,
+"mrp_after": 1669,
 "shown_before": 55,
 "shown_after": 40
 },
 {
+"handle": "chevron-whisper-ring",
+"status": "active",
+"rule": "last few",
+"variantId": "gid://shopify/ProductVariant/47501788610722",
+"variant": "Default Title",
+"price": 1299,
+"mrp_before": 2899,
+"mrp_after": 1449,
+"shown_before": 55,
+"shown_after": 10
+},
+{
 "handle": "golden-duet-ring",
 "status": "active",
+"rule": "steady",
 "variantId": "gid://shopify/ProductVariant/50646802137250",
 "variant": "Default Title",
 "price": 999,
@@ -706,6 +770,7 @@
 {
 "handle": "pearl-ribbon-ring",
 "status": "active",
+"rule": "steady",
 "variantId": "gid://shopify/ProductVariant/47501788741794",
 "variant": "Default Title",
 "price": 1099,
@@ -717,160 +782,175 @@
 {
 "handle": "star-point-band",
 "status": "active",
+"rule": "bestseller",
 "variantId": "gid://shopify/ProductVariant/50709664333986",
 "variant": "Gold / 5",
 "price": 799,
 "mrp_before": 1500,
-"mrp_after": 999,
+"mrp_after": 1339,
 "shown_before": 47,
-"shown_after": 20
+"shown_after": 40
 },
 {
 "handle": "star-point-band",
 "status": "active",
+"rule": "bestseller",
 "variantId": "gid://shopify/ProductVariant/47501788774562",
 "variant": "Gold / 6",
 "price": 799,
 "mrp_before": 1500,
-"mrp_after": 999,
+"mrp_after": 1339,
 "shown_before": 47,
-"shown_after": 20
+"shown_after": 40
 },
 {
 "handle": "star-point-band",
 "status": "active",
+"rule": "bestseller",
 "variantId": "gid://shopify/ProductVariant/50709664366754",
 "variant": "Gold / 7",
 "price": 799,
 "mrp_before": 1500,
-"mrp_after": 999,
+"mrp_after": 1339,
 "shown_before": 47,
-"shown_after": 20
+"shown_after": 40
 },
 {
 "handle": "star-point-band",
 "status": "active",
+"rule": "bestseller",
 "variantId": "gid://shopify/ProductVariant/50709664399522",
 "variant": "Gold / 8",
 "price": 799,
 "mrp_before": 1500,
-"mrp_after": 999,
+"mrp_after": 1339,
 "shown_before": 47,
-"shown_after": 20
+"shown_after": 40
 },
 {
 "handle": "star-point-band",
 "status": "active",
+"rule": "bestseller",
 "variantId": "gid://shopify/ProductVariant/50709664432290",
 "variant": "Silver / 5",
 "price": 799,
 "mrp_before": 1500,
-"mrp_after": 999,
+"mrp_after": 1339,
 "shown_before": 47,
-"shown_after": 20
+"shown_after": 40
 },
 {
 "handle": "star-point-band",
 "status": "active",
+"rule": "bestseller",
 "variantId": "gid://shopify/ProductVariant/50652105605282",
 "variant": "Silver / 6",
 "price": 799,
 "mrp_before": 1500,
-"mrp_after": 999,
+"mrp_after": 1339,
 "shown_before": 47,
-"shown_after": 20
+"shown_after": 40
 },
 {
 "handle": "star-point-band",
 "status": "active",
+"rule": "bestseller",
 "variantId": "gid://shopify/ProductVariant/50709664465058",
 "variant": "Silver / 7",
 "price": 799,
 "mrp_before": 1500,
-"mrp_after": 999,
+"mrp_after": 1339,
 "shown_before": 47,
-"shown_after": 20
+"shown_after": 40
 },
 {
 "handle": "star-point-band",
 "status": "active",
+"rule": "bestseller",
 "variantId": "gid://shopify/ProductVariant/50709664497826",
 "variant": "Silver / 8",
 "price": 799,
 "mrp_before": 1500,
-"mrp_after": 999,
+"mrp_after": 1339,
 "shown_before": 47,
-"shown_after": 20
+"shown_after": 40
 },
 {
 "handle": "star-point-band",
 "status": "active",
+"rule": "bestseller",
 "variantId": "gid://shopify/ProductVariant/50795372708002",
 "variant": "Gold / 9",
 "price": 799,
 "mrp_before": 1500,
-"mrp_after": 999,
+"mrp_after": 1339,
 "shown_before": 47,
-"shown_after": 20
+"shown_after": 40
 },
 {
 "handle": "star-point-band",
 "status": "active",
+"rule": "bestseller",
 "variantId": "gid://shopify/ProductVariant/50798239645858",
 "variant": "Silver / 9",
 "price": 799,
 "mrp_before": 1500,
-"mrp_after": 999,
+"mrp_after": 1339,
 "shown_before": 47,
-"shown_after": 20
+"shown_after": 40
 },
 {
 "handle": "blush-cluster-ring",
 "status": "active",
+"rule": "last few",
 "variantId": "gid://shopify/ProductVariant/47501788807330",
 "variant": "Default Title",
 "price": 1799,
 "mrp_before": 3079,
-"mrp_after": 2999,
+"mrp_after": 1999,
 "shown_before": 42,
-"shown_after": 40
+"shown_after": 10
 },
 {
 "handle": "rose-verdant-band",
 "status": "active",
+"rule": "last few",
 "variantId": "gid://shopify/ProductVariant/47501788840098",
 "variant": "Default Title",
 "price": 1599,
 "mrp_before": 3329,
-"mrp_after": 2669,
+"mrp_after": 1779,
 "shown_before": 52,
+"shown_after": 10
+},
+{
+"handle": "granule-dome-ring",
+"status": "active",
+"rule": "deep stock, not moving",
+"variantId": "gid://shopify/ProductVariant/50860921618594",
+"variant": "Gold",
+"price": 999,
+"mrp_before": 3249,
+"mrp_after": 1669,
+"shown_before": 69,
 "shown_after": 40
 },
 {
 "handle": "granule-dome-ring",
 "status": "active",
-"variantId": "gid://shopify/ProductVariant/50860921618594",
-"variant": "Gold",
-"price": 999,
-"mrp_before": 3249,
-"mrp_after": 1429,
-"shown_before": 69,
-"shown_after": 30
-},
-{
-"handle": "granule-dome-ring",
-"status": "active",
+"rule": "deep stock, not moving",
 "variantId": "gid://shopify/ProductVariant/50860921651362",
 "variant": "Silver",
 "price": 999,
 "mrp_before": 3249,
-"mrp_after": 1429,
+"mrp_after": 1669,
 "shown_before": 69,
-"shown_after": 30
+"shown_after": 40
 },
 {
 "handle": "verdant-eternity-band",
 "status": "active",
+"rule": "steady",
 "variantId": "gid://shopify/ProductVariant/47501788938402",
 "variant": "Default Title",
 "price": 1049,
@@ -882,6 +962,7 @@
 {
 "handle": "verdant-circlet-studs",
 "status": "active",
+"rule": "steady",
 "variantId": "gid://shopify/ProductVariant/47501788971170",
 "variant": "Default Title",
 "price": 899,
@@ -893,17 +974,19 @@
 {
 "handle": "halo-curve-ring",
 "status": "active",
+"rule": "deep stock, not moving",
 "variantId": "gid://shopify/ProductVariant/47501789233314",
 "variant": "Default Title",
 "price": 899,
 "mrp_before": 3419,
-"mrp_after": 1289,
+"mrp_after": 1499,
 "shown_before": 74,
-"shown_after": 30
+"shown_after": 40
 },
 {
 "handle": "vintage-halo-ring",
 "status": "active",
+"rule": "steady",
 "variantId": "gid://shopify/ProductVariant/47501789266082",
 "variant": "Default Title",
 "price": 999,
@@ -915,6 +998,7 @@
 {
 "handle": "silver-dome-ring",
 "status": "active",
+"rule": "steady",
 "variantId": "gid://shopify/ProductVariant/47501789298850",
 "variant": "Default Title",
 "price": 1099,
@@ -926,72 +1010,79 @@
 {
 "handle": "whisper-pave-band",
 "status": "active",
+"rule": "last few",
 "variantId": "gid://shopify/ProductVariant/47501789331618",
 "variant": "Default Title",
 "price": 899,
 "mrp_before": 1799,
-"mrp_after": 1289,
+"mrp_after": 999,
 "shown_before": 50,
-"shown_after": 30
+"shown_after": 10
 },
 {
 "handle": "petite-pave-band",
 "status": "active",
+"rule": "last few",
 "variantId": "gid://shopify/ProductVariant/47501789364386",
 "variant": "Default Title",
 "price": 899,
 "mrp_before": 1819,
-"mrp_after": 1289,
+"mrp_after": 999,
 "shown_before": 51,
-"shown_after": 30
+"shown_after": 10
 },
 {
 "handle": "first-light-set",
 "status": "active",
+"rule": "last few",
 "variantId": "gid://shopify/ProductVariant/47501789397154",
 "variant": "Default Title",
 "price": 1199,
 "mrp_before": 2909,
-"mrp_after": 1999,
+"mrp_after": 1339,
 "shown_before": 59,
-"shown_after": 40
+"shown_after": 10
 },
 {
 "handle": "teardrop-lariat",
 "status": "active",
+"rule": "last few",
 "variantId": "gid://shopify/ProductVariant/47501789429922",
 "variant": "Default Title",
 "price": 2749,
 "mrp_before": 5499,
-"mrp_after": 4599,
+"mrp_after": 3059,
 "shown_before": 50,
-"shown_after": 40
+"shown_after": 10
 },
 {
 "handle": "clover-charm-necklace",
 "status": "active",
+"rule": "last few",
 "variantId": "gid://shopify/ProductVariant/47501789462690",
 "variant": "Default Title",
 "price": 1299,
 "mrp_before": 2599,
-"mrp_after": 2169,
+"mrp_after": 1449,
 "shown_before": 50,
-"shown_after": 40
+"shown_after": 10
 },
 {
 "handle": "lumiere-oval-necklace",
 "status": "active",
+"rule": "steady",
 "variantId": "gid://shopify/ProductVariant/47599618588834",
 "variant": "Default Title",
 "price": 1499,
 "mrp_before": 2800,
-"mrp_after": 2499,
+"mrp_after": 2149,
 "shown_before": 46,
-"shown_after": 40
+"shown_after": 30
 },
 {
 "handle": "lumiere-oval-bracelet",
 "status": "active",
+"rule": "steady",
 "variantId": "gid://shopify/ProductVariant/47599620096162",
 "variant": "Default Title",
 "price": 1099,
@@ -1003,17 +1094,19 @@
 {
 "handle": "serpentine-whisper-chain-silver",
 "status": "active",
+"rule": "deep stock, not moving",
 "variantId": "gid://shopify/ProductVariant/47599742615714",
 "variant": "Default Title",
 "price": 899,
 "mrp_before": 3359,
-"mrp_after": 1289,
+"mrp_after": 1499,
 "shown_before": 73,
-"shown_after": 30
+"shown_after": 40
 },
 {
 "handle": "bold-dome-huggies",
 "status": "active",
+"rule": "steady",
 "variantId": "gid://shopify/ProductVariant/47679510184098",
 "variant": "Default Title",
 "price": 999,
@@ -1025,6 +1118,7 @@
 {
 "handle": "quatrefoil-eclat-studs",
 "status": "active",
+"rule": "steady",
 "variantId": "gid://shopify/ProductVariant/47679510216866",
 "variant": "Default Title",
 "price": 1099,
@@ -1036,6 +1130,7 @@
 {
 "handle": "verdant-cushion-studs",
 "status": "active",
+"rule": "steady",
 "variantId": "gid://shopify/ProductVariant/47679510282402",
 "variant": "Default Title",
 "price": 1099,
@@ -1047,17 +1142,19 @@
 {
 "handle": "baguette-halo-drops",
 "status": "active",
+"rule": "steady",
 "variantId": "gid://shopify/ProductVariant/47679511494818",
 "variant": "Default Title",
 "price": 1199,
 "mrp_before": 2200,
-"mrp_after": 1999,
+"mrp_after": 1719,
 "shown_before": 46,
-"shown_after": 40
+"shown_after": 30
 },
 {
 "handle": "torsade-huggies",
 "status": "active",
+"rule": "steady",
 "variantId": "gid://shopify/ProductVariant/47679511625890",
 "variant": "Default Title",
 "price": 999,
@@ -1069,6 +1166,7 @@
 {
 "handle": "petite-square-huggies",
 "status": "active",
+"rule": "steady",
 "variantId": "gid://shopify/ProductVariant/47681779531938",
 "variant": "Default Title",
 "price": 899,
@@ -1080,28 +1178,31 @@
 {
 "handle": "petite-bow-studs",
 "status": "active",
+"rule": "deep stock, not moving",
 "variantId": "gid://shopify/ProductVariant/47681780252834",
 "variant": "Default Title",
 "price": 999,
 "mrp_before": 2300,
-"mrp_after": 1429,
+"mrp_after": 1669,
 "shown_before": 57,
-"shown_after": 30
+"shown_after": 40
 },
 {
 "handle": "riviere-huggies-silver",
 "status": "active",
+"rule": "steady",
 "variantId": "gid://shopify/ProductVariant/47681780646050",
 "variant": "Default Title",
 "price": 1499,
 "mrp_before": 2600,
-"mrp_after": 2499,
+"mrp_after": 2149,
 "shown_before": 42,
-"shown_after": 40
+"shown_after": 30
 },
 {
 "handle": "torsade-pearl-cuff",
 "status": "active",
+"rule": "steady",
 "variantId": "gid://shopify/ProductVariant/47681794244770",
 "variant": "Default Title",
 "price": 1099,
@@ -1113,39 +1214,43 @@
 {
 "handle": "molten-panel-bracelet",
 "status": "active",
+"rule": "deep stock, not moving",
 "variantId": "gid://shopify/ProductVariant/47681794670754",
 "variant": "Default Title",
 "price": 999,
 "mrp_before": 2300,
-"mrp_after": 1429,
+"mrp_after": 1669,
 "shown_before": 57,
-"shown_after": 30
+"shown_after": 40
 },
 {
 "handle": "prism-cluster-studs-silver",
 "status": "active",
+"rule": "steady",
 "variantId": "gid://shopify/ProductVariant/47681794703522",
 "variant": "Default Title",
 "price": 1299,
 "mrp_before": 2400,
-"mrp_after": 2169,
+"mrp_after": 1859,
 "shown_before": 46,
-"shown_after": 40
+"shown_after": 30
 },
 {
 "handle": "aqua-heart-drops-silver",
 "status": "active",
+"rule": "steady",
 "variantId": "gid://shopify/ProductVariant/47681794736290",
 "variant": "Default Title",
 "price": 1299,
 "mrp_before": 2400,
-"mrp_after": 2169,
+"mrp_after": 1859,
 "shown_before": 46,
-"shown_after": 40
+"shown_after": 30
 },
 {
 "handle": "lilac-papillon-ring",
 "status": "active",
+"rule": "deep stock, not moving",
 "variantId": "gid://shopify/ProductVariant/47682253750434",
 "variant": "Default Title",
 "price": 1199,
@@ -1157,6 +1262,7 @@
 {
 "handle": "silk-mesh-cuff",
 "status": "active",
+"rule": "bestseller",
 "variantId": "gid://shopify/ProductVariant/50651894546594",
 "variant": "Gold",
 "price": 1399,
@@ -1168,6 +1274,7 @@
 {
 "handle": "silk-mesh-cuff",
 "status": "active",
+"rule": "bestseller",
 "variantId": "gid://shopify/ProductVariant/50651894579362",
 "variant": "Silver",
 "price": 1399,
@@ -1179,6 +1286,7 @@
 {
 "handle": "garnet-cable-cuff",
 "status": "active",
+"rule": "bestseller",
 "variantId": "gid://shopify/ProductVariant/50651931607202",
 "variant": "Default Title",
 "price": 1399,
@@ -1190,28 +1298,31 @@
 {
 "handle": "triple-coil-wrap-bangle",
 "status": "active",
+"rule": "deep stock, not moving",
 "variantId": "gid://shopify/ProductVariant/50651931639970",
 "variant": "Gold",
 "price": 1149,
 "mrp_before": 2299,
-"mrp_after": 1649,
+"mrp_after": 1919,
 "shown_before": 50,
-"shown_after": 30
+"shown_after": 40
 },
 {
 "handle": "triple-coil-wrap-bangle",
 "status": "active",
+"rule": "deep stock, not moving",
 "variantId": "gid://shopify/ProductVariant/50651931672738",
 "variant": "Silver",
 "price": 1149,
 "mrp_before": 2299,
-"mrp_after": 1649,
+"mrp_after": 1919,
 "shown_before": 50,
-"shown_after": 30
+"shown_after": 40
 },
 {
 "handle": "marquise-wheat-cuff",
 "status": "active",
+"rule": "deep stock, not moving",
 "variantId": "gid://shopify/ProductVariant/50651931705506",
 "variant": "Default Title",
 "price": 1549,
@@ -1223,6 +1334,7 @@
 {
 "handle": "baguette-tennis-bracelet",
 "status": "active",
+"rule": "bestseller",
 "variantId": "gid://shopify/ProductVariant/50651931738274",
 "variant": "Crystal",
 "price": 1249,
@@ -1234,6 +1346,7 @@
 {
 "handle": "baguette-tennis-bracelet",
 "status": "active",
+"rule": "bestseller",
 "variantId": "gid://shopify/ProductVariant/50651931771042",
 "variant": "Ruby",
 "price": 1249,
@@ -1245,6 +1358,7 @@
 {
 "handle": "baguette-tennis-bracelet",
 "status": "active",
+"rule": "bestseller",
 "variantId": "gid://shopify/ProductVariant/50651931803810",
 "variant": "Emerald",
 "price": 1249,
@@ -1256,61 +1370,67 @@
 {
 "handle": "droplet-open-ring",
 "status": "active",
+"rule": "deep stock, not moving",
 "variantId": "gid://shopify/ProductVariant/50651931836578",
 "variant": "Gold",
 "price": 899,
 "mrp_before": null,
-"mrp_after": 1289,
+"mrp_after": 1499,
 "shown_before": null,
-"shown_after": 30
+"shown_after": 40
 },
 {
 "handle": "droplet-open-ring",
 "status": "active",
+"rule": "deep stock, not moving",
 "variantId": "gid://shopify/ProductVariant/50651931869346",
 "variant": "Silver",
 "price": 899,
 "mrp_before": null,
-"mrp_after": 1289,
+"mrp_after": 1499,
 "shown_before": null,
-"shown_after": 30
+"shown_after": 40
 },
 {
 "handle": "north-star-bangle",
 "status": "active",
+"rule": "steady",
 "variantId": "gid://shopify/ProductVariant/50651938783394",
 "variant": "Silver",
 "price": 799,
 "mrp_before": 2200,
-"mrp_after": 999,
+"mrp_after": 1149,
 "shown_before": 64,
-"shown_after": 20
+"shown_after": 30
 },
 {
 "handle": "north-star-bangle",
 "status": "active",
+"rule": "steady",
 "variantId": "gid://shopify/ProductVariant/50651938816162",
 "variant": "Gold",
 "price": 799,
 "mrp_before": 2200,
-"mrp_after": 999,
+"mrp_after": 1149,
 "shown_before": 64,
-"shown_after": 20
+"shown_after": 30
 },
 {
 "handle": "tile-stone-bangle",
 "status": "active",
+"rule": "last few",
 "variantId": "gid://shopify/ProductVariant/50651938848930",
 "variant": "Default Title",
 "price": 1099,
 "mrp_before": 2100,
-"mrp_after": 1579,
+"mrp_after": 1225,
 "shown_before": 48,
-"shown_after": 30
+"shown_after": 10
 },
 {
 "handle": "kiss-knot-bangle",
 "status": "active",
+"rule": "bestseller",
 "variantId": "gid://shopify/ProductVariant/50651938881698",
 "variant": "Gold",
 "price": 1199,
@@ -1322,6 +1442,7 @@
 {
 "handle": "kiss-knot-bangle",
 "status": "active",
+"rule": "bestseller",
 "variantId": "gid://shopify/ProductVariant/50651938914466",
 "variant": "Silver",
 "price": 1199,
@@ -1333,6 +1454,7 @@
 {
 "handle": "mint-pear-drop-earrings",
 "status": "active",
+"rule": "steady",
 "variantId": "gid://shopify/ProductVariant/50651938947234",
 "variant": "Default Title",
 "price": 1049,
@@ -1344,6 +1466,7 @@
 {
 "handle": "duo-link-necklace",
 "status": "active",
+"rule": "steady",
 "variantId": "gid://shopify/ProductVariant/50651938980002",
 "variant": "Default Title",
 "price": 1099,
@@ -1355,6 +1478,7 @@
 {
 "handle": "duo-link-bracelet",
 "status": "active",
+"rule": "steady",
 "variantId": "gid://shopify/ProductVariant/50651962015906",
 "variant": "Default Title",
 "price": 999,
@@ -1366,171 +1490,187 @@
 {
 "handle": "baguette-eternity-band",
 "status": "active",
+"rule": "bestseller",
 "variantId": "gid://shopify/ProductVariant/50710035136674",
 "variant": "Ruby / 5",
 "price": 899,
 "mrp_before": 2000,
-"mrp_after": 1289,
+"mrp_after": 1499,
 "shown_before": 55,
-"shown_after": 30
+"shown_after": 40
 },
 {
 "handle": "baguette-eternity-band",
 "status": "active",
+"rule": "bestseller",
 "variantId": "gid://shopify/ProductVariant/50651962048674",
 "variant": "Ruby / 6",
 "price": 899,
 "mrp_before": 2000,
-"mrp_after": 1289,
+"mrp_after": 1499,
 "shown_before": 55,
-"shown_after": 30
+"shown_after": 40
 },
 {
 "handle": "baguette-eternity-band",
 "status": "active",
+"rule": "bestseller",
 "variantId": "gid://shopify/ProductVariant/50651962081442",
 "variant": "Ruby / 7",
 "price": 899,
 "mrp_before": 2000,
-"mrp_after": 1289,
+"mrp_after": 1499,
 "shown_before": 55,
-"shown_after": 30
+"shown_after": 40
 },
 {
 "handle": "baguette-eternity-band",
 "status": "active",
+"rule": "bestseller",
 "variantId": "gid://shopify/ProductVariant/50651962114210",
 "variant": "Ruby / 8",
 "price": 899,
 "mrp_before": 2000,
-"mrp_after": 1289,
+"mrp_after": 1499,
 "shown_before": 55,
-"shown_after": 30
+"shown_after": 40
 },
 {
 "handle": "baguette-eternity-band",
 "status": "active",
+"rule": "bestseller",
 "variantId": "gid://shopify/ProductVariant/50710035169442",
 "variant": "Emerald / 5",
 "price": 899,
 "mrp_before": 2000,
-"mrp_after": 1289,
+"mrp_after": 1499,
 "shown_before": 55,
-"shown_after": 30
+"shown_after": 40
 },
 {
 "handle": "baguette-eternity-band",
 "status": "active",
+"rule": "bestseller",
 "variantId": "gid://shopify/ProductVariant/50651962146978",
 "variant": "Emerald / 6",
 "price": 899,
 "mrp_before": 2000,
-"mrp_after": 1289,
+"mrp_after": 1499,
 "shown_before": 55,
-"shown_after": 30
+"shown_after": 40
 },
 {
 "handle": "baguette-eternity-band",
 "status": "active",
+"rule": "bestseller",
 "variantId": "gid://shopify/ProductVariant/50651962179746",
 "variant": "Emerald / 7",
 "price": 899,
 "mrp_before": 2000,
-"mrp_after": 1289,
+"mrp_after": 1499,
 "shown_before": 55,
-"shown_after": 30
+"shown_after": 40
 },
 {
 "handle": "baguette-eternity-band",
 "status": "active",
+"rule": "bestseller",
 "variantId": "gid://shopify/ProductVariant/50651962212514",
 "variant": "Emerald / 8",
 "price": 899,
 "mrp_before": 2000,
-"mrp_after": 1289,
+"mrp_after": 1499,
 "shown_before": 55,
-"shown_after": 30
+"shown_after": 40
 },
 {
 "handle": "baguette-eternity-band",
 "status": "active",
+"rule": "bestseller",
 "variantId": "gid://shopify/ProductVariant/50710035202210",
 "variant": "Amethyst / 5",
 "price": 899,
 "mrp_before": 2000,
-"mrp_after": 1289,
+"mrp_after": 1499,
 "shown_before": 55,
-"shown_after": 30
+"shown_after": 40
 },
 {
 "handle": "baguette-eternity-band",
 "status": "active",
+"rule": "bestseller",
 "variantId": "gid://shopify/ProductVariant/50651962245282",
 "variant": "Amethyst / 6",
 "price": 899,
 "mrp_before": 2000,
-"mrp_after": 1289,
+"mrp_after": 1499,
 "shown_before": 55,
-"shown_after": 30
+"shown_after": 40
 },
 {
 "handle": "baguette-eternity-band",
 "status": "active",
+"rule": "bestseller",
 "variantId": "gid://shopify/ProductVariant/50651962278050",
 "variant": "Amethyst / 7",
 "price": 899,
 "mrp_before": 2000,
-"mrp_after": 1289,
+"mrp_after": 1499,
 "shown_before": 55,
-"shown_after": 30
+"shown_after": 40
 },
 {
 "handle": "baguette-eternity-band",
 "status": "active",
+"rule": "bestseller",
 "variantId": "gid://shopify/ProductVariant/50651962310818",
 "variant": "Amethyst / 8",
 "price": 899,
 "mrp_before": 2000,
-"mrp_after": 1289,
+"mrp_after": 1499,
 "shown_before": 55,
-"shown_after": 30
+"shown_after": 40
 },
 {
 "handle": "baguette-eternity-band",
 "status": "active",
+"rule": "bestseller",
 "variantId": "gid://shopify/ProductVariant/50831248556194",
 "variant": "Ruby / 9",
 "price": 899,
 "mrp_before": 2000,
-"mrp_after": 1289,
+"mrp_after": 1499,
 "shown_before": 55,
-"shown_after": 30
+"shown_after": 40
 },
 {
 "handle": "baguette-eternity-band",
 "status": "active",
+"rule": "bestseller",
 "variantId": "gid://shopify/ProductVariant/50831248588962",
 "variant": "Emerald / 9",
 "price": 899,
 "mrp_before": 2000,
-"mrp_after": 1289,
+"mrp_after": 1499,
 "shown_before": 55,
-"shown_after": 30
+"shown_after": 40
 },
 {
 "handle": "baguette-eternity-band",
 "status": "active",
+"rule": "bestseller",
 "variantId": "gid://shopify/ProductVariant/50831248621730",
 "variant": "Amethyst / 9",
 "price": 899,
 "mrp_before": 2000,
-"mrp_after": 1289,
+"mrp_after": 1499,
 "shown_before": 55,
-"shown_after": 30
+"shown_after": 40
 },
 {
 "handle": "pearl-nugget-hoops",
 "status": "active",
+"rule": "steady",
 "variantId": "gid://shopify/ProductVariant/50651962343586",
 "variant": "Default Title",
 "price": 1049,
@@ -1542,17 +1682,19 @@
 {
 "handle": "emerald-halo-c-hoops",
 "status": "active",
+"rule": "steady",
 "variantId": "gid://shopify/ProductVariant/50651962376354",
 "variant": "Default Title",
 "price": 1199,
 "mrp_before": 2200,
-"mrp_after": 1999,
+"mrp_after": 1719,
 "shown_before": 46,
-"shown_after": 40
+"shown_after": 30
 },
 {
 "handle": "baguette-tennis-necklace",
 "status": "active",
+"rule": "bestseller",
 "variantId": "gid://shopify/ProductVariant/50651962409122",
 "variant": "Ruby",
 "price": 1799,
@@ -1564,6 +1706,7 @@
 {
 "handle": "baguette-tennis-necklace",
 "status": "active",
+"rule": "bestseller",
 "variantId": "gid://shopify/ProductVariant/50651962441890",
 "variant": "Crystal",
 "price": 1799,
@@ -1575,6 +1718,7 @@
 {
 "handle": "baguette-tennis-necklace",
 "status": "active",
+"rule": "bestseller",
 "variantId": "gid://shopify/ProductVariant/50651962474658",
 "variant": "Emerald",
 "price": 1799,
@@ -1586,6 +1730,7 @@
 {
 "handle": "baguette-huggies",
 "status": "active",
+"rule": "bestseller",
 "variantId": "gid://shopify/ProductVariant/50651968929954",
 "variant": "Ruby",
 "price": 1199,
@@ -1597,6 +1742,7 @@
 {
 "handle": "baguette-huggies",
 "status": "active",
+"rule": "bestseller",
 "variantId": "gid://shopify/ProductVariant/50651968962722",
 "variant": "Crystal",
 "price": 1199,
@@ -1608,6 +1754,7 @@
 {
 "handle": "baguette-huggies",
 "status": "active",
+"rule": "bestseller",
 "variantId": "gid://shopify/ProductVariant/50651968995490",
 "variant": "Emerald",
 "price": 1199,
@@ -1619,6 +1766,7 @@
 {
 "handle": "baguette-huggies",
 "status": "active",
+"rule": "bestseller",
 "variantId": "gid://shopify/ProductVariant/50651969028258",
 "variant": "Amethyst",
 "price": 1199,
@@ -1630,6 +1778,7 @@
 {
 "handle": "emerald-deco-hoops",
 "status": "active",
+"rule": "steady",
 "variantId": "gid://shopify/ProductVariant/50651969061026",
 "variant": "Default Title",
 "price": 999,
@@ -1641,6 +1790,7 @@
 {
 "handle": "tubogas-dome-ring",
 "status": "active",
+"rule": "steady",
 "variantId": "gid://shopify/ProductVariant/50710035234978",
 "variant": "Gold / 5",
 "price": 999,
@@ -1652,6 +1802,7 @@
 {
 "handle": "tubogas-dome-ring",
 "status": "active",
+"rule": "steady",
 "variantId": "gid://shopify/ProductVariant/50651969978530",
 "variant": "Gold / 6",
 "price": 999,
@@ -1663,6 +1814,7 @@
 {
 "handle": "tubogas-dome-ring",
 "status": "active",
+"rule": "steady",
 "variantId": "gid://shopify/ProductVariant/50651970011298",
 "variant": "Gold / 7",
 "price": 999,
@@ -1674,6 +1826,7 @@
 {
 "handle": "tubogas-dome-ring",
 "status": "active",
+"rule": "steady",
 "variantId": "gid://shopify/ProductVariant/50651970044066",
 "variant": "Gold / 8",
 "price": 999,
@@ -1685,6 +1838,7 @@
 {
 "handle": "tubogas-dome-ring",
 "status": "active",
+"rule": "steady",
 "variantId": "gid://shopify/ProductVariant/50710035267746",
 "variant": "Silver / 5",
 "price": 999,
@@ -1696,6 +1850,7 @@
 {
 "handle": "tubogas-dome-ring",
 "status": "active",
+"rule": "steady",
 "variantId": "gid://shopify/ProductVariant/50651970076834",
 "variant": "Silver / 6",
 "price": 999,
@@ -1707,6 +1862,7 @@
 {
 "handle": "tubogas-dome-ring",
 "status": "active",
+"rule": "steady",
 "variantId": "gid://shopify/ProductVariant/50651970109602",
 "variant": "Silver / 7",
 "price": 999,
@@ -1718,6 +1874,7 @@
 {
 "handle": "tubogas-dome-ring",
 "status": "active",
+"rule": "steady",
 "variantId": "gid://shopify/ProductVariant/50651970142370",
 "variant": "Silver / 8",
 "price": 999,
@@ -1729,6 +1886,7 @@
 {
 "handle": "fine-tennis-bracelet",
 "status": "active",
+"rule": "steady",
 "variantId": "gid://shopify/ProductVariant/50651970207906",
 "variant": "Default Title",
 "price": 999,
@@ -1740,6 +1898,7 @@
 {
 "handle": "petal-flower-studs",
 "status": "active",
+"rule": "steady",
 "variantId": "gid://shopify/ProductVariant/50651971125410",
 "variant": "Gold",
 "price": 899,
@@ -1751,6 +1910,7 @@
 {
 "handle": "petal-flower-studs",
 "status": "active",
+"rule": "steady",
 "variantId": "gid://shopify/ProductVariant/50651971158178",
 "variant": "Silver",
 "price": 899,
@@ -1762,6 +1922,7 @@
 {
 "handle": "droplet-open-cuff",
 "status": "active",
+"rule": "deep stock, not moving",
 "variantId": "gid://shopify/ProductVariant/50651971190946",
 "variant": "Gold",
 "price": 1199,
@@ -1773,6 +1934,7 @@
 {
 "handle": "droplet-open-cuff",
 "status": "active",
+"rule": "deep stock, not moving",
 "variantId": "gid://shopify/ProductVariant/50651971223714",
 "variant": "Silver",
 "price": 1199,
@@ -1784,6 +1946,7 @@
 {
 "handle": "roman-numeral-trio-ring",
 "status": "active",
+"rule": "bestseller",
 "variantId": "gid://shopify/ProductVariant/50651971256482",
 "variant": "6",
 "price": 1899,
@@ -1795,6 +1958,7 @@
 {
 "handle": "roman-numeral-trio-ring",
 "status": "active",
+"rule": "bestseller",
 "variantId": "gid://shopify/ProductVariant/50651971289250",
 "variant": "7",
 "price": 1899,
@@ -1806,6 +1970,7 @@
 {
 "handle": "roman-numeral-trio-ring",
 "status": "active",
+"rule": "bestseller",
 "variantId": "gid://shopify/ProductVariant/50651971322018",
 "variant": "8",
 "price": 1899,
@@ -1817,6 +1982,7 @@
 {
 "handle": "roman-numeral-trio-ring",
 "status": "active",
+"rule": "bestseller",
 "variantId": "gid://shopify/ProductVariant/50724024909986",
 "variant": "9",
 "price": 1900,
@@ -1828,6 +1994,7 @@
 {
 "handle": "linked-trio-ring",
 "status": "active",
+"rule": "bestseller",
 "variantId": "gid://shopify/ProductVariant/50710035300514",
 "variant": "Gold / 5",
 "price": 1199,
@@ -1839,6 +2006,7 @@
 {
 "handle": "linked-trio-ring",
 "status": "active",
+"rule": "bestseller",
 "variantId": "gid://shopify/ProductVariant/50651974795426",
 "variant": "Gold / 6",
 "price": 1199,
@@ -1850,6 +2018,7 @@
 {
 "handle": "linked-trio-ring",
 "status": "active",
+"rule": "bestseller",
 "variantId": "gid://shopify/ProductVariant/50651974828194",
 "variant": "Gold / 7",
 "price": 1199,
@@ -1861,6 +2030,7 @@
 {
 "handle": "linked-trio-ring",
 "status": "active",
+"rule": "bestseller",
 "variantId": "gid://shopify/ProductVariant/50651974860962",
 "variant": "Gold / 8",
 "price": 1199,
@@ -1872,6 +2042,7 @@
 {
 "handle": "linked-trio-ring",
 "status": "active",
+"rule": "bestseller",
 "variantId": "gid://shopify/ProductVariant/50710035333282",
 "variant": "Silver / 5",
 "price": 1199,
@@ -1883,6 +2054,7 @@
 {
 "handle": "linked-trio-ring",
 "status": "active",
+"rule": "bestseller",
 "variantId": "gid://shopify/ProductVariant/50651974893730",
 "variant": "Silver / 6",
 "price": 1199,
@@ -1894,6 +2066,7 @@
 {
 "handle": "linked-trio-ring",
 "status": "active",
+"rule": "bestseller",
 "variantId": "gid://shopify/ProductVariant/50651974926498",
 "variant": "Silver / 7",
 "price": 1199,
@@ -1905,6 +2078,7 @@
 {
 "handle": "linked-trio-ring",
 "status": "active",
+"rule": "bestseller",
 "variantId": "gid://shopify/ProductVariant/50651974959266",
 "variant": "Silver / 8",
 "price": 1199,
@@ -1916,6 +2090,7 @@
 {
 "handle": "crystal-baguette-eternity-ring",
 "status": "active",
+"rule": "bestseller",
 "variantId": "gid://shopify/ProductVariant/50710035366050",
 "variant": "5",
 "price": 1199,
@@ -1927,6 +2102,7 @@
 {
 "handle": "crystal-baguette-eternity-ring",
 "status": "active",
+"rule": "bestseller",
 "variantId": "gid://shopify/ProductVariant/50651974992034",
 "variant": "6",
 "price": 1199,
@@ -1938,6 +2114,7 @@
 {
 "handle": "crystal-baguette-eternity-ring",
 "status": "active",
+"rule": "bestseller",
 "variantId": "gid://shopify/ProductVariant/50651975024802",
 "variant": "7",
 "price": 1199,
@@ -1949,6 +2126,7 @@
 {
 "handle": "crystal-baguette-eternity-ring",
 "status": "active",
+"rule": "bestseller",
 "variantId": "gid://shopify/ProductVariant/50651975057570",
 "variant": "8",
 "price": 1199,
@@ -1960,6 +2138,7 @@
 {
 "handle": "crystal-baguette-eternity-ring",
 "status": "active",
+"rule": "bestseller",
 "variantId": "gid://shopify/ProductVariant/50831247966370",
 "variant": "9",
 "price": 1199,
@@ -1971,6 +2150,7 @@
 {
 "handle": "chain-drop-dome-ring",
 "status": "active",
+"rule": "steady",
 "variantId": "gid://shopify/ProductVariant/50710035398818",
 "variant": "Gold / 5",
 "price": 1099,
@@ -1982,6 +2162,7 @@
 {
 "handle": "chain-drop-dome-ring",
 "status": "active",
+"rule": "steady",
 "variantId": "gid://shopify/ProductVariant/50651979022498",
 "variant": "Gold / 6",
 "price": 1099,
@@ -1993,6 +2174,7 @@
 {
 "handle": "chain-drop-dome-ring",
 "status": "active",
+"rule": "steady",
 "variantId": "gid://shopify/ProductVariant/50651979055266",
 "variant": "Gold / 7",
 "price": 1099,
@@ -2004,6 +2186,7 @@
 {
 "handle": "chain-drop-dome-ring",
 "status": "active",
+"rule": "steady",
 "variantId": "gid://shopify/ProductVariant/50651979088034",
 "variant": "Gold / 8",
 "price": 1099,
@@ -2015,6 +2198,7 @@
 {
 "handle": "chain-drop-dome-ring",
 "status": "active",
+"rule": "steady",
 "variantId": "gid://shopify/ProductVariant/50710035431586",
 "variant": "Silver / 5",
 "price": 1099,
@@ -2026,6 +2210,7 @@
 {
 "handle": "chain-drop-dome-ring",
 "status": "active",
+"rule": "steady",
 "variantId": "gid://shopify/ProductVariant/50651979120802",
 "variant": "Silver / 6",
 "price": 1099,
@@ -2037,6 +2222,7 @@
 {
 "handle": "chain-drop-dome-ring",
 "status": "active",
+"rule": "steady",
 "variantId": "gid://shopify/ProductVariant/50651979153570",
 "variant": "Silver / 7",
 "price": 1099,
@@ -2048,6 +2234,7 @@
 {
 "handle": "chain-drop-dome-ring",
 "status": "active",
+"rule": "steady",
 "variantId": "gid://shopify/ProductVariant/50651979186338",
 "variant": "Silver / 8",
 "price": 1099,
@@ -2059,116 +2246,127 @@
 {
 "handle": "watch-link-ring",
 "status": "active",
+"rule": "bestseller",
 "variantId": "gid://shopify/ProductVariant/50710035464354",
 "variant": "Gold / 5",
 "price": 899,
 "mrp_before": null,
-"mrp_after": 1289,
+"mrp_after": 1499,
 "shown_before": null,
-"shown_after": 30
+"shown_after": 40
 },
 {
 "handle": "watch-link-ring",
 "status": "active",
+"rule": "bestseller",
 "variantId": "gid://shopify/ProductVariant/50651979219106",
 "variant": "Gold / 6",
 "price": 899,
 "mrp_before": null,
-"mrp_after": 1289,
+"mrp_after": 1499,
 "shown_before": null,
-"shown_after": 30
+"shown_after": 40
 },
 {
 "handle": "watch-link-ring",
 "status": "active",
+"rule": "bestseller",
 "variantId": "gid://shopify/ProductVariant/50651979251874",
 "variant": "Gold / 7",
 "price": 899,
 "mrp_before": null,
-"mrp_after": 1289,
+"mrp_after": 1499,
 "shown_before": null,
-"shown_after": 30
+"shown_after": 40
 },
 {
 "handle": "watch-link-ring",
 "status": "active",
+"rule": "bestseller",
 "variantId": "gid://shopify/ProductVariant/50651979284642",
 "variant": "Gold / 8",
 "price": 899,
 "mrp_before": null,
-"mrp_after": 1289,
+"mrp_after": 1499,
 "shown_before": null,
-"shown_after": 30
+"shown_after": 40
 },
 {
 "handle": "watch-link-ring",
 "status": "active",
+"rule": "bestseller",
 "variantId": "gid://shopify/ProductVariant/50710035497122",
 "variant": "Silver / 5",
 "price": 899,
 "mrp_before": null,
-"mrp_after": 1289,
+"mrp_after": 1499,
 "shown_before": null,
-"shown_after": 30
+"shown_after": 40
 },
 {
 "handle": "watch-link-ring",
 "status": "active",
+"rule": "bestseller",
 "variantId": "gid://shopify/ProductVariant/50651979317410",
 "variant": "Silver / 6",
 "price": 899,
 "mrp_before": null,
-"mrp_after": 1289,
+"mrp_after": 1499,
 "shown_before": null,
-"shown_after": 30
+"shown_after": 40
 },
 {
 "handle": "watch-link-ring",
 "status": "active",
+"rule": "bestseller",
 "variantId": "gid://shopify/ProductVariant/50651979350178",
 "variant": "Silver / 7",
 "price": 899,
 "mrp_before": null,
-"mrp_after": 1289,
+"mrp_after": 1499,
 "shown_before": null,
-"shown_after": 30
+"shown_after": 40
 },
 {
 "handle": "watch-link-ring",
 "status": "active",
+"rule": "bestseller",
 "variantId": "gid://shopify/ProductVariant/50651979382946",
 "variant": "Silver / 8",
 "price": 899,
 "mrp_before": null,
-"mrp_after": 1289,
+"mrp_after": 1499,
 "shown_before": null,
-"shown_after": 30
+"shown_after": 40
 },
 {
 "handle": "watch-link-ring",
 "status": "active",
+"rule": "bestseller",
 "variantId": "gid://shopify/ProductVariant/50854512230562",
 "variant": "Gold / 9",
 "price": 899,
 "mrp_before": null,
-"mrp_after": 1289,
+"mrp_after": 1499,
 "shown_before": null,
-"shown_after": 30
+"shown_after": 40
 },
 {
 "handle": "watch-link-ring",
 "status": "active",
+"rule": "bestseller",
 "variantId": "gid://shopify/ProductVariant/50854512263330",
 "variant": "Silver / 9",
 "price": 899,
 "mrp_before": null,
-"mrp_after": 1289,
+"mrp_after": 1499,
 "shown_before": null,
-"shown_after": 30
+"shown_after": 40
 },
 {
 "handle": "marquise-drop-choker",
 "status": "active",
+"rule": "steady",
 "variantId": "gid://shopify/ProductVariant/50651979415714",
 "variant": "Gold",
 "price": 999,
@@ -2180,6 +2378,7 @@
 {
 "handle": "marquise-drop-choker",
 "status": "active",
+"rule": "steady",
 "variantId": "gid://shopify/ProductVariant/50804601028770",
 "variant": "Silver",
 "price": 999,
@@ -2191,127 +2390,139 @@
 {
 "handle": "mesh-band-ring",
 "status": "active",
+"rule": "bestseller",
 "variantId": "gid://shopify/ProductVariant/50710035529890",
 "variant": "Gold / 5",
 "price": 799,
 "mrp_before": null,
-"mrp_after": 999,
-"shown_before": null,
-"shown_after": 20
-},
-{
-"handle": "mesh-band-ring",
-"status": "active",
-"variantId": "gid://shopify/ProductVariant/50651983184034",
-"variant": "Gold / 6",
-"price": 799,
-"mrp_before": null,
-"mrp_after": 999,
-"shown_before": null,
-"shown_after": 20
-},
-{
-"handle": "mesh-band-ring",
-"status": "active",
-"variantId": "gid://shopify/ProductVariant/50651983216802",
-"variant": "Gold / 7",
-"price": 799,
-"mrp_before": null,
-"mrp_after": 999,
-"shown_before": null,
-"shown_after": 20
-},
-{
-"handle": "mesh-band-ring",
-"status": "active",
-"variantId": "gid://shopify/ProductVariant/50651983249570",
-"variant": "Gold / 8",
-"price": 799,
-"mrp_before": null,
-"mrp_after": 999,
-"shown_before": null,
-"shown_after": 20
-},
-{
-"handle": "mesh-band-ring",
-"status": "active",
-"variantId": "gid://shopify/ProductVariant/50710035562658",
-"variant": "Silver / 5",
-"price": 799,
-"mrp_before": null,
-"mrp_after": 999,
-"shown_before": null,
-"shown_after": 20
-},
-{
-"handle": "mesh-band-ring",
-"status": "active",
-"variantId": "gid://shopify/ProductVariant/50651983282338",
-"variant": "Silver / 6",
-"price": 799,
-"mrp_before": null,
-"mrp_after": 999,
-"shown_before": null,
-"shown_after": 20
-},
-{
-"handle": "mesh-band-ring",
-"status": "active",
-"variantId": "gid://shopify/ProductVariant/50651983315106",
-"variant": "Silver / 7",
-"price": 799,
-"mrp_before": null,
-"mrp_after": 999,
-"shown_before": null,
-"shown_after": 20
-},
-{
-"handle": "mesh-band-ring",
-"status": "active",
-"variantId": "gid://shopify/ProductVariant/50651983347874",
-"variant": "Silver / 8",
-"price": 799,
-"mrp_before": null,
-"mrp_after": 999,
-"shown_before": null,
-"shown_after": 20
-},
-{
-"handle": "mesh-band-ring",
-"status": "active",
-"variantId": "gid://shopify/ProductVariant/50854512394402",
-"variant": "Gold / 9",
-"price": 799,
-"mrp_before": null,
-"mrp_after": 999,
-"shown_before": null,
-"shown_after": 20
-},
-{
-"handle": "mesh-band-ring",
-"status": "active",
-"variantId": "gid://shopify/ProductVariant/50854512427170",
-"variant": "Silver / 9",
-"price": 799,
-"mrp_before": null,
-"mrp_after": 999,
-"shown_before": null,
-"shown_after": 20
-},
-{
-"handle": "bold-nocturne-drops",
-"status": "active",
-"variantId": "gid://shopify/ProductVariant/50651983380642",
-"variant": "Default Title",
-"price": 1299,
-"mrp_before": null,
-"mrp_after": 2169,
+"mrp_after": 1339,
 "shown_before": null,
 "shown_after": 40
 },
 {
+"handle": "mesh-band-ring",
+"status": "active",
+"rule": "bestseller",
+"variantId": "gid://shopify/ProductVariant/50651983184034",
+"variant": "Gold / 6",
+"price": 799,
+"mrp_before": null,
+"mrp_after": 1339,
+"shown_before": null,
+"shown_after": 40
+},
+{
+"handle": "mesh-band-ring",
+"status": "active",
+"rule": "bestseller",
+"variantId": "gid://shopify/ProductVariant/50651983216802",
+"variant": "Gold / 7",
+"price": 799,
+"mrp_before": null,
+"mrp_after": 1339,
+"shown_before": null,
+"shown_after": 40
+},
+{
+"handle": "mesh-band-ring",
+"status": "active",
+"rule": "bestseller",
+"variantId": "gid://shopify/ProductVariant/50651983249570",
+"variant": "Gold / 8",
+"price": 799,
+"mrp_before": null,
+"mrp_after": 1339,
+"shown_before": null,
+"shown_after": 40
+},
+{
+"handle": "mesh-band-ring",
+"status": "active",
+"rule": "bestseller",
+"variantId": "gid://shopify/ProductVariant/50710035562658",
+"variant": "Silver / 5",
+"price": 799,
+"mrp_before": null,
+"mrp_after": 1339,
+"shown_before": null,
+"shown_after": 40
+},
+{
+"handle": "mesh-band-ring",
+"status": "active",
+"rule": "bestseller",
+"variantId": "gid://shopify/ProductVariant/50651983282338",
+"variant": "Silver / 6",
+"price": 799,
+"mrp_before": null,
+"mrp_after": 1339,
+"shown_before": null,
+"shown_after": 40
+},
+{
+"handle": "mesh-band-ring",
+"status": "active",
+"rule": "bestseller",
+"variantId": "gid://shopify/ProductVariant/50651983315106",
+"variant": "Silver / 7",
+"price": 799,
+"mrp_before": null,
+"mrp_after": 1339,
+"shown_before": null,
+"shown_after": 40
+},
+{
+"handle": "mesh-band-ring",
+"status": "active",
+"rule": "bestseller",
+"variantId": "gid://shopify/ProductVariant/50651983347874",
+"variant": "Silver / 8",
+"price": 799,
+"mrp_before": null,
+"mrp_after": 1339,
+"shown_before": null,
+"shown_after": 40
+},
+{
+"handle": "mesh-band-ring",
+"status": "active",
+"rule": "bestseller",
+"variantId": "gid://shopify/ProductVariant/50854512394402",
+"variant": "Gold / 9",
+"price": 799,
+"mrp_before": null,
+"mrp_after": 1339,
+"shown_before": null,
+"shown_after": 40
+},
+{
+"handle": "mesh-band-ring",
+"status": "active",
+"rule": "bestseller",
+"variantId": "gid://shopify/ProductVariant/50854512427170",
+"variant": "Silver / 9",
+"price": 799,
+"mrp_before": null,
+"mrp_after": 1339,
+"shown_before": null,
+"shown_after": 40
+},
+{
+"handle": "bold-nocturne-drops",
+"status": "active",
+"rule": "steady",
+"variantId": "gid://shopify/ProductVariant/50651983380642",
+"variant": "Default Title",
+"price": 1299,
+"mrp_before": null,
+"mrp_after": 1859,
+"shown_before": null,
+"shown_after": 30
+},
+{
 "handle": "pear-point-open-cuff",
 "status": "active",
+"rule": "bestseller",
 "variantId": "gid://shopify/ProductVariant/50651983413410",
 "variant": "Default Title",
 "price": 1599,
@@ -2323,6 +2534,7 @@
 {
 "handle": "emerald-square-ear-cuff",
 "status": "active",
+"rule": "steady",
 "variantId": "gid://shopify/ProductVariant/50651983446178",
 "variant": "Default Title",
 "price": 899,
@@ -2334,6 +2546,7 @@
 {
 "handle": "crystal-pear-ear-cuff",
 "status": "active",
+"rule": "steady",
 "variantId": "gid://shopify/ProductVariant/50651983478946",
 "variant": "Default Title",
 "price": 999,
@@ -2345,28 +2558,31 @@
 {
 "handle": "sorbet-riviere-bracelet",
 "status": "active",
+"rule": "last few",
 "variantId": "gid://shopify/ProductVariant/50714566230178",
 "variant": "Default Title",
 "price": 999,
 "mrp_before": 2200,
-"mrp_after": 1429,
+"mrp_after": 1110,
 "shown_before": 55,
-"shown_after": 30
+"shown_after": 10
 },
 {
 "handle": "emerald-carre-bracelet",
 "status": "active",
+"rule": "steady",
 "variantId": "gid://shopify/ProductVariant/50714566262946",
 "variant": "Default Title",
 "price": 799,
 "mrp_before": 2500,
-"mrp_after": 999,
+"mrp_after": 1149,
 "shown_before": 68,
-"shown_after": 20
+"shown_after": 30
 },
 {
 "handle": "midnight-riviere-bracelet",
 "status": "active",
+"rule": "steady",
 "variantId": "gid://shopify/ProductVariant/50714620068002",
 "variant": "Default Title",
 "price": 899,
@@ -2378,6 +2594,7 @@
 {
 "handle": "aquarelle-riviere-bracelet",
 "status": "active",
+"rule": "steady",
 "variantId": "gid://shopify/ProductVariant/50714620100770",
 "variant": "Royal Blue",
 "price": 899,
@@ -2389,6 +2606,7 @@
 {
 "handle": "aquarelle-riviere-bracelet",
 "status": "active",
+"rule": "steady",
 "variantId": "gid://shopify/ProductVariant/50714620133538",
 "variant": "Lavender",
 "price": 899,
@@ -2400,6 +2618,7 @@
 {
 "handle": "aquarelle-riviere-bracelet",
 "status": "active",
+"rule": "steady",
 "variantId": "gid://shopify/ProductVariant/50749309649058",
 "variant": "White",
 "price": 899,
@@ -2411,6 +2630,7 @@
 {
 "handle": "aquarelle-riviere-bracelet",
 "status": "active",
+"rule": "steady",
 "variantId": "gid://shopify/ProductVariant/50749309681826",
 "variant": "Pink",
 "price": 899,
@@ -2422,237 +2642,259 @@
 {
 "handle": "bougainvillea-vine-bracelet",
 "status": "active",
+"rule": "steady",
 "variantId": "gid://shopify/ProductVariant/50714620166306",
 "variant": "Fuchsia",
 "price": 799,
 "mrp_before": 2000,
-"mrp_after": 999,
+"mrp_after": 1149,
 "shown_before": 60,
-"shown_after": 20
+"shown_after": 30
 },
 {
 "handle": "bougainvillea-vine-bracelet",
 "status": "active",
+"rule": "steady",
 "variantId": "gid://shopify/ProductVariant/50714620199074",
 "variant": "Violet",
 "price": 799,
 "mrp_before": 2000,
-"mrp_after": 999,
+"mrp_after": 1149,
 "shown_before": 60,
-"shown_after": 20
+"shown_after": 30
 },
 {
 "handle": "bougainvillea-vine-bracelet",
 "status": "active",
+"rule": "steady",
 "variantId": "gid://shopify/ProductVariant/50730904191138",
 "variant": "White",
 "price": 799,
 "mrp_before": 2000,
-"mrp_after": 999,
+"mrp_after": 1149,
 "shown_before": 60,
-"shown_after": 20
+"shown_after": 30
 },
 {
 "handle": "lumiere-solitaire-bracelet",
 "status": "active",
+"rule": "last few",
 "variantId": "gid://shopify/ProductVariant/50714620231842",
 "variant": "Default Title",
 "price": 1199,
 "mrp_before": 2300,
-"mrp_after": 1999,
+"mrp_after": 1339,
 "shown_before": 48,
-"shown_after": 40
+"shown_after": 10
 },
 {
 "handle": "clover-drop-pendant-necklace",
 "status": "active",
+"rule": "steady",
 "variantId": "gid://shopify/ProductVariant/50716471230626",
 "variant": "Default Title",
 "price": 799,
 "mrp_before": 1999,
-"mrp_after": 999,
+"mrp_after": 1149,
 "shown_before": 60,
-"shown_after": 20
+"shown_after": 30
 },
 {
 "handle": "clover-drop-earrings",
 "status": "active",
+"rule": "steady",
 "variantId": "gid://shopify/ProductVariant/50716471263394",
 "variant": "Default Title",
 "price": 699,
 "mrp_before": 1500,
-"mrp_after": 879,
+"mrp_after": 999,
 "shown_before": 53,
-"shown_after": 20
+"shown_after": 30
 },
 {
 "handle": "clover-chain-bracelet",
 "status": "active",
+"rule": "last few",
 "variantId": "gid://shopify/ProductVariant/50716475228322",
 "variant": "Default Title",
 "price": 699,
 "mrp_before": 1500,
-"mrp_after": 879,
+"mrp_after": 779,
 "shown_before": 53,
-"shown_after": 20
+"shown_after": 10
 },
 {
 "handle": "clover-station-bracelet",
 "status": "active",
+"rule": "last few",
 "variantId": "gid://shopify/ProductVariant/50716703195298",
 "variant": "Default Title",
 "price": 999,
 "mrp_before": 2000,
-"mrp_after": 1429,
+"mrp_after": 1110,
 "shown_before": 50,
-"shown_after": 30
+"shown_after": 10
 },
 {
 "handle": "twin-heart-necklace",
 "status": "active",
+"rule": "last few",
 "variantId": "gid://shopify/ProductVariant/50716703228066",
 "variant": "Default Title",
 "price": 999,
 "mrp_before": null,
-"mrp_after": 1429,
+"mrp_after": 1110,
 "shown_before": null,
-"shown_after": 30
+"shown_after": 10
 },
 {
 "handle": "twin-heart-studs",
 "status": "active",
+"rule": "steady",
 "variantId": "gid://shopify/ProductVariant/50716709912738",
 "variant": "Default Title",
 "price": 749,
 "mrp_before": 1608,
-"mrp_after": 939,
+"mrp_after": 1070,
 "shown_before": 53,
-"shown_after": 20
+"shown_after": 30
 },
 {
 "handle": "bow-pear-drop-necklace",
 "status": "active",
+"rule": "deep stock, not moving",
 "variantId": "gid://shopify/ProductVariant/50716710502562",
 "variant": "Default Title",
 "price": 749,
 "mrp_before": null,
-"mrp_after": 939,
+"mrp_after": 1249,
 "shown_before": null,
-"shown_after": 20
+"shown_after": 40
 },
 {
 "handle": "open-heart-layered-bracelet",
 "status": "active",
+"rule": "last few",
 "variantId": "gid://shopify/ProductVariant/50716710568098",
 "variant": "Default Title",
 "price": 599,
 "mrp_before": 1200,
-"mrp_after": 749,
+"mrp_after": 669,
 "shown_before": 50,
-"shown_after": 20
+"shown_after": 10
 },
 {
 "handle": "molten-wave-ear-cuff",
 "status": "active",
+"rule": "steady",
 "variantId": "gid://shopify/ProductVariant/50716711485602",
 "variant": "Default Title",
 "price": 449,
 "mrp_before": 1300,
-"mrp_after": 499,
+"mrp_after": 645,
 "shown_before": 65,
-"shown_after": 10
+"shown_after": 30
 },
 {
 "handle": "asscher-solitaire-ring",
 "status": "active",
+"rule": "last few",
 "variantId": "gid://shopify/ProductVariant/50716711518370",
 "variant": "Default Title",
 "price": 700,
 "mrp_before": 2000,
-"mrp_after": 879,
+"mrp_after": 779,
 "shown_before": 65,
-"shown_after": 20
+"shown_after": 10
 },
 {
 "handle": "cushion-solitaire-ring",
 "status": "active",
+"rule": "bestseller",
 "variantId": "gid://shopify/ProductVariant/50716711551138",
 "variant": "Default Title",
 "price": 899,
 "mrp_before": 1600,
-"mrp_after": 1289,
+"mrp_after": 1499,
 "shown_before": 44,
-"shown_after": 30
+"shown_after": 40
 },
 {
 "handle": "lumiere-oval-solitaire-ring",
 "status": "active",
+"rule": "last few",
 "variantId": "gid://shopify/ProductVariant/50716711583906",
 "variant": "Default Title",
 "price": 699,
 "mrp_before": null,
-"mrp_after": 879,
+"mrp_after": 779,
 "shown_before": null,
-"shown_after": 20
+"shown_after": 10
 },
 {
 "handle": "pearl-heart-layered-necklace",
 "status": "active",
+"rule": "last few",
 "variantId": "gid://shopify/ProductVariant/50716711616674",
 "variant": "Default Title",
 "price": 999,
 "mrp_before": 1999,
-"mrp_after": 1429,
+"mrp_after": 1110,
 "shown_before": 50,
-"shown_after": 30
+"shown_after": 10
 },
 {
 "handle": "pave-zigzag-ring",
 "status": "active",
+"rule": "steady",
 "variantId": "gid://shopify/ProductVariant/50716942925986",
 "variant": "Default Title",
 "price": 599,
 "mrp_before": 999,
-"mrp_after": 749,
+"mrp_after": 859,
 "shown_before": 40,
-"shown_after": 20
+"shown_after": 30
 },
 {
 "handle": "prism-pear-drop-necklace",
 "status": "active",
+"rule": "last few",
 "variantId": "gid://shopify/ProductVariant/50716942958754",
 "variant": "Default Title",
 "price": 999,
 "mrp_before": 1908,
-"mrp_after": 1429,
+"mrp_after": 1110,
 "shown_before": 48,
-"shown_after": 30
+"shown_after": 10
 },
 {
 "handle": "prism-pear-drop-hoops",
 "status": "active",
+"rule": "last few",
 "variantId": "gid://shopify/ProductVariant/50716942991522",
 "variant": "Default Title",
 "price": 899,
 "mrp_before": 1600,
-"mrp_after": 1289,
+"mrp_after": 999,
 "shown_before": 44,
-"shown_after": 30
+"shown_after": 10
 },
 {
 "handle": "blush-carre-bracelet",
 "status": "active",
+"rule": "last few",
 "variantId": "gid://shopify/ProductVariant/50725447893154",
 "variant": "Default Title",
 "price": 899,
 "mrp_before": 2200,
-"mrp_after": 1289,
+"mrp_after": 999,
 "shown_before": 59,
-"shown_after": 30
+"shown_after": 10
 },
 {
 "handle": "sapphire-carre-bracelet",
 "status": "active",
+"rule": "steady",
 "variantId": "gid://shopify/ProductVariant/50725447925922",
 "variant": "Default Title",
 "price": 999,
@@ -2664,6 +2906,7 @@
 {
 "handle": "champagne-carre-bracelet",
 "status": "active",
+"rule": "steady",
 "variantId": "gid://shopify/ProductVariant/50725447958690",
 "variant": "Default Title",
 "price": 899,
@@ -2675,17 +2918,19 @@
 {
 "handle": "amethyst-carre-bracelet",
 "status": "active",
+"rule": "last few",
 "variantId": "gid://shopify/ProductVariant/50725447991458",
 "variant": "Default Title",
 "price": 899,
 "mrp_before": 2200,
-"mrp_after": 1289,
+"mrp_after": 999,
 "shown_before": 59,
-"shown_after": 30
+"shown_after": 10
 },
 {
 "handle": "lotus-pear-drop-studs",
 "status": "active",
+"rule": "steady",
 "variantId": "gid://shopify/ProductVariant/50730841112738",
 "variant": "Default Title",
 "price": 999,
@@ -2697,17 +2942,19 @@
 {
 "handle": "watch-link-strap-bracelet",
 "status": "active",
+"rule": "last few",
 "variantId": "gid://shopify/ProductVariant/50730842751138",
 "variant": "Default Title",
 "price": 1199,
 "mrp_before": 2000,
-"mrp_after": 1999,
+"mrp_after": 1339,
 "shown_before": 40,
-"shown_after": 40
+"shown_after": 10
 },
 {
 "handle": "clover-garland-bracelet",
 "status": "active",
+"rule": "deep stock, not moving",
 "variantId": "gid://shopify/ProductVariant/50779949727906",
 "variant": "Sky Blue",
 "price": 1199,
@@ -2719,6 +2966,7 @@
 {
 "handle": "clover-garland-bracelet",
 "status": "active",
+"rule": "deep stock, not moving",
 "variantId": "gid://shopify/ProductVariant/50779949760674",
 "variant": "Pink",
 "price": 1199,
@@ -2730,6 +2978,7 @@
 {
 "handle": "clover-garland-bracelet",
 "status": "active",
+"rule": "deep stock, not moving",
 "variantId": "gid://shopify/ProductVariant/50779949793442",
 "variant": "White",
 "price": 1199,
@@ -2741,248 +2990,271 @@
 {
 "handle": "riviere-classique-necklace",
 "status": "active",
+"rule": "last few",
 "variantId": "gid://shopify/ProductVariant/50779949826210",
 "variant": "Silver",
 "price": 1599,
 "mrp_before": 2800,
-"mrp_after": 2669,
+"mrp_after": 1779,
 "shown_before": 43,
-"shown_after": 40
+"shown_after": 10
 },
 {
 "handle": "riviere-classique-necklace",
 "status": "active",
+"rule": "last few",
 "variantId": "gid://shopify/ProductVariant/50779949858978",
 "variant": "Gold",
 "price": 1599,
 "mrp_before": 2800,
-"mrp_after": 2669,
+"mrp_after": 1779,
 "shown_before": 43,
-"shown_after": 40
+"shown_after": 10
 },
 {
 "handle": "cascade-pear-drop-earrings",
 "status": "active",
+"rule": "new arrival",
 "variantId": "gid://shopify/ProductVariant/50785485127842",
 "variant": "Default Title",
 "price": 1199,
 "mrp_before": 2300,
-"mrp_after": 1999,
+"mrp_after": 1499,
 "shown_before": 48,
-"shown_after": 40
+"shown_after": 20
 },
 {
 "handle": "bow-and-heart-gift-set",
 "status": "active",
+"rule": "new arrival",
 "variantId": "gid://shopify/ProductVariant/50785485160610",
 "variant": "Default Title",
 "price": 1599,
 "mrp_before": 2800,
-"mrp_after": 2669,
+"mrp_after": 1999,
 "shown_before": 43,
-"shown_after": 40
+"shown_after": 20
 },
 {
 "handle": "heart-solitaire-huggies",
 "status": "active",
+"rule": "new arrival",
 "variantId": "gid://shopify/ProductVariant/50785485291682",
 "variant": "Default Title",
 "price": 1099,
 "mrp_before": 2199,
-"mrp_after": 1579,
+"mrp_after": 1379,
 "shown_before": 50,
-"shown_after": 30
+"shown_after": 20
 },
 {
 "handle": "pave-open-heart-studs",
 "status": "active",
+"rule": "new arrival",
 "variantId": "gid://shopify/ProductVariant/50785485324450",
 "variant": "Default Title",
 "price": 999,
 "mrp_before": 1899,
-"mrp_after": 1429,
+"mrp_after": 1249,
 "shown_before": 47,
-"shown_after": 30
+"shown_after": 20
 },
 {
 "handle": "v-bar-teardrop-necklace",
 "status": "active",
+"rule": "new arrival",
 "variantId": "gid://shopify/ProductVariant/50798476820642",
 "variant": "Default Title",
 "price": 1199,
 "mrp_before": 2499,
-"mrp_after": 1999,
+"mrp_after": 1499,
 "shown_before": 52,
-"shown_after": 40
+"shown_after": 20
 },
 {
 "handle": "laurel-marquise-necklace",
 "status": "active",
+"rule": "new arrival",
 "variantId": "gid://shopify/ProductVariant/50798484979874",
 "variant": "Default Title",
 "price": 2199,
 "mrp_before": 3299,
-"mrp_after": 3669,
+"mrp_after": 2749,
 "shown_before": 33,
-"shown_after": 40
+"shown_after": 20
 },
 {
 "handle": "soleil-petal-pendant",
 "status": "active",
+"rule": "new arrival",
 "variantId": "gid://shopify/ProductVariant/50798485045410",
 "variant": "Default Title",
 "price": 999,
 "mrp_before": 2499,
-"mrp_after": 1429,
+"mrp_after": 1249,
 "shown_before": 60,
-"shown_after": 30
+"shown_after": 20
 },
 {
 "handle": "pearl-crescent-pendant",
 "status": "active",
+"rule": "new arrival",
 "variantId": "gid://shopify/ProductVariant/50798485078178",
 "variant": "Default Title",
 "price": 1199,
 "mrp_before": 2199,
-"mrp_after": 1999,
+"mrp_after": 1499,
 "shown_before": 45,
-"shown_after": 40
+"shown_after": 20
 },
 {
 "handle": "molten-solitaire-pendant",
 "status": "active",
+"rule": "new arrival",
 "variantId": "gid://shopify/ProductVariant/50798485110946",
 "variant": "Default Title",
 "price": 899,
 "mrp_before": 2199,
-"mrp_after": 1289,
+"mrp_after": 1129,
 "shown_before": 59,
-"shown_after": 30
+"shown_after": 20
 },
 {
 "handle": "petite-pear-solitaire-necklace",
 "status": "active",
+"rule": "new arrival",
 "variantId": "gid://shopify/ProductVariant/50798485143714",
 "variant": "Default Title",
 "price": 899,
 "mrp_before": 1899,
-"mrp_after": 1289,
+"mrp_after": 1129,
 "shown_before": 53,
-"shown_after": 30
+"shown_after": 20
 },
 {
 "handle": "asscher-solitaire-pendant",
 "status": "active",
+"rule": "new arrival",
 "variantId": "gid://shopify/ProductVariant/50798485209250",
 "variant": "Default Title",
 "price": 1199,
 "mrp_before": 2199,
-"mrp_after": 1999,
+"mrp_after": 1499,
 "shown_before": 45,
-"shown_after": 40
+"shown_after": 20
 },
 {
 "handle": "cushion-bezel-pendant",
 "status": "active",
+"rule": "new arrival",
 "variantId": "gid://shopify/ProductVariant/50798485242018",
 "variant": "Default Title",
 "price": 1249,
 "mrp_before": 1899,
-"mrp_after": 2099,
+"mrp_after": 1569,
 "shown_before": 34,
-"shown_after": 40
+"shown_after": 20
 },
 {
 "handle": "petite-heart-trio-necklace",
 "status": "active",
+"rule": "new arrival",
 "variantId": "gid://shopify/ProductVariant/50798485274786",
 "variant": "Default Title",
 "price": 999,
 "mrp_before": 1899,
-"mrp_after": 1429,
+"mrp_after": 1249,
 "shown_before": 47,
-"shown_after": 30
+"shown_after": 20
 },
 {
 "handle": "clover-garland-necklace",
 "status": "active",
+"rule": "new arrival",
 "variantId": "gid://shopify/ProductVariant/50804419887266",
 "variant": "Default Title",
 "price": 2199,
 "mrp_before": 3499,
-"mrp_after": 3669,
+"mrp_after": 2749,
 "shown_before": 37,
-"shown_after": 40
+"shown_after": 20
 },
 {
 "handle": "solitaire-charm-huggies",
 "status": "active",
+"rule": "new arrival",
 "variantId": "gid://shopify/ProductVariant/50804419920034",
 "variant": "Default Title",
 "price": 1099,
 "mrp_before": 2199,
-"mrp_after": 1579,
+"mrp_after": 1379,
 "shown_before": 50,
-"shown_after": 30
+"shown_after": 20
 },
 {
 "handle": "orb-cable-cuff",
 "status": "active",
+"rule": "new arrival",
 "variantId": "gid://shopify/ProductVariant/50804587495586",
 "variant": "Default Title",
 "price": 999,
 "mrp_before": 2299,
-"mrp_after": 1429,
+"mrp_after": 1249,
 "shown_before": 57,
-"shown_after": 30
+"shown_after": 20
 },
 {
 "handle": "peach-heart-hoops",
 "status": "draft",
+"rule": "steady",
 "variantId": "gid://shopify/ProductVariant/47501787168930",
 "variant": "",
 "price": 2599,
 "mrp_before": 5199,
-"mrp_after": 4349,
+"mrp_after": 3719,
 "shown_before": 50,
-"shown_after": 40
+"shown_after": 30
 },
 {
 "handle": "pearl-halo-studs",
 "status": "draft",
+"rule": "steady",
 "variantId": "gid://shopify/ProductVariant/47501787660450",
 "variant": "",
 "price": 1199,
 "mrp_before": 2799,
-"mrp_after": 1999,
+"mrp_after": 1719,
 "shown_before": 57,
-"shown_after": 40
+"shown_after": 30
 },
 {
 "handle": "pave-initial-chain-drops",
 "status": "draft",
+"rule": "steady",
 "variantId": "gid://shopify/ProductVariant/47501787791522",
 "variant": "",
 "price": 1699,
 "mrp_before": 3399,
-"mrp_after": 2849,
+"mrp_after": 2429,
 "shown_before": 50,
-"shown_after": 40
+"shown_after": 30
 },
 {
 "handle": "whisper-twist-cuff",
 "status": "draft",
+"rule": "steady",
 "variantId": "gid://shopify/ProductVariant/47501788053666",
 "variant": "",
 "price": 1849,
 "mrp_before": 3699,
-"mrp_after": 3099,
+"mrp_after": 2649,
 "shown_before": 50,
-"shown_after": 40
+"shown_after": 30
 },
 {
 "handle": "baguette-eclat-bracelet",
 "status": "draft",
+"rule": "deep stock, not moving",
 "variantId": "gid://shopify/ProductVariant/47501788250274",
 "variant": "",
 "price": 1699,
@@ -2994,94 +3266,103 @@
 {
 "handle": "trio-bloom-ring",
 "status": "draft",
+"rule": "steady",
 "variantId": "gid://shopify/ProductVariant/47501788512418",
 "variant": "",
 "price": 1899,
 "mrp_before": 3799,
-"mrp_after": 3169,
+"mrp_after": 2719,
 "shown_before": 50,
-"shown_after": 40
+"shown_after": 30
 },
 {
 "handle": "scatter-light-band",
 "status": "draft",
+"rule": "steady",
 "variantId": "gid://shopify/ProductVariant/47501788709026",
 "variant": "",
 "price": 1299,
 "mrp_before": 2599,
-"mrp_after": 2169,
+"mrp_after": 1859,
 "shown_before": 50,
-"shown_after": 40
+"shown_after": 30
 },
 {
 "handle": "duet-of-dawn-ring",
 "status": "draft",
+"rule": "steady",
 "variantId": "gid://shopify/ProductVariant/47501788905634",
 "variant": "",
 "price": 1899,
 "mrp_before": 3799,
-"mrp_after": 3169,
+"mrp_after": 2719,
 "shown_before": 50,
-"shown_after": 40
+"shown_after": 30
 },
 {
 "handle": "halo-bloom-ring",
 "status": "draft",
+"rule": "steady",
 "variantId": "gid://shopify/ProductVariant/47501789167778",
 "variant": "",
 "price": 1349,
 "mrp_before": 2699,
-"mrp_after": 2249,
+"mrp_after": 1929,
 "shown_before": 50,
-"shown_after": 40
+"shown_after": 30
 },
 {
 "handle": "classic-solitaire-ring",
 "status": "draft",
+"rule": "steady",
 "variantId": "gid://shopify/ProductVariant/47501789200546",
 "variant": "",
 "price": 1299,
 "mrp_before": 2599,
-"mrp_after": 2169,
+"mrp_after": 1859,
 "shown_before": 50,
-"shown_after": 40
+"shown_after": 30
 },
 {
 "handle": "star-fall-drop-earrings",
 "status": "draft",
+"rule": "last few",
 "variantId": "gid://shopify/ProductVariant/47504884433058",
 "variant": "",
 "price": 1799,
 "mrp_before": null,
-"mrp_after": 2999,
+"mrp_after": 1999,
 "shown_before": null,
-"shown_after": 40
+"shown_after": 10
 },
 {
 "handle": "petal-pearl-drop-studs",
 "status": "draft",
+"rule": "last few",
 "variantId": "gid://shopify/ProductVariant/47504884465826",
 "variant": "",
 "price": 2499,
 "mrp_before": null,
-"mrp_after": 4199,
+"mrp_after": 2779,
 "shown_before": null,
-"shown_after": 40
+"shown_after": 10
 },
 {
 "handle": "riviere-eternal-bracelet-1",
 "status": "draft",
+"rule": "steady (no data)",
 "variantId": "gid://shopify/ProductVariant/47679510249634",
 "variant": "",
 "price": 1299,
 "mrp_before": null,
-"mrp_after": 2169,
+"mrp_after": 1859,
 "shown_before": null,
-"shown_after": 40
+"shown_after": 30
 },
 {
 "handle": "deco-ribbon-hoops",
 "status": "draft",
+"rule": "deep stock, not moving",
 "variantId": "gid://shopify/ProductVariant/47679511527586",
 "variant": "",
 "price": 2449,
@@ -3093,6 +3374,7 @@
 {
 "handle": "pearl-circlet-studs",
 "status": "draft",
+"rule": "deep stock, not moving",
 "variantId": "gid://shopify/ProductVariant/47681780220066",
 "variant": "",
 "price": 1899,
@@ -3104,149 +3386,163 @@
 {
 "handle": "pearl-crossover-ring",
 "status": "draft",
+"rule": "last few",
 "variantId": "gid://shopify/ProductVariant/47682253422754",
 "variant": "",
 "price": 1449,
 "mrp_before": null,
-"mrp_after": 2419,
+"mrp_after": 1610,
 "shown_before": null,
-"shown_after": 40
+"shown_after": 10
 },
 {
 "handle": "birthstone-heart-necklace",
 "status": "draft",
+"rule": "steady",
 "variantId": "gid://shopify/ProductVariant/50651969093794",
 "variant": "",
 "price": 699,
 "mrp_before": 1200,
-"mrp_after": 879,
+"mrp_after": 999,
 "shown_before": 42,
-"shown_after": 20
+"shown_after": 30
 },
 {
 "handle": "birthstone-heart-necklace",
 "status": "draft",
+"rule": "steady",
 "variantId": "gid://shopify/ProductVariant/50651969126562",
 "variant": "",
 "price": 699,
 "mrp_before": 1200,
-"mrp_after": 879,
+"mrp_after": 999,
 "shown_before": 42,
-"shown_after": 20
+"shown_after": 30
 },
 {
 "handle": "birthstone-heart-necklace",
 "status": "draft",
+"rule": "steady",
 "variantId": "gid://shopify/ProductVariant/50651969159330",
 "variant": "",
 "price": 699,
 "mrp_before": 1200,
-"mrp_after": 879,
+"mrp_after": 999,
 "shown_before": 42,
-"shown_after": 20
+"shown_after": 30
 },
 {
 "handle": "birthstone-heart-necklace",
 "status": "draft",
+"rule": "steady",
 "variantId": "gid://shopify/ProductVariant/50651969192098",
 "variant": "",
 "price": 699,
 "mrp_before": 1200,
-"mrp_after": 879,
+"mrp_after": 999,
 "shown_before": 42,
-"shown_after": 20
+"shown_after": 30
 },
 {
 "handle": "birthstone-heart-necklace",
 "status": "draft",
+"rule": "steady",
 "variantId": "gid://shopify/ProductVariant/50651969224866",
 "variant": "",
 "price": 699,
 "mrp_before": 1200,
-"mrp_after": 879,
+"mrp_after": 999,
 "shown_before": 42,
-"shown_after": 20
+"shown_after": 30
 },
 {
 "handle": "birthstone-heart-necklace",
 "status": "draft",
+"rule": "steady",
 "variantId": "gid://shopify/ProductVariant/50651969257634",
 "variant": "",
 "price": 699,
 "mrp_before": 1200,
-"mrp_after": 879,
+"mrp_after": 999,
 "shown_before": 42,
-"shown_after": 20
+"shown_after": 30
 },
 {
 "handle": "birthstone-heart-necklace",
 "status": "draft",
+"rule": "steady",
 "variantId": "gid://shopify/ProductVariant/50651969290402",
 "variant": "",
 "price": 699,
 "mrp_before": 1200,
-"mrp_after": 879,
+"mrp_after": 999,
 "shown_before": 42,
-"shown_after": 20
+"shown_after": 30
 },
 {
 "handle": "birthstone-heart-necklace",
 "status": "draft",
+"rule": "steady",
 "variantId": "gid://shopify/ProductVariant/50651969323170",
 "variant": "",
 "price": 699,
 "mrp_before": 1200,
-"mrp_after": 879,
+"mrp_after": 999,
 "shown_before": 42,
-"shown_after": 20
+"shown_after": 30
 },
 {
 "handle": "birthstone-heart-necklace",
 "status": "draft",
+"rule": "steady",
 "variantId": "gid://shopify/ProductVariant/50651969355938",
 "variant": "",
 "price": 699,
 "mrp_before": 1200,
-"mrp_after": 879,
+"mrp_after": 999,
 "shown_before": 42,
-"shown_after": 20
+"shown_after": 30
 },
 {
 "handle": "birthstone-heart-necklace",
 "status": "draft",
+"rule": "steady",
 "variantId": "gid://shopify/ProductVariant/50651969388706",
 "variant": "",
 "price": 699,
 "mrp_before": 1200,
-"mrp_after": 879,
+"mrp_after": 999,
 "shown_before": 42,
-"shown_after": 20
+"shown_after": 30
 },
 {
 "handle": "birthstone-heart-necklace",
 "status": "draft",
+"rule": "steady",
 "variantId": "gid://shopify/ProductVariant/50651969421474",
 "variant": "",
 "price": 699,
 "mrp_before": 1200,
-"mrp_after": 879,
+"mrp_after": 999,
 "shown_before": 42,
-"shown_after": 20
+"shown_after": 30
 },
 {
 "handle": "birthstone-heart-necklace",
 "status": "draft",
+"rule": "steady",
 "variantId": "gid://shopify/ProductVariant/50651969454242",
 "variant": "",
 "price": 699,
 "mrp_before": 1200,
-"mrp_after": 879,
+"mrp_after": 999,
 "shown_before": 42,
-"shown_after": 20
+"shown_after": 30
 },
 {
 "handle": "petite-blossom-bracelet",
 "status": "draft",
+"rule": "steady",
 "variantId": "gid://shopify/ProductVariant/50716710535330",
 "variant": "",
 "price": 999,
@@ -3258,6 +3554,7 @@
 {
 "handle": "watch-link-bracelet",
 "status": "draft",
+"rule": "steady (no data)",
 "variantId": "gid://shopify/ProductVariant/50716711452834",
 "variant": "",
 "price": 999,
@@ -3269,6 +3566,7 @@
 {
 "handle": "solitaire-drop-huggies",
 "status": "draft",
+"rule": "steady",
 "variantId": "gid://shopify/ProductVariant/50730836852898",
 "variant": "",
 "price": 999,
@@ -3280,276 +3578,301 @@
 {
 "handle": "clarte-baguette-bracelet-silver",
 "status": "draft",
+"rule": "steady",
 "variantId": "gid://shopify/ProductVariant/50749309911202",
 "variant": "",
 "price": 1299,
 "mrp_before": 2500,
-"mrp_after": 2169,
+"mrp_after": 1859,
 "shown_before": 48,
-"shown_after": 40
+"shown_after": 30
 },
 {
 "handle": "clarte-baguette-bracelet-silver",
 "status": "draft",
+"rule": "steady",
 "variantId": "gid://shopify/ProductVariant/50750035394722",
 "variant": "",
 "price": 1299,
 "mrp_before": 2500,
-"mrp_after": 2169,
+"mrp_after": 1859,
 "shown_before": 48,
-"shown_after": 40
+"shown_after": 30
 },
 {
 "handle": "quintet-stack-ring",
 "status": "draft",
+"rule": "new arrival",
 "variantId": "gid://shopify/ProductVariant/50785484701858",
 "variant": "",
 "price": 1499,
 "mrp_before": 2999,
-"mrp_after": 2499,
+"mrp_after": 1879,
 "shown_before": 50,
-"shown_after": 40
+"shown_after": 20
 },
 {
 "handle": "quintet-stack-ring",
 "status": "draft",
+"rule": "new arrival",
 "variantId": "gid://shopify/ProductVariant/50785484734626",
 "variant": "",
 "price": 1499,
 "mrp_before": 2999,
-"mrp_after": 2499,
+"mrp_after": 1879,
 "shown_before": 50,
-"shown_after": 40
+"shown_after": 20
 },
 {
 "handle": "quintet-stack-ring",
 "status": "draft",
+"rule": "new arrival",
 "variantId": "gid://shopify/ProductVariant/50785484767394",
 "variant": "",
 "price": 1499,
 "mrp_before": 2999,
-"mrp_after": 2499,
+"mrp_after": 1879,
 "shown_before": 50,
-"shown_after": 40
+"shown_after": 20
 },
 {
 "handle": "heart-duet-open-ring",
 "status": "draft",
+"rule": "new arrival",
 "variantId": "gid://shopify/ProductVariant/50785484800162",
 "variant": "",
 "price": 999,
 "mrp_before": 1899,
-"mrp_after": 1429,
+"mrp_after": 1249,
 "shown_before": 47,
-"shown_after": 30
+"shown_after": 20
 },
 {
 "handle": "heart-duet-open-ring",
 "status": "draft",
+"rule": "new arrival",
 "variantId": "gid://shopify/ProductVariant/50785484832930",
 "variant": "",
 "price": 999,
 "mrp_before": 1899,
-"mrp_after": 1429,
+"mrp_after": 1249,
 "shown_before": 47,
-"shown_after": 30
+"shown_after": 20
 },
 {
 "handle": "duet-emerald-cut-ring",
 "status": "draft",
+"rule": "new arrival",
 "variantId": "gid://shopify/ProductVariant/50785484865698",
 "variant": "",
 "price": 999,
 "mrp_before": 1899,
-"mrp_after": 1429,
+"mrp_after": 1249,
 "shown_before": 47,
-"shown_after": 30
+"shown_after": 20
 },
 {
 "handle": "duet-emerald-cut-ring",
 "status": "draft",
+"rule": "new arrival",
 "variantId": "gid://shopify/ProductVariant/50785484898466",
 "variant": "",
 "price": 999,
 "mrp_before": 1899,
-"mrp_after": 1429,
+"mrp_after": 1249,
 "shown_before": 47,
-"shown_after": 30
+"shown_after": 20
 },
 {
 "handle": "duet-emerald-cut-ring",
 "status": "draft",
+"rule": "new arrival",
 "variantId": "gid://shopify/ProductVariant/50785484931234",
 "variant": "",
 "price": 999,
 "mrp_before": 1899,
-"mrp_after": 1429,
+"mrp_after": 1249,
 "shown_before": 47,
-"shown_after": 30
+"shown_after": 20
 },
 {
 "handle": "oval-duet-ring",
 "status": "draft",
+"rule": "new arrival",
 "variantId": "gid://shopify/ProductVariant/50785484964002",
 "variant": "",
 "price": 999,
 "mrp_before": 1899,
-"mrp_after": 1429,
+"mrp_after": 1249,
 "shown_before": 47,
-"shown_after": 30
+"shown_after": 20
 },
 {
 "handle": "oval-duet-ring",
 "status": "draft",
+"rule": "new arrival",
 "variantId": "gid://shopify/ProductVariant/50785484996770",
 "variant": "",
 "price": 999,
 "mrp_before": 1899,
-"mrp_after": 1429,
+"mrp_after": 1249,
 "shown_before": 47,
-"shown_after": 30
+"shown_after": 20
 },
 {
 "handle": "oval-duet-ring",
 "status": "draft",
+"rule": "new arrival",
 "variantId": "gid://shopify/ProductVariant/50785485029538",
 "variant": "",
 "price": 999,
 "mrp_before": 1899,
-"mrp_after": 1429,
+"mrp_after": 1249,
 "shown_before": 47,
-"shown_after": 30
+"shown_after": 20
 },
 {
 "handle": "oval-duet-ring",
 "status": "draft",
+"rule": "new arrival",
 "variantId": "gid://shopify/ProductVariant/50785485062306",
 "variant": "",
 "price": 999,
 "mrp_before": 1899,
-"mrp_after": 1429,
+"mrp_after": 1249,
 "shown_before": 47,
-"shown_after": 30
+"shown_after": 20
 },
 {
 "handle": "marquise-charm-band",
 "status": "draft",
+"rule": "new arrival",
 "variantId": "gid://shopify/ProductVariant/50785485095074",
 "variant": "",
 "price": 999,
 "mrp_before": 1899,
-"mrp_after": 1429,
+"mrp_after": 1249,
 "shown_before": 47,
-"shown_after": 30
+"shown_after": 20
 },
 {
 "handle": "trillion-fringe-necklace",
 "status": "draft",
+"rule": "new arrival",
 "variantId": "gid://shopify/ProductVariant/50785485193378",
 "variant": "",
 "price": 1199,
 "mrp_before": 2199,
-"mrp_after": 1999,
+"mrp_after": 1499,
 "shown_before": 45,
-"shown_after": 40
+"shown_after": 20
 },
 {
 "handle": "verdant-pear-pendant-necklace",
 "status": "draft",
+"rule": "new arrival",
 "variantId": "gid://shopify/ProductVariant/50785485226146",
 "variant": "",
 "price": 1199,
 "mrp_before": 2199,
-"mrp_after": 1999,
+"mrp_after": 1499,
 "shown_before": 45,
-"shown_after": 40
+"shown_after": 20
 },
 {
 "handle": "heartline-tennis-bracelet",
 "status": "draft",
+"rule": "new arrival",
 "variantId": "gid://shopify/ProductVariant/50785485258914",
 "variant": "",
 "price": 1299,
 "mrp_before": 2499,
-"mrp_after": 2169,
+"mrp_after": 1629,
 "shown_before": 48,
-"shown_after": 40
+"shown_after": 20
 },
 {
 "handle": "rouge-heart-bar-bracelet",
 "status": "draft",
+"rule": "new arrival",
 "variantId": "gid://shopify/ProductVariant/50785485357218",
 "variant": "",
 "price": 1199,
 "mrp_before": 2199,
-"mrp_after": 1999,
+"mrp_after": 1499,
 "shown_before": 45,
-"shown_after": 40
+"shown_after": 20
 },
 {
 "handle": "emerald-station-snake-chain",
 "status": "draft",
+"rule": "new arrival",
 "variantId": "gid://shopify/ProductVariant/50785485389986",
 "variant": "",
 "price": 1299,
 "mrp_before": 2499,
-"mrp_after": 2169,
+"mrp_after": 1629,
 "shown_before": 48,
-"shown_after": 40
+"shown_after": 20
 },
 {
 "handle": "rouge-heart-pendant",
 "status": "draft",
+"rule": "new arrival",
 "variantId": "gid://shopify/ProductVariant/50785485422754",
 "variant": "",
 "price": 1199,
 "mrp_before": 2199,
-"mrp_after": 1999,
+"mrp_after": 1499,
 "shown_before": 45,
-"shown_after": 40
+"shown_after": 20
 },
 {
 "handle": "pastel-trio-cluster-studs",
 "status": "draft",
+"rule": "new arrival",
 "variantId": "gid://shopify/ProductVariant/50785485455522",
 "variant": "",
 "price": 3499,
 "mrp_before": null,
-"mrp_after": 5849,
+"mrp_after": 4399,
 "shown_before": null,
-"shown_after": 40
+"shown_after": 20
 },
 {
 "handle": "verdant-pear-drop-huggies",
 "status": "draft",
+"rule": "new arrival",
 "variantId": "gid://shopify/ProductVariant/50785485488290",
 "variant": "",
 "price": 1199,
 "mrp_before": 2199,
-"mrp_after": 1999,
+"mrp_after": 1499,
 "shown_before": 45,
-"shown_after": 40
+"shown_after": 20
 },
 {
 "handle": "petite-fleur-y-necklace",
 "status": "draft",
+"rule": "new arrival",
 "variantId": "gid://shopify/ProductVariant/50798485176482",
 "variant": "",
 "price": 999,
 "mrp_before": 1899,
-"mrp_after": 1429,
+"mrp_after": 1249,
 "shown_before": 47,
-"shown_after": 30
+"shown_after": 20
 },
 {
 "handle": "slim-pave-huggies",
 "status": "draft",
+"rule": "new arrival",
 "variantId": "gid://shopify/ProductVariant/50801589944482",
 "variant": "",
 "price": 999,
 "mrp_before": 1899,
-"mrp_after": 1429,
+"mrp_after": 1249,
 "shown_before": 47,
-"shown_after": 30
+"shown_after": 20
 }
 ]

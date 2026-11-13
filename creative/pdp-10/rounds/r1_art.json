@@ -1,0 +1,141 @@
+{
+ "lens": "Luxury art direction for jewellery e-commerce (Mejuri / Missoma / Monica Vinader calibre) with Indian fine-jewellery taste: elegance, typography, photography sequence and crops, spacing and grid, colour, hierarchy, copy tone, and whether a Rs 2,399 piece feels worth desiring. G3: the supplied fold.png and screens_*.jpg are stale (they show '7 day exchange & returns' and 'Delivery, COD & exchange'), so I scored a fresh render of the unchanged HTML in scratchpad/r1art/ (fold.png, added.png, s2x_00..05.jpg at 2x). Supporting files there: hero_crops.jpg, gallery_sheet.jpg, source_sheet.jpg, fold_zoom.png, and fold_mock.png. The mock is a test of fixes 2-5 applied to a COPY of the page, to check that they fit; the prototype was not edited. Note: the trust lens found a G1 trip (the skin claim at L262), which caps the page total at 60 whatever this lens scores. Score_now is the weight-averaged score of the criteria scored below (C1, C2, C7, C10, C12, C13, C14, C18, C19, C20).",
+ "score_now": 5.3,
+ "score_with_roadmap": 8.6,
+ "criteria": [
+  {
+   "id": "C1",
+   "score": 6.5,
+   "note": "The decision set fits: H1 418-447, price 454-484, ladder 495-548, delivery line 555-573, bar top 575 (measure.json), with 2px to spare. The hierarchy is flat, though. The price in Cormorant 25px is almost as big as the H1 at 28px, so name and price read as two headlines, and the gold-boxed ladder is the loudest object below the hero. 'Free insured delivery by 18-20 Nov' (L189) is the courier-promise wording of the 6/10 anchor. In r1art/fold_mock.png the same content fits with the ladder set as a ruled line, the truck icon dropped and 'est.' added; the delivery line then ends at 570."
+  },
+  {
+   "id": "C2",
+   "score": 5.0,
+   "note": "The hero is the piece worn, which is right. But g1 is p1 (896x1200, 3:4) cut to 360:329 at source y 192-1010: the top edge slices through the upper lip and pulls the eye to the mouth, and the bracelet spans only 32% of the frame width. The '▶ VIDEO' chip (L177; box 10-78 x 372-397) is a plain span over a still photo, so it is a dead tap. The trust row (589-671) sits half under the bar, and the bar's 97% ivory lets it ghost through: the gift-box icon shows inside BUY NOW, and 'Waterproof,' and 'Faulty? Sorted' show under the buttons (r1art/fold_zoom.png). No popups, which is good."
+  },
+  {
+   "id": "C7",
+   "score": 5.0,
+   "note": "The rail, the running total and 'Add the set' all exist (s2x_01). Six problems:\n- The only true match is the Cushion Halo Ring (PVD rhodium, a cushion stone in a halo, like the bracelet), and it sits third, cut off at the screen edge. The rail leads with two gold-tone pieces beside a rhodium bracelet and never mentions metal.\n- The three photos sit on three different grounds: cool grey, cream plaster, tan.\n- '+ ADD' is 132x36.\n- 'Only 3 left' is in #9A3B2B, an off-palette alarm red.\n- Three outlined boxes, the ink 'Add the set' and the ink sticky bar make three heavy blocks on one screen.\n- The total reads '1 piece in your bag' while the bag is empty."
+  },
+  {
+   "id": "C10",
+   "score": 7.0,
+   "note": "The hero is worn, and '18 cm · fits wrists 15-19 cm' appears in the proof row, Details and the size-guide slide. But g8 squeezes a 900px graphic into 360px, so its instruction lines render at about 5-7 CSS px, which nobody can read. Its instruction also differs from the FAQ: the image says 'Measure around your wrist bone', the FAQ (L264) 'Measure where you wear a watch'."
+  },
+  {
+   "id": "C12",
+   "score": 5.5,
+   "note": "Eight real slides, with swipe and dots. The order is worn, plaster, blue sculpture, macro, velvet, video, box, size guide:\n- The two blue frames are split (slides 3 and 5).\n- The macro, the most desirable frame, waits until slide 4.\n- g3 (pu09, the blue sculpture) leaves the bracelet at about 20% of the frame, and its cool cast washes the pastels blue.\n\nEvery 3:4 original is forced into 360:329 by object-fit: cover. All slides are 720px wide (enough for DPR 2 only), with no srcset, zoom or lazy loading. g6 is a frame of the 270x480 reel, upscaled about 2.7x."
+  },
+  {
+   "id": "C13",
+   "score": 4.5,
+   "note": "The video slide g6 is a still from the 270x480 reel, upscaled about 2.7x, of Riya mid-blink with no bracelet in frame. It is the weakest image on the page, in the slot meant to sell the piece in motion. The 'Worn by' tiles (s2x_03) are strong frames (mehendi; ring and bracelet together), but their round play buttons do nothing, the second tile is unlabelled, and '@riya' is not a verified handle."
+  },
+  {
+   "id": "C14",
+   "score": 4.0,
+   "note": "Type and contrast:\n- 21 distinct text styles in a measured render, including a 9.5px ladder legend and 10px gold caps (#9A7A3E, 3.7:1).\n- Strike price, 'each' and 'incl. GST' are 11-13px in 52% ink (3.6:1); body copy is 13px in 72% ink.\n- Jost has no ₹ glyph. Measured: the ₹ renders 60px wide in 'Jost, monospace' (the same as monospace) and 54px in 'Jost, serif' (the same as serif), while Cormorant draws its own at 42px. So every ₹ set in Jost (the Add to bag button, the ladder figures, the strike price, the set cards, the totals) falls back to a heavier system glyph (fold_zoom.png).\n- The WhatsApp link renders in the browser's default blue rgb(0,0,238), underlined.\n- The footer is white on sage at 2.2:1.\n- The set buttons are 36px tall.\n- lang is 'en', not 'en-IN'."
+  },
+  {
+   "id": "C18",
+   "score": 5.0,
+   "note": "What is right: two type families, ivory and ink, no badges or emoji, the price on the primary button, one ink primary and one outlined secondary. What is wrong:\n- The gold-boxed ladder and the three-icon trust row are template patterns.\n- 23 elements use tracked capitals.\n- Corners are rounded on the dots, the bag badge and the round play buttons.\n- Off-palette colours: #9A3B2B, #fff and the browser-default link blue.\n- Sections collapse. `.g {padding: 0 16px}` overrides `section {padding: 30px 0 4px}`, so the gap above a heading is 4px for 'Up close', 0 for 'Worn by' and 'Reviews', and about 0 for 'More bracelets', against 31px for 'Make it a set'.\n- The same photos appear two or three times: p1, p0 and p4 in the gallery and again as 'Up close' thumbnails; the hoops and necklace in the rail and again under 'More bracelets'."
+  },
+  {
+   "id": "C19",
+   "score": 5.0,
+   "note": "Good lines: 'Every stone in its own halo', and the wording of the Details list. Weak lines:\n- 'What you are paying for, in the photographs and in the facts.' sounds defensive.\n- 'Faulty? Sorted within 7 days' is glib and also wrong.\n- 'Tap to add, the total updates below.' is UI instruction.\n- '1 piece in your bag' is false while the bag is empty.\n- 'Worn by' heads a single creator.\n- 'More bracelets' heads a necklace and hoops (the 6/10 mislabel).\n- 'in a vacuum… far harder than regular plating' is outside FACTS."
+  },
+  {
+   "id": "C20",
+   "score": 4.0,
+   "note": "added.png: the ink toast covers 521-564 CSS px, over the ladder figures and the delivery line. It disappears after 2.6 s (L317) and offers no path to checkout. The Add button turns deep sage, which adds a second primary colour."
+  }
+ ],
+ "fixes": [
+  {
+   "priority": 1,
+   "where": "CSS L25 `.g`, L78 `section`; the block after #product-facts",
+   "change": "Restore the vertical rhythm:\n- `.g { padding-left: 16px; padding-right: 16px; }`, horizontal only, so it stops cancelling the section padding.\n- `section { padding-top: 48px; }`\n- `h2 { margin-bottom: 12px; }` and `.sub { margin-bottom: 16px; }`\n- Give the first block after the facts `margin-top: 72px`, so at 360x640 it starts at 645 or lower, fully below the bar instead of half-cut under it.",
+   "why": "Measured heading gaps are 31 / 4 / 0 / 0 / ~0 px. 'Worn by' touches the last proof photo and 'Reviews' touches the reels (s2x_02, s2x_03). Calm spacing is the cheapest signal of luxury (C18 asks for generous whitespace and a calm rhythm). C2 forbids text half-cut by the bar."
+  },
+  {
+   "priority": 1,
+   "where": "Gallery slide 1 (g1), hero overlays L177-178, `.dots`",
+   "change": "Hero crop and overlays:\n- Re-export g1 from prism-riviere-bracelet-1 (pdp10/img/p1.jpg) at source x 100-860, y 300-994 (760x694), output 720x658. The crop line moves from the upper lip to the jaw, the jaw curve leads down the arm, and the bracelet grows from 32% to 38% of the frame width with no upscaling (DPR 2.1).\n- Delete the hero '▶ VIDEO' span.\n- Make the heart button 44x44.\n- Replace the round dots with 2px-high square bars: 12px wide inactive at 28% ink, 20px active in ink, radius 0.",
+   "why": "r1art/hero_crops.jpg compares the options (crop B) and r1art/fold_mock.png renders it. The bracelet is the subject, so the mouth should not compete with it. The chip is a dead tap on a still (C2, C12), and Baymard says in-scale images must show the piece clearly [S3]. Brand rule: radius 0."
+  },
+  {
+   "priority": 1,
+   "where": "All prices: button L281, ladder .v, `.price s`, set cards .p, #total, toast",
+   "change": "Fix the rupee glyph and the type scale:\n- Set every price in Cormorant Garamond with `font-variant-numeric: lining-nums; letter-spacing: 0` via a `.rs` span, inside the Add to bag button too: 'ADD TO BAG' in Jost 12px caps, then '₹2,399' in Cormorant 17px 500.\n- Set the strike price in Cormorant 15px, 72% ink.\n- Apply lining-nums to all serif text. Old-style digits currently show in 'Fits wrists of 15 to 19 cm' and the total '₹2,399'.\n- Reduce 21 text styles to 8. Cormorant: 27 for the H1, 23 for the price, 22 for H2s, 18 for card names, rung prices and totals, all 500. Jost: 15/400 body (13 today), 13/400 secondary, 12/500 caps on buttons only (.14em), 11/500 minimum label. Delete the 9.5px and 10px sizes.",
+   "why": "Jost has no ₹. Measured, it falls back to monospace or serif metrics (60px and 54px wide against Cormorant's own 42px), so a heavier system glyph prints in the button, the ladder and the strike price (r1art/fold_zoom.png). This also meets the brand rule that Cormorant sets names, prices and headings, and fixes C14 (sizes under 11px, small grey text) and C18."
+  },
+  {
+   "priority": 1,
+   "where": ".ladder (L59-65, L184-188) and .ship (L66-68, L189)",
+   "change": "Set the ladder as a ruled typographic line instead of a coupon box:\n- Put `<p class=\"lk\">Any pieces · taken off in your bag, no code</p>` (Jost 11px 500, deep sage #50726A) on a 1px deep-sage 40% top rule, with an ivory backing, `position: absolute; top: -8px`.\n- Below it, three columns divided by 1px 12%-ink rules and no side borders. Each column has a label ('2 pieces · 10% off', Jost 11px, 72% ink) and a figure ('₹2,159', Cormorant 19px 500, lining) followed by 'each' (Jost 11px).\n- Delete the ::before legend and the gold caps.\n- Delivery line: drop the truck icon and change the text to 'Free insured delivery · est. 18–20 Nov · COD available'.\n- `.facts { gap: 6px }`, `.lad { margin-top: 4px }`.",
+   "why": "Tested in r1art/fold_mock.png: H1 418-446, price 452-480, ladder 490-546, delivery line 552-570, bar 575, every line single. The delivery line ends at x 316 of 344. The gold-boxed caps ladder is the most 'coupon wall' element on the page (C18), its 10px gold labels are 3.7:1 (C14), and the date wording meets the C1 estimate anchor."
+  },
+  {
+   "priority": 1,
+   "where": ".buybar L71, .btn.now L74, .trust L81-84 and L192-196",
+   "change": "Make the buy bar opaque and replace the icon trio:\n- `.buybar { background: var(--ivory); }` and `.btn.now { background: var(--ivory); }`\n- Replace the three-icon trust row with a text list, Jost 13px ink, three rows of at least 44px divided by hairlines, starting below 645:\n  1. 'Waterproof and tarnish free: daily wear and water are fine.'\n  2. 'Arrives in the Naira Petite gift box.'\n  3. 'Faulty piece? Tell us on WhatsApp within 7 days of delivery for a repair, replacement or store credit.', linking to /exchange-return-policy.",
+   "why": "Today the gift-box icon shows through BUY NOW and the trust labels ghost under the buttons (r1art/fold_zoom.png). An icon trio is the most generic Shopify-theme pattern there is, and this one is half-cut at 589-671 (C2). The copy is the policy as FACTS states it (C5)."
+  },
+  {
+   "priority": 1,
+   "where": "Gallery #track L166-175, size guide g8, creator poster g6",
+   "change": "Re-sequence the gallery to 7 slides:\n1. Worn (p1, recropped).\n2. Stone macro (p4).\n3. Plaster block, whole line and clasp (p0, `object-position: 50% 40%`).\n4. Riya's video. Use pdp10/img/riya_21.0.jpg (540x960; mehendi wrist, bracelet sharp) as the poster in place of g6 (Riya mid-blink, no bracelet, upscaled 2.7x), with a square ivory plate at bottom-left reading '▶ Creator video · Riya'.\n5. Blue velvet (p2).\n6. Size guide, cropped to the ruler band, with '18 cm · fits wrists 15 to 19 cm · measure around your wrist bone' set as live Jost 13px text beneath it.\n7. Gift box.\n\nDrop pu09 (the blue sculpture). Change the FAQ to the size guide's own instruction: 'Measure around your wrist bone.'",
+   "why": "Lead with desire (worn, then the stones up close), then proof (the whole line and clasp, the creator), then reassurance (fit, box). r1art/gallery_sheet.jpg and source_sheet.jpg show the poster and sculpture problems. Baymard: 56% explore images first [S5], so put the video in the gallery [S8]. The mehendi frame speaks to Indian wedding-season taste. C10 needs one size instruction, not two. Bitmap text at 5-7px fails C14."
+  },
+  {
+   "priority": 2,
+   "where": "'Make it a set' L198-207 and its script",
+   "change": "Lead with the matching piece and calm the cards:\n- Order: Cushion Halo Ring first, then the Prism Emerald-Cut Hoops, then the Prism Pear Drop Necklace.\n- Add a metal line to each card in Jost 12px, 72% ink: 'PVD rhodium, like the bracelet' / 'Gold tone' / 'PVD 18K gold tone'.\n- Heading: 'Wear it as a set'.\n- Sub-line: 'The ring matches in rhodium; the Prism hoops and necklace carry the same pastel stones in gold tone. Any second piece takes 10% off both.'\n- Replace each 36px outlined '+ ADD' with a full-width 44px row under a hairline: 'Add' (Jost 12px caps) on the left, '+' on the right.\n- Set 'Only 3 left' in 72% ink, not #9A3B2B.\n- Make 'Add the set to bag' an outlined button (1px ink, ivory fill), so the sticky bar stays the only ink block.\n- Total with nothing picked: 'The bracelet alone · ₹2,399' / 'With one more piece, 10% comes off both.'",
+   "why": "A 'set' in Indian fine-jewellery taste means the same metal and motif. Today the rhodium match is cut off at the edge and two gold pieces lead without a word (s2x_01). The 36px buttons, the red and the three heavy blocks fail C7, C14 and C18. '1 piece in your bag' is false before any add (C19). Metal wording follows the FACTS rules."
+  },
+  {
+   "priority": 2,
+   "where": "'Up close' L209-217, 'More bracelets' L270-276, box image L253",
+   "change": "Remove the repeats:\n- Replace the three 112px thumbnail rows, which re-use p4, p1 and p0 from the gallery, with ONE full-bleed image: p4 at 360x450 (4:5 crop of the 896x1200 original, DPR 2.5). Caption: H3 'Every stone in its own halo', then 'Cushion-cut cubic zirconia, about 5 mm, in aqua blue, soft pink and pale yellow, each in a fine clear pavé halo.'\n- Delete the sub-line 'What you are paying for…'.\n- Delete 'More bracelets' entirely.\n- End the page on the gift box, full width (pdp10/img/box.jpg, 900x1117, 4:5), captioned 'Arrives in the Naira Petite gift box', then the footer.",
+   "why": "One large editorial image reads as luxury; a stack of thumbnail-plus-paragraph rows reads as a SaaS feature list (C18). Showing the same photos two or three times makes a small shoot look smaller. 'More bracelets' mislabels a necklace and hoops already shown in the rail (C19). Gifting is the purchase motive the box answers, and today it hides inside a closed fold."
+  },
+  {
+   "priority": 2,
+   "where": "Reviews L228-235, .ghost L124, .reel L112-117 and L222-225, footer L143",
+   "change": "Polish the lower sections:\n- `.ghost { color: var(--ink); text-decoration: none; min-height: 44px; }`\n- Reviews: drop the bordered box and the star glyphs. Keep one line in Jost 15px, 'No reviews for this piece yet.', then a row: 'Ask us anything on WhatsApp · +91 95615 57935'.\n- Creator tiles: replace the round play buttons with 36px square ivory plates like the heart. Label both tiles 'Creator video · Riya'. Change the heading to 'As Riya wears it'.\n- Footer: deep sage ground (#50726A) with ivory text.",
+   "why": "The WhatsApp link renders in the browser's default blue rgb(0,0,238), underlined (s2x_03). Round plates break radius 0, and the second tile is unlabelled (C13, CCPA disguised advertisement). White on sage is 2.2:1 (C14). An empty state framed like a review widget looks like a missing feature, not restraint."
+  },
+  {
+   "priority": 2,
+   "where": "Toast L145-147, L284, bump() L312-319",
+   "change": "Replace the toast with an ivory panel that drops from under the header over the top of the hero (y 77-197), never over the facts:\n- A hairline at the bottom edge and a 56px thumbnail.\n- 'Added to your bag' in Cormorant 18px.\n- In Jost 13px: 'Add one more piece and 10% comes off both: with the Cushion Halo Ring, ₹3,058 for the two.'\n- Two 44px buttons: 'View bag' (outlined) and 'Checkout' (ink).\n- It stays until dismissed or until the shopper scrolls 200px, announced through aria-live=polite.\n- The bar's button reads 'Added · View bag' and stays ink, not deep sage.",
+   "why": "added.png shows the ink slab over the ladder and the delivery line for only 2.6 s, with no path to checkout (C20). The arithmetic is (2,399 + 999) × 0.9 = 3,058.2, so ₹3,058. Keeping one primary colour preserves the bar's hierarchy (C18)."
+  }
+ ],
+ "keep": [
+  "Title-case H1 in Cormorant 500 at about 27-28px. It is far more refined than the live page's tracked-uppercase display H1.",
+  "Two families only (measure.json fontFamilies = Jost, Cormorant Garamond), on an ivory ground with ink as the single primary.",
+  "No popups, no % OFF badge, no marquee, no FOMO. The strike price stays small and grey beside the price.",
+  "The worn-on-wrist hero on warm South Asian skin, and the real photography set: the p4 macro, the p0 plaster block, the p2 blue velvet (the jeweller's-box idiom Indian shoppers read as premium).",
+  "Riya's mehendi frames (reel1 / riya_21.0, reel2): culturally right for November wedding-season styling. Keep them, labelled.",
+  "The whole decision set above the bar at 360x640, with the price on the Add to bag button and Buy now as the outlined secondary.",
+  "The ladder shown as per-piece rupees (₹2,159 / ₹1,919 / ₹1,679), only restyled.",
+  "Details open by default as a definition list, with the exact material wording ('Surgical stainless steel, PVD rhodium coated').",
+  "The set rail with a live running total and a one-tap 'Add the set'.",
+  "The gift box as a visible part of the offer."
+ ],
+ "roadmap": [
+  "Originals at least 1,440px wide of p1 (worn), p4 (macro) and p0 (plaster). Shopify returns at most 896x1200, so DPR-3 phones and zoom get soft images.",
+  "Riya's original reel file at 1080x1920. The prototype's video is 270x480, so every frame taken from it is soft.",
+  "A matched set shoot: the bracelet with the Cushion Halo Ring, the Prism hoops and the Pear Drop necklace on the same plaster block and light as p0, plus one on-wrist stack of bracelet and ring. This gives the rail one ground and a true 'set' image.",
+  "An unboxing photo: the bracelet laid in the open Naira Petite box. The current box image is a closed box floating on pink and shows no piece. Gifting is the November motive.",
+  "A 6-10 s macro turn under a point light for the pastel colour play, plus a short on-wrist movement clip, each under 1 MB, for gallery slide 2 or 4.",
+  "A dimension photo: the bracelet on a wrist beside a ruler, or two wrists (15 cm and 19 cm) wearing it, to replace the bitmap size guide.",
+  "An ad-to-asset map, so a creator-ad landing (e.g. utm_content=prism_sugar_p1) opens on the matching frame. fold-ad.png is byte-identical to fold.png today.",
+  "Real reviews with photos (review app, request 7 days after delivery). The Reviews block can then carry customer wrist photos instead of an empty state."
+ ]
+}

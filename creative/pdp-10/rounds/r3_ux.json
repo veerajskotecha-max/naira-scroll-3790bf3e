@@ -1,0 +1,131 @@
+{
+ "lens": "Mobile UX, accessibility and web performance, round 3. Tested as a 360x640 Android shopper in the Instagram in-app browser, plus 360x600, 360x560, 320x568, 390x664, 390x844, 412x732 and 412x846. Also tested with a bottom safe-area inset of 24, 34 and 48 px (CDP Emulation.setSafeAreaInsetsOverride), and with Android's own fallback faces (Roboto and Noto Serif, set up through a private fontconfig) for the ~2.2 s before the deferred brand fonts land. G3 holds: fold.png, added.png, fold-ad.png, screens_*.jpg and measure.json (03:26:39-42) are newer than prototype.html (03:25:16), and my renders match them. fold-ad.png is byte-identical to fold.png, by the builder's choice. All ten of my round-2 fixes landed (Up close crop, double-tap guard, Back, keyboard-only arrows, hero framing, card fit, 12px rung labels, specs under Up close, keyboard/SR items, deferred fonts). Probes ran over http://127.0.0.1 against an untouched copy (md5 matches). Speed was measured with CDP throttling (150 ms RTT, 1.6 Mbps, 4x CPU) at DPR 2 and 3. Fixes were checked on a separate copy, /tmp/claude-0/-home-user/aaed4e78-f5ea-57f6-bb8a-ea8f2c0ecee0/scratchpad/ux_r3/proto/variant.html, built by mkvariant.py. The prototype was not edited. Evidence is in /tmp/claude-0/-home-user/aaed4e78-f5ea-57f6-bb8a-ea8f2c0ecee0/scratchpad/ux_r3/out/: folds.json, orig_folds.json and var_folds.json with their fold_*.png; fallback.json and fallback_320x568.png / fallback_360x640.png; perf.json and perf_variant.json; load_strip.jpg and load_compare.jpg; interact.json and interact_b.json; dock_over_set.png, bar_away.png, drawer4.png, slides_sheet.jpg; vcheck.json, v_add_in_set.png, v_foot_end.png. The scripts are alongside: folds3.js, fb.js, perf3.js, interact3.js, interact3b.js, cc2.js, vcheck3.js, ratio.js and afonts/fonts.conf. score_now is the weighted mean of the criteria I score (C1, C2, C12, C13, C14, C15, C16, C20; the same set as round 2): 367/44 = 8.34.",
+ "score_now": 8.3,
+ "score_with_roadmap": 9.4,
+ "criteria": [
+  {
+   "id": "C1",
+   "score": 8.5,
+   "note": "All six items fit at the design target, 360x640 with no inset (out/folds.json). The worn hero runs 77-386, the H1 398-426, and the price with incl. GST 432-460. The ladder runs 471-538: ₹2,159 / ₹1,919 / ₹1,679 with 12px rung labels. The single fact line, 544-562, carries 'est.', a runtime date and COD available. The bar at 575 holds Add to bag · ₹2,399 and Buy now. The fact line clears the bar by 13px at 360x640, 360x600, 360x560, 320x568, 390x664, 412x732 and 412x846, and by 38px at 390x844. Nothing scrolls sideways at 320. Both round-2 gaps are closed: the rung labels are 12px, and the crop keeps the piece. Two new gaps keep this under 10. (1) The hero budget subtracts a fixed 331px (L87), but the bar grows by env(safe-area-inset-bottom) (L55, L140), and viewport-fit=cover is set (L5). Any bottom inset over 13px therefore puts the delivery and COD line under the bar. With a 24px inset the line (544-562) sits under the bar top at 551 and is half-cut (fold_360x640_safe24.png). With 34px at 390x844 only 4px is left, inside the fade. With 48px the ladder rupees (508-530) go under the bar at 527. Face ID iPhones in a full-height webview report 34px, and so can Android edge-to-edge webviews. (2) The fonts are deferred until after the hero, so for about 2.2 s Android draws Roboto and Noto Serif. At 320x568 the H1 then wraps to two lines and the delivery and COD line sits 16px under the bar (fallback_320x568.png). At 360 the nowrap price row widens the .facts track to 338px, which leaves a 6px right gutter (fallback.json)."
+  },
+  {
+   "id": "C2",
+   "score": 8.0,
+   "note": "On load the hero is the worn bracelet. There is no popup and no timer, the '1 / 7' counter is quiet, and the chip is a real 44px button. At 360x640 with no inset, no line straddles the bar. Faults: (1) The inset case above half-cuts the fact line, which is C2's own fail condition. (2) Under throttle the facts paint at about 0.87 s, but the bar shows two blank boxes until about 1.39 s (load_strip.jpg, 868 ms frame). #add and #now are empty in the HTML (L398-399) and are only filled by the end-of-body script. (3) At 2.2-2.5 s the brand fonts swap in, and the H1 and every price re-set from Noto Serif to Cormorant while the shopper is reading them. Cormorant is 0.81x Noto Serif's width for the H1 and 0.76x for the prices (ratio.js). CLS stays at 0.0013-0.0018 only because the line heights are fixed."
+  },
+  {
+   "id": "C12",
+   "score": 8.0,
+   "note": "Seven real slides sit in a snapping track. A touch swipe moves exactly one slide (2 / 7) and loads that slide and its neighbour. A vertical drag that starts on the photo still scrolls the page (scrollY 267), so the gallery never traps the thumb. Every slide has alt text, and the size slide is an SVG ruler (slides_sheet.jpg). A tap opens a full-screen viewer with the 896x1200 Shopify originals, drawn at 360x482. Back closes it, focus returns to the track, and the arrows stay hidden after touch. Gaps: (1) There is no zoom of its own. A double tap in the viewer does nothing (visualViewport.scale stays 1 and the image stays 360px wide), so the only way to magnify the stones is a browser pinch of the whole page. (2) The hero srcset tops out at 720w, which is a 1.5x upscale on DPR 3. Both gaps wait on originals of 1,440px or more."
+  },
+  {
+   "id": "C13",
+   "score": 8.0,
+   "note": "No MP4 bytes load before a tap; the tap makes one 142 KB request. The 'Creator collaboration · Riya' label shows in the viewer. The clip plays once with sound, then loops muted, and the second tile plays too. The clip is 270x480, drawn at 360x640, a 2.7x upscale at DPR 2, so it is soft. That limit comes from the source; the fix is in the roadmap."
+  },
+  {
+   "id": "C14",
+   "score": 8.0,
+   "note": "On load, axe-core (wcag2a/aa, 21aa, 22aa, best-practice) finds 0 violations. My computed-contrast scan of every visible text run finds 0 failures; the lowest is 4.84 (deep sage at 12px). Every target is at least 44px in the main page, header, footer, bar, card and drawer. Body text is 15px. Add to bag is tab stop 9. The drawer and viewer trap Tab, Back closes overlays and returns focus, and the h2s inside the summaries reach the accessibility tree as headings. Faults that appear only in later states: (1) The set summary's saving line, '.sum .save' (L226), is deep sage on ivory-deep: 4.39:1 at 13px and 15px. That fails 1.4.3 on the line that states the saving (cc2.js). The size slide's 'fits wrists 15-19 cm' (L97, 11px SVG text) is also 4.39:1. (2) WCAG 2.5.3, label in name: axe's label-content-name-mismatch rule flags 5 nodes. The chip shows 'Creator collaboration · Riya' but is named 'Play Riya's clip, a creator collaboration' (L365). A set row shows '✓ In bag', is named 'Remove Cushion Halo Ring from bag' and also carries aria-pressed=true (L627-628). TalkBack therefore reads it as a pressed 'Remove' toggle, and a tap on that tick removes the piece, while the card's identical '✓ Added' (L694) does nothing. (3) The drawer's 'Remove' buttons do not name their piece (L756). (4) <aside role=dialog> (L497) fails aria-allowed-role. (5) In 'Added to your bag · 1 piece', the 1 is a Cormorant old-style figure and reads as 'I piece'."
+  },
+  {
+   "id": "C15",
+   "score": 8.0,
+   "note": "A usable buy control is on screen at every 100px step from 0 to 2500. Two taps 120 ms apart leave one bracelet in the bag (nf_tap_guarded), and a deliberate third tap at 0.9 s opens the bag. Back closes the bag, the viewer and the hand-off, and stays on the piece. Up close is 360x396 and the specs start at y=2035 (screen 4). The page is 3,370px to the end of the footer: six swipes of 563px. There are three native folds with h2s and 52px rows, and nothing needed to decide is only inside a fold. Faults: (1) The bar leaves when the footer's first pixel appears (L886-887), from about scrollY 2570. From there, Reviews, the WhatsApp and Instagram links and all three fold headers are read with no buy control (bar_away.png). With the folds open, the bar goes at 3600 while the last answer, 'Is the offer automatic?', is still at 399-494. (2) A tap on the bar's Add to bag while the set is on screen docks the card at 491-567, over the necklace row's '+ Add' (518) and its 'Adds ₹659, not ₹999' line. It stays there until × or 150px of scroll (dock_over_set.png)."
+  },
+  {
+   "id": "C16",
+   "score": 9.0,
+   "note": "Lab results (150 ms RTT, 1.6 Mbps, 4x CPU, 360x640, Android fallback fonts; out/perf.json): LCP 1.39 / 1.39 / 1.40 s on worn-720.jpg (DPR 2, 2 and 3), FCP 0.32-0.34 s, CLS 0.0013-0.0018. Before scroll: 4 image requests, 155 KB of images and 305 KB in all. Fonts are 71 KB and land at 2.2-2.5 s. No video bytes load. Every 10/10 threshold is met. Three things still slow LCP: (1) The hero downloads from 200 to 1369 ms over the same 1.6 Mbps as macro-720.jpg (54 KB, 393-1361 ms), set-3.jpg (10 KB) and logo.png (18 KB). The macro is the Up close <img loading=lazy> at y≈1600. That is inside Chrome's 2,500px lazy-load distance on slow connections, so it loads at once. (2) On a creator-ad landing (utm_content=prism_riya_reel), slide 1's worn-720.jpg (73 KB, fetchpriority=high) still downloads beside the frame that lands. That landing's LCP is 1.17 s, with 5 images and 344 KB in all. (3) The facts paint before the bar has its labels, and the fonts swap visibly at 2.2 s (see C2). I tested a variant copy that loads Up close and the set sprite through a 600px IntersectionObserver and fetches slide 1 only when it is the landing frame (out/perf_variant.json): LCP fell to 1.06 / 1.06 / 1.06 s (-24%). The Riya landing fell to 0.87 s, with 3 images and 218 KB, and CLS fell to 0.0001. These are lab results on a static file served uncompressed; field data is in the roadmap."
+  },
+  {
+   "id": "C20",
+   "score": 8.5,
+   "note": "The card spans 85-350 at 360x640 (85-354 after its + Add). It goes compact at 360x560 (bottom 293), drops the suggestion at 320x568 (bottom 225), and spans 85-333 at 390x844 (85-362 after its + Add). It never reaches the H1. It has no timer, and it closes on ×, Escape, Keep browsing or 150px of scroll. The bar reads '✓ Added to bag' for 600 ms, then 'View bag · ₹2,399'. The badge and its aria-label carry the count, and the polite live region announces each change. Faults: (1) The docked card covers a set row's + Add (C15). (2) '1 piece' reads as 'I piece'. (3) The ticks are inconsistent: the card's '✓ Added' is inert, while a row's '✓ In bag' removes the piece."
+  }
+ ],
+ "fixes": [
+  {
+   "priority": 1,
+   "where": "CSS L87 (.track height, both clamp() lines); the same rule in the live JewelDetail hero",
+   "change": "Subtract the inset in both clamp() lines: 'height: clamp(220px, calc(100vh - 331px - var(--safe)), min(125vw, 520px)); height: clamp(220px, calc(100svh - 331px - var(--safe)), min(125vw, 520px));'. Nothing else moves: the photo gives up exactly the inset. In the live page, use env(safe-area-inset-bottom, 0px) in the hero height the same way, and add the inset to the first-screen budget test (Header.test.ts / PdpBuyFacts).",
+   "why": "C1 (the delivery and COD line must end above the bar) and C2 (no half-cut line). The bar already pads for the inset (L140); the budget left it out. Measured with a 24px inset: the fact line (544-562) sits under the bar top at 551. With 34px at 390x844, 4px is left, inside the fade. With 48px, the ladder rupees go under the bar. On the variant the line is 13px clear at all three (hero 285, 479 and 261px), and the viewports with no inset are unchanged (out/var_folds.json, var_fold_360x640_safe24.png)."
+  },
+  {
+   "priority": 1,
+   "where": "showCard() L677 (the dock branch)",
+   "change": "Before docking, show no card when the set is on screen. Insert 'var setR = document.getElementById(\"set\").getBoundingClientRect(); if ((avail < 180 || card.offsetHeight > avail) && setR.top < innerHeight && setR.bottom > 77) { card.hidden = true; cardY = scrollY; track(\"nf_card_shown\", { id: id, mode: \"none_set_visible\" }); return; }'. The add is already confirmed there in five ways: the rows' marginal lines, the #sum box ('Your bag · 1 piece ₹2,399 / A second piece makes it 10%.'), the bar ('✓ Added to bag', then 'View bag · ₹2,399'), the badge and the live region. Keep the dock everywhere else (Up close, specs, Riya, reviews), where nothing tappable sits under 491-567.",
+   "why": "C20 ('does not cover'), C15 and the brief's 'nothing covers anything'. The docked card at 491-567 covers the necklace row's '+ Add' (518) and its 'Adds ₹659, not ₹999' line (529), the control the card exists to promote. It stays until × or 150px of scroll (interact_b.json, dock_over_set.png). On the variant: no card, the bar reads '✓ Added to bag', the badge shows 1, #sum appears and the announcement is made (vcheck.json, v_add_in_set.png)."
+  },
+  {
+   "priority": 2,
+   "where": "A new @font-face before L58; :root --serif L51; .facts L115",
+   "change": "Add a metric-matched serif fallback and a facts column that its content cannot widen: '@font-face { font-family: \"Cormorant Fallback\"; src: local(\"Noto Serif\"), local(\"NotoSerif-Regular\"), local(\"Georgia\"), local(\"Times New Roman\"); size-adjust: 80%; }', then '--serif: \"Cormorant Garamond\", \"Cormorant Fallback\", Georgia, serif;' and '.facts { padding: 12px 16px 0; display: grid; grid-template-columns: minmax(0, 1fr); gap: 6px; }'. Jost and Roboto are within 1-3% of each other at 12-15px, so the sans needs no fallback face. Keep the deferred font load, and check the local() names on one real Android device.",
+   "why": "C1, C2 and C16 (CLS 0). Fonts are deferred, so every Android shopper reads Roboto and Noto Serif until 2.2-2.5 s. On the current page at 320x568 the H1 wraps and the fact line goes 16px under the bar (fallback_320x568.png). At 360 the right gutter shrinks to 6px. Then the swap re-sets the H1 and every price (load_strip.jpg). On the variant the H1 stays on one line at 320 with the fact line 14px clear, the gutter is 16px at 360, and CLS falls from 0.0013-0.0018 to 0.0001. The swap is barely visible (load_compare.jpg, var_fold_320x568_nofonts.png)."
+  },
+  {
+   "priority": 2,
+   "where": "L354 (slide-1 img), L375 (inline promote), L432 (Up close img), L415/418/421 (set-3.jpg imgs), and a 600px IntersectionObserver near L886",
+   "change": "(a) Give slide 1 'data-src=\"i/worn-720.jpg\" data-srcset=\"i/worn-360.jpg 360w, i/worn-720.jpg 720w\"' in place of src/srcset, keeping width, height and fetchpriority. In the inline script, change 'if (m.slide && im && im.dataset.src)' to 'if (im && im.dataset.src)'. The head preload (L30-38) already starts whichever frame lands at about 200 ms. (b) Give Up close (data-src, data-srcset, data-sizes) and the three set-3.jpg images data-src, and load them with 'new IntersectionObserver(..., { rootMargin: \"0px 0px 600px 0px\" })' in place of loading=lazy, which uses a 2,500px distance on slow connections. In the live SPA, render only the landing slide's <img> eagerly and mount every other gallery or below-the-fold src on intersection.",
+   "why": "C16. Today macro-720 (54 KB, 393-1361 ms) and set-3 (10 KB) share the pipe with the hero (200-1369 ms). A Riya-ad landing also pulls worn-720 (73 KB at High priority) beside riya-540. On the variant, LCP fell from 1.39 to 1.06 s at DPR 2 and 3. The Riya landing fell from 1.17 to 0.87 s, images from 5 / 194 KB to 3 / 67 KB, and the total from 344 to 218 KB. In the swipe test no slide arrived blank: the macro still loads at idle at about 2.3 s, through L813 (perf_variant.json). Vodafone's A/B test: 31% better LCP, 8% more sales."
+  },
+  {
+   "priority": 2,
+   "where": "Footer CSS L273; the IntersectionObserver at L886-887",
+   "change": "Delete the observer that adds .away, and keep the bar at every scroll position. Give the footer room for it: 'footer { margin-top: 48px; padding: 28px 16px calc(30px + var(--bar) + var(--safe)); ... }'.",
+   "why": "C15. Today there is no buy control from scrollY 2600 to 3300 with the folds closed: Reviews, both contact links and all three fold headers are on screen (bar_away.png). With the folds open, the bar leaves at 3600 while the last answer is still at 399-494 (interact.json, interact_b.json). On the variant a control is on screen at every 100px step down to 3435, and at the bottom the footer links end at 545, above the bar at 575 (v_foot_end.png). The same fix is in CRO round 3."
+  },
+  {
+   "priority": 2,
+   "where": ".sum CSS L223 (and .sum .save L226); .ruler .w L97",
+   "change": "Set '.sum { margin: 16px 16px 0; padding: 14px; background: var(--ivory); border: 1px solid var(--line); display: grid; gap: 2px; }': deep sage on ivory is 4.84:1. Set '.ruler .w { font-weight: 500; fill: var(--ink); }'. Add one line to the token notes: deep sage text only on ivory, never on ivory-deep.",
+   "why": "C14 (WCAG 1.4.3 AA). The line '10% off applied · you save ₹340' and its ₹ figure measure 4.39:1 at 13 and 15px (cc2.js). This is the line that states the saving, and it appears as soon as the bag holds a set piece. The ruler's 'fits wrists 15-19 cm' is 4.39:1 at 11px. axe misses it because it is SVG text."
+  },
+  {
+   "priority": 2,
+   "where": "Set rows L627-628 and L733; chip L365; card done button L694; drawer Remove L756; drawer element L497; bar aria-label L609",
+   "change": "(a) Make the set rows' '✓ In bag' inert, like the card's '✓ Added'. Remove aria-pressed. In the bag: aria-disabled=\"true\" and aria-label 'In bag: Cushion Halo Ring'. Out of the bag: 'Add Cushion Halo Ring to bag'. Click handler: 'if (bag[id]) return;'. Removal stays with the bag's − and Remove. (b) Chip: drop the aria-label and use '<svg …/><span class=\"vh\">Play </span><span id=\"chipt\">Riya's clip · creator collaboration</span>'. (c) The card's done button: aria-label 'Added: ' + name. (d) Drawer: '<button class=\"rm\" data-rm=\"…\" aria-label=\"Remove ' + P[k].n + '\">Remove</button>'. (e) Replace '<aside class=\"drawer\" role=\"dialog\">' with a <div>. (f) Bar in bag mode: drop the aria-label and append '<span class=\"vh\">, ' + plural(s.q) + '</span>', so the name starts with the visible 'View bag'.",
+   "why": "C14 and C20 (WCAG 2.5.3 Label in Name, level A). axe's label-content-name-mismatch rule flags 5 nodes (interact_b.json). TalkBack reads '✓ In bag' as 'Remove Cushion Halo Ring from bag, toggle button, pressed'. Two identical ticks also behave differently: one is inert, the other removes. On the variant the rows are inert and named by their visible words, and the chip passes (vcheck.json)."
+  },
+  {
+   "priority": 2,
+   "where": "Bar buttons L398-399",
+   "change": "Write the first state into the HTML: '<button class=\"btn pri\" id=\"add\"><span>Add to bag</span><span aria-hidden=\"true\">·</span><span class=\"rs\">₹2,399</span></button>' and '<button class=\"btn sec\" id=\"now\"><span>Buy now</span>' + the UPI marks + '</button>'. render() still owns every later state. In the live SPA, the bar renders in the same pass as the price, never after a hook resolves.",
+   "why": "C1 and C2. Under throttle the facts and the bar's two boxes paint at about 0.87 s, but both buttons stay blank until about 1.39 s, because their labels come from the end-of-body script (load_strip.jpg). On the variant they are labelled from the first text paint (load_compare.jpg, 759 ms)."
+  },
+  {
+   "priority": 3,
+   "where": "body CSS L60",
+   "change": "Use 'body { font-variant-numeric: lining-nums; font-family: var(--sans); … }', so every Cormorant digit outside .rs uses lining figures: the card and dock headings, the drawer, the set summary.",
+   "why": "C14 and C19. In dock_over_set.png the old-style 1 in 'Added to your bag · 1 piece' reads as 'I piece'. The variant uses lining figures (vcheck.json)."
+  },
+  {
+   "priority": 3,
+   "where": "Drawer item markup L753-756; .dr-items CSS L288-297; drawer foot L762-763",
+   "change": "Put Remove on the stepper row (stepper · Remove · price), which saves about 44px per piece. When a rung applies, add one line to the fixed foot above the COD figure: 'You save ₹1,709 (30%, automatic) · free insured delivery', in 13px deep sage on ivory.",
+   "why": "C21 and C20. With four pieces, the Subtotal, '−₹1,709 (BUY4, automatic)' and Total rows sit at 856-902 inside a 479px scroll area (interact_b.json, drawer4.png). The saving that sold the set is out of view unless the shopper scrolls inside the bag."
+  }
+ ],
+ "keep": [
+  "The first-screen budget at the 360x640 target: hero, H1, price with GST, the ladder in rupees, one estimated-delivery and COD line, and the bar, 13px clear. It holds at seven viewports, with 38px at 390x844 and no sideways scroll at 320. Only the inset term needs adding.",
+  "The hero framed on the wrist (object-position 50% 100%) and the min(125vw, 520px) cap: the piece is mid-frame from 320 to 412 wide, including with the inset fix.",
+  "The 700 ms tap guard on every control that changes meaning under the finger, with nf_tap_guarded logged.",
+  "Bag, viewer and hand-off each own one history entry: Back closes the overlay and stays on the piece, and focus returns to the opener. Tab is trapped in the bag and the viewer.",
+  "The after-add card's fit modes (full, compact, no suggestion, dock), measured against the photo. It never reaches the H1 at any viewport. It has no timer, and its + Add becomes an inert '✓ Added'.",
+  "The bar after the add: '✓ Added to bag' for 600 ms, then one full-width 'View bag · ₹total', at the same height.",
+  "Up close at 360x396, with the spec list under it from y=2035, and a lean 3,370px page (six swipes).",
+  "The gallery: scroll-snap with snap-stop, one slide per swipe, vertical drags passing through to the page, the quiet counter, alt text on every slide, the SVG size ruler, arrows only for keyboard users, and Enter opening the viewer.",
+  "The loading strategy: the landing frame preloaded at high priority from the head script, data-src slides with an idle neighbour, the set sprite, no video bytes before a tap, and fonts attached after the hero. Lab results: LCP 1.39 s, 4 image requests, 155 KB, CLS about 0.",
+  "44px targets everywhere, 15px body text, axe-core clean on load, every text run AA on load, lang en-IN, <main>, one H1 and ordered H2s (including inside the native <details> summaries), a polite live region, and the bag's aria-label with its count.",
+  "The bag's fixed foot, with Secure checkout and the COD figure in rupees in view at 1-4 pieces (551-628 at 360x640), and the single 10px radius exception.",
+  "Ad landing decided before paint, with the query string kept and no redirect."
+ ],
+ "roadmap": [
+  "A real-device pass inside the Instagram app on a low-end Android (gesture and 3-button navigation) and on a Face ID iPhone. Record env(safe-area-inset-bottom), the visible viewport height and the time the fonts land, and check that the local() fallback names resolve (fixes 1 and 3). Pinch in the viewer could not be emulated here (CDP synthesizePinchGesture had no effect), so test it there too.",
+  "Shopify originals at 1,440px wide or more for every gallery frame. That gives the viewer a real zoom (double tap to 2.5x, then pan) and a sharp hero on DPR 3 (C12, 10 with input). Today's 896px originals make any zoom beyond 1.25x an upscale at DPR 2.",
+  "A clip of at least 540x960, and ideally the 6-10 s macro turn and an on-wrist clip under 1 MB each, to replace the 270x480 source drawn at 360x640 (C13).",
+  "Field LCP, INP and CLS from the Instagram webview (web-vitals RUM tagged with in-app browser, DPR, inset and font-load time), to replace these lab figures (C16).",
+  "Port the loading rules to the live SPA. Inject the landing-frame preload from index.html's inline head script, next to NAIRA_JEWELLERY_REDIRECT, using a handle-to-hero map generated with jewellerySnapshot. Render only the landing slide eagerly. Ship the HTML compressed: the prototype's 78 KB uncompressed document is about a third of the bytes before scroll.",
+  "Clarity after launch: dead and rage taps on the gallery, set rows and bar, and the nf_tap_guarded and nf_card_shown modes, to confirm that fixes 2 and 7 removed the covered and ambiguous controls."
+ ]
+}

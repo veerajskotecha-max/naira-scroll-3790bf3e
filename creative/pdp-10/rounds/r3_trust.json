@@ -1,0 +1,164 @@
+{
+  "lens": "Trust and consumer law, round 3: a first-time Indian shopper (28, Pune, buys on Instagram, burnt by fake jewellery sites) and a reviewer who knows the CCPA 2023 dark-pattern guidelines, the Consumer Protection (E-Commerce) Rules 2020 (Naira sells its own stock, so the inventory-entity duties in r.7 apply), BIS IS 19000:2022 and ASCI's influencer rules. G3 passes: fold.png, added.png, fold-ad.png, screens_*.jpg and measure.json (03:26) are newer than prototype.html (03:25:16) and match it. fold-ad.png is byte-identical to fold.png by the builder's choice (no unconfirmed ad promise is printed), which is right from this lens. G1 does not trip. Behaviour and the proposed fixes were probed on an untouched copy in /tmp/claude-0/-home-user/aaed4e78-f5ea-57f6-bb8a-ea8f2c0ecee0/scratchpad/r3trust/ (probe.js and probe.json; measure.js and measure.json; fact.js and fact2.js for the fact-line wordings; after_add.png, bag1.png, bag2.png, policy.png, land_riya.png, chip_fix.png). I also checked the page against the repo (ExchangeReturnPolicy.tsx, serviceability.ts, PincodeChecker.tsx, AnnouncementBar.tsx, Header.tsx, Footer.tsx, ContactUs.tsx), the live JSON-LD in pdp10/live/prism.html and Naira's own size-guide image (pdp10/img/size.jpg). score_now is the weight-averaged score of the criteria below (8.34). I rounded it down to 8.3 because the two new findings a dispute would turn on, the fit range and the damage exclusion, both cut against the shopper. The critique is also written to /tmp/claude-0/-home-user/aaed4e78-f5ea-57f6-bb8a-ea8f2c0ecee0/scratchpad/pdp10/rounds/r3_trust.json.",
+  "score_now": 8.3,
+  "score_with_roadmap": 9.3,
+  "criteria": [
+    {
+      "id": "C1",
+      "score": 9.0,
+      "note": "Unchanged, and right. The first screen holds the worn hero, the H1 (398–426), ₹2,399 incl. GST, 'Surgical steel, PVD rhodium', the ladder in rupees, and 'Free insured delivery, est. 18–20 Nov · COD available', which ends at 562 with the bar at 575 (measure.json). The date is computed (L542–548) and matches FACTS for a 13 Nov order. The one gap: 'COD available' is unqualified, but the site's own rules refuse COD in whole regions (see C8). For implementation: the live header puts a 34px marquee above the 77px bar. On a copy that pushes the fact line to 596 against the bar's 575, so 21px of it sits under the bar at 360x640, 320x568 and 412x732 (r3trust/measure.json; fix 4)."
+    },
+    {
+      "id": "C2",
+      "score": 9.0,
+      "note": "Nothing covers the decision set. There is no popup, timer or FOMO card, and the bar is opaque. The after-add card stays over the photo (added.png). The one thing on the hero that misleads is the chip's wording, scored under C3 and C13."
+    },
+    {
+      "id": "C3",
+      "score": 7.0,
+      "note": "G1 does not trip. The rubric grep over the page frame finds no rating, star, sold count, timer, press, skin or nickel claim, diamond, bare 18K, NAIRA10 or change-of-mind returns. Both round-2 deductions are fixed: the ring caption is gone, and in the reel map prism_reel_v2 and halo_pankti_creator now land on 1/7 with the default chip (probe.json). Two new deductions. (1) L468 says 'Pieces that have been worn or damaged after delivery are not covered'. FACTS says 'customer-damaged', and the live policy says 'Damaged by the customer' (ExchangeReturnPolicy.tsx, not-eligible list). 'Damaged after delivery' also excludes a fault that shows itself after delivery, which is exactly what the 7-day cover is for. It understates her rights rather than overstating the product, so I score it −2 rather than tripping G1. It was already in round 2 (prototype_v1 L438), and I missed it then. (2) The default hero chip reads 'Creator collaboration · Riya', the same string that captions Riya's own photo tile and slide. On the studio photo (orange top, no mehendi; FACTS names no model) it reads as a credit saying this photo is Riya's paid content (−1). The ₹3,999 strike is still unlabelled; the rubric keeps it until the owner confirms (roadmap)."
+    },
+    {
+      "id": "C4",
+      "score": 8.5,
+      "note": "Everything she can check is real and true: the WhatsApp number written out twice, with a prefilled message naming the piece (L409, L461); @naira.flore twice; seven real images; the gift-box slide; and 'No reviews for this piece yet. Ask us anything before you buy.' with no stars. The footer link 'Contact & business address' is true, because /contact lists a Nashik business address. Two things hold it at 8.5. There is no identity she can verify herself (no GSTIN, legal name or grievance officer anywhere; see roadmap). And the chip credit above."
+    },
+    {
+      "id": "C5",
+      "score": 7.5,
+      "note": "The faulty-piece sentence sits at the first scroll under the bar (L407) and opens the fold, which now holds the whole policy. Three gaps. First, the damage exclusion is misstated (C3). Second, the FAQ asks 'What if it arrives faulty?' (L481), which narrows the 7-day cover to arrival, though a clasp that fails on day 4 is also covered. Third, 'Full policy (store-wide)' lands on a page written for garments (embroidery, stitching, fabric, washed) whose meta description says '7-day window on standard pieces'. The colour-variation exclusion is still only in the notes (L520), which is correct until it is in FACTS."
+    },
+    {
+      "id": "C6",
+      "score": 8.5,
+      "note": "There is one offer and no code. The rupee figures round as promo.ts rounds, and the bag names the single code as automatic (bag2.png: 'BUY2, automatic'). A burnt shopper reads two things as a trick. One is the unlabelled 40% strike above a ladder that goes down to ₹1,679. The other: after one add, the ₹2,159 rung is underlined under '1 in your bag' while the bar says ₹2,399 (probe afterAdd: underlined '2 pieces · 10% off ₹2,159', bar 'VIEW BAG · ₹2,399')."
+    },
+    {
+      "id": "C7",
+      "score": 9.0,
+      "note": "Honest and complete. Every piece has a metal line, '3 in stock' shows only at stock ≤5, and the marginal rupees match the bag. 'Add all four' adds only what is missing and says so. Nothing is pre-added, so there is no basket sneaking."
+    },
+    {
+      "id": "C8",
+      "score": 7.5,
+      "note": "'COD available' is on the fact line in the owner's words. Buy now carries the UPI marks, no prepaid discount is claimed, and the proposals sit in the notes. Two problems remain. (1) The site's own serviceability.ts, used by PincodeChecker on the live PDP, says 'Cash on Delivery is unavailable for this pincode … Prepaid only' for J&K and Ladakh, Bihar, Jharkhand, the North East, the islands and parts of UP and Haryana (L61–89). FACTS says 'COD available', and only that a pincode checker exists. One of the two is wrong, and this page promises COD to a shopper in Patna. (2) The fold sentence 'any COD fee is shown in rupees in your bag' (L467) is true and points the right way, but it goes beyond the owner's 'COD available' rule, and no notes item asks the owner to approve it. The Buy now path still never shows the fee on our pages (probe buyNow, hand-off text)."
+    },
+    {
+      "id": "C9",
+      "score": 9.0,
+      "note": "The material is now on the first screen (L385) and in the spec list, title, meta, bag and FAQ, all in FACTS wording. For implementation: the live Product JSON-LD description says 'a 15–19 cm adjustable bracelet' and 'keeps the line flat on the wrist' (pdp10/live/prism.html), and neither is in FACTS. The shipped page must build its JSON-LD from FACTS fields."
+    },
+    {
+      "id": "C10",
+      "score": 7.0,
+      "note": "By the rubric's literal anchor this is near 10: a worn hero, a size slide, a spec line and how to measure. By truth it is not. An 18 cm bracelet cannot close round a 19 cm wrist unless it adjusts, and FACTS does not say it adjusts. The page's own ruler (L361) draws the 15–19 cm wrist band running 1 cm past the bracelet's end. Naira's own size-guide image does the same (img/size.jpg), and it reads like a template. With no change-of-mind returns, a wrong fit range is the most likely 'not as described' dispute (E-Commerce Rules r.7(4))."
+    },
+    {
+      "id": "C11",
+      "score": 9.0,
+      "note": "Care is in the listing's words. The five questions are the right ones and are answered from FACTS, and 'Is it real silver? No…' now owns the claim. The fit and faulty-piece answers carry the issues scored under C10 and C5."
+    },
+    {
+      "id": "C13",
+      "score": 8.0,
+      "note": "The clip is the honest 3.3 s cut and loads only on tap. It is labelled on the slide, in the viewer, on both tiles and in the sub-line. A Riya ad lands on 5/7 with 'From Riya's reel · creator collaboration' (land_riya.png). It loses marks for the chip credit on the studio photo, and because Riya's handle and whether she was paid or gifted are still unknown (notes L521)."
+    },
+    {
+      "id": "C17",
+      "score": 8.5,
+      "note": "Scored on whether what the match prints is true. A creator is named only when utm_content names her, and 'reel' and 'creator' tokens no longer borrow Riya. No unconfirmed angle line is printed, the query is kept and nothing redirects. fold-ad.png equals fold.png because 'sugar' is unconfirmed, which is right from this lens."
+    },
+    {
+      "id": "C19",
+      "score": 8.5,
+      "note": "The voice is quiet, specific Indian English, with no superlatives or exclamation marks. 'The policy' (L407) is a vague link label for the one sentence she most needs."
+    },
+    {
+      "id": "C20",
+      "score": 9.0,
+      "note": "One tap adds one piece, behind the 700 ms guard. The card waits, never covers the facts, and is announced. The bar becomes 'View bag' and never goes straight to Fastrr."
+    },
+    {
+      "id": "C21",
+      "score": 8.0,
+      "note": "Up from 5.0. After an add, every route off the page passes the bag. The bag's footer line keeps the COD figure in rupees in view whether it holds one piece or several: '₹2,399 paid online · ₹2,519 with COD (₹120 fee)' at y 605–628 (bag1.png), and '₹3,058 paid online · ₹3,211 with COD (₹153 fee)' (bag2.png). InitiateCheckout fires only from the bag or Buy now. What is left is the Buy now path. It reaches Fastrr with no rupee COD figure on our pages, after 'Free insured delivery', and Fastrr books the fee as shipping. That is the owner's decision (notes L516–517)."
+    }
+  ],
+  "fixes": [
+    {
+      "priority": 1,
+      "where": "Policy fold L468; FAQ L481; notes panel L516–523",
+      "change": "Replace the last sentence of the returns paragraph with FACTS' own words: 'Worn or customer-damaged pieces are not eligible, and we cannot take a piece back for a change of mind.' Rename the FAQ question 'What if it arrives faulty?' to 'What if it has a fault?' and keep its answer. Add a notes item: 'Owner: does \"worn\" exclude a manufacturing fault found while wearing the piece in the first 7 days? If not, the fold should say \"A fault that shows while you wear it in the first 7 days is covered; accidental damage is not.\" If it does, counsel should see it, because r.7(4) bars an inventory seller from refusing to take back defective goods.'",
+      "why": "'Damaged after delivery' excludes any damage after delivery, including a manufacturing fault that appears in the 7-day window, which the policy covers. FACTS and the live policy both say customer-damaged (ExchangeReturnPolicy.tsx not-eligible list: 'Damaged by the customer'). E-Commerce Rules r.7(1)(a) require accurate information on return, refund, exchange and warranty. This shopper reads 'worn or damaged … not covered' as 'if a stone falls out the first time I wear it, I am on my own', which is what the fake sites did to her. The wording has been there since round 2 (prototype_v1 L438)."
+    },
+    {
+      "priority": 1,
+      "where": "Fact line L394 and the narrow-screen rule at CSS L137; delivery fold L467; repo src/lib/serviceability.ts L61–89 (COD_BLOCKED_RANGES, COD_BLOCKED_PINCODES); notes L517",
+      "change": "Before shipping, run one Fastrr checkout to a blocked pincode (for example 800001 Patna and 781001 Guwahati), record whether COD is offered, and add the result to FACTS. If Fastrr offers COD there, delete the COD blocks from serviceability.ts so the site never tells a shopper COD is unavailable while the PDP says it is available, and keep 'COD available'. If Fastrr withholds it, the fact line becomes 'Free insured delivery, est. 18–20 Nov · COD in most areas', with the .ins rule moved from max-width 349px to 379px. Measured on a copy: one line, right edge 303 at 320 and 360 and 348 at 390 and 412, all inside the 16px gutter, with the bar unmoved. The fold then adds: 'Cash on delivery is not offered on some pincodes; your bag and checkout show whether it is offered for yours.' That second branch changes the owner's wording, so it goes to the owner with this evidence.",
+      "why": "The live PincodeChecker tells a shopper in J&K, Ladakh, Bihar, Jharkhand, the North East, the islands and parts of UP and Haryana 'Cash on Delivery is unavailable for this pincode … Prepaid only' (serviceability.ts L61–80, PincodeChecker.tsx L103–107). This page promises 'COD available' to everyone. FACTS records both ('COD available'; 'a pincode checker exists in code'). COD is 45% of orders. A COD-only shopper who meets 'prepaid only' after 'COD available' reads it as bait: a CCPA 2023 bait-and-switch and misleading-advertisement risk, and E-Commerce Rules r.7(1)(c) require accurate information on payment methods. 'COD on most pincodes' does not fit: it overflows at 360 (right edge 374) with 'insured', and at 320 (right edge 329) without it (fact.js, fact2.js)."
+    },
+    {
+      "priority": 1,
+      "where": "FACTS.md (the piece); size slide L361–362; spec 'Fits' L440; FAQ L480; the Shopify listing description, the size-guide image and the Product JSON-LD",
+      "change": "Ops measure the bracelet closed (inside length, clasp to clasp) and check whether the fold-over clasp adjusts, and record both in FACTS. If it is a fixed 18 cm, replace 'fits wrists 15–19 cm' with the range the measurement supports, everywhere at once: page, FACTS, Shopify description, size-guide image and JSON-LD. Redraw the ruler so the wrist band ends at or before the bracelet's 18 cm mark. If it adjusts, say how in FACTS and on the page ('adjusts to fit wrists 15–19 cm'). Whatever the answer, add a second 44px link under 'See the size guide' in the spec list: 'Ask about your wrist size on WhatsApp', to https://wa.me/919561557935?text=Hi%2C%20my%20wrist%20is%20__%20cm.%20Will%20the%20Prism%20Rivi%C3%A8re%20Bracelet%20fit%3F. End the FAQ answer with 'Not sure? Send us your wrist measurement on WhatsApp.' Keep links out of the size slide itself, because a tap on a slide also opens the viewer (L835).",
+      "why": "An 18 cm bracelet cannot close round a 19 cm wrist unless it adjusts, and FACTS does not say it adjusts. The page's ruler draws the wrist band 1 cm past the bracelet's end (L361: band x 185–231.67 against the bracelet's 10–220), and so does Naira's size guide (img/size.jpg). The live listing says 'a 15–19 cm adjustable bracelet' (JSON-LD), which FACTS does not carry. With no change-of-mind returns, a shopper with a 19 cm wrist relies on the fit claim and cannot undo the purchase. Goods not as described must be taken back and refunded under E-Commerce Rules r.7(4), while the policy offers store credit. Fit is also the commonest non-fault reason she would want to send it back (rubric C10)."
+    },
+    {
+      "priority": 1,
+      "where": "Implementation of this page: Header.tsx L19 and L32 (AnnouncementBar, --announcement-h 34px); AnnouncementBar.tsx L27 (MESSAGES); CartDrawerNext.tsx L177; the JewelDetail Product JSON-LD",
+      "change": "Render the jewellery PDP header with no announcement marquee (--announcement-h: 0 on this route), as the prototype's 77px header assumes. Remove 'SITEWIDE SALE LIVE TODAY!' and 'MADE IN LIMITED BATCHES' from MESSAGES site-wide, and the same string from the bag. Until the Shopify description is corrected, build the Product JSON-LD from FACTS fields rather than from it: the name; PVD rhodium coated surgical stainless steel; 18 cm (or the measured fit, per fix 3); cubic zirconia; the offers; and no aggregateRating.",
+      "why": "Measured on a copy: a 34px bar above the header moves the delivery + COD line to 596 against the bar's 575, so 21px of it sits under the sticky bar at 360x640, 320x568 and 412x732 (r3trust/measure.json). That is the exact fault the redesign fixes. A daily 'sale live today' is false urgency under the CCPA 2023 guidelines. 'Limited batches' is unverified scarcity (FACTS: 49 in stock) and is on the audit's invented list. A marquee repeating the ladder is a second offer surface (rubric C6). The JSON-LD claims 'adjustable' and 'keeps the line flat' are outside FACTS, and the rubric's G1 counts JSON-LD as shopper-visible."
+    },
+    {
+      "priority": 2,
+      "where": "Hero chip L365 (default #chipt text)",
+      "change": "Change the text to '▶ Riya's clip · creator collaboration' and keep the aria-label 'Play Riya's clip, a creator collaboration'. Measured on a copy: at 360x640 the chip spans x 10–241 at y 332–376, clear of the 1 / 7 counter (x 303) and of the bracelet; at 320x568 it is 22px clear of the counter (chip_fix.png).",
+      "why": "The current text, 'Creator collaboration · Riya', is the same string that captions Riya's photo tile (L454) and her slide (L359). On the studio hero it reads as a credit saying this photo is Riya's paid content. Nothing shows the hero model is Riya (a different top, no mehendi), and FACTS names no model. Naming the clip keeps the disclosure ('collaboration', which the Department of Consumer Affairs' Endorsement Know-hows accept) on the endorsement itself, without attaching it to a photo that is not hers."
+    },
+    {
+      "priority": 2,
+      "where": "Delivery fold L467; notes item 1 (L516)",
+      "change": "Add to notes item 1: 'The fold already says more than \"COD available\": \"any COD fee is shown in rupees in your bag, and there is none if you pay online.\" Owner to approve. Recommended instead, because it is true on every route including Buy now: \"Cash on delivery is available with a 5% fee; paying online has none. Your bag shows it in rupees.\"' Keep the current sentence until the owner answers; it is true, and it errs on the safe side.",
+      "why": "The fold is the one place on our pages where a Buy now COD shopper can learn of the fee, one tap from the faulty-piece line. As written it points to the bag, which Buy now skips (the hand-off says 'Buy now skips the bag, so its COD figure is not shown on our pages first'). FACTS: Fastrr adds 5% and books it as shipping, and the owner's rule is 'COD available' only. The legal hooks are CCPA 2023 drip pricing (price elements not revealed upfront) and E-Commerce Rules r.7(1)(c) (fees or charges payable by users). The rubric lists this wording as an owner decision (section 4, C21), so it must be flagged as one, not shipped silently."
+    },
+    {
+      "priority": 3,
+      "where": "Reassurance list L405–410",
+      "change": "Reorder: (1) 'Questions before you buy?' with the WhatsApp and @naira.flore links; (2) the faulty-piece line, with its link text changed from 'The policy' to 'Read the policy'; (3) 'Surgical steel under a PVD rhodium coating: waterproof and tarnish free, so daily wear and water are fine.'",
+      "why": "The first line under the buy bar is the one claim she cannot check and has seen on every fake site ('tarnish free'). The WhatsApp number is the one she can test in ten seconds. Tying the claim to a material she can look up gives it a reason, using only FACTS words. Baymard: 60% of users look for the return policy on the product page [S1]."
+    },
+    {
+      "priority": 3,
+      "where": "render() L621",
+      "change": "Use 'var on = s.r ? s.r[0] : 0;' so a rung is underlined only once it applies. The caption keeps '1 in your bag · a second piece takes 10% off'.",
+      "why": "After one add, the ₹2,159 rung is underlined while the bar reads 'View bag · ₹2,399' (probe afterAdd). To someone who has been baited before, an underlined price that is not her price reads as a switch. This touches price certainty (rubric C21) and the CCPA bait-and-switch pattern."
+    }
+  ],
+  "keep": [
+    "Zero invented proof: no rating, stars, review count, sold count, FOMO card, timer, press strip, NAIRA10 or marquee in the page frame (the rubric grep is clean), and no JSON-LD that could carry an aggregateRating.",
+    "'Free insured delivery, est. 18–20 Nov · COD available' on one line, the date computed at runtime and marked as an estimate, and 'Surgical steel, PVD rhodium' in the price row.",
+    "The faulty-piece sentence in full at the first scroll, and the fold holding the whole policy, including 'no change of mind' (with the exclusion reworded per fix 1).",
+    "The WhatsApp number written out with a prefilled message naming the piece, and @naira.flore, both in the reassurance list and under Reviews.",
+    "'No reviews for this piece yet. Ask us anything before you buy.' with no stars and no promise of a review process that does not exist yet.",
+    "Creator disclosure on the slide, in the viewer, on both tiles and in the sub-line; the honest 3.3 s cut, loaded only on tap; a creator named only when utm_content names her.",
+    "After the add, the bar becomes 'View bag · ₹total' and never goes straight to Fastrr. InitiateCheckout fires only from the bag or Buy now.",
+    "The bag's footer line '₹X paid online · ₹Y with COD (₹Z fee)', computed like payment.ts and in view with 1–4 pieces at 360x640; the single code named as automatic; delivery shown as Free with the estimate.",
+    "One add per tap with the 700 ms guard, nothing pre-added, and 'Add all four' adding only what is missing and saying so.",
+    "Metal lines on every set piece, '3 in stock' only at stock ≤5 and from live inventory, and '30% off the four pieces'.",
+    "Every proposal kept in the notes outside the frame, labelled PROPOSED: the COD legal view, the Fastrr label check, the prepaid rule, MRP, the colour exclusion, Riya's rights and reel captions, and the review-request line."
+  ],
+  "roadmap": [
+    "Owner and ops, before launch: (a) decide COD disclosure on the first screen ('COD +5% fee', or no fee, then 'COD available' is the whole truth); (b) check how a live Fastrr COD checkout labels the fee; (c) check whether Fastrr withholds COD for any pincode, then reconcile serviceability.ts and FACTS (fix 2).",
+    "Ops: measure the bracelet closed and confirm whether the clasp adjusts. Correct the fit range in FACTS, the Shopify description, the size-guide image, the JSON-LD and the page together (fix 3). Check the other bracelets' size guides, which look templated, the same way.",
+    "Owner: the basis for ₹3,999. All four Indian brands in the bench label their strike price: GIVA 'MRP ₹4,399' and 'MRP incl. of all taxes'; Salty 'MRP Rs. 1,200'; CaratLane '(MRP Inclusive of all taxes)'; Palmonas 'Inclusive of all taxes'. If ₹3,999 is the printed MRP, show 'MRP ₹3,999 (incl. of all taxes)', which the Legal Metrology (Packaged Commodities) Rules r.6(10) expect online. If it is neither the MRP nor a real past selling price, drop it sitewide (CPA 2019 s.2(47), misleading as to the price at which goods are ordinarily sold).",
+    "Owner with counsel (recommendations, not page copy): under E-Commerce Rules r.7(4), refund to the original payment method for defective, not-as-described or late goods, not only 'store credit, refunds case by case'. Say that a fault found while wearing the piece within 7 days is covered, what happens to a piece damaged in transit (the page says 'insured'), how a COD order is refunded, and how to cancel before dispatch. Rewrite the apparel-worded /exchange-return-policy page and its meta ('7-day window on standard pieces') for jewellery. Consider a 7-day size exchange on unworn pieces.",
+    "Seller identity (E-Commerce Rules r.4(2), r.4(4)–(5)): the legal name and address are on /contact already. Add the GSTIN and a named grievance officer with designation and contact (acknowledge within 48 h, resolve within a month) to FACTS, then to a footer line on every PDP. A GSTIN she can look up on the GST portal is the strongest proof this shopper can check herself.",
+    "Country of origin and, if the pieces are imported, the importer's name and address, as an 'Origin' row in the spec list (E-Commerce Rules importer duty; Legal Metrology r.6(10) online declarations). This needs supplier facts. Palmonas carries these under a 'Supplier Information' fold.",
+    "Ship the redesign as the template for every jewellery PDP in one release. The set rows link to the ring and necklace pages, and a shopper who sees 'No reviews yet' here and '4.9 · 51 reviews' there concludes the site invents reviews. In the same release, delete productReviews.ts and reviewWall.ts data on PDPs, FomoPopup, dailySold, PressMarquee and JewelTrustStrip's hashed 'pieces sold'.",
+    "Reviews: an app that conforms to IS 19000:2022 (published collection and moderation terms, no suppression of negative reviews, 'verified' only on an order match, incentives disclosed, requests 7 days after delivery, photo reviews). Never publish WhatsApp chats as reviews without the customer's written consent.",
+    "Riya: her real handle, whether the video was paid or gifted (then 'Paid partnership' or 'Gifted'), and written rights to use it on the site and in ads. Her full reel carries 'Two years plating guarantee' and 'Pastel zircon'. Replace the live Shopify product video with the clean cut, and check her own post's disclosure and any running ad that uses the full reel: under the CCPA 2022 endorsement guidelines, the advertiser answers for claims in an endorsement it commissioned.",
+    "'Tarnish free' and 'waterproof' are absolute performance claims with nothing behind them: the 7-day window and the worn-piece exclusion leave a failing coating uncovered. The owner either holds substantiation for them or adopts a real, written cover window (never the invented '3-year plating assurance').",
+    "Owner decision: whether a true store-level line such as '222 orders shipped' may appear near Reviews. The rubric reads the Never list strictly, so it stays off until the owner approves it.",
+    "A courier API with a pincode check, so the estimate becomes a dated promise only where a courier backs it (r.7(4) ties refunds to a stated delivery schedule)."
+  ]
+}

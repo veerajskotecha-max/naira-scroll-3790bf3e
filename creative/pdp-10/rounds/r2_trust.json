@@ -1,0 +1,169 @@
+{
+ "lens": "Trust and consumer law, round 2: a first-time Indian shopper (28, Pune, buys on Instagram, burnt by fake jewellery sites) and a reviewer who knows the CCPA 2023 dark-pattern guidelines, the Consumer Protection (E-Commerce) Rules 2020 (Naira sells its own stock, so the inventory-entity duties in r.7 apply), BIS IS 19000:2022 and ASCI's influencer rules. G3 does not trip: fold.png, added.png, fold-ad.png and screens_*.jpg (02:28) are newer than prototype.html (02:27:24) and match it. Behaviour was probed on an untouched copy in /tmp/claude-0/-home-user/aaed4e78-f5ea-57f6-bb8a-ea8f2c0ecee0/scratchpad/r2trust/ (probe.js, probe2.js, probe3.js). Screenshots there: bar_checkout.png (the bar's Checkout skips the bag), drawer1.png, drawer4.png (the COD fee is below the fold), fold_reel_v2.png (a non-Riya ad labelled as Riya's reel) and clip_strip.jpg (frames of the 3.3 s clip). The critique is also written to /tmp/claude-0/-home-user/aaed4e78-f5ea-57f6-bb8a-ea8f2c0ecee0/scratchpad/pdp10/rounds/r2_trust.json.",
+ "score_now": 7.8,
+ "score_with_roadmap": 9.2,
+ "criteria": [
+  {
+   "id": "C1",
+   "score": 9.0,
+   "note": "The whole decision set sits on the first screen (fold.png): the H1 at 398–426, the price incl. GST, the ladder in rupees, and 'Free insured delivery, est. 18–20 Nov · COD available' ending at 562 with the bar at 575 (measure.json). The date is worked out at runtime as an estimate (L511–517), which fixes the courier-promise wording from R1. One thing she still cannot tell from this screen is what the piece is made of (see C9)."
+  },
+  {
+   "id": "C2",
+   "score": 9.0,
+   "note": "There is no popup, timer or FOMO card, and nothing is half-cut by the bar. The after-add card (added.png, y 85–325) covers only the photo. The bar is opaque."
+  },
+  {
+   "id": "C3",
+   "score": 7.0,
+   "note": "G1 does not trip. A grep finds no rating, star, sold count, timer, press, skin/nickel, diamond, NAIRA10 or change-of-mind returns wording, and every material line matches FACTS. Deductions: (1) L407–408, the caption and alt 'with the Cushion Halo Ring'. FACTS records Riya wearing only the bracelet, so this is a claim outside the sheet (−2). I suggested this caption in R1 and withdraw it. (2) The ad map (L15–26) prints 'From Riya's reel · creator collaboration' for any utm_content with a 'reel' token. Probe: morph_reel_4 and prism_reel_v2 both land on Riya's slide with that line (r2trust/fold_reel_v2.png). A brand film would be shown as a creator's reel, which is a false attribution that only waits on ad naming (−1). The ₹3,999 strike has no label; the rubric keeps it until the owner confirms (see roadmap)."
+  },
+  {
+   "id": "C4",
+   "score": 8.5,
+   "note": "Everything she can check is here and true: a written-out WhatsApp number twice (L374, L416), @naira.flore twice, real photos, the gift-box slide, and 'No reviews for this piece yet' with no stars and two 48px contact buttons (screens_2 panel 2). The creator is labelled everywhere except the first-screen chip, which reads only 'Riya's video' (L337). To someone looking for reviews, a first name on its own reads as a customer's video."
+  },
+  {
+   "id": "C5",
+   "score": 8.0,
+   "note": "The faulty-piece sentence sits on the first scroll under the bar (L372) and opens a fold that holds the whole policy, including 'not covered … change of mind' (L438). Two gaps: 'Read the full policy' (L439) lands on a page written for clothes (embroidery, stitching, fabric, 'washed', made-to-measure garments; ExchangeReturnPolicy.tsx), and that page also excludes 'slight colour variations due to screen differences', which the fold leaves out although colour is what this piece is bought for."
+  },
+  {
+   "id": "C6",
+   "score": 8.5,
+   "note": "There is one offer: no code, correct rupee figures, automatic in the bag. The unlabelled 40% strike next to the ladder still reads as a second, unexplained discount."
+  },
+  {
+   "id": "C7",
+   "score": 8.5,
+   "note": "This is now honest. Each piece carries a metal line (gold tone, PVD 18K gold coating, PVD rhodium). 'Add all four' adds only the missing pieces, the summary reads from the bag, and nothing is pre-added. Small points: 'Only 3 left' (true, but in the urgency phrasing) and 'All four: 30% off everything', where 'everything' can read as sitewide."
+  },
+  {
+   "id": "C8",
+   "score": 7.5,
+   "note": "'COD available' is on the fact line in the owner's words, Buy now shows the UPI marks, and no prepaid discount is stated as fact. The proposals sit outside the frame. But the COD fee in rupees is reachable only through 'Bag · n' or the header icon (see C21), and notes item 1 frames the decision as a prepaid perk while leaving out that the fee is the item at legal risk."
+  },
+  {
+   "id": "C9",
+   "score": 8.5,
+   "note": "Details, the title and the meta description are exact. Nothing in the first-screen 'H1 area' (the rubric's words) says surgical steel / PVD rhodium. With no change-of-mind returns, the material is the one fact she must know before Add, and the FAQ's first question shows it is her first doubt."
+  },
+  {
+   "id": "C11",
+   "score": 8.5,
+   "note": "The care text is in the listing's words, and the five questions are the right ones, answered from FACTS. L448 attributes the seller's own claim to 'the listing'. A burnt shopper reads that as small print, and it shifts no responsibility."
+  },
+  {
+   "id": "C13",
+   "score": 7.5,
+   "note": "This is strong. The clip is cut to 3.3 s with no supported-claim problem: its frames carry only 'and this bracelet is the one / people stop you for' and the Naira title card (clip_strip.jpg). It loads on tap only and is labelled on the slide, in the viewer, on both tiles and in the sub-line. It loses marks for the unlabelled first-screen chip and the misattribution in the ad map."
+  },
+  {
+   "id": "C17",
+   "score": 5.5,
+   "note": "Scored on the truth of what the match prints, not on its CRO value. The 'reel' and 'creator' tokens put Riya's slide and name on any reel or creator ad: morph_reel_4, prism_reel_v2 and halo_pankti_creator all land on 4 / 7. The mechanism is sound, but this map can say something false."
+  },
+  {
+   "id": "C19",
+   "score": 8.0,
+   "note": "The voice is quiet and specific, in Indian English. Two lines read stiffly: 'the listing describes it as' and '30% off everything'."
+  },
+  {
+   "id": "C20",
+   "score": 8.5,
+   "note": "There is no basket sneaking: one add per tap. The card has no timer, never covers the facts and is announced politely. Its next step, the bar's Checkout, is the problem scored under C21."
+  },
+  {
+   "id": "C21",
+   "score": 5.0,
+   "note": "This got worse in R1. After an add, the bar's 'Checkout · ₹2,399' calls handoff() directly (L633). The probe shows the drawer never opens, and the events are AddToCart then InitiateCheckout (bar_checkout.png). The bag is the only place the 5% COD fee appears in rupees (L666). Inside the bag, at 360x640 with 2 or 3 pieces, both Total and the COD line sit below the fixed footer (COD at y 622 and 784, footer at 542; probe3, drawer4.png), so every multi-piece bag can be paid without the fee in view. The live flow (Add → bag drawer) shows it. Fastrr books the fee as shipping (src/lib/payment.ts), after a page that says 'Free insured delivery' three times."
+  }
+ ],
+ "fixes": [
+  {
+   "priority": 1,
+   "where": "Script L560 (bar in checkout mode) and L632–634 (#add click); fold L437",
+   "change": "Once the bracelet is in the bag, the primary bar button reads 'VIEW BAG · ₹{bag total}' and calls openDrawer(). It never calls handoff(). Fire InitiateCheckout only from the drawer's Secure checkout ([data-co], L679). After this change the only routes off the page are Buy now (one piece, by design) and the bag's Secure checkout. Fold L437 becomes: 'Free insured delivery across India, estimated at 3 to 5 working days. Cash on delivery is available with a fee, shown in rupees in your bag before you pay; there is none if you pay online.'",
+   "why": "Probe on a copy: Add, then the bar's Checkout, opens the hand-off straight away, and the drawer, which holds the only rupee COD line, is never shown (r2trust/bar_checkout.png). src/lib/payment.ts says the fee is stated in the bag 'so it is seen before the payment page rather than first met there', and Fastrr books it as shipping. A COD shopper (45% of orders) told 'Free insured delivery' then meets a shipping charge, which is the moment a burnt shopper decides the site is a scam. CCPA 2023 drip pricing: price elements not revealed upfront. E-Commerce Rules r.7(1): fees or charges payable by users displayed prominently. Rubric C21: the fee must be shown in rupees in the bag before the shopper leaves. This R1 change made price certainty worse than the live flow."
+  },
+  {
+   "priority": 1,
+   "where": "renderDrawer L662–668 (.dr-tot and .dr-foot p)",
+   "change": "Move the COD figure into the fixed footer, as the line directly under Secure checkout, replacing 'Free insured delivery, est. … · COD available'. Example for four pieces: 'Total ₹3,987 paid online · ₹4,186 with COD (₹199 fee)'. Measured: one 19px line at 360px. Compute the fee with payment.ts codFeeFor so it matches Fastrr. The delivery estimate moves to the body row: 'Insured delivery, est. 18–20 Nov · Free'.",
+   "why": "probe3 at 360x640: with 2 pieces the Total sits at y 572 and the COD line at 622; with 3 pieces at 734 and 784. The fixed footer starts at 542, so both are hidden while 'Secure checkout · ₹X' is in view (r2trust/drawer4.png). Multi-piece bags are what the ladder exists to create. E-Commerce Rules r.7(1) (as I read it): the total price as a single figure, with all compulsory and voluntary charges. The bag is not the PDP, so the owner's 'only COD available' rule does not apply there (CLAUDE.md: the fee is stated in the bag)."
+  },
+  {
+   "priority": 1,
+   "where": "Head script L15–27 (ASSET, ANGLE, token loop)",
+   "change": "Name a creator only when utm_content names that creator. Keep CREATOR = { riya: 3 }: the 'riya' token alone selects slide 4 and sets 'From Riya's reel · creator collaboration'. Remove 'reel' and 'creator' from ASSET and ANGLE; an unknown reel or creator ad falls back to slide 1 with the default chip. Add a check that morph_reel_4, prism_reel_v2 and halo_pankti_creator render the default fold, and that prism_riya_reel renders Riya's.",
+   "why": "probe2: utm_content=morph_reel_4 and prism_reel_v2 print 'From Riya's reel · creator collaboration' on Riya's slide (r2trust/fold_reel_v2.png), and halo_pankti_creator lands on her slide. Naira runs brand-made morph reels and other creators' reels, and prism_reel_v2 is the exact utm the audit used. Presenting a brand film as a named creator's reel misattributes an endorsement: the CCPA Misleading Advertisements and Endorsements Guidelines 2022 and ASCI's influencer guidelines require the endorser and the connection to be what they appear to be. New in R1."
+  },
+  {
+   "priority": 1,
+   "where": "Notes panel L490–491 (outside the frame)",
+   "change": "Replace items 1–2 with these three. (1) 'Legal view: Buy now reaches Fastrr with no rupee COD figure on our pages, and Fastrr books the 5% fee as shipping after a page that says Free insured delivery. Recommended fact line: \"Free insured delivery, est. 18–20 Nov · COD +5% fee\" (measured: one line, right edge 310px of 344 at 360px, nothing moves). The alternative is to drop the COD fee; then \"COD available\" is the whole truth.' (2) 'Check a live COD checkout on Fastrr. If the fee shows as Shipping, ask Fastrr to label it COD fee.' (3) 'Prepaid: 55 of ~105 prepaid orders carried 5% PrepaidDiscount, so it is not applied to every online order. Confirm the rule before any \"extra 5% off online\" line.'",
+   "why": "The owner's rule keeps the fee off the PDP, so the Buy now path, the live buyNow, can only be made compliant by an owner decision, and the notes currently frame that decision as a prepaid perk. CCPA 2023 drip pricing; E-Commerce Rules r.7(1). FACTS: the COD fee is 5%, prepaid discount shows on 55 of ~105 orders, and COD is 45% of orders with 21% RTO."
+  },
+  {
+   "priority": 2,
+   "where": "Hero chip L337 (default text) and chipFor L700",
+   "change": "Chip text '▶ Creator collaboration · Riya', aria-label 'Play Riya's clip, a creator collaboration'. Measured on a copy: the chip spans x 10–210 at y 332–376, and the bracelet's stones start at about x 230 at that height, so no stone is covered.",
+   "why": "This is the endorsement's first mention, on the first screen, and the only one without the disclosure every other mention carries (slide tag, viewer label, tiles, sub-line, alt). The Department of Consumer Affairs' Endorsement Know-hows (2023) want the disclosure in the endorsement itself, with 'collaboration' as an accepted term. To a shopper hunting for reviews, a first name alone reads as a customer's video."
+  },
+  {
+   "priority": 2,
+   "where": "Price row L353 (.price .gift); delivery fold L437",
+   "change": "Replace 'Arrives gift-boxed' with 'Surgical steel, PVD rhodium' (12px, ink-2, same slot, hidden below 350px as now). Measured at 360: x 200–344, 24px clear of 'incl. GST' (ends 176), row height unchanged at 28px. If the owner confirms 'MRP ₹3,999', use 'PVD rhodium on steel' (x 232–344; 'incl. GST' then ends at 204). The gift box stays on slide 7 and in Details. Add 'It arrives in the Naira Petite gift box.' to the end of the delivery paragraph.",
+   "why": "The policy takes nothing back for a change of mind, so the material is the fact she must have before Add. 'Is it real silver?' is the page's own first question, and fake sites she has met sell 'silver' and 'diamond'. E-Commerce Rules r.7: information needed for an informed decision at the pre-purchase stage, and advertising consistent with actual characteristics. Rubric C9: the same material wording runs through the H1 area."
+  },
+  {
+   "priority": 2,
+   "where": "Policy fold L438–439; footer L462; FACTS.md Returns",
+   "change": "Point 'Read the full policy' and the footer link to /exchange-return-policy#standard-orders, and rename it 'Full policy (store-wide)'. Add the live policy's exclusion to FACTS, then to the fold after '…for a change of mind.': 'Slight colour differences from what your screen shows are not covered.'",
+   "why": "The policy page is written for garments: embroidery, stitching, fabric, 'washed', made-to-measure. It is titled 'Exchange & Return Policy', with the meta description '7-day window on standard pieces'. Landing at the top of it reads like a template site to this shopper. The colour exclusion is on that page but missing from the fold, and pastel colour is what this piece sells on. E-Commerce Rules r.7(1)(a) asks for all return and refund information to be displayed prominently; an exclusion she discovers after delivery is the dispute this avoids."
+  },
+  {
+   "priority": 2,
+   "where": "Riya's second tile L407–408 (alt and figcaption)",
+   "change": "Until the owner confirms that the ring in Riya's reel is the Cushion Halo Ring: figcaption 'Creator collaboration · Riya'; alt 'Riya, a creator Naira collaborated with, wearing the bracelet with mehendi'.",
+   "why": "FACTS records Riya wearing only the bracelet, so naming the ring is a claim outside the sheet (rubric G1, −2 on C3). The ring in reel2.jpg looks like a cushion halo, but a look is not a fact. I proposed this caption in R1 and withdraw it."
+  },
+  {
+   "priority": 2,
+   "where": "Questions fold L448",
+   "change": "'No. It is surgical stainless steel with a PVD rhodium coating, not silver. It is waterproof and tarnish free, so daily wear and water are fine.'",
+   "why": "'The listing describes it as' attributes Naira's own claim to a third party, and to a burnt shopper that reads as small print. The seller owns the claim either way (CPA 2019 s.2(47); E-Commerce Rules r.7(2)), so the hedge costs trust and protects nothing."
+  },
+  {
+   "priority": 3,
+   "where": "Stock line L572; allnote L596; WhatsApp links L374 and L416",
+   "change": "'Only 3 left' becomes '3 in stock', still rendered only at stock ≤5 and from live inventory at render time. 'All four: 30% off everything · you save ₹1,709' becomes 'All four: 30% off the four pieces · you save ₹1,709'. The WhatsApp hrefs become https://wa.me/919561557935?text=Hi%2C%20a%20question%20about%20the%20Prism%20Rivi%C3%A8re%20Bracelet",
+   "why": "'Only N left' is the phrasing Mathur et al. counted 632 times across shopping sites and that this shopper has learned to discount. '3 in stock' states the same true fact without the urgency framing the CCPA guidelines police. 'Everything' can read as a sitewide sale. A prefilled message names the piece, so the reply she gets is specific, which is itself proof that someone real is answering."
+  }
+ ],
+ "keep": [
+  "Zero invented proof: no rating, stars, review count, sold count, FOMO card, timer, press strip, NAIRA10 or announcement ticker (grep clean).",
+  "'Free insured delivery, est. 18–20 Nov · COD available' on one line, the date worked out at runtime and marked as an estimate.",
+  "The faulty-piece sentence in full under the bar (L372), and the fold holding the whole policy, including 'worn or damaged … not covered' and 'we cannot take a piece back for a change of mind'.",
+  "The WhatsApp number written out and @naira.flore, both in the reassurance list and under Reviews.",
+  "'No reviews for this piece yet. Ask us anything before you buy.' with no stars and no promise of a review process that does not exist yet.",
+  "'Creator collaboration · Riya' on the gallery slide, in the viewer, on both tiles and in the sub-line; the honest 3.3 s cut, loaded only on tap.",
+  "Add to bag adds exactly one; 'Add all four' adds only what is missing and says so; nothing is pre-added; the after-add card has no timer and never covers the price, ladder or delivery line.",
+  "The bag's rupee COD line, 'COD fee ₹X · none if paid online', and the single automatic code named in the bag (BUY2/3/4, automatic).",
+  "Metal lines on every set piece (PVD rhodium; PVD 18K gold coating; gold tone), and the stock line only at ≤5.",
+  "The Details block, title and meta description word for word from FACTS; prices incl. GST; the strike with no '% OFF' badge.",
+  "Every proposal (prepaid line, MRP label, ad map, reel captions, review request) kept in the notes outside the frame, labelled PROPOSED."
+ ],
+ "roadmap": [
+  "Owner: decide how COD is disclosed on the PDP ('COD +5% fee' on the fact line, or no COD fee), and check on a live COD checkout how Fastrr labels the fee. Until then, the Buy now path meets the fee first at Fastrr.",
+  "Owner: confirm the basis for ₹3,999. If it is the printed MRP, show 'MRP ₹3,999 (incl. of all taxes)'; the Legal Metrology (Packaged Commodities) Rules expect e-commerce listings to carry the pack declarations, MRP included. If it is neither MRP nor a real past selling price, remove it sitewide (CPA 2019 s.2(47), misleading on the price at which goods are ordinarily sold).",
+  "Riya: her real handle, whether the video was paid or gifted (then 'Paid partnership' or 'Gifted'), and written rights to use it on the site and in ads. Her full reel carries 'Two years plating guarantee' and 'Pastel zircon' captions. Replace the live Shopify product video with the clean cut, and check her own post and any running ad that uses the full reel: under the CCPA 2022 endorsement guidelines the advertiser answers for claims in an endorsement it commissioned. Confirm whether the ring in the reel is the Cushion Halo Ring.",
+  "Policy, for the owner with counsel (recommendations, not page copy): E-Commerce Rules r.7(4) bars an inventory seller from refusing to take back or refund goods that are defective, not as described or delivered late, so offer a refund to the original payment method in those cases, not only 'store credit, refunds case by case'. Say what happens to a piece damaged in transit (the page says 'insured'), how a COD order is refunded, and how to cancel before dispatch. Rewrite the apparel-worded policy page and its meta for jewellery. Consider a 7-day size exchange on unworn pieces, because fit (15–19 cm) is the main non-fault reason she would want to send it back.",
+  "Seller identity on every PDP footer (E-Commerce Rules r.4(2), r.4(4)–(5)): legal name, registered address (/contact has an address), GSTIN, and a named grievance officer with designation and contact (acknowledge within 48 h, resolve within a month). A GSTIN she can look up is the strongest proof this shopper can check herself.",
+  "Country of origin, and the importer's name and address if the pieces are imported, as an 'Origin' row in Details (E-Commerce Rules and Legal Metrology declarations). This needs supplier facts.",
+  "'Tarnish free' is an absolute performance claim with no remedy behind it: the 7-day window and the worn-piece exclusion mean nothing covers a coating that wears. The owner either holds substantiation for it or adopts a real, written cover window (never the invented '3-year plating assurance').",
+  "Reviews: a review app conforming to IS 19000:2022 (published collection and moderation terms, no suppression of negative reviews, 'verified' only on an order match, incentives disclosed, requests 7 days after delivery, photo reviews). When it ships, delete productReviews.ts and reviewWall.ts, FomoPopup, dailySold, PressMarquee, any aggregateRating JSON-LD, and the AnnouncementBar and CartDrawerNext strings 'SITEWIDE SALE LIVE TODAY!' and 'MADE IN LIMITED BATCHES', so they cannot reappear around this page.",
+  "Add 'incl. 3% GST' (the live GST_LABEL) and the policy's colour-variation exclusion to FACTS so both are traceable.",
+  "A courier API with a pincode check, so the estimate becomes a dated promise only where a courier backs it (r.7(4) ties refunds to a stated delivery schedule)."
+ ]
+}

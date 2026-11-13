@@ -1,0 +1,140 @@
+{
+ "lens": "Luxury art direction for jewellery e-commerce (Mejuri / Missoma / Monica Vinader calibre) with Indian fine-jewellery taste, round 2: elegance, typography, photography sequence and crops, spacing and grid, colour, hierarchy, copy tone, and whether a ₹2,399 piece feels worth desiring. G3 is clear: fold.png, added.png, fold-ad.png and screens_*.jpg (02:28:04-08) are newer than prototype.html (02:27:24) and match it. I found no G1 trip from this lens. Probes and mocks are in /tmp/claude-0/-home-user/aaed4e78-f5ea-57f6-bb8a-ea8f2c0ecee0/scratchpad/r2art: m1.js (boxes and a census of text styles), slide_0..6.png and gallery_r2.jpg (every gallery slide at 360x640), drawer.png, added2.png, set_after.png, viewer.png and hand.png, hero_vp.jpg (hero crop now vs proposed at 320/360/412), and mock_fold.png, mock_slide4.png and mock_screens_1/2.jpg (fixes 1-3, 6-8 and part of 4 applied to a COPY through injected CSS; the prototype was not edited). score_now is the weighted mean of the criteria scored below (C1, C2, C7, C10, C12, C13, C14, C18, C19, C20, the same set as round 1). The critique is also written to /tmp/claude-0/-home-user/aaed4e78-f5ea-57f6-bb8a-ea8f2c0ecee0/scratchpad/pdp10/rounds/r2_art.json.",
+ "score_now": 7.75,
+ "score_with_roadmap": 9.1,
+ "criteria": [
+  {
+   "id": "C1",
+   "score": 8.5,
+   "note": "All six items sit above the bar at 360x640:\n- the worn hero, 77-386;\n- the H1 (Cormorant 27, title case), 398-426;\n- the price row: ₹2,399, the strike, incl. GST and 'Arrives gift-boxed';\n- the ruled ladder, 470-538;\n- 'Free insured delivery, est. 18-20 Nov · COD available', ending at 562;\n- the bar from 575 (measure.json).\nNo line wraps. The ladder is now a typographic table, not a coupon box, which is the right idiom.\n\nRemaining art faults:\n- The price (Cormorant 23) and the three ladder figures (Cormorant 19, ink) differ by only 1.21x, so the eye meets four near-equal rupee figures in 90px. With the strike and the button that makes six on one screen.\n- 'Any pieces · taken off in your bag, no code' reads as a fragment.\n- The piece sits low in the hero (see C2)."
+  },
+  {
+   "id": "C2",
+   "score": 7.5,
+   "note": "What is right:\n- The hero is the worn p1 crop.\n- Nothing overlays the screen before a tap.\n- The bar is opaque ivory with a 10px fade; nothing ghosts through (fold.png y 1150-1280 at 2x).\n- The '1 / 7' counter is quiet.\n\nThe crop does not keep the piece whole. The slide-1 inline style object-position: 50% 0% (L326) shows the top 309px of a 396px-tall image, so the bracelet sits in the bottom third:\n- its clasp end runs into the frame's bottom edge (fold.png x 510-560, y 740-772 at 2x);\n- the 'Riya's video' plate (332-376) and the counter (349-376) sit on the same band as the stones.\n\nAt 320x568 the counter covers the last stones (r2art/vp_320_cur.png). The top 40% of the frame is jaw and neck, so the subject reads as 'a woman' rather than 'this bracelet'."
+  },
+  {
+   "id": "C7",
+   "score": 8.0,
+   "note": "The rail is strong:\n- a vertical list with the ring first as the rhodium match;\n- full names, a metal line from FACTS and 'Only 3 left' in ink-2 from stock;\n- 88x44 Adds that toggle to an ink '✓ In bag' (set_after.png);\n- deep-sage marginal lines in rupees;\n- an outlined 'Add all four · ₹3,987'.\n\nArt faults:\n- The ring's metal line wraps and orphans '5-9' on a line of its own (full.png y 1750-1820).\n- The sub-line 'Any second piece takes 10% off your whole bag, a third 20%, a fourth 30%.' and the empty-bag summary 'The bracelet alone ₹2,399 / Any second piece takes 10% off your whole bag.' are the second and third tellings of the ladder within two screens. The summary is also a deep-ivory box that is not a bag.\n- The three thumbnails sit on three grounds (terracotta, cream plinth, grey). That needs the matched set shoot (roadmap)."
+  },
+  {
+   "id": "C10",
+   "score": 8.0,
+   "note": "In place:\n- a worn hero;\n- slide 6 with a live caption, '18 cm long · fits wrists 15-19 cm / Measure around your wrist bone.' (gallery_r2.jpg);\n- the FAQ and Details match it.\n\nGaps:\n- The ruler is a 720x252 bitmap squeezed to about 320px. Its tick numerals render at about 5 CSS px and cannot be read, and its filled gold bar is the only mass of gold on the page.\n- 'Fits: Wrists of 15 to 19 cm' in Details does not lead to the slide.\n- No dimension photo yet (roadmap)."
+  },
+  {
+   "id": "C12",
+   "score": 7.5,
+   "note": "Seven real slides in a good arc: worn, macro, plaster, Riya, velvet, size, box (gallery_r2.jpg). Slides snap one at a time, there is a counter, data-src lazy loading, and a full-screen viewer with the Shopify originals (viewer.png).\n\nFaults:\n- The 'Play Riya's clip' plate is centred (L95) and sits squarely on the bracelet's middle stones (slide_3.png).\n- riya-540 is served at 0.75x of the 720px that DPR 2 needs, so it is visibly soft. It sits between the crisp plaster and velvet frames and breaks the lit studio sequence. Velvet, the jeweller's-box idiom Indian shoppers read as fine jewellery, waits until slide 5. velvet-640 is also served at 0.89x.\n- The hero crop (C2).\n- The size bitmap (C10)."
+  },
+  {
+   "id": "C13",
+   "score": 8.0,
+   "note": "The 10-today set is met:\n- an honest 3.3 s cut that loads only on tap;\n- a mehendi-wrist poster;\n- 'Creator collaboration · Riya' on the slide, with the sub-line 'Riya, a creator we collaborated with, styling it with mehendi.' (screens_2.jpg panel 1);\n- the second tile shown as a still with no fake play button.\n\nArt faults:\n- At 9:16 the second tile shows a ceiling fan, a bare ceiling and wall frames above Riya (full.png y 2850-2950). It is the cheapest-looking detail on the page.\n- The label 'Creator collaboration · Riya' appears four times in two screens, so the captions carry no information about their frames."
+  },
+  {
+   "id": "C14",
+   "score": 7.5,
+   "note": "Scored for type and legibility. Taps and contrast belong to UX:\n- every target is at least 44px and the text floor is 11px;\n- ink-2 at 0.72 on ivory passes.\n\nThe type system is still not a system. m1.js counts 34 distinct text styles on the visible page (family, size, weight, case, tracking, colour), against the 8 asked for in round 1:\n- Cormorant runs at 12 sizes: 13, 15, 16, 17, 18, 19, 20, 21, 23, 24, 25 and 27;\n- Jost has half-pixel sizes: 12.5 for .ship and .row .eff, 13.5 for .lad2 and .dr-lad;\n- the '₹1,709' in 'All four · you save' is Cormorant at 13px, a spindly hairline serif;\n- set names ask for Cormorant 400, which is not loaded (L169), so the browser picks the 500 face anyway."
+  },
+  {
+   "id": "C18",
+   "score": 7.0,
+   "note": "Restraint is now real:\n- two families only (measure.json);\n- palette: ivory, ivory-deep, ink and deep sage; no new hex except #fff in the UPI discs;\n- radius 0 except the bag's 10px checkout;\n- no badges or stars;\n- one ink primary;\n- a deep-sage footer and a 48px section rhythm.\nThis now sits closer to Mejuri than to any Indian bench fold (r2art/bench_r2.jpg).\n\nOne fix made things worse. 'Up close' became a single image, as asked, but .bleed renders 360x792, not square (m1.js). The width=720 height=792 attributes set height: 792px, which defeats aspect-ratio: 1/1, and object-fit: cover then shows the macro's out-of-focus top. The result is about 1.2 screens of blank beige blur before a stone appears (screens_1.jpg panel 3 lower half; full.png y 1673-2100). It is the largest visual fault on the page.\n\nSmaller issues:\n- The two 48px outlined Reviews boxes are the heaviest objects on their screen, and they give an empty state the weight of a primary action.\n- The UPI marks are three overlapping white discs with 1px ink rings and border-radius 50% (L138). They read as an avatar stack, and they carry the only saturated colour on the first screen."
+  },
+  {
+   "id": "C19",
+   "score": 7.5,
+   "note": "Good lines:\n- 'Every stone in its own halo'\n- 'Arrives gift-boxed'\n- 'Wear it as a set'\n- 'As Riya wears it'\nThe Details list is exact, the creator disclosure is honest, and there are no cliches or exclamation marks.\n\nWeak lines:\n- 'Any pieces · taken off in your bag, no code' is a fragment.\n- The ladder is restated six times: the caption, the set sub-line, the summary hint, the 'All four' note, the FAQ and the after-add card. Repeating it reads as a sales script, not a jeweller's voice.\n- The Up close caption repeats Details' Stones, Setting and Colours rows nearly word for word two screens later.\n- The tile captions both say only 'Creator collaboration · Riya'."
+  },
+  {
+   "id": "C20",
+   "score": 7.0,
+   "note": "The shape is right (added.png):\n- an ivory card under the header with no timer;\n- it never covers the price, ladder or delivery line;\n- the bar becomes 'CHECKOUT · ₹2,399' + 'BAG · 1', the badge shows 1, and the ladder caption and underline follow the bag.\n\nArt faults:\n- The card's only picture is the Cushion Halo Ring, so at a glance it reads as 'ring added'. The bracelet appears only as a 13px text line.\n- On the first add, 'Any second piece takes 10% off your whole bag.' (card) and '1 in your bag · a second piece takes 10% off' (caption at y 948 at 2x) say the same thing on the same screen.\n- The count is confirmed four ways at once (card heading, badge, 'BAG · 1', caption).\nThe behaviour faults are CRO's (r2_cro.json)."
+  }
+ ],
+ "fixes": [
+  {
+   "priority": 1,
+   "where": "CSS L191 `.bleed`; img L397",
+   "change": "Show the whole macro frame:\n- Set `.bleed { display: block; width: 100%; height: auto; background: var(--ivory-deep); }`.\n- Delete `aspect-ratio: 1 / 1`, `object-fit: cover` and the inline `style=\"object-position: 50% 62%\"`.\n\nThe width=720 height=792 attributes then render the full p4 macro at 360x396, with no crop and no upscale. This saves 396px. Checked on a copy: the .bleed box is 396px tall (r2art/mock_screens_1.jpg panels 3-4).",
+   "why": "Measured box 360x792 (r2art/m1.js). The height attribute beats aspect-ratio, so cover shows about 430px of blank, out-of-focus beige above the stones (full.png y 1673-2100; screens_1.jpg panel 3). Round 1 asked for one large macro; built this way, it is the page's biggest visual fault (C18 calm rhythm, C12 whole frame, no waste)."
+  },
+  {
+   "priority": 1,
+   "where": "Gallery slide 1, img L326 (inline style)",
+   "change": "Change `style=\"object-position: 50% 0%\"` to `style=\"object-position: 50% 100%\"`. Keep the file and the clamp height.\n\nAt 360x640 the bracelet moves from track y 205-309, where its clasp end touches the bottom edge, to about 105-213, centred at 52% of the 309px frame. The 'Riya's video' plate and the counter then sit on bare forearm and the ochre strap.\n\nThe jaw and lip leave the frame. The crop becomes arm, collarbone, hair and strap, with the piece as the subject. The full-screen viewer still shows the whole p1 with her face.\n\nfold-ad (prism_sugar_p1) lands on this slide, so it gets the same fix.",
+   "why": "C2 asks for a deliberate crop that keeps the piece whole and clear of overlays. Today the stones meet the frame edge at 360 (fold.png x 510-560, y 740-772 at 2x), and at 320x568 the counter covers them. Checked at 320, 360 and 412: r2art/hero_vp.jpg (current vs proposed pairs) and mock_fold.png. Mejuri and Missoma heroes centre the piece."
+  },
+  {
+   "priority": 1,
+   "where": "CSS L95 `.sl .play`; SLIDES L14, ASSET L15, the riya/reel branch at L24, the slide order L326-335",
+   "change": "Two changes on the Riya slide.\n\n1. Move the plate:\n- Set `.sl .play { left: 10px; bottom: 10px; top: auto; transform: none; }`, the same corner as the hero chip.\n- Keep the 'Creator collaboration · Riya' tag at top-left.\n\n2. Reorder the gallery to worn, macro, plaster, velvet, Riya, size, box:\n- SLIDES = ['worn','macro','plaster','velvet','riya','size','box'];\n- ASSET: p2/velvet → 3; riya/reel/creator → 4;\n- in the head script, `if (t === 'riya' || t === 'reel') m.slide = 4`;\n- the counter and aria label follow the DOM order.",
+   "why": "The centred plate sits on the bracelet's middle stones (r2art/slide_3.png). Moved, it covers only forearm (r2art/mock_slide4.png). riya-540 is 0.75x of the 720px that DPR 2 needs and reads soft between two crisp studio frames. After the move the four studio frames form one lit sequence, and the velvet frame, the piece's most 'fine jewellery' image, comes one swipe earlier. The hero chip still opens Riya's clip in one tap, so the video is not buried (C12, C13)."
+  },
+  {
+   "priority": 1,
+   "where": ":root and the selectors listed below",
+   "change": "Collapse the type to 5 Cormorant sizes and 4 Jost sizes, as tokens:\n- `--t-h1: 27px; --t-h2: 24px; --t-h3: 20px; --t-name: 18px; --t-fig: 15px` (Cormorant 500 only, lining-nums);\n- `--t-body: 15px; --t-small: 13px; --t-label: 12px; --t-micro: 11px` (Jost).\n\nCormorant sizes:\n- 24: h2 (L155, 25→24), `.price .now` (L108, 23→24), .sum .big, .dr-head h2, .dr-tot .tt .rs, .hand h2 (23→24).\n- 20: h3, `.added .h` (L236, 21→20), `.sl.size b` (L90, 21→20).\n- 18: `.lad .v .rs` (L123, 19→18), `.row .n` (L169, keep 18, add font-weight: 500), `.row .p` (L170, 16→18), .btn .rs, `.addall .rs` (L187, 17→18), `.added .sug .n` (17→18), `.dr-items .n` and `.dr-items .pr` (17→18).\n- 15: every rupee inside a sentence: .price s, .row .eff .rs, a new `.allnote .rs { font-size: 15px }` (now 13px), .sum .save s, `.added .what .rs`, `.added .lad2 .rs` (16→15), `.added .sug .e .rs` (14→15), `.dr-tot .rs` (16→15), `.hand .rs` (16→15).\n\nJost sizes, with no half pixels:\n- `.ship` 12.5→13. Measured 307px of 328 at 360, and 262 of 288 at 320 with 'insured' hidden, so it stays on one line at the same 18px line-height.\n- `.row .eff` 12.5→13; `.added .lad2` and `.dr-lad` 13.5→13.\n- `.assure li` 14→15 (+9px at 360).\n\nTarget: 16 or fewer distinct styles in the m1.js census.\n\nKeep 'each' after the three ladder figures. I disagree with r2_cro's 'drop each, grow to 20': on its own, '₹2,159' under '2 pieces' reads as the price of two.",
+   "why": "m1.js counts 34 text styles, and Cormorant runs at 12 sizes (C14, C18). Price 24 against ladder 18 (1.33x, now 1.21x) makes the first screen read as one price plus a table rather than four prices. The 13px Cormorant '₹1,709' is a hairline. Mejuri runs 2-3 sizes on its fold (bench/mejuri-fold-clean.png)."
+  },
+  {
+   "priority": 2,
+   "where": "showCard L603-613; CSS L236-247",
+   "change": "Make the card confirm the bracelet first.\n\n1. Replace `<p class=\"what\">` with a row (grid 40px 1fr, gap 10px):\n- the added piece's thumbnail at 40x50 (for the bracelet, i/plaster-360.jpg, as the drawer uses; otherwise thumb(id, 40, 50));\n- then 'Prism Rivière Bracelet' in Cormorant 18 and '₹2,399' in Cormorant 15, on one line.\n\n2. When no rung is reached, render no `.lad2`. Carry the offer on the suggestion's rupee line instead: 'Adds ₹659, not ₹999 · 10% off both'. That is true: with BUY2, ₹2,399 + ₹999 = ₹3,398 → ₹3,058.\n\n3. Once a rung is reached, keep CRO's rupee line.\n\nThe card loses about 38px (the lad2 rule, padding and line), so it ends near y 287 instead of 325.",
+   "why": "added.png: the card's only image is the ring, so the eye reads 'ring added'. 'Any second piece takes 10% off your whole bag.' duplicates the ladder caption '1 in your bag · a second piece takes 10% off' on the same screen (added.png y 948 at 2x). A luxury confirmation shows the piece bought, then one suggestion (C20)."
+  },
+  {
+   "priority": 2,
+   "where": "Set sub-line L378; #sum render L581; ring metal line L381 and P.ring.m L527",
+   "change": "1. Sub-line: replace it with 'The Cushion Halo Ring matches it in rhodium; the Prism necklace and hoops are gold tone.' (FACTS: ring PVD rhodium; necklace PVD 18K gold coating; hoops gold tone). This explains the pairing instead of repeating the offer.\n\n2. #sum: when the bag is empty, render nothing (agrees with r2_cro fix 7). Saves 87px at 360 and 107px at 320 (measured).\n\n3. Ring metal line: split it into two lines in .m, 'PVD rhodium, like the bracelet' and 'Adjustable, US 5–9'. Keep the first as its own field, so the card's split(' · ')[0] still reads 'PVD rhodium, like the bracelet'.\n\nSet names stay at 18px: at 19px 'Prism Emerald-Cut Hoops' wraps (mock_screens_1.jpg panel 3).",
+   "why": "The ladder is said on screen 1, in each row's 'With the bracelet it adds ₹659, not ₹999', and in 'All four: 30% off everything · you save ₹1,709'. The sub-line and the empty summary are the second and third tellings, which is coupon-wall tone (C7, C19). '5–9' sits orphaned on its own line (full.png y 1750-1820). Checked on a copy: mock_screens_1.jpg panel 2."
+  },
+  {
+   "priority": 2,
+   "where": "CSS L197 `.reel .frame`; the two reel imgs L405-410",
+   "change": "Crop both tiles to 4:5:\n- `.reel .frame { aspect-ratio: 4 / 5; overflow: hidden; }`\n- `.reel:first-child img { object-position: 50% 45%; }`\n- `.reel:last-child img { object-position: 50% 100%; }`\n\nThe first tile keeps the mehendi wrist and the bracelet. The second keeps Riya's face, her mehendi hands, the ring and the bracelet, and drops the ceiling fan, ceiling and wall frames. Saves 84px. The Play plate stays bottom-left.\n\nCaptions:\n- 'With mehendi · creator collaboration'\n- 'With the Cushion Halo Ring · creator collaboration'\nEach still carries the label and now also says what the frame shows.",
+   "why": "The ceiling fan above Riya (full.png y 2850-2950) is the one frame that reads amateur on an otherwise editorial page. Indian shoppers value creator authenticity, but the room adds nothing that the face, the mehendi and the pieces do not. Checked: mock_screens_1.jpg panel 4 and mock_screens_2.jpg panel 1 (C13, C19)."
+  },
+  {
+   "priority": 2,
+   "where": "Reviews .stack L415-418; .ghost L204",
+   "change": "Replace the two full-width 48px outlined boxes with one line of 44px text links, class l44 (the assure row's style), in a `p` with `display: flex; flex-wrap: wrap; column-gap: 20px; row-gap: 0; margin-top: 4px`:\n- 'WhatsApp +91 95615 57935'\n- 'Instagram @naira.flore'\n\nKeep 'No reviews for this piece yet. Ask us anything before you buy.' as it is.",
+   "why": "Two ink-bordered boxes make the empty state the heaviest block on its screen (full.png y 3270-3330). They give the absence of reviews the visual weight of a primary action and repeat the assure row's two links one screen earlier. A quiet empty state is the honest, confident register (C18, C4). Checked: mock_screens_2.jpg panel 1."
+  },
+  {
+   "priority": 2,
+   "where": "Slide 6 `figure.sl.size` L333 (i/size-band.jpg); CSS L87-91",
+   "change": "Replace the bitmap with an inline SVG ruler at the slide's width (viewBox 0 0 320 72, width 100%, max 320px):\n- a 1px ink baseline from 0 to 24 cm, with ticks every cm (5px; 9px at 0, 5, 10, 15 and 20);\n- numerals 0, 5, 10, 15, 20, 24 cm in Jost 11px ink-2;\n- the bracelet as a 2px ink line from 0 to 18, with '18 cm' in Jost 11px 500 above its end;\n- the wrist range as a 6px band in deep sage at 40% from 15 to 19, labelled 'fits wrists 15–19 cm' in Jost 11px deep sage.\n\nKeep the figcaption text exactly. Drop size-band.jpg (12 KB, one request).",
+   "why": "The 720x252 bitmap shrinks to about 320px, so its tick numerals render at about 5 CSS px and cannot be read (gallery_r2.jpg slide 6). Its filled gold bar is the only mass of gold on the page, where the tokens keep gold for hairlines. Live SVG is crisp at any DPR and states the same FACTS (C10, C18)."
+  },
+  {
+   "priority": 3,
+   "where": "Ladder caption L355 and L566; Up close caption L398",
+   "change": "1. Ladder caption: 'Mix any pieces · applied in your bag, no code'. Measured at 248px in Jost 11px 500 with .03em tracking. It leaves a 70px rule at 360 and 30px at 320.\n\n2. Up close caption, under the H3 'Every stone in its own halo': 'Aqua blue, soft pink and pale yellow, each about 5 mm and ringed in clear pavé.' The full material wording stays in Details.",
+   "why": "'Any pieces' reads as a fragment; 'mix' says the rungs work across different pieces. The current Up close caption repeats Details' Stones, Setting and Colours rows nearly word for word two screens later. One sensory line under the macro is the editorial register (C19)."
+  }
+ ],
+ "keep": [
+  "The first screen's composition: H1 in Cormorant 500 at 27px, title case; the price with Cormorant's own rupee glyph; 'Arrives gift-boxed' filling the price row; the ladder as a ruled typographic table with a deep-sage caption; one-line delivery and COD with the date in 500; an opaque ivory bar with an ink primary carrying the price and an outlined Buy now.",
+  "The palette discipline: ivory, ivory-deep, ink, ink-2 and deep sage only, with no gold or blush fills. Radius 0 except the bag's 10px checkout. No stars, badges, timers or marquee.",
+  "The gallery's opening sequence: worn, then the p4 macro, then the p0 plaster block with the clasp. Also the quiet '1 / 7' counter, slides that snap one at a time, and the full-screen viewer with the Shopify originals.",
+  "The set as a vertical list with the ring first as the rhodium match. FACTS metal lines; 'Only 3 left' in ink-2, rendered from stock. Deep-sage marginal rupee lines ('With the bracelet it adds ₹659, not ₹999'). An ink '✓ In bag' state and the outlined 'Add all four'.",
+  "Riya's mehendi frames, labelled honestly. They are culturally right for November wedding-season styling, and the honest 3.3 s cut loads only on tap.",
+  "Details as an open definition list with deep-sage tracked dt labels, and accordions in 12px tracked caps. This is the most Missoma-like block on the page.",
+  "The deep-sage footer with the ivory wordmark, and the bar stepping aside at the footer.",
+  "The bag drawer's restraint: Cormorant names and prices, a 44px stepper, the single code named, the COD fee in rupees, and the one 10px checkout.",
+  "The PROPOSED notes outside the page frame, never on it."
+ ],
+ "roadmap": [
+  "Originals at least 1,440px wide of p1 (worn), p4 (macro), p0 (plaster) and p2 (velvet). velvet-640 (0.89x) and riya-540 (0.75x) are upscaled at DPR 2 today, and DPR 3 phones and zoom get soft images.",
+  "Riya's original reel at 1080x1920, plus a clean edit without the unsupported captions ('zircon' at about 22 s, the plating claim at about 26 s), so a longer clip can play.",
+  "A matched set shoot: the bracelet with the Cushion Halo Ring, the Prism hoops and the Pear Drop necklace on one ground and light (the p0 plaster block). Also one on-wrist stack of the bracelet and the ring. The set thumbnails and the bag would then share one ground instead of terracotta, cream and grey.",
+  "An unboxing photo: the bracelet laid in the open Naira Petite box, to replace slide 7's closed box floating on pink. Gifting is the November motive.",
+  "A 6-10 s macro turn under a point light for the pastel colour play, under 1 MB, as gallery slide 2's motion twin.",
+  "A dimension photo: the bracelet on a 15 cm and a 19 cm wrist, or beside a ruler, to stand beside the SVG ruler.",
+  "Real reviews with wrist photos (review app, request 7 days after delivery). The Reviews block can then show customer photos instead of an empty state.",
+  "The ads owner's confirmed line for the 'sugar' angle. Until then the ad lander keeps the default chip."
+ ]
+}

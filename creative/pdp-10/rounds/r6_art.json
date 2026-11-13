@@ -1,0 +1,119 @@
+{
+ "lens": "Luxury art direction for jewellery e-commerce (Mejuri / Missoma / Monica Vinader calibre) with Indian fine-jewellery taste, round 6: elegance, typography, photography sequence and crops, spacing and grid, colour, hierarchy, copy tone, and whether a Rs 2,399 piece feels worth desiring.\n\nG3 passes. fold.png, added.png, fold-ad.png, screens_1-5.jpg and measure.json (06:59:17-21) are newer than prototype.html (06:58:55, md5 74dcaeee...). My renders of an untouched copy (same md5) agree: H1 399-427, facts end 562, bar 575, no console errors. fold.png is md5-identical to round 5's (d4ae18d6...), so the 360x640 first screen did not change. fold-ad.png is byte-identical to fold.png, by the builder's choice.\n\nI found no G1 trip from this lens. A grep of the page text, alt text, aria labels, JSON-LD, title and meta description finds only allowed text: 'Returns are for manufacturing faults only', 'PVD 18K gold coating', 'No reviews for this piece yet', 'Refunds are considered case by case' and the FAQ's 'Is it real silver? No.'\n\nAll seven of my round-5 fixes landed in some form:\n- the inert ticks are text;\n- slide 5 has one plate;\n- tall screens get the 3:4 frame;\n- the set caption names the bag;\n- text-wrap: pretty is applied;\n- the footer ends on a clean edge;\n- 'nosug' is gone. It went CRO's way, as a 'slim' card instead of my two-line form; see C20.\n\nTwo round-5 changes made things worse from this lens:\n1. The bag's new foot policy line grew the foot to 154px. In a two-piece bag at 360x640 the Total figure (459-496) is now sliced by the foot's hairline at 486. In round 3 it sat whole above a foot at 511.\n2. The slim card names no piece. The ring's photo and name sit directly under 'Added to your bag · 1 piece' and read as the piece just added. Every 320x568 shopper gets it on a first add from the top.\n\nAlso found:\n- at 320 the suggestion row (card and bag) breaks inside the ring's name and its rupee line;\n- Up close still repeats slide 2, with its top third in bokeh.\n\nEvidence is in /tmp/claude-0/-home-user/aaed4e78-f5ea-57f6-bb8a-ea8f2c0ecee0/scratchpad/r6art/out:\n- probe.json: boxes, the text-style census and the colours in use;\n- states.json, orig_bag.json, mock_bag.json, mockk_bag.json, orig_card.json, mock_card.json;\n- s2x_00..06.png: the page as 2x phone screens;\n- slide_0..6.png and gallery_r6.jpg;\n- cards_r6.jpg, card_y60/120/180/350/2300.png, added_1.png, added_ring.png;\n- bags_r6.jpg, bags2_r6.jpg, drawer_1/2/4.png, orig_bag_*.png;\n- set_after.png, set_all.png, land_riya.png, viewer.png, folds_open.png, folds_open2.png;\n- folds_r6.jpg with fold_320x568/390x844/412x732/412x915.png;\n- orig_y520_360.png, orig_y2700_360.png;\n- src_r6.jpg, p4_grid.jpg, cmp_upclose_src.jpg;\n- bench_vs.jpg: the live page, Mejuri, Missoma, Ana Luisa, GIVA and the prototype.\n\nFixes 1-6 were built into a COPY, /tmp/claude-0/-home-user/aaed4e78-f5ea-57f6-bb8a-ea8f2c0ecee0/scratchpad/r6art/mock/prototype.html, by mkmock.py. A second copy, /tmp/claude-0/-home-user/aaed4e78-f5ea-57f6-bb8a-ea8f2c0ecee0/scratchpad/r6art/mockk/prototype.html, keeps the price on the checkout button. They were measured with bag.js, card.js, ring320.js, w.js, w2.js, w3.js, fold.js and shots.js, and compared in:\n- cmp_bag.jpg and cmp_bag4.jpg (fix 1);\n- cmp_card.jpg (fix 2);\n- cmp_mid.jpg (fixes 3 and 5);\n- cmp_320.jpg (fix 4);\n- cmp_cap.png (fix 6).\nThe two crops for fix 3 are in /tmp/claude-0/-home-user/aaed4e78-f5ea-57f6-bb8a-ea8f2c0ecee0/scratchpad/r6art/mockimg. The prototype was not edited.\n\nscore_now is the weighted mean of the same criteria as rounds 1-5 (C1, C2, C7, C10, C12, C13, C14, C18, C19, C20): 417.5 / 46 = 9.08. I report 9.0 because the sliced total sits on a routine path: 26-32% of orders are two pieces or more (FACTS), and 360x640 is the commonest screen. The critique is also written to /tmp/claude-0/-home-user/aaed4e78-f5ea-57f6-bb8a-ea8f2c0ecee0/scratchpad/pdp10/rounds/r6_art.json.",
+ "score_now": 9.0,
+ "criteria": [
+  {
+   "id": "C1",
+   "score": 9.1,
+   "note": "Unchanged at 360x640. fold.png is md5-identical to round 5's, and my render agrees:\n- hero 77-387;\n- H1 399-427;\n- price row 433-462;\n- caption 472-488;\n- rungs 491-538;\n- 'Free insured delivery, est. 18–20 Nov · COD available' at 544-562;\n- bar at 575.\n\nTall phones are better since round 5's picture source. The empty band under the fact line is now 13px at 390x844 (was 39) and 48px at 412x915 (was 83) (states.json, folds_r6.jpg).\n\nTwo things hold it below 10:\n- the density the budget forces;\n- the caption 'the bracelet's price', which reads as a column header rather than a sentence (fix 6)."
+  },
+  {
+   "id": "C2",
+   "score": 9.3,
+   "note": "Up from 9.1. On screens 2:1 and taller the hero is now the photographer's own 3:4 frame (lips, hand, wrist), upscaled about 1.2x instead of 1.7x (fold_390x844.png, fold_412x915.png). Nothing covers the first screen before a tap. No line is half-cut at 320, 360, 390 or 412.\n\nLeft: the chip (170x52 at 10,325) is still the largest non-photo element on the hero. It is kept for C13."
+  },
+  {
+   "id": "C7",
+   "score": 9.2,
+   "note": "Up from 9.0. Round 5 fixed both faults I raised:\n- '✓ In bag' is right-aligned text in its 88x44 box, so after Add all four the set shows no ink blocks (set_all.png);\n- the caption names the bag ('With the ring in your bag').\n\nLeft:\n- At 320 the one-tap ring row, in the after-add card and in the bag, breaks inside its name and its rupee line: 'Cushion Halo / Ring', 'Adds ₹659, / not ₹999'. The 88px + Add leaves a 112px text column for a 137px name (cmp_320.jpg; fix 4).\n- The three thumbnails sit on three grounds (terracotta, cream, grey). That needs a reshoot.\n- The hoops' saturated multicolour stones in gold tone stretch the word 'set' beside a pastel rhodium bracelet. The sub-line handles this honestly."
+  },
+  {
+   "id": "C10",
+   "score": 9.2,
+   "note": "Held. 'Size guide' now opens the ruler in the viewer. The 48px Fits row and the spec table are unchanged.\n\nThe ruler slide is still a thin figure in a large empty frame (slide_5.png). It waits on ops' fit measurement and a dimension-marked wrist photo (roadmap)."
+  },
+  {
+   "id": "C12",
+   "score": 8.8,
+   "note": "Up from 8.6. Slide 5 carries one plate, the chip's two-line form (slide_4.png), and the tall-screen hero is sharper.\n\nLeft:\n- Up close (1584-1980) is slide 2's frame again. It is 396px tall, its top third is bokeh, its lower half is plaster, and the stones fill a band of about 90px (s2x_02.png, s2x_03.png). The Shopify original p4 (896x1200) holds the same front stones at 1.25x the size. A 720x540 crop of it makes a 360x270 frame at 1:1 at DPR 2 that the gallery does not repeat (cmp_upclose_src.jpg, cmp_mid.jpg; fix 3).\n- riya-540 (0.75x) and velvet-640 (0.89x) are still upscaled at DPR 2.\n- The ruler slide is slight."
+  },
+  {
+   "id": "C13",
+   "score": 9.1,
+   "note": "Up from 8.9. Slide 5's three plates are now one, '▶ Riya's clip / Creator collaboration', in the chip's words and the chip's place. On a Riya landing it reads 'From Riya's reel' (land_riya.png). The sub-line no longer ends on 'mehendi.' alone (s2x_04.png). The 3.3 s clip still loads only on tap.\n\nLeft: a product-only macro turn and more labelled creator clips (roadmap)."
+  },
+  {
+   "id": "C14",
+   "score": 9.1,
+   "note": "Held. The type system holds: 24 text styles, only the sizes 11/12/13/15/18/20/24/27, and Cormorant at 500 with lining figures (probe.json). text-wrap: pretty removed the one-word last lines in the folds (folds_open.png).\n\nNew, at 320:\n- The ring's row breaks inside its name and its rupee line ('Adds ₹659, / not ₹999'), both in the after-add card and in the bag.\n- After its + Add the card's bag line also splits ('Bag ₹3,058 · / you save ₹340').\n\nFix 4 is measured: name and rupee line on one line each, and '✓ Added' (61px) on one line in a 64px box."
+  },
+  {
+   "id": "C18",
+   "score": 9.0,
+   "note": "Up from 8.9. Both of my round-5 colour faults are gone: there are no ink ticks, and the footer's deep sage ends on a straight edge above the bar. Palette and radius discipline hold.\n\nNew, and caused by round 5's foot policy line (the foot grew to 154px):\n- In the two-piece bag at 360x640 the Total, the bag's bottom line in Cormorant 24, is sliced by the foot's hairline: the figure runs 459-496 and the foot starts at 486 (orig_bag.json, drawer_2.png). In round 3 it sat whole above a foot at 511.\n- In bags of three and four the total is not on screen at all except inside the button (orig_bag_360x640_4.png).\nFix 1."
+  },
+  {
+   "id": "C19",
+   "score": 9.0,
+   "note": "Up from 8.8. The set caption names the bag ('With the ring in your bag', 'With the two pieces in your bag'), and the bag foot's saving line does one job.\n\nLeft:\n- 'Mix any pieces, no code · the bracelet's price' is a label, not a sentence (fix 6).\n- 'Added to your bag · 1 piece' is clerical where a name would do (fix 2).\n- In the Reviews block, 'Ask us anything before you buy.' echoes 'Questions before you buy?' 2,100px above. Its third link, 'Business address', sits alone on its own line (orig_y2700_360.png; fix 5)."
+  },
+  {
+   "id": "C20",
+   "score": 8.9,
+   "note": "Down from 9.0. The full card is as good as it was (added.png), and '✓ Added' is now text (added_ring.png).\n\nRound 5's 'slim' step, which went CRO's way instead of my two-line form, has a hierarchy fault:\n- It drops the bracelet's row and keeps the heading 'Added to your bag · 1 piece', so the next picture and name under it are the ring's. At a glance the ring reads as the piece just added (card_y120.png, orig_card_320_y0.png).\n- Every 320x568 shopper gets this card on a first add from the top, and a 360x640 shopper gets it adding at scrollY 90-120.\n\nFixes:\n- Naming the piece in the heading ('The bracelet is in your bag', one line at 320 and 360) removes the fault at no height (fix 2).\n- Fix 4 also lets the first add at 320 show the compact card with the bracelet's row (85-293 against a photo that ends at 318).\n\nIn the bag, two-piece bags open with a sliced total (fix 1).\n\nPre-existing: after the ring's + Add at 320 the card reaches 331, 1px into the H1's box (w3.js)."
+  }
+ ],
+ "fixes": [
+  {
+   "priority": 1,
+   "where": "renderDrawer(): the ledger at L952-954 and the foot at L969-973; fitPol at L979; CSS .dr-body L364, .dr-tot .tt L386-387 and .dr-foot p.sv L401-402; build note 2 (the CartDrawerNext foot).",
+   "change": "Put the bag's total in the fixed foot, never in the scrolling body.\n\n1. L954: delete <div class=\"tt\"><span>Total</span>' + R(s.total) + '</div>, so the ledger ends with 'Insured delivery, est. … Free'.\n\n2. L969: replace the 'You save' line with:\n'<div class=\"ft\"><span>Total' + (s.r ? '<i> · you save ' + R(s.sub - s.total) + '</i>' : '') + '</span>' + R(s.total) + '</div>' +\n\n3. L971: the button becomes <span>Secure checkout</span>' + UPI…. Drop <span aria-hidden=\"true\">·</span>' + R(s.total), because the total now sits 50px above it in the same foot. If CRO wants the price kept on the button, keep it: steps 1, 2, 4 and 5 still hold (mockk/ shows that version).\n\n4. CSS: delete L386-387 and L401-402, and add:\n.dr-foot .ft { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; font-size: var(--t-body); }\n.dr-foot .ft > .rs { font-size: var(--t-h2); line-height: 1.1; }\n.dr-foot .ft i { font-style: normal; font-size: var(--t-small); color: var(--deep); }\n.dr-foot .ft i .rs { font-size: var(--t-fig); }\n\n5. L364: add -webkit-mask-image: linear-gradient(#000 calc(100% - 16px), transparent); mask-image: linear-gradient(#000 calc(100% - 16px), transparent);\nAdd a new rule: .dr-body > :last-child { margin-bottom: 16px; }\nIn fitPol (L979), compare with body.clientHeight - 16.\n\nMeasured on the copy (mock_bag.json, cmp_bag.jpg, cmp_bag4.jpg):\n- The Total is whole for 1-4 pieces at 360x640, 320x568, 360x600, 390x664 and 412x732, in Cormorant 24 on the foot's first line, with 'you save ₹340' in deep sage beside 'Total'.\n- With 2-4 pieces at 360x640 the foot is 482-640 (was 486). The body ends in a 16px fade instead of a hairline drawn across a line of text.\n- A one-piece bag at 360x640 keeps the whole policy line in the body and no short form in the foot (foot at 507), as in rounds 4 and 5.\n- Three- and four-piece bags now show their total. Today it appears only inside the button.",
+   "why": "C18 and C20, and C21 for CRO and trust. The bag is where 80% of adds are lost (FACTS: add to checkout about 20%), and its bottom line is the one figure that must never look broken. Today a two-piece bag at 360x640 opens with the lower 10px of the total's figure under a hairline (drawer_2.png); 26-32% of orders are two pieces or more (FACTS). Round 5's foot line caused it: in round 3 the same total sat whole above a foot at 511. A jeweller's bag pins the total beside the checkout, and lets scrolling lines fade out rather than be cut."
+  },
+  {
+   "priority": 2,
+   "where": "showCard(): the slim heading at L842 and the brief heading used by mini and dock at L827; the full card's link at L837.",
+   "change": "Name the piece in the short forms' heading while the bracelet is the only piece in the bag.\n\nL842:\ncard.querySelector('.top .h').textContent = s.q === 1 ? 'The ' + short(id) + ' is in your bag' : 'Added to your bag · ' + plural(s.q);\n\nL827:\nvar brief = '<div class=\"top\"><p class=\"h\">' + (s.q === 1 ? 'The ' + short(id) + ' is in your bag' : 'Added to your bag · ' + plural(s.q)) + '</p>' + X + …\n\nWhat it reads:\n- 'The bracelet is in your bag' in Cormorant 20, one line (24px) at 320 and 360 (card.js);\n- then the ring with + Add, or 'A second piece takes 10% off · See the set';\n- with two or more pieces the heading stays 'Added to your bag · n pieces' above the bag line.\n\nL837: 'See the whole set' becomes 'See the set', the words the mini and dock cards already use for the same jump.\n\nNo height changes (mock_card.json): slim stays at 85-253 for adds at scrollY 90-120, and mini at 85-173.",
+   "why": "C20 and C19. Under 'Added to your bag · 1 piece' the first picture and name are the ring's, so the ring reads as the piece just added (card_y120.png, orig_card_320_y0.png). A heading that names the bracelet turns the ring into a suggestion without a label or an extra pixel (cmp_card.jpg). The short noun is not the H1's full name, so it does not repeat the title under it, which was the builder's reason for the clerical wording."
+  },
+  {
+   "priority": 2,
+   "where": "Up close: the #closeup img at L554, its CSS comment at L308, and new files i/macro-band-720.jpg and i/macro-band-360.jpg.",
+   "change": "Give Up close a frame of its own, from the Shopify original at 1:1.\n\n1. Make two files:\n- i/macro-band-720.jpg: pdp10/img/p4.jpg (896x1200) cropped to x 176-896, y 330-870, which is 720x540; JPEG q82, progressive, 66 KB;\n- i/macro-band-360.jpg: the same crop at 360x270, 18 KB.\nBoth are in /tmp/claude-0/-home-user/aaed4e78-f5ea-57f6-bb8a-ea8f2c0ecee0/scratchpad/r6art/mockimg, made with PIL from p4.jpg. For the live page, use the CDN's crop on the same media, or these files.\n\n2. L554: data-src=\"i/macro-band-720.jpg\" data-srcset=\"i/macro-band-360.jpg 360w, i/macro-band-720.jpg 720w\" width=\"720\" height=\"540\". Keep the alt, the button, and its tap, which opens the viewer at slide 2 (the full frame).\n\n3. L308: change the comment to 'up close: the front stones at 1:1 from the original, a frame the gallery does not repeat'.\n\nMeasured (cmp_mid.jpg, fold.js):\n- The frame is 360x270 (was 396). Four front stones and their pavé fill its width, with no bokeh and a sliver of plaster.\n- At DPR 2 it is 720 source px over 360 CSS px, so nothing is upscaled.\n- The page is 126px shorter at 360 (3495 to 3369) and 112px shorter at 320.\n- The spec table starts 126px higher, on the same screen as the stones.\nCost: one lazy request below the fold, 18 KB at DPR 1 or 66 KB at DPR 2, where today the frame reuses macro-720.",
+   "why": "C12 and C18. The section is titled 'Every stone in its own halo', and the photo under it should prove the line. Today it is slide 2 again, with the stones in a band about a quarter of its height between bokeh and plaster (s2x_02.png, s2x_03.png). The page's one dedicated detail image should be closer than the gallery, not the same frame twice. The crop is real product media at the original's own resolution (cmp_upclose_src.jpg)."
+  },
+  {
+   "priority": 2,
+   "where": "CSS after L407, with the other 349px rules. .sug (L223) is shared by the after-add card and the bag's 'Wear it with' row.",
+   "change": "Add:\n@media (max-width: 349px) { .sug { column-gap: 8px; } .sug .add { width: 64px; letter-spacing: .08em; } }\nThis is the same .08em tracking the bar already uses below 350px.\n\nMeasured at 320x568 (ring320.js, w.js, w2.js, w3.js; cmp_320.jpg):\n- The text column grows from 112 to 138px. 'Cushion Halo Ring' (137px) and 'Adds ₹659, not ₹999' each keep one line, in the card and in the bag.\n- '+ ADD' is 41px and '✓ ADDED' 61px wide, both inside the 64x44 box, which stays 44px tall.\n- A first add from the top now fits the compact card with the bracelet's row (85-293, photo ends at 318) instead of slim (85-291).\n- 360px and wider screens are unchanged.",
+   "why": "C14, C7 and C20. At 320, every first add opens on a card whose ring row breaks inside its name and its rupee figure ('Cushion Halo / Ring', 'Adds ₹659, / not ₹999'), and the one-piece bag repeats the break (orig_card_320_y0.png, orig_bag320_1.png). Broken names and split prices are what make a page read as templated."
+  },
+  {
+   "priority": 3,
+   "where": "CSS .rvlinks, L331.",
+   "change": "Add .rvlinks a:first-child { flex-basis: 100%; }\n\nWhatsApp keeps a line of its own, and '@naira.flore' and 'Business address' share the second. The block stays 88px tall and no link sits alone (cmp_mid.jpg).",
+   "why": "C19 and C18. Today 'Business address' sits alone on a third line under a pair, a loose cluster rather than a set (orig_y2700_360.png). With the change, the primary channel comes first and the two quieter links sit together."
+  },
+  {
+   "priority": 3,
+   "where": "#ladcap L498 and CAP0 L748.",
+   "change": "Change the caption to 'Mix any pieces, no code · the bracelet comes to'.\n\nIt stays on one line at 320 (247px of 288, at 11px) and 360 (270px of 328, at 12px). The rule after it shortens to 31px and 48px (card.js cap_*, cmp_cap.png). The captions that follow the bag are unchanged.",
+   "why": "C19 and C1. Read with the rung under it, 'the bracelet comes to · 2 pieces · 10% off · ₹2,159' is something a person would say; 'the bracelet's price' reads as a column header. Same length, same line."
+  }
+ ],
+ "keep": [
+  "The 360x640 first screen exactly as it is:\n- the worn hero at object-position 50% 100%;\n- the Cormorant 27 H1;\n- ₹2,399 at 24 with the grey strike and 'incl. GST';\n- the material at the row's end;\n- the ruled ladder in rupees;\n- the one-line delivery and COD line with the date in 500;\n- the opaque ivory bar with one ink primary carrying the price.",
+  "Round 5's tall-screen picture source: the photographer's 3:4 frame on screens 2:1 and taller, and worn-720 everywhere else.",
+  "The first-screen column with its min-height and tight mode, so larger text never pushes COD under the bar or paints over the next section.",
+  "Inert states as text: '✓ In bag' and '✓ Added' right-aligned in the same 88x44 box, never in the primary's ink.",
+  "Slide 5's single plate in the chip's words, 'Riya's clip / Creator collaboration', or 'From Riya's reel' on a Riya landing.",
+  "text-wrap: pretty on running text, and the footer's deep sage ending on a straight edge above the bar.",
+  "The type system and palette discipline:\n- five Cormorant sizes at 500 with lining figures, four Jost sizes, no half pixels;\n- ink, ivory, deep sage and the hairlines;\n- radius 0 except the bag's checkout;\n- no stars, badges, timers or marquee.",
+  "The set: the condition said once and naming the bag, one 'Adds ₹X, not ₹Y' line per row, the ring first as the rhodium match, FACTS metal lines, '3 in stock' only where true, and the outlined 'Add all four'.",
+  "The spec table: 72px label column, values at x 100, and the 48px Fits row with its two links side by side.",
+  "The full after-add card: the bracelet first, 48px thumbnails, right-aligned prices, the ring's size range always shown, one suggestion in rupees, no timer, and the chip and counter hidden while it is open.",
+  "The bag's one-job lines: the next rung in rupees on top, the only 'automatic' in the ledger, the policy that opens in place, and the COD figure in rupees above the one 10px button.",
+  "Riya's 4:5 tiles with 32px marks clear of the bracelet and two-line captions, and the honest 3.3 s clip loaded only on tap.",
+  "The gallery arc (worn, macro, plaster, velvet, Riya, size, box), the quiet counter, and the viewer with the 896x1200 originals."
+ ],
+ "roadmap": [
+  "Set thumbnails on one ground. The ring, necklace and hoops sit on terracotta, cream and grey. Reshoot or re-cut them on the bracelet's plaster and ivory so the set reads as one family (content).",
+  "Originals at least 1,440px wide for the viewer and DPR 3. Also Riya and velvet sources at least 720px wide: riya-540 and velvet-640 are upscaled 0.75x and 0.89x at DPR 2 (content).",
+  "A dimension-marked wrist photo (the bracelet on a wrist beside a tape) to replace the thin ruler slide, once ops have measured the real fit (launch blocker 1).",
+  "A 6-10 s product-only macro turn under light for the stones' colour play, and two or three more labelled creator clips (content).",
+  "The colour check, soft pink against lilac in Riya's footage, before any colour copy changes (owner and ops).",
+  "Merchandising: the set's earring is gold tone with saturated multicolour stones. If the catalogue holds a pastel or rhodium earring, the owner may prefer it as the set's fourth piece (owner's call; FACTS lists only these pairings today).",
+  "Reviews. Once a review app has real reviews for this piece, the Reviews block leads with them, and the WhatsApp, Instagram and address links move under them (owner and ops)."
+ ],
+ "score_with_roadmap": 9.5
+}

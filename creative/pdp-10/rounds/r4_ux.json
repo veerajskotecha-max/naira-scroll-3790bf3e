@@ -1,0 +1,117 @@
+{
+ "lens": "Mobile UX, accessibility and web performance, round 4. Tested as a 360x640 Android shopper in the Instagram in-app browser, plus 360x600, 360x560, 320x568, 390x664, 390x844, 412x732, 412x846 and a height sweep from 640 to 900 at widths 360, 393 and 412. Stress cases: bottom safe-area insets of 24, 34 and 48 px; Android fallback faces (Roboto and Noto Serif through a private fontconfig) with the brand fonts blocked; Android 'Font size' at 115% and 130% (emulated by scaling every computed font size, which is what WebView textZoom does); and WCAG 1.4.12 text spacing.\n\nG3 holds. fold.png, added.png, fold-ad.png, screens_*.jpg and measure.json (04:30) are newer than prototype.html (04:28:28), and my renders match them: facts end at 562, the bar starts at 575, and there are no console errors. All of my round-3 fixes landed and measure as intended.\n\nProbes ran over http://127.0.0.1 against an untouched copy (md5 49edcb03…). Speed was measured with CDP throttling (150 ms RTT, 1.6 Mbps, 4x CPU) at DPR 2 and 3. The fixes were checked on a separate copy, /tmp/claude-0/-home-user/aaed4e78-f5ea-57f6-bb8a-ea8f2c0ecee0/scratchpad/ux_r4/proto/variant.html, built by mkvariant.py; the prototype was not edited.\n\nEvidence is in /tmp/claude-0/-home-user/aaed4e78-f5ea-57f6-bb8a-ea8f2c0ecee0/scratchpad/ux_r4/out/:\n- folds.json, var_folds.json and fold_*.png, var_fold_*.png;\n- textscale_compare.jpg, tall_compare.jpg, focus_hidden.png;\n- interact.json, interact_b.json, perf.json, perf_variant.json, vcheck.json;\n- load_strip.jpg, states_sheet.jpg, compare_folds.jpg.\nThe scripts are in /tmp/claude-0/-home-user/aaed4e78-f5ea-57f6-bb8a-ea8f2c0ecee0/scratchpad/ux_r4.\n\nscore_now is the weighted mean of C1, C2, C12, C13, C14, C15, C16 and C20 (the same set as rounds 2 and 3): 381.6/44 = 8.67.",
+ "score_now": 8.7,
+ "score_with_roadmap": 9.4,
+ "criteria": [
+  {
+   "id": "C1",
+   "score": 8.8,
+   "note": "At the design target, every item fits.\n- Worn hero 77–386, H1 398–426, price with GST and 'Surgical steel, PVD rhodium' 432–460.\n- Ladder ₹2,159 / ₹1,919 / ₹1,679 at 471–538.\n- One line 'Free insured delivery, est. 18–20 Nov · COD available' at 544–562.\n- Bar at 575: Add to bag · ₹2,399 and Buy now.\nThe fact line clears the bar by 13 px at 360x640, 360x600, 360x560, 320x568, 390x664, 412x732 and 412x846, and by 38 px at 390x844 (folds.json). It also clears by 13 px with insets of 24, 34 and 48 px, and by 14 px with the brand fonts blocked. Nothing scrolls sideways.\n\nGap: the budget is a constant (100svh − 331px), so the facts cannot grow.\n- At 115% text (Android 'Large', emulated), the price row runs to 374 px, the delivery line to 369 px ('COD availabl|') and the third rung to 361 px. The page becomes 374 px wide on a 360 px screen and pans sideways (fold_360x640_text115_clip.png).\n- At 130%, the fact line ends 3 px under the bar top, 'COD available' runs to 415 px, and Buy now's label is 6 px wider than its button.\nAndroid WebView follows the phone's Font size unless the app pins textZoom to 100. Whether Instagram pins it is unverified (roadmap). The variant holds 13 px at 115% and 130% with no sideways scroll, and is identical at the default size (fix 1)."
+  },
+  {
+   "id": "C2",
+   "score": 8.5,
+   "note": "On load the hero is the worn bracelet. There is no popup and no timer. The '1 / 7' counter is quiet, and the chip is a 52 px button with Riya's own frame inside it.\n\nBoth round-3 faults are gone:\n- The bar is labelled from the first text paint (load_strip.jpg, 794 ms frame).\n- The size-adjusted fallback keeps the swap at about 2.1 s to CLS 0.0001.\n\nRemaining:\n(1) On tall screens the hero hits its min(125vw, 520px) cap, so the reassurance list peeks under the bar with text half-cut, which is C2's own fail condition. The sweep found 'Questions before you buy?' at 820–839 against a bar at 835 (412x900), the WhatsApp and @naira.flore links at 777–821 against 795 (360x860, 360x880), and the same links at 818–862 against 835 (393x900) (tall_compare.jpg). These sizes are Chrome or Safari with the toolbar collapsed rather than Instagram, but they are half the traffic.\n(2) The chip appears at about 1.1 s, after the end-of-body script, with a blank 40x52 thumbnail for about 150 ms (load_strip.jpg, 1133 ms frame).\nThe variant from fix 1 removes (1) at every height from 640 to 900 (sweep: none)."
+  },
+  {
+   "id": "C12",
+   "score": 8.0,
+   "note": "Seven real slides sit in a snapping track. One touch swipe moves exactly one slide (2 / 7) and loads that slide and its neighbour. A vertical drag that starts on the photo still scrolls the page (scrollY 264). Every slide has alt text, and the size slide is an SVG ruler. A tap opens the viewer with the 896x1200 Shopify original drawn at 360x482. Back closes it and focus returns to the track.\n\nUnchanged gaps:\n- There is no zoom of its own: a double tap leaves visualViewport.scale at 1 and the image at 360 px.\n- The hero srcset tops out at 720w, a 1.5x upscale on DPR 3. Both wait on 1,440 px originals.\n- New: at 320 px the ruler scales to 280 px, so its labels render at 9.6 px, under the 11 px floor (size_320.png). This is the slide that carries the fit claim."
+  },
+  {
+   "id": "C13",
+   "score": 8.0,
+   "note": "No MP4 bytes load before a tap; the tap makes one 142 KB request. 'Creator collaboration · Riya' shows in the viewer, and the clip plays once with sound, then loops muted. The source is 270x480 drawn at 360x640, so it is soft. Only new footage can fix that (roadmap)."
+  },
+  {
+   "id": "C14",
+   "score": 8.3,
+   "note": "These hold in every state:\n- axe-core (wcag2a/aa, 21aa, 22aa, best-practice and label-content-name-mismatch) finds 0 violations on load, with the card open, and in the one- and four-piece bags.\n- My computed-contrast scan finds no failure on load, with the card open, in the bag or in the set summary. The lowest ratio is 4.84:1 (deep sage at 12 px on ivory).\n- Every target in the header, page, bar, card, bag and footer is at least 44 px. Body text is 15 px and nothing is under 11 px except the ruler at 320 (9.6 px).\n- One H1 and ordered H2s, including inside the summaries. lang en-IN, a polite live region, Tab trapped in the bag and viewer, and focus returned on close.\nAll five of my round-3 a11y faults are fixed.\n\nNew, both WCAG AA:\n(1) 2.4.11 Focus Not Obscured (2.2 AA). Of 31 tab stops, 4 land entirely behind the fixed bar: the WhatsApp link, @naira.flore, the ring's '+ Add' and 'Add all four' (focus_hidden.png). Three more are partly hidden: the ring thumbnail (25 of 90 px) and both Riya tiles (134 of 199 px). The browser scrolls focus into view against the viewport, not against the bar. With html scroll-padding the count is 0 (interact_b.json, fix 2).\n(2) 1.4.12 Text Spacing. With the WCAG spacing override, the delivery + COD line runs to 422 px on a 360 px screen and the page scrolls sideways. The variant keeps it on screen and 19 px clear of the bar.\nMinor: the track is a div with aria-label and no role (a name on a generic element is not reliably announced), the slides have no slide semantics, and the page behind the bag is not inert for TalkBack's swipe navigation."
+  },
+  {
+   "id": "C15",
+   "score": 9.0,
+   "note": "The bar is on at every scroll position. At the page end the footer links sit at 501–545 against the bar at 575; with the folds open the page ends at 4,395 px.\nTaps and Back:\n- Two taps 120 ms apart on Add to bag give one piece and no bag.\n- A second tap on the bag's Secure checkout 120 ms after it opens is swallowed (nf_tap_guarded), and no InitiateCheckout fires.\n- Back closes the bag, the viewer and the hand-off, and stays on the piece.\nFolds open in place with no scroll jump (summary at 300 before and after). 'Read the policy' opens its fold with the summary at 91 and both paragraphs (143–436) above the bar.\nLength: the page is 3,422 px to the end of the footer, 6.1 swipes of 563 px. Sections start at: the set 872, Up close 1528, Riya 2425, Reviews 2814, folds 3010. Nothing needed to decide is only inside a fold.\n\nRemaining: an add from the bar while the specs are on screen docks the card at 491–567. It covers the spec rows and slivers of 'See the size guide' (560–604) or 'Ask about your wrist size' (454–498), and the top of both Riya tiles (545–744). It stays until × or 150 px of scroll (dock_specs.png, interact_b.json)."
+  },
+  {
+   "id": "C16",
+   "score": 9.2,
+   "note": "Lab, 150 ms RTT, 1.6 Mbps, 4x CPU, 360x640, Android fallback faces (perf.json):\n- LCP 1.13 / 1.12 s at DPR 2 and 1.11 s at DPR 3, on worn-720.jpg. Round 3 was 1.39 s.\n- FCP 0.35–0.37 s, CLS 0.0001.\n- Before scroll: 5 image requests, 158 KB of images, 321 KB in all.\n- Fonts are 71 KB and land at 2.16–2.33 s. No video bytes load.\n- A Riya landing reaches LCP at 0.87 s with 4 images (121 KB). A dpa landing reaches it at 1.12 s.\nEvery 10/10 threshold is met, and the variant measures the same (LCP 1.13 / 1.16 s, CLS 0.0001).\n\nWhat still slows LCP:\n(1) The 73 KB hero (207–1089 ms) shares the 1.6 Mbps pipe with the end of the 91 KB uncompressed document (0–962 ms), which now carries the notes panel, and with logo.png (18 KB, 337–775 ms).\n(2) The hero is a JPEG. Re-encoded from the same pixels it is 53 KB as WebP q80 and 47 KB as AVIF (out/worn-720.webp, .avif).\nThese are lab figures on a static file; field data is in the roadmap."
+  },
+  {
+   "id": "C20",
+   "score": 9.0,
+   "note": "The card sits over the photo and never reaches the H1:\n- 85–360 at 360x640 (85–364 after its + Add);\n- compact 85–293 at 360x560;\n- no suggestion, 85–225 at 320x568;\n- 85–343 at 390x844 and 412x732 (85–372 after its + Add).\nIt has no timer and closes on ×, Escape, Keep browsing or 150 px of scroll. The bar reads '✓ Added to bag' for 600 ms, then 'Bag & checkout · ₹2,399', named '…, 1 piece'. The badge and the live region ('Prism Rivière Bracelet added. 1 piece in your bag, ₹2,399. A second piece takes 10% off your whole bag.') confirm the add. The card's + Add becomes an inert '✓ Added', and no card appears while the set is on screen.\n\nAll three round-3 faults are fixed. What remains is the dock covering spec rows and links (see C15)."
+  }
+ ],
+ "fixes": [
+  {
+   "priority": 1,
+   "where": "Markup: wrap L389–434 (section.gal, its inline script and div#product-facts) in <div class=\"above\">. CSS: .track height L96, .price L136, .lk L142, .lad ul L144, .lad .k L150, .lad .v L151, .ship L153, .buybar L161. Live: JewelDetail hero + PdpBuyFacts, and the first-screen budget test.",
+   "change": "Make the first screen a column in which the photo gives way, never the facts.\n\n1. Add this CSS:\n.above { display: flex; flex-direction: column; height: calc(100vh - var(--hdr) - var(--bar) - var(--safe) - 13px); height: calc(100svh - var(--hdr) - var(--bar) - var(--safe) - 13px); }\n.above .gal { flex: 1 1 0; min-height: 180px; max-height: min(125vw, 520px); }\n.above .track { height: 100%; }\n.above .facts { flex: none; }\nDelete both clamp() lines on .track (their work moves to .above).\n\n2. Let the facts wrap instead of overflowing:\n.price { flex-wrap: wrap; row-gap: 0; }\n.lk, .lad .k, .ship { white-space: normal; }\n.ship b { white-space: nowrap; }\n.lad ul { grid-template-columns: repeat(3, minmax(0, 1fr)); }\n\n3. Use unitless line heights, which are identical at the default size:\n.ship { line-height: 1.385; } .lk, .lad .k { line-height: 1.334; } .lad .v { line-height: 1.223; }\n\n4. Bar: .buybar { grid-template-columns: minmax(0, 1fr) minmax(128px, auto); }\n\n5. Write each rung label as <span class=\"k\"><span class=\"nw\">2 pieces ·</span> <span class=\"nw\">10% off</span></span>, so a wrap falls after the dot.\n\n6. Keep the @media (max-width: 349px) rules.\n\nIn the live SPA, build the same structure in JewelDetail. Extend the first-screen budget test to run at font scales 1.15 and 1.3 and at 412x900, asserting that the delivery + COD line ends at or above the bar and that the document is no wider than the viewport.",
+   "why": "C1, C2 and C14 (WCAG 1.4.12; 1.4.4 in spirit). The fixed 331 px budget cannot absorb any growth of the facts. Measured (folds.json, textscale_compare.jpg):\n- At 115% text the COD line runs to 369 px and the material note to 374 px on a 360 px screen, and the page pans sideways.\n- At 130% the fact line goes 3 px under the bar and 'COD available' runs to 415 px.\n- With WCAG text spacing it runs to 422 px.\n- On tall screens (360x860–900, 393x900, 412x900) the reassurance list is half-cut under the bar (tall_compare.jpg).\nOn the variant (proto/variant.html, var_folds.json, vcheck.json):\n- The default geometry is unchanged within 1 px at all eight viewports, with fallback fonts and with the 24/34/48 px insets.\n- The fact line ends 13 px above the bar at 115% and 130% (360x640, 390x844) and at 320x568 at 115%, and 19 px above it with text spacing.\n- The document is never wider than the screen, and the height sweep finds no half-cut line.\n- LCP is 1.13 / 1.16 s and CLS 0.0001, and axe finds 0 violations.\nThe one residual: at 130% Add to bag's label is 4 px wider than its button. COD is a first-screen decision fact for 45% of orders [N]."
+  },
+  {
+   "priority": 1,
+   "where": "CSS, after html, body L66 (and the scrollMarginTop loop at L963 becomes redundant). Live: index.css, using --navbar-h and the PDP bar's height.",
+   "change": "Add: html { scroll-padding-top: calc(var(--hdr) + 8px); scroll-padding-bottom: calc(var(--bar) + var(--safe) + 8px); }\nThen a focused control, a fragment jump (#set, #policy) or a scrollIntoView never lands under the sticky header or the fixed bar.\nIn the live app: html { scroll-padding-top: calc(var(--navbar-h) + 8px); } on every page, and on the PDP add scroll-padding-bottom equal to the sticky bar plus env(safe-area-inset-bottom). Then the hard-coded scrollMarginTop values can go.",
+   "why": "C14: WCAG 2.2 SC 2.4.11 Focus Not Obscured (Minimum), level AA. Tabbing from the top (31 stops), these are entirely hidden behind the bar when focused (focus_hidden.png, interact_b.json):\n- the WhatsApp link;\n- @naira.flore;\n- the ring's '+ Add';\n- 'Add all four · ₹3,987'.\nThe ring thumbnail and both Riya tiles are partly hidden. The same applies to TalkBack and switch users, whose focus the browser scrolls against the viewport. With the rule injected at runtime the count is 0, and nothing else moves."
+  },
+  {
+   "priority": 2,
+   "where": "showCard() L728–738, the dock branch",
+   "change": "Test the controls under the dock, not only the set section. Before docking, compute the dock band (var bt = bar.getBoundingClientRect().top, top = bt - 84, bottom = bt - 8). Then run var hit = $$('main a, main button, main summary').some(function (e) { if (card.contains(e) || bar.contains(e)) return false; var r = e.getBoundingClientRect(); return r.width && r.bottom > top && r.top < bottom; }).\nIf hit is true, show no card: track('nf_card_shown', { id: id, mode: 'none_control_under' }) and let the bar, badge and live region confirm, as the set branch already does. This generalises the existing none_set_visible rule. It is the same idea as CRO's round-4 'test the buttons, not the section', so one implementation serves both.",
+   "why": "C15, C20 and the brief's 'nothing covers anything'. Added from the bar while reading the specs, the dock at 491–567 covers the Clasp and Box rows and slivers of 'See the size guide' (560–604) or 'Ask about your wrist size on WhatsApp' (454–498). Further down it covers the top of both Riya tiles (545–744). It stays until × or 150 px of scroll (dock_specs.png, interact_b.json). The add is already confirmed four ways without it."
+  },
+  {
+   "priority": 3,
+   "where": ".sl.size L104 and .ruler L105",
+   "change": "Let the ruler keep its 320 px width at 320 px screens:\n.sl.size { padding: 0 0 34px; }\n.ruler { width: 100%; max-width: 320px; }\nThe 0 and 24 cm labels already sit 10 px inside the viewBox. At 360 px and wider nothing changes, because the grid centres the 320 px ruler.",
+   "why": "C12 and C14 (type floor 11 px). At 320x568 the ruler draws at 280 px, so 'wrist 15–19 cm', 'bracelet 18 cm' and the scale numbers render at 9.6 px (interact.json ruler320, size_320.png). This is the slide that answers 'will it fit?'."
+  },
+  {
+   "priority": 3,
+   "where": "Gallery markup L389–400 and mark() L865–871",
+   "change": "Give the carousel its parts:\n- On #track, replace aria-label with role=\"group\" aria-label=\"Photos, swipe for more\".\n- On each figure.sl, add role=\"group\" aria-roledescription=\"slide\" aria-label=\"1 of 7, worn on the wrist\" (and so on for each slide).\n- Add <p class=\"vh\" id=\"gal-live\" aria-live=\"polite\"></p> inside .gal.\n- In mark(), set gal-live's text to (k + 1) + ' of ' + N, but only after a user swipe or arrow press, never on load.",
+   "why": "C14 (name, role, value) and APG carousel. A name on a role-less div is not reliably announced. Today a TalkBack user who swipes the gallery hears nothing about which photo is shown, because #count is aria-hidden and the changed track label is not live."
+  },
+  {
+   "priority": 3,
+   "where": "openLayer() L930–935 and the popstate handler L937–942",
+   "change": "While the bag or the viewer is open, make the page behind it inert:\n- On open: ['header', 'main', 'footer'].forEach(function (s) { $(s).inert = true; }).\n- In popstate, set inert = false. Leave the bar and card out of it: the bar sits in main, so the bag's opener is restored after close.\nKeep the JS Tab trap as a fallback.",
+   "why": "C14. aria-modal and the Tab trap stop Tab, but TalkBack's swipe-to-next can still walk into the page behind the bag in some Chrome/TalkBack versions. inert is the robust form, and it also blocks a stray tap from reaching the page through the scrim."
+  },
+  {
+   "priority": 3,
+   "where": "Chip L402 and the head script L14–38",
+   "change": "Render the chip visible from the first paint on the default landing:\n- Remove hidden from #chip in the HTML. The head script already knows m.slide, so it can add a class that hides the chip before paint when m.slide !== 0.\n- Give the 40x52 thumbnail a src that is a data URI of chip-riya.jpg (2.7 KB, about 3.6 KB inline), or at least drop loading=lazy, so the plate never shows an empty frame.",
+   "why": "C2. Under throttle the chip appears only at about 1.1 s, on top of the hero, when the end-of-body script runs, and its thumbnail is blank for about 150 ms (load_strip.jpg, 1133 ms frame; chip-riya.jpg 1097–1262 ms). It is a late element over the hero."
+  },
+  {
+   "priority": 3,
+   "where": "Live build: the landing-frame preload and the header",
+   "change": "In the live SPA:\n- Serve the landing frame from the Shopify CDN at width=720 with format negotiation (WebP or AVIF), not as a hand-made JPEG.\n- Keep the header wordmark as the existing vector component; no PNG logo request on the PDP.\n- Keep the notes panel out of the shipped document.\n- Preload only the landing frame from index.html's inline head script, as build note 4 says.",
+   "why": "C16. In the lab the 73 KB hero (207–1089 ms) shares 1.6 Mbps with the end of the 91 KB uncompressed document (to 962 ms) and logo.png (18 KB, 337–775 ms). The same pixels are 53 KB as WebP q80 and 47 KB as AVIF (out/worn-720.webp, .avif), 27–35% fewer bytes on the LCP element. Expect roughly 0.1–0.2 s off a 1.1 s LCP on this profile."
+  }
+ ],
+ "keep": [
+  "The first-screen decision set at the 360x640 target, 13 px clear of the bar at eight viewports, with fallback faces (14 px) and with 24, 34 and 48 px insets (13 px). The bar is labelled from the first text paint.",
+  "The 700 ms tap guards: two taps on Add to bag give one piece, and a second tap on the bag's Secure checkout is swallowed with no InitiateCheckout. nf_tap_guarded is logged.",
+  "Bag, viewer and hand-off each own one history entry. Back closes the overlay and stays on the piece, focus returns to the opener, and Tab is trapped in the bag and viewer.",
+  "The after-add card's fit modes (full, compact, no suggestion, dock), measured against the photo. It never reaches the H1 at five viewports. It has no timer, its '✓ Added' is inert, and no card shows while the set is on screen.",
+  "The bar on at every scroll position, with the footer padded for it (links at 501–545 against the bar at 575).",
+  "The bag's fixed foot: the saving line, the COD figure in rupees and Secure checkout in view at 1–4 pieces (522–628), and the single 10 px radius exception.",
+  "The loading strategy. The landing frame is preloaded at high priority from the head, the slides use data-src with an idle neighbour, and the below-the-fold images are released after the hero. The fonts are deferred behind a size-adjusted fallback. No video bytes load before a tap. Lab: LCP 1.11–1.13 s, a Riya landing at 0.87 s, CLS 0.0001.",
+  "44 px targets everywhere. AA contrast in every state (lowest 4.84:1). axe-core clean on load, with the card open and in the one- and four-piece bags, with label-in-name fixed. One H1 and ordered H2s.",
+  "The gallery: one slide per swipe with snap-stop, vertical drags passing through to the page, the quiet counter, alt text on every slide, the SVG ruler, arrows only for keyboard users, and Enter opening the viewer.",
+  "A lean page of 3,422 px (6.1 swipes), in this order: set, Up close with specs, Riya, reviews, then three folds that hold nothing needed to decide."
+ ],
+ "roadmap": [
+  "A real-device pass inside the Instagram app on a low-end Android at Font size Default, Large and Largest. Record whether Instagram pins WebView textZoom to 100; if it does not, fix 1 is what keeps COD on the first screen. Also record env(safe-area-inset-bottom), the visible viewport height and when the fonts land, and test pinch in the viewer.",
+  "Field RUM (web-vitals: LCP, INP, CLS) from the Instagram webview, tagged with in-app browser, DPR, inset and an effective text scale. The text scale is measured once from a hidden 100px-wide test string and logged as the Clarity tag nf_text_scale. This replaces the lab figures and sizes the textZoom risk (C16, C1).",
+  "Shopify originals at 1,440 px or wider for every gallery frame. That gives the viewer a real zoom (double tap to 2.5x, then pan) and a sharp hero on DPR 3 (C12, 10 with input).",
+  "A clip of at least 540x960, ideally the 6–10 s macro turn and an on-wrist clip under 1 MB each, to replace the 270x480 source drawn at 360x640 (C13).",
+  "Port to the live SPA. Build the first-screen column and html scroll-padding (fixes 1 and 2) in JewelDetail and index.css, and extend Header.test.ts's budget test with font scales 1.15 and 1.3 and a 412x900 viewport. Inject the landing-frame preload from index.html's inline head script, beside NAIRA_JEWELLERY_REDIRECT.",
+  "Clarity after launch: dead and rage taps on the gallery, the dock and the bar, the nf_card_shown modes (including none_control_under) and nf_tap_guarded. These confirm that no control is covered or ambiguous."
+ ]
+}

@@ -1,0 +1,158 @@
+{
+ "lens": "Trust and consumer law, round 4: a first-time Indian shopper (28, Pune, buys on Instagram, burnt by fake jewellery sites) and a reviewer who knows the CCPA 2023 dark-pattern guidelines, the Consumer Protection (E-Commerce) Rules 2020 (Naira sells its own stock, so the inventory-entity duties in r.7 apply), BIS IS 19000:2022 and ASCI's influencer rules. G3 passes: fold.png, added.png, fold-ad.png, screens_1-3.jpg and measure.json (04:30:23-27) are newer than prototype.html (04:28:28) and match it; my renders of an untouched copy (md5 49edcb03...) agree. fold-ad.png is byte-identical to fold.png (md5 ab13225d...) because prism_sugar_p1 carries no confirmed angle, which is right from this lens. G1 does not trip: the rubric grep over the page text, alt text and JSON-LD finds no rating, star, sold count, timer, press, skin or nickel claim, diamond, bare 18K, NAIRA10 or change-of-mind return. All eight round-3 trust fixes landed, or were parked correctly in the notes as owner or ops items. Evidence in /tmp/claude-0/-home-user/aaed4e78-f5ea-57f6-bb8a-ea8f2c0ecee0/scratchpad/r4trust/: probe.js and probe.json (page text, alts, the Buy now hand-off, the bag, the policy fold, the 320 and 412 fact lines, a Riya landing, the viewer label); bag1.png, policy.png, hand.png, land_riya.png, viewer_clip.png, fold_320.png, fold_412.png; clip_strip.jpg (the 3.3 s clip at 3 fps); bagpol.js, bagpol.json and bagpol_*.png (fix 2 tried on a COPY; the prototype was not edited). I also checked the repo at origin/main bd412960 (promo.ts, serviceability.ts, CartDrawerNext.tsx BagReturns and SimpleLadder, and the absence of any inventory field in src), the live cushion-halo-ring and prism HTML in pdp10/live, Riya's transcript (/tmp/claude-0/-home-user/aaed4e78-f5ea-57f6-bb8a-ea8f2c0ecee0/scratchpad/mx/audit_riya.json) and the test plan in rounds/r3_cro.json. score_now is the weight-averaged score of the criteria below (650/74 = 8.78). I report 8.7 because the three statements a dispute would turn on (the 15–19 cm fit, COD for every pincode, and 'worn' against the defect cover) still wait on ops and the owner. The critique is also written to /tmp/claude-0/-home-user/aaed4e78-f5ea-57f6-bb8a-ea8f2c0ecee0/scratchpad/pdp10/rounds/r4_trust.json.",
+ "score_now": 8.7,
+ "score_with_roadmap": 9.4,
+ "criteria": [
+  {
+   "id": "C1",
+   "score": 9.0,
+   "note": "Unchanged, and right. The H1 sits at 398-426. The price row carries 'incl. GST' and 'Surgical steel, PVD rhodium', the ladder is in rupees, and 'Free insured delivery, est. 18–20 Nov · COD available' ends at 562 with the bar at 575 (measure.json). At 320x568 the line drops 'insured' and ends at 490 against the bar at 503; at 412x732 it ends at 654 against 667 (probe.json). The estimate matches serviceability.ts: 3 working days in Maharashtra and 5 elsewhere, so the Pune shopper's date is 18 Nov. The one gap is still the unqualified 'COD available', against the site's own prepaid-only pincodes (notes item 2)."
+  },
+  {
+   "id": "C2",
+   "score": 9.5,
+   "note": "Nothing covers the decision set. There is no popup, timer or FOMO card, the bar is opaque, and the after-add card sits over the photo only (added.png, y 85-360). The chip now carries Riya's own mehendi frame, so it no longer reads as a credit on the studio photo (fold.png, y 324-376)."
+  },
+  {
+   "id": "C3",
+   "score": 9.0,
+   "note": "G1 is clean. Both round-3 deductions are gone. The fold now says 'Worn or customer-damaged pieces are not eligible', in FACTS' words (L508), and the chip names Riya's clip rather than the photo. The Product JSON-LD in the head is built from FACTS, with no aggregateRating (L42). Two things hold it under 10. (1) The 40% strike to ₹3,999 has no basis on file (notes item 7); the rubric allows it until the owner confirms. (2) The page states 'fits wrists 15–19 cm' beside its own ruler, which draws the wrist band 1 cm past the bracelet's 18 cm end (L398). Both come from FACTS, so neither is deducted under G1, but a not-as-described complaint would start at either."
+  },
+  {
+   "id": "C4",
+   "score": 9.0,
+   "note": "Everything she can check is real. The WhatsApp number is written out twice, and three links carry a prefilled message naming the piece (one asks about wrist size). Add @naira.flore, seven real images, the gift box, and 'No reviews for this piece yet. Ask us anything before you buy.' with no stars. It is under 10 because she still cannot tell from the page who the seller is (no legal name, GSTIN or grievance officer; roadmap), and Riya has no handle. One risk sits in the implementation, not the page: the ring and necklace rows link to live PDPs that show '4.9 out of 5 from 51 reviews' with an aggregateRating count of 51 (pdp10/live/cushion-halo-ring.html). See fix 1."
+  },
+  {
+   "id": "C5",
+   "score": 8.5,
+   "note": "Up from 7.5. The faulty-piece line sits at the first scroll (y 680-761, probe.json) and opens the fold, which now states the policy in FACTS' words, including no change of mind (policy.png). The FAQ asks 'What if it has a fault?'. Three gaps remain. (1) The bag, where she commits, carries no policy words at all (bag1.png), and build note 1 deletes the live bag's only line without replacing it (fix 2). (2) 'Full policy (store-wide)' still lands on the apparel-worded page. (3) Whether 'worn' excludes a fault found while wearing the piece in week one is still for the owner to answer (notes item 4)."
+  },
+  {
+   "id": "C6",
+   "score": 9.0,
+   "note": "There is one offer and no code. The rupee figures round as promo.ts rounds, and a rung is underlined only once it applies (L670): after one add nothing is underlined while the bar says ₹2,399. BUY2 has been live again since 9 Nov (promo.ts comment), so the ₹2,159 rung is honoured. The unlabelled ₹3,999 strike directly above the ladder holds it under 10."
+  },
+  {
+   "id": "C7",
+   "score": 9.0,
+   "note": "Honest. Each piece has a metal line, and the marginal rupees match the bag ('With the bracelet it adds ₹659, not ₹999'). '30% off all four · you save ₹1,709' is computed against list prices, never against ₹3,999. Nothing is pre-added, and 'Add all four' adds only what is missing. Two gaps. (1) '3 in stock' has no live data source in the repo: there is no quantityAvailable or totalInventory anywhere in src at bd412960 (fix 3). (2) The hoops row, which 'Add all four' sells in one tap, gives only 'Gold tone', with no base metal and no link to the hoops' own page (roadmap)."
+  },
+  {
+   "id": "C8",
+   "score": 8.0,
+   "note": "'COD available' is on the fact line in the owner's words. Buy now carries the UPI marks, no prepaid discount is claimed, and the PROPOSED items sit outside the frame. Up from 7.5, because notes item 1 now flags the fold sentence for the owner and item 2 makes the pincode test a pre-launch step. Two things are still open on the page as it stands. (1) COD is promised to every pincode, while serviceability.ts keeps J&K, Ladakh, Bihar, Jharkhand, the North East, the islands and parts of UP and Haryana prepaid-only. (2) The fold's 'any COD fee is shown in rupees in your bag' is not true on the Buy now route, which has no bag (hand.png: 'Buy now skips the bag, so its COD figure is not shown on our pages first')."
+  },
+  {
+   "id": "C9",
+   "score": 9.0,
+   "note": "The material is on the first screen and in the spec list, title, meta, bag, FAQ and JSON-LD, all in FACTS wording, and the stone size, colours, clasp and box are all given. Two things hold it under 10. (1) There is no country of origin, which E-Commerce Rules r.7 lists among the details an inventory seller must give before purchase; it needs a supplier fact. (2) The colour name: the studio photos show the second stone as pink, while Riya's footage on slide 5, in the clip and on both tiles shows the same stones as lilac (land_riya.png, viewer_clip.png). FACTS says soft pink, so the page is right to say it, but ops should confirm it in daylight (fix 7)."
+  },
+  {
+   "id": "C10",
+   "score": 7.5,
+   "note": "Up from 7.0. The spec list now has a 44px 'Ask about your wrist size on WhatsApp' link, prefilled 'my wrist is __ cm', and the FAQ ends 'Not sure? Send us your wrist measurement on WhatsApp.' The contradiction itself stands until ops measure the bracelet (notes item 3): an 18 cm bracelet cannot close round a 19 cm wrist unless it adjusts, and the page's own ruler shows exactly that."
+  },
+  {
+   "id": "C11",
+   "score": 9.0,
+   "note": "Care is in the listing's words, and the five real questions are answered from FACTS, including 'Is it real silver? No…'. 'Will it fit me?' carries C10's issue, and 'tarnish free' is an absolute performance claim with no cover window behind it (roadmap)."
+  },
+  {
+   "id": "C13",
+   "score": 8.5,
+   "note": "Up from 8.0. Every placement discloses: the chip, the slide plate, the viewer label ('Creator collaboration · Riya', shown while the clip plays, viewer_clip.png), both tiles and the sub-line. A Riya ad lands on 5/7 with 'From Riya's reel · creator collaboration' (land_riya.png). The 3.3 s clip says only 'and this bracelet is the one / people stop you for', and it ends before the 'Pastel zircon' and plating captions (clip_strip.jpg; transcript in mx/audit_riya.json). Two things hold it at 8.5. Riya has no handle and no paid-or-gifted status. And the clip has no disclosure in its own frames, which matters once it replaces the live Shopify product video and plays without this page around it (fix 6)."
+  },
+  {
+   "id": "C17",
+   "score": 8.5,
+   "note": "Scored on whether what the match prints is true. A creator is named only when utm_content names her, and no unconfirmed angle line is printed. The query is kept and nothing redirects. fold-ad.png equals fold.png by design."
+  },
+  {
+   "id": "C19",
+   "score": 9.0,
+   "note": "Quiet, specific Indian English, and 'Read the policy' is now a clear label. There are no superlatives and no exclamation marks. The only absolute is the listing's 'tarnish free', which is set as a bold lead (fix 5)."
+  },
+  {
+   "id": "C20",
+   "score": 9.0,
+   "note": "One tap adds one piece, behind the guard. The card confirms the bracelet first and offers one suggestion in true rupees: 'Adds ₹659, not ₹999 / 10% off both', since ₹3,058 − ₹2,399 = ₹659. '✓ Added' is inert. The bar reads 'Bag & checkout · ₹2,399' and opens the bag, never Fastrr."
+  },
+  {
+   "id": "C21",
+   "score": 8.0,
+   "note": "After an add, every route passes the bag. The bag keeps '₹2,399 paid online · ₹2,519 with COD (₹120 fee)' above Secure checkout (bag1.png, y 551-574) and names the code as automatic. The Buy now route still reaches Fastrr with no rupee COD figure on our pages, after a first screen that says 'Free insured delivery', and Fastrr books the fee as shipping. That is the owner's decision (notes items 1 and 5)."
+  }
+ ],
+ "fixes": [
+  {
+   "priority": 1,
+   "where": "Notes panel, 'Build notes for the live release' (a new item 1, before the bag item at L570). In the repo: JewelDetailNext.tsx (care answers L679-690, title L716, badges L993-998, JSON-LD), CustomerReviews.tsx, reviewWall.ts, productReviews.ts, FomoPopup.tsx, dailySold.ts, JewelTrustStrip.tsx, PressMarquee.tsx, AnnouncementBar.tsx L27, and CartDrawerNext.tsx (BagReturns, SimpleLadder).",
+   "change": "Add as build note 1, worded: 'An honest baseline before any test, for all traffic and on every jewellery page. Remove: the authored rating and review wall on PDPs (reviewSummary 4.9 · 51, the hard-coded \"Verified Buyer\" flag, and aggregateRating in the Product JSON-LD); FomoPopup; dailySold \"N pieces sold in the last 48 hours\" and JewelTrustStrip's hashed count; PressMarquee \"As featured in\"; the unconditional \"Skin-friendly\" and \"Anti-tarnish\" badges; from the care answers, \"3-year plating assurance\", \"for a lifetime\", \"skin-safe\" and \"If it does not suit you, return it within 7 days\"; \"dispatched from our Mumbai atelier\"; the \" · Demi-Gold Jewellery\" title suffix; \"SITEWIDE SALE LIVE TODAY!\" and \"MADE IN LIMITED BATCHES\" in the marquee; \"✦ Sitewide sale live today · up to 30% off\" in the bag's SimpleLadder; and BagReturns' \"Easy 7-day exchange & returns\", replaced by the line in fix 2. Arm A is then the current layout without these, so the test compares layouts, never honest proof against invented proof. Test: render JewelDetailNext, CartDrawerNext and Header, and fail on /51 reviews|verified buyer|pieces sold|just bought|as featured|skin|plating assurance|lifetime|sale live today|limited batches|atelier|demi-gold|7-day exchange/i.' In notes item 1, say that nf_bag_view and nf_bag_exit are read against this honest arm A.",
+   "why": "rounds/r3_cro.json plans 'arm A stays live' and 'Ship the bag change for arm B only', and sizes the test at about 6,050 to 51,000 visitors per arm. For that whole period, half the ad traffic would keep seeing what the audit proved invented. The arm-B page links straight into it: the ring and necklace rows go to live PDPs that show '4.9 out of 5 from 51 reviews', an aggregateRating count of 51 and 'Skin-friendly' (pdp10/live/cushion-halo-ring.html). A shopper who reads 'No reviews for this piece yet' here meets 51 reviews one tap later and concludes the brand invents them. The law: the CCPA 2023 dark-pattern guidelines name false urgency, which includes showing false popularity, as the FomoPopup's random 'Varsha, Hyderabad bought…' does. E-Commerce Rules r.7 bar an inventory seller from posting reviews as if it were a consumer, and require accurate return information, which 'return it within 7 days if it does not suit you' and 'Easy 7-day exchange & returns' are not. IS 19000:2022 requires reviews to be genuine, and 'verified' to mean a checked purchase. Running all this on after the audit has documented it turns an oversight into a knowing practice. It also makes the test readable: an honest arm B against a fake-proof arm A measures the fake proof, not the layout."
+  },
+  {
+   "priority": 2,
+   "where": "renderDrawer(), L804-830 (the end of #drbody); CSS beside .dr-tot (L332-337); build note 1 (L570)",
+   "change": "Append to the end of the bag body, whatever the bag holds: <a class=\"dr-pol\" href=\"#policy\" data-pol><b>Faulty piece?</b> Tell us on WhatsApp within 7 days of delivery. We cannot take a piece back for a change of mind. <u>Read the policy</u></a>.\nCSS: display block; min-height 44px; padding 12px 0 14px; border-top 1px solid var(--line); Jost 13px at line-height 1.5 in var(--ink-2); b at weight 500 in ink; u in ink with a 3px underline offset and nowrap.\nOn tap: closeLayer(), then open #policy and scroll to it, and log nf_bag_policy {q}.\nMeasured on a copy (r4trust/bagpol.json, bagpol_360x640_1.png): at 360x640 with one piece the line sits at 449-534, clear of the foot at 540, and nothing scrolls or moves. With two to four pieces it is the last item in the scrolling body (86-333px down), never under the foot.\nChange build note 1 from 'delete BagReturns' to 'replace BagReturns with this line, under the total', and change its test to: the bag contains \"change of mind\" and does not contain \"7-day exchange\".",
+   "why": "The bag is where she commits, and for a COD order it is the last page of ours she sees. Today the live bag's only policy words promise the change-of-mind return that the policy denies. The build note removes them and puts nothing in their place, so a shopper who adds from the first screen and taps 'Bag & checkout' pays without passing the policy line at y 680. E-Commerce Rules r.7 want accurate return information displayed prominently at the appropriate place, and Baymard finds 60% of users look for the policy on the product page [S1]. 68–74% of orders are one piece, which is exactly the case where the line fits with no scroll. Stating the exclusion before payment is also what keeps it from first surfacing in a WhatsApp argument after delivery (the live test file's own comment names that risk)."
+  },
+  {
+   "priority": 2,
+   "where": "Set row data-stock (L459) and render() L672-673; build notes; the repo's Storefront query (useLiveJewellery.ts)",
+   "change": "Add a build note, worded: '\"3 in stock\" must come from live inventory at view time. Nothing in src reads inventory today (no quantityAvailable or totalInventory at origin/main bd412960). Add ProductVariant.quantityAvailable to the Storefront query; the token needs the unauthenticated_read_product_inventory scope. Render the line only after live data has arrived, never from jewellerySnapshot.ts or the pre-rendered HTML, and only when 1 ≤ n ≤ 5. Show nothing when the field is null or the call fails. Test: snapshot 3 with live 12 renders no line; live 3 renders \"3 in stock\".' In the prototype, extend the comment at L672 with 'never from the snapshot or the pre-render'.",
+   "why": "The Never list allows a stock line only when stock is 5 or fewer and the number is true. A hard-coded or snapshot '3 in stock' is right today (FACTS: 3) and false after a restock. That is the false-urgency pattern the CCPA guidelines name, and 'only a few left' is the exact tell this shopper learned on fake sites. Per CLAUDE.md, JewelDetail draws from the snapshot until live data arrives, and the pre-rendered page is built at Publish, so either path can freeze a number."
+  },
+  {
+   "priority": 2,
+   "where": "Notes panel, owner list L553-567",
+   "change": "Split the owner list.\nHead the first group 'Launch blockers · the page cannot go live until each is answered', and move into it, in this order: item 3 (the fit), item 2 (COD by pincode), item 4 ('worn'), then item 1 (the COD fee wording and the Buy now route).\nGive each blocker one 'Until answered:' line:\n- Fit: the page ships with the range ops measure, not 15–19 cm.\n- COD: 'COD in most areas', with the fold sentence already drafted.\n- Worn: 'A fault that shows while you wear it in the first 7 days is covered; accidental damage is not' only if the owner confirms it; otherwise counsel decides.\n- Fee: the owner picks one of the two wordings in item 1 before launch.\nKeep everything else under 'Owner to confirm'.",
+   "why": "Each of the four is a statement on the page that a dispute would test:\n- the fit, under the r.7 take-back duty for goods not as described, with no change-of-mind return to fall back on;\n- COD, under the duty to give accurate payment-method information;\n- the fee, as drip pricing;\n- 'worn', against the defect cover.\nMixed in with MRP labelling and ad-map housekeeping, they read as optional. In this lens they are the difference between 8.7 and 9+."
+  },
+  {
+   "priority": 3,
+   "where": "Reassurance list, third item (L449)",
+   "change": "Make the material the bold lead and the listing's claim the detail: '<b>Surgical steel, PVD rhodium coating.</b> Waterproof and tarnish free, so daily wear and water are fine.' This is the listing's exact care wording. Keep the same icon and the same 13px detail type.",
+   "why": "Set in bold, 'Waterproof and tarnish free.' is the one absolute performance promise on the page. It sits one row under a policy that covers only manufacturing faults for 7 days and excludes worn pieces. A bold promise over small exclusions is the pairing this shopper has learned to distrust. The material is a fact she can look up, and the claim keeps the listing's own words. Under the CCPA 2022 guidelines on misleading advertisements, an objective claim needs substantiation, and none is on file yet (roadmap)."
+  },
+  {
+   "priority": 3,
+   "where": "Notes item 10 (L565) and the build notes; v/riya-prism.mp4",
+   "change": "Add to the note: 'When this 3.3 s cut replaces the live Shopify product video, burn \"Creator collaboration\" into the frame for its whole length, on an ivory plate at top left. The product video also plays where this page's label is absent: on Shopify, in the catalogue and on ad surfaces.' On this page, keep the viewer label as it is.",
+   "why": "clip_strip.jpg shows no disclosure in the clip's own frames, only the NAIRA watermark and Riya's captions. On this page the viewer overlays 'Creator collaboration · Riya' while the clip plays (viewer_clip.png), which is enough here. Off the page, ASCI's influencer guidelines want the label upfront in the content and, for a video under 15 s, on screen for at least 3 s. The Department of Consumer Affairs' Endorsement Know-hows (2023) accept 'collaboration' as a label."
+  },
+  {
+   "priority": 3,
+   "where": "Notes panel, a new owner item; the spec row 'Colours' (L477)",
+   "change": "Add, worded: 'Colour: the studio photos show the second stone as pink, while Riya's footage (slide 5, the clip and both tiles) shows it as lilac. Ops: look at a piece in daylight and confirm \"soft pink\" in FACTS, or correct it on the page, the listing and the JSON-LD together. If the live policy's colour-variation exclusion goes into FACTS (item 8), the fold states it.'",
+   "why": "Colour is the claim she can check the moment the box opens, and the page shows her both versions. With no change-of-mind return, stones she calls lilac against a page that says soft pink make a not-as-described complaint (E-Commerce Rules r.7)."
+  }
+ ],
+ "keep": [
+  "Zero invented proof in the page frame: no rating, stars, review count, sold count, FOMO card, timer, press strip, NAIRA10 or marquee. The rubric grep is clean over text, alt text and JSON-LD, and the head's Product JSON-LD is built from FACTS with no aggregateRating.",
+  "'Free insured delivery, est. 18–20 Nov · COD available' on one line, with the date computed at runtime and marked as an estimate, plus 'Surgical steel, PVD rhodium' in the price row.",
+  "The faulty-piece sentence at the first scroll, and the fold in FACTS' words: 'Worn or customer-damaged pieces are not eligible, and we cannot take a piece back for a change of mind.' The FAQ asks 'What if it has a fault?'.",
+  "The WhatsApp number written out, with prefilled messages naming the piece, including 'my wrist is __ cm', and @naira.flore, in the reassurance list and under Reviews.",
+  "'No reviews for this piece yet. Ask us anything before you buy.', with no stars and no promise of a review process that does not exist yet.",
+  "Creator disclosure on the chip (with Riya's own frame), on the slide, in the viewer while the clip plays, on both tiles and in the sub-line. The honest 3.3 s cut loads only on tap, and a creator is named only when utm_content names her.",
+  "After the add, 'Bag & checkout · ₹total' opens the bag and never goes straight to Fastrr, the double-tap guards hold, and InitiateCheckout fires only from the bag or Buy now.",
+  "The bag's '₹X paid online · ₹Y with COD (₹Z fee)' above Secure checkout, computed as payment.ts computes it, together with the single code named as automatic and 'Insured delivery, est. … · Free'.",
+  "Nothing pre-added. 'Add all four' adds only what is missing and says so. The marginal rupees are true, savings are counted against list prices and never against ₹3,999, and '3 in stock' shows only at stock ≤5.",
+  "A ladder rung is underlined only once it applies.",
+  "Every proposal kept outside the frame and labelled PROPOSED, with build notes that name the live strings to delete."
+ ],
+ "roadmap": [
+  "Launch blockers (ops and owner), already in the notes:\n- measure the bracelet closed and confirm whether the clasp adjusts;\n- run one Fastrr checkout to 800001 and 781001 and record whether COD is offered;\n- say what 'worn' means against a fault found in week one;\n- choose the COD fee wording, which must hold on the Buy now route too;\n- check how Fastrr labels the fee.",
+  "Owner: the basis for ₹3,999. Either show 'MRP ₹3,999 (incl. of all taxes)', or drop the strike sitewide and let the ladder carry the saving.",
+  "Seller identity (E-Commerce Rules r.4: legal name, address, customer-care and grievance-officer details; acknowledge within 48 hours, resolve within a month). Add the legal name, GSTIN and a named grievance officer to FACTS, then a footer line on every PDP. A GSTIN she can look up on the GST portal is the strongest proof this shopper can check herself.",
+  "Country of origin and, if the pieces are imported, the importer's name and address, as an 'Origin' row in the spec list. E-Commerce Rules r.4 and r.7, and the Legal Metrology online declarations, ask for these. They need supplier facts.",
+  "Reviews: an app that conforms to IS 19000:2022, with published collection and moderation terms, no suppression of negative reviews, 'verified' only on an order match, incentives disclosed, requests sent 7 days after delivery, and photo reviews. Never publish WhatsApp chats as reviews without written consent.",
+  "Riya:\n- her handle, whether the video was paid or gifted, and written rights for the site and ads;\n- once the rights are in writing, cut the same 3.3 s from her clean 4K timeline (/tmp/claude-0/-home-user/aaed4e78-f5ea-57f6-bb8a-ea8f2c0ecee0/scratchpad/src/riya_F67FB13D.mp4, 2160x3840, no burned captions) with captions set as page text, instead of the 270x480 re-export;\n- check her own post's disclosure, and any running ad that uses the full reel ('Two years plating guarantee').",
+  "'Tarnish free' and 'waterproof': either substantiation on file, or a real written cover window (never the invented '3-year plating assurance').",
+  "Set pieces: the base metal and care for the hoops and the necklace go into FACTS, then into their rows. Confirm the hoops' PDP handle (it is not in jewelleryHandles.ts at bd412960) so its row can link out like the other two.",
+  "Owner with counsel (recommendations, not page copy):\n- rewrite /exchange-return-policy for jewellery;\n- refund to the original payment method for defective or not-as-described goods (r.7);\n- say what happens to a piece damaged in transit (the page says 'insured'), how a COD order is refunded, and how to cancel before dispatch;\n- consider a 7-day size exchange on unworn pieces.",
+  "Off-site listings: check the return-policy settings in Google Merchant Center and Meta Commerce, so that Shopping and catalogue ads never advertise a return window the policy does not give. Keep hasMerchantReturnPolicy out of the JSON-LD until the policy can be stated in it truthfully.",
+  "Owner decision: whether a true store-level line such as '222 orders shipped' may appear near Reviews. It stays off until approved.",
+  "A courier API with a pincode check, so the estimate becomes a dated promise only where a courier backs it."
+ ]
+}

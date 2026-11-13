@@ -1,0 +1,1158 @@
+<!doctype html>
+<html lang="en-IN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Prism Rivière Bracelet · Naira</title>
+<meta name="description" content="Prism Rivière Bracelet: cushion-cut pastel cubic zirconia, each in a clear pavé halo, on surgical stainless steel with a PVD rhodium coating. 18 cm, fits wrists 15–19 cm.">
+<script>
+/* Ad message match, decided before first paint. utm_content is read as tokens (piece_asset_angle in any order).
+   An ASSET token opens the gallery on the frame the ad showed. A creator is named only when utm_content names her:
+   a brand film or another creator's reel ("reel", "creator") never lands on Riya's frame or prints her name.
+   ANGLE lines are added only once the ads owner confirms what an ad says; an unconfirmed angle ("sugar") changes nothing.
+   Nothing redirects and the query string stays for the pixel. */
+(function () {
+  var SLIDES = ['worn', 'macro', 'plaster', 'velvet', 'riya', 'size', 'box'];
+  /* catalogue and carousel ads show Shopify image 1, the worn photo, so they land on it by rule */
+  var ASSET = { p1: 0, worn: 0, dpa: 0, catalogue: 0, catalog: 0, carousel: 0, p4: 1, macro: 1, p0: 2, plaster: 2, studio: 2, p2: 3, velvet: 3, size: 5, box: 6, gift: 6 };
+  /* the label is the first line of slide 5's plate; its second line always reads "Creator collaboration" */
+  var CREATOR = { riya: { slide: 4, label: "From Riya's reel" } };
+  var ANGLE = {};
+  var m = { slide: 0, angle: null, creator: null };
+  try {
+    var q = new URLSearchParams(location.search).get('utm_content') || '';
+    q.toLowerCase().split(/[^a-z0-9]+/).forEach(function (t) {
+      if (Object.prototype.hasOwnProperty.call(ASSET, t) && !m.creator) m.slide = ASSET[t];
+      if (Object.prototype.hasOwnProperty.call(CREATOR, t)) { m.creator = CREATOR[t]; m.slide = CREATOR[t].slide; }
+      if (Object.prototype.hasOwnProperty.call(ANGLE, t)) m.angle = ANGLE[t];
+    });
+  } catch (e) {}
+  window.__match = m;
+  /* the chip is drawn with the first paint on the default landing; any other landing hides it before paint */
+  if (m.slide !== 0 && !(m.angle && m.angle.chip)) document.documentElement.className += ' nf-nochip';
+  /* Preload only the frame that will be on screen first. */
+  var name = SLIDES[m.slide], set = { worn: 'worn', macro: 'macro', plaster: 'plaster', riya: 'riya', velvet: 'velvet', box: 'box' }[name];
+  var pre = function (srcset, media) {
+    var l = document.createElement('link');
+    l.rel = 'preload'; l.as = 'image'; l.setAttribute('fetchpriority', 'high');
+    l.setAttribute('imagesrcset', srcset); l.setAttribute('imagesizes', '(max-width: 430px) 100vw, 430px');
+    if (media) l.media = media;
+    document.head.appendChild(l);
+  };
+  if (set) {
+    var big = { riya: 'riya-540', velvet: 'velvet-640' }[set] || set + '-720';
+    var ss = 'i/' + set + '-360.jpg 360w, i/' + big + '.jpg ' + big.split('-')[1] + 'w';
+    /* tall phones (2:1 and taller) land on the worn photo's whole 3:4 frame, so each screen fetches one hero, never both */
+    if (set === 'worn') { pre(ss, 'not all and (max-aspect-ratio: 1/2)'); pre('i/worn-full-896.jpg 896w', '(max-aspect-ratio: 1/2)'); }
+    else pre(ss);
+  }
+})();
+</script>
+<!-- Product data for search, built from the truth sheet's fields only: no aggregateRating, no "adjustable", nothing the listing text adds -->
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Product","name":"Prism Rivière Bracelet","description":"Cushion-cut pastel cubic zirconia, about 5 mm each, each in a fine clear pavé halo, linked in a continuous line with a fold-over clasp. PVD rhodium coating on surgical stainless steel. 18 cm long, fits wrists 15–19 cm. Ships in the Naira Petite gift box.","material":"PVD rhodium coating on surgical stainless steel","image":"https://cdn.shopify.com/s/files/1/0680/9606/5698/files/prism-riviere-bracelet-1.jpg","brand":{"@type":"Brand","name":"Naira"},"offers":{"@type":"Offer","url":"https://nairaflore.com/jewellery/prism-riviere-bracelet","price":"2399","priceCurrency":"INR","availability":"https://schema.org/InStock"}}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500&family=Jost:wght@400;500&display=swap"></noscript>
+<style>
+/* The proposed Naira product page, phone first (designed at 360x640, the Instagram browser on Android).
+   Brand tokens as on nairaflore.com: ivory ground, ink, sage, deep sage, gold for hairlines only; radius 0
+   (the bag's checkout button is the one 10px exception). Every price is set in Cormorant: Jost has no rupee glyph.
+   Deep sage text sits on ivory only, never on ivory-deep (4.39:1 there, under AA). */
+/* Android draws its own serif for the ~2.2 s before Cormorant lands. Scaled to Cormorant's width, the H1 stays on one
+   line and the delivery + COD line stays above the bar during that window, and the swap no longer re-sets the prices.
+   Jost and Roboto are within 1-3% in width, so the sans needs no fallback face. */
+@font-face { font-family: "Cormorant Fallback"; src: local("Noto Serif"), local("NotoSerif-Regular"), local("Georgia"), local("Times New Roman"); size-adjust: 80%; }
+:root {
+  --ivory: #FBF3EC; --ivory-deep: #F3E8DD; --ink: #1A1614; --ink-2: rgba(26,22,20,.72);
+  --line: rgba(26,22,20,.12); --line-2: rgba(26,22,20,.24); --sage: #99B4AF; --deep: #50726A; --gold: #9A7A3E; --blush: #FFBDA8;
+  --serif: "Cormorant Garamond", "Cormorant Fallback", Georgia, serif; --sans: "Jost", system-ui, sans-serif;
+  /* Type: five Cormorant sizes (500, lining figures) and four Jost sizes. Nothing else, and no half pixels. */
+  --t-h1: 27px; --t-h2: 24px; --t-h3: 20px; --t-name: 18px; --t-fig: 15px;
+  --t-body: 15px; --t-small: 13px; --t-label: 12px; --t-micro: 11px;
+  --hdr: 77px; --bar: 65px; --safe: env(safe-area-inset-bottom, 0px);
+  color-scheme: light;
+}
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body { margin: 0; background: var(--ivory-deep); }
+/* focus, Tab and in-page jumps land clear of the header and of the fixed bar (WCAG 2.4.11): nothing is focused behind the bar */
+html { scroll-padding-top: calc(var(--hdr) + 8px); scroll-padding-bottom: calc(var(--bar) + var(--safe) + 8px); }
+/* lining figures everywhere: Cormorant's old-style 1 reads as "I" ("I piece") */
+body { font-family: var(--sans); color: var(--ink); -webkit-font-smoothing: antialiased; font-size: var(--t-body); line-height: 1.55; font-variant-numeric: lining-nums; }
+.phone { max-width: 430px; margin: 0 auto; background: var(--ivory); min-height: 100vh; min-height: 100svh; position: relative; }
+button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; touch-action: manipulation; text-align: inherit; }
+a { color: inherit; }
+img { display: block; max-width: 100%; }
+p { margin: 0; }
+.g { padding-left: 16px; padding-right: 16px; }
+.rs { font-family: var(--serif); font-weight: 500; font-variant-numeric: lining-nums; letter-spacing: 0; text-transform: none; }
+.serif { font-family: var(--serif); font-weight: 500; }
+[hidden] { display: none !important; }
+.vh { position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+.btn.pri:focus-visible { outline: 2px solid var(--ivory); outline-offset: -5px; box-shadow: 0 0 0 2px var(--ink); }
+
+/* header */
+header { height: var(--hdr); display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; padding: 0 10px; background: var(--ivory); border-bottom: 1px solid var(--line); position: sticky; top: 0; z-index: 20; }
+header .l, header .r { display: flex; gap: 8px; }
+header .r { justify-content: flex-end; }
+.ico { width: 44px; height: 44px; display: grid; place-items: center; position: relative; }
+.ico svg { width: 21px; height: 21px; stroke: var(--ink); stroke-width: 1.4; fill: none; opacity: .85; }
+header .logo { width: 104px; height: auto; }
+.ico i { position: absolute; top: 7px; right: 5px; min-width: 16px; height: 16px; font-style: normal; font-size: var(--t-micro); line-height: 16px; text-align: center; background: var(--ink); color: var(--ivory); padding: 0 3px; display: none; }
+
+/* The first screen is one column, the visible page between the header and the bar (less the bottom inset and 13px).
+   The facts take the height they need and the photo takes what is left, so larger Android text, text spacing or a
+   fallback face shrink the photo instead of pushing COD under the bar or the page sideways. On tall phones the photo
+   stops at its cap and the column still ends at the bar, so nothing below is ever half-cut under it.
+   A MIN-height: when the facts and the 180px photo floor cannot share the screen (very large text, landscape), the column
+   grows and pushes the page down; a fixed height let the facts paint over the next section, text on text. */
+.above { display: flex; flex-direction: column; min-height: calc(100vh - var(--hdr) - var(--bar) - var(--safe) - 13px); min-height: calc(100svh - var(--hdr) - var(--bar) - var(--safe) - 13px); }
+.above .gal { flex: 1 1 0; min-height: 180px; max-height: min(125vw, 520px); }
+.above .facts { flex: none; }
+/* tight mode (set by the script under the facts): the two optional words go before COD can go under the bar */
+.nf-tight .price .mat, .nf-tight .ship .ins { display: none; }
+/* tall phones get the photographer's whole 3:4 frame (lips, hand, wrist) instead of a chin crop and an empty band */
+@media (max-aspect-ratio: 1/2) { .above .gal { max-height: min(133.4vw, 560px); } }
+/* gallery: one swipe track */
+.gal { position: relative; }
+.track { display: flex; overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x mandatory; scrollbar-width: none; background: var(--ivory-deep); height: 100%; }
+.track::-webkit-scrollbar { display: none; }
+.sl { flex: 0 0 100%; height: 100%; margin: 0; position: relative; scroll-snap-align: center; scroll-snap-stop: always; overflow: hidden; cursor: zoom-in; }
+.sl img { width: 100%; height: 100%; object-fit: cover; }
+/* a frame waiting for its src shows the ground, never its alt text */
+.sl img, img.lz { color: transparent; }
+/* the worn hero is framed on the wrist: the piece sits mid-frame at every viewport and clear of the corner plates */
+.sl.worn img { object-position: 50% 100%; }
+/* until the hero lands, the frame shows its own photo, soft (18x20 px of it, inline), not a band of skin over ivory */
+.sl.worn { background: url("data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAA0JCgsKCA0LCgsODg0PEyAVExISEyccHhcgLikxMC4pLSwzOko+MzZGNywtQFdBRkxOUlNSMj5aYVpQYEpRUk//2wBDAQ4ODhMREyYVFSZPNS01T09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0//wAARCAAUABIDASIAAhEBAxEB/8QAGAABAQEBAQAAAAAAAAAAAAAAAAUEAgP/xAApEAABAwMCBQMFAAAAAAAAAAABAAIDBREhBBIGEyIxURQjQWFxkaHR/8QAGAEAAwEBAAAAAAAAAAAAAAAAAAMEAQL/xAAcEQADAAEFAAAAAAAAAAAAAAAAAQIhETEyQXH/2gAMAwEAAhEDEQA/AMfEs1T4frUha9sjdY7nO3dXVci48Yx9lQpcczgajUJS855LOwb5dbyvKSnevqztVqpXzvJvufkNHhaKu4GCPRRkNc6zRbGPlR1SrYumXOGcmsQ3OAiziiaKwvE0n6kol4GFaEBkY2ju4/q39Ud3u1rrJO0YRFzPFeB2VREwi+0fhERGhp//2Q==") 50% 100% / cover no-repeat; }
+.sl.size { display: grid; align-content: center; justify-items: center; gap: 16px; padding: 0 0 34px; background: var(--ivory-deep); }
+.ruler { display: block; width: 100%; max-width: 320px; height: auto; overflow: visible; }
+.ruler text { font-family: var(--sans); font-size: 11px; fill: var(--ink-2); }
+.ruler .b { font-weight: 500; fill: var(--ink); }
+.ruler .w { font-weight: 500; fill: var(--ink); }
+.sl.size figcaption { text-align: center; display: grid; gap: 2px; padding: 0 16px; }
+.sl.size b { font-family: var(--serif); font-weight: 500; font-size: var(--t-h3); line-height: 1.2; font-variant-numeric: lining-nums; }
+.sl.size span { font-size: var(--t-small); color: var(--ink-2); }
+.plate { position: absolute; background: rgba(251,243,236,.92); color: var(--ink); font-size: var(--t-label); font-weight: 500; letter-spacing: .04em; padding: 0 12px; height: 44px; display: inline-flex; align-items: center; gap: 8px; }
+.plate svg { width: 10px; height: 10px; fill: var(--ink); flex: none; }
+.sl .tag { left: 10px; top: 10px; height: auto; padding: 6px 9px; }
+.sl .play, .chip { left: 10px; bottom: 10px; }
+/* the hero chip names the clip, not the studio photo it sits on: Riya's own mehendi frame is inside it */
+.chip { height: 52px; padding: 0 12px 0 0; gap: 10px; max-width: calc(100% - 96px); }
+.chip .tt { min-width: 0; }
+.chip .tt > * { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.chip .th { width: 40px; height: 52px; object-fit: cover; flex: none; }
+.chip .tt, .play.two .tt { display: grid; line-height: 15px; }
+.chip .tt b, .play.two .tt b { font-weight: 500; font-size: var(--t-label); letter-spacing: .04em; display: flex; align-items: center; gap: 6px; }
+.chip .tt b svg, .play.two .tt b svg { width: 8px; height: 8px; }
+.chip .tt .c2, .play.two .tt .c2 { font-weight: 400; font-size: var(--t-micro); color: var(--ink-2); }
+/* slide 5 carries one plate, the chip's two-line form: the clip and its disclosure in the same words, in the same place */
+.sl .play.two { height: 52px; padding: 0 12px; }
+.chip.angle .th, .chip.angle .c2, .chip.angle .vh, .chip.angle svg { display: none; }
+.nf-nochip #chip { display: none; }
+.count { position: absolute; right: 10px; bottom: 10px; background: rgba(251,243,236,.92); font-size: var(--t-label); font-weight: 500; letter-spacing: .04em; padding: 4px 8px; font-variant-numeric: tabular-nums; pointer-events: none; }
+.nav { display: none; position: absolute; top: 50%; transform: translateY(-50%); width: 44px; height: 44px; background: rgba(251,243,236,.92); place-items: center; }
+.nav svg { width: 16px; height: 16px; stroke: var(--ink); stroke-width: 1.5; fill: none; }
+.nav.prev { left: 8px; } .nav.next { right: 8px; }
+/* arrows for keyboard users only: a tap must never leave two plates over the photo */
+.gal:has(:focus-visible) .nav { display: grid; }
+[data-kbd] .gal:focus-within .nav { display: grid; }
+@media (hover: hover) and (pointer: fine) { .gal:hover .nav { display: grid; } }
+
+/* buy facts: everything a shopper from an ad needs, above the sticky bar */
+.facts { padding: 12px 16px 0; display: grid; grid-template-columns: minmax(0, 1fr); gap: 6px; }
+h1 { font-family: var(--serif); font-weight: 500; font-size: var(--t-h1); line-height: 1.05; margin: 0; letter-spacing: -.005em; }
+.price { display: flex; flex-wrap: wrap; row-gap: 0; align-items: baseline; gap: 8px; white-space: nowrap; }
+.price .now { font-size: var(--t-h2); line-height: 1.2; }
+.price s { font-family: var(--serif); font-weight: 500; font-size: var(--t-fig); color: var(--ink-2); font-variant-numeric: lining-nums; }
+.price small, .price .mat { font-size: var(--t-label); color: var(--ink-2); }
+.price .mat { margin-left: auto; }
+.lad { margin-top: 4px; }
+.lk { display: flex; align-items: center; gap: 10px; font-size: var(--t-label); font-weight: 500; letter-spacing: .03em; color: var(--deep); line-height: 1.334; margin-bottom: 3px; text-wrap: balance; }
+.lk::after { content: ""; flex: 1; height: 1px; background: rgba(80,114,106,.4); }
+.lad ul { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-bottom: 1px solid var(--line); }
+.lad li { padding: 2px 0 6px 10px; display: grid; position: relative; }
+.lad li:first-child { padding-left: 0; }
+.lad li + li { border-left: 1px solid var(--line); }
+.lad li.on::after { content: ""; position: absolute; left: 0; right: 10px; bottom: -1px; height: 2px; background: var(--ink); }
+.lad li + li.on::after { left: 10px; right: 10px; }
+.lad .k { font-size: var(--t-label); color: var(--ink-2); line-height: 1.334; }
+.lad .v { line-height: 1.223; white-space: nowrap; }
+.lad .v .rs { font-size: var(--t-name); color: var(--ink); }
+.ship { font-size: var(--t-small); line-height: 1.385; color: var(--ink-2); }
+.ship b { font-weight: 500; color: var(--ink); white-space: nowrap; }
+/* below 350px the optional words go and the rung labels step down, so nothing wraps */
+@media (max-width: 349px) { .ship .ins, .price .mat { display: none; } .lk, .lad .k { font-size: var(--t-micro); }
+  .lad li + li { padding-left: 7px; } .lad li + li.on::after { left: 7px; } }
+
+/* sticky buy bar: on from first paint, under the facts, never over them, and on at every scroll position:
+   the footer pads for it, so the reviews, the policy and the questions are never read without a buy control */
+.buybar { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: min(100%, 430px); z-index: 30; display: grid; grid-template-columns: minmax(0, 1fr) minmax(128px, auto); gap: 8px; padding: 8px 12px calc(8px + var(--safe)); background: var(--ivory); border-top: 1px solid var(--line); transition: transform .25s; }
+.buybar::before { content: ""; position: absolute; left: 0; right: 0; top: -11px; height: 10px; background: linear-gradient(rgba(251,243,236,0), var(--ivory)); pointer-events: none; }
+/* once the bracelet is in the bag the bar is one button, to the bag, where the COD fee is shown in rupees */
+.buybar.one { grid-template-columns: 1fr; }
+.buybar.one #now { display: none; }
+.btn { height: auto; min-height: 48px; padding: 0 4px; display: flex; flex-wrap: wrap; align-items: center; align-content: center; justify-content: center; gap: 0 8px; line-height: 1.2; font-size: var(--t-label); letter-spacing: .14em; text-transform: uppercase; font-weight: 500; white-space: normal; text-align: center; }
+/* with Android's larger text the label takes two lines inside the same 48px rather than spilling past the button's edges;
+   at 150-200% it grows past 48px instead of clipping, and --bar follows the real bar (the script under render()). The
+   labels wrap between their parts first; a part breaks inside only when it alone is wider than the button. */
+.btn .rs { font-size: var(--t-name); }
+.btn.pri { background: var(--ink); color: var(--ivory); }
+/* below 350px the bar's labels get their air back (2px a side at 320 with the full tracking) */
+@media (max-width: 349px) { .btn { letter-spacing: .08em; column-gap: 6px; } }
+.btn.sec { border: 1px solid var(--ink); background: var(--ivory); }
+.btn:active { opacity: .85; }
+.btn[aria-disabled="true"] { cursor: default; }
+.upi { display: inline-flex; align-items: center; }
+.upi i { width: 16px; height: 16px; border-radius: 50%; border: 1px solid var(--ink); background: #fff; display: grid; place-items: center; margin-left: -4px; }
+.upi i:first-child { margin-left: 0; }
+.upi svg { display: block; }
+
+/* after add: a card over the photo, never over the price, ladder or delivery line; no timer */
+.added { position: fixed; top: calc(var(--hdr) + 8px); left: 50%; transform: translateX(-50%); width: min(calc(100% - 24px), 406px); z-index: 35; background: var(--ivory); border: 1px solid var(--line-2); padding: 12px 14px 4px; display: grid; gap: 8px; box-shadow: 0 10px 30px rgba(26,22,20,.10); }
+.added .top { display: flex; justify-content: space-between; align-items: center; margin: -8px -10px -6px 0; }
+.added .h { font-family: var(--serif); font-weight: 500; font-size: var(--t-h3); line-height: 1.2; }
+.added .x { width: 44px; height: 44px; display: grid; place-items: center; }
+.x svg { width: 16px; height: 16px; stroke: var(--ink); stroke-width: 1.5; fill: none; }
+/* the bracelet and the suggestion share one 48px thumbnail column, so both names start at the same x */
+.added .what { display: grid; grid-template-columns: 48px 1fr; gap: 10px; align-items: center; padding-bottom: 8px; border-bottom: 1px solid var(--line); }
+.added .what p { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; white-space: nowrap; min-width: 0; }
+.added .what .n { font-family: var(--serif); font-weight: 500; font-size: var(--t-name); line-height: 1.2; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.added .what .rs { font-size: var(--t-fig); color: var(--ink-2); }
+/* one suggestion in rupees: the card's and the bag's share this markup */
+.sug { display: grid; grid-template-columns: 48px 1fr auto; gap: 10px; align-items: center; }
+.sug .n { font-family: var(--serif); font-weight: 500; font-size: var(--t-name); line-height: 1.15; display: block; }
+.sug .e { font-size: var(--t-label); color: var(--ink-2); display: block; line-height: 1.35; text-wrap: balance; }
+.sug .e .rs { font-size: var(--t-fig); color: var(--ink); }
+.sug .off { color: var(--deep); }
+.nw { white-space: nowrap; }
+.added .bagl { font-size: var(--t-small); color: var(--deep); line-height: 1.4; }
+.added .bagl .rs { font-size: var(--t-fig); }
+.added .acts { display: flex; justify-content: space-between; }
+.added .acts button, .added .acts a { min-height: 44px; display: inline-flex; align-items: center; font-size: var(--t-small); text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--line-2); }
+/* short viewports: the card loses its pictures first, then the bracelet's row (the bar's tick and the badge already
+   confirm it), keeping the ring and its size, and only then goes to two lines, so it never reaches the title */
+.added.compact .what { grid-template-columns: 1fr; }
+.added.compact .what > :first-child { display: none; }
+.added.compact .sug .m { display: none; }
+.added.compact .sug .off:not(.bag) { display: none; }
+.added.slim .what { display: none; }
+/* added from the bar further down the page: two lines docked above the bar, never over what is being read */
+.added.dock, .added.mini { padding-bottom: 10px; gap: 4px; }
+.added.dock { top: auto; bottom: calc(var(--bar) + var(--safe) + 8px); }
+.added a.bagl { display: flex; align-items: center; justify-self: start; min-height: 44px; margin: -4px 0 -10px; text-decoration: none; }
+.added a.bagl u { margin-left: .3em; color: var(--ink); text-underline-offset: 3px; text-decoration-color: var(--line-2); white-space: nowrap; }
+
+/* reassurance, in words: the policy as it is. A lead in ink, the detail quieter, so a skimmer reads
+   "Questions? · Faulty piece? · Waterproof" at a glance. The one thing she can test (the WhatsApp number) comes first;
+   the claim she cannot test comes last, tied to the material. */
+.assure { list-style: none; margin: 40px 0 0; padding: 0 16px; }
+.assure li { border-top: 1px solid var(--line); min-height: 44px; display: flex; gap: 12px; align-items: flex-start; padding: 11px 0; font-size: var(--t-small); line-height: 1.5; color: var(--ink-2); }
+.assure li b { font-weight: 500; color: var(--ink); }
+.assure li:last-child { border-bottom: 1px solid var(--line); }
+.assure svg { width: 18px; height: 18px; stroke: var(--deep); stroke-width: 1.4; fill: none; flex: none; margin-top: 1px; }
+.assure a.rowlink { display: flex; gap: 12px; text-decoration: none; }
+.assure u { color: var(--ink); text-underline-offset: 3px; text-decoration-color: var(--line-2); white-space: nowrap; }
+.assure .l44 { color: var(--ink); }
+.assure .ask { display: grid; grid-template-columns: 18px 1fr; column-gap: 12px; padding-bottom: 0; }
+.assure .ask .links { grid-column: 2; display: flex; column-gap: 20px; flex-wrap: wrap; margin-top: -10px; }
+.l44 { min-height: 44px; display: inline-flex; align-items: center; text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--line-2); }
+
+/* sections */
+section.s { padding-top: 48px; }
+h2 { font-family: var(--serif); font-weight: 500; font-size: var(--t-h2); line-height: 1.15; margin: 0 0 8px; }
+h3 { font-family: var(--serif); font-weight: 500; font-size: var(--t-h3); line-height: 1.2; margin: 14px 0 10px; }
+.sub { font-size: var(--t-body); color: var(--ink-2); margin: 0 0 16px; }
+/* no paragraph ends on one word ("mehendi.", "online.", "mind.", "needed."); browsers without it ignore the rule */
+.sub, .dp, .faq > div, .assure li > span, .assure a.rowlink > span, .dr-pol, .hand p { text-wrap: pretty; }
+#set .sub { margin-bottom: 12px; }
+.setcap { margin: 0 0 8px; font-size: var(--t-label); font-weight: 500; letter-spacing: .03em; color: var(--deep); line-height: 16px; }
+
+/* wear it as a set: the ladder made tangible, every piece and its true cost visible at once */
+.rows { list-style: none; margin: 0; padding: 0 16px; }
+.row { display: grid; grid-template-columns: 72px 1fr; gap: 12px; padding: 14px 0; border-top: 1px solid var(--line); }
+.row:last-child { border-bottom: 1px solid var(--line); }
+.row .pic { display: block; width: 72px; height: 90px; }
+/* the three set pieces share one image (one request); each box shows its third */
+.spr { display: block; overflow: hidden; background: var(--ivory-deep); flex: none; }
+.spr img { width: 100%; height: 300%; max-width: none; transform: translateY(calc(var(--o) * -33.3333%)); }
+.row .info { display: grid; gap: 1px; align-content: start; min-width: 0; }
+.row .top { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+.row .n { font-family: var(--serif); font-weight: 500; font-size: var(--t-name); line-height: 1.2; }
+.row .p { font-size: var(--t-name); white-space: nowrap; }
+.row .m, .row .left { font-size: var(--t-label); color: var(--ink-2); line-height: 1.45; }
+.row .act { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 6px; }
+.row .eff { font-size: var(--t-small); color: var(--deep); line-height: 1.35; text-wrap: balance; }
+.row .eff .rs { font-size: var(--t-fig); }
+.add { flex: none; width: 88px; height: 44px; border: 1px solid var(--ink); font-size: var(--t-label); letter-spacing: .14em; text-transform: uppercase; font-weight: 500; background: var(--ivory); text-align: center; }
+/* an inert state is text, never the primary's ink: '✓ In bag' right-aligns with the price above it, in the same 88x44
+   box, so no row moves and nothing changes size under the finger */
+.add[aria-pressed="true"], .add.done { background: transparent; color: var(--ink); border-color: transparent; text-align: right; padding: 0; }
+.add.done { cursor: default; }
+.add:active { background: rgba(26,22,20,.06); }
+.add[aria-pressed="true"]:active, .add.done:active { background: transparent; }
+/* on ivory, not ivory-deep: the deep-sage saving line is 4.84:1 here and 4.39:1 there */
+.sum { margin: 16px 16px 0; padding: 14px; background: var(--ivory); border: 1px solid var(--line); display: grid; gap: 2px; }
+.sum .row1 { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; font-size: var(--t-body); }
+.sum .big { font-size: var(--t-h2); }
+.sum .save { font-size: var(--t-small); color: var(--deep); display: flex; justify-content: space-between; gap: 10px; }
+.sum .save .rs, .sum .save s { font-size: var(--t-fig); }
+.sum .save s { font-family: var(--serif); font-weight: 500; color: var(--ink-2); }
+.sum .hint { font-size: var(--t-small); color: var(--ink-2); }
+.allnote { margin: 16px 16px 6px; font-size: var(--t-small); color: var(--deep); }
+.allnote .rs { font-size: var(--t-fig); }
+.addall { margin: 0 16px; height: 48px; width: calc(100% - 32px); border: 1px solid var(--ink); background: var(--ivory); font-size: var(--t-label); letter-spacing: .14em; text-transform: uppercase; font-weight: 500; display: flex; align-items: center; justify-content: center; gap: 8px; }
+.addall .rs { font-size: var(--t-name); }
+.addall[aria-disabled="true"] { border-color: var(--line-2); color: var(--ink-2); cursor: default; }
+
+/* up close: the whole macro frame (no crop, no upscale), then the specs right under it */
+.zoom { display: block; width: 100%; cursor: zoom-in; }
+.bleed { display: block; width: 100%; height: auto; background: var(--ivory-deep); }
+dl { display: grid; grid-template-columns: 72px 1fr; gap: 10px 12px; margin: 0; font-size: var(--t-body); }
+dt { font-size: var(--t-micro); letter-spacing: .12em; text-transform: uppercase; color: var(--deep); font-weight: 500; padding-top: 3px; }
+dd { margin: 0; line-height: 1.45; }
+.specs { padding-top: 16px; }
+dd .lks { display: flex; flex-wrap: wrap; column-gap: 20px; margin: -6px 0 -12px; }
+dd .l44 { font-size: var(--t-small); color: var(--ink-2); min-height: 44px; }
+
+/* creator */
+.reels { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.reel { margin: 0; display: grid; gap: 8px; align-content: start; }
+.reel .frame { position: relative; display: block; width: 100%; aspect-ratio: 4 / 5; overflow: hidden; background: var(--ivory-deep); }
+.reel img { width: 100%; height: 100%; object-fit: cover; }
+.reel:first-child img { object-position: 50% 45%; }
+.reel:last-child img { object-position: 50% 100%; }
+.reel .frame .plate { left: 8px; bottom: 8px; width: 32px; height: 32px; padding: 0; justify-content: center; }
+.reel figcaption { font-size: var(--t-small); line-height: 1.4; color: var(--ink-2); }
+.reel figcaption span { display: block; }
+.reel figcaption .lab { font-size: var(--t-label); }
+
+/* reviews: none yet, so the page says so, quietly, and offers people instead */
+.rvlinks { display: flex; flex-wrap: wrap; column-gap: 20px; margin-top: 4px; }
+
+/* folds */
+.folds { margin-top: 48px; }
+details { border-bottom: 1px solid var(--line); }
+details:first-of-type { border-top: 1px solid var(--line); }
+summary { list-style: none; min-height: 52px; display: flex; justify-content: space-between; align-items: center; font-size: var(--t-label); letter-spacing: .14em; text-transform: uppercase; font-weight: 500; cursor: pointer; }
+summary h2 { font: inherit; letter-spacing: inherit; margin: 0; }
+summary::-webkit-details-marker { display: none; }
+summary svg { width: 14px; height: 14px; stroke: var(--ink); stroke-width: 1.4; fill: none; transition: transform .2s; }
+details[open] summary svg { transform: rotate(45deg); }
+summary:active { background: rgba(26,22,20,.04); }
+.dp { margin: 0 0 14px; font-size: var(--t-body); color: var(--ink-2); }
+.dp + .l44 { margin-bottom: 10px; }
+.faq { margin: 0 0 20px; display: grid; gap: 14px; }
+.faq b { display: block; font-weight: 500; font-size: var(--t-body); margin-bottom: 2px; }
+.faq span { font-size: var(--t-body); color: var(--ink-2); }
+
+/* the green ends on a straight edge 12px above the bar's hairline, so the bar's ivory fade lies over ivory, never over
+   the green (it made a grey smear there) */
+footer { margin-top: 48px; padding: 28px 16px calc(40px + var(--bar) + var(--safe)); background: linear-gradient(var(--deep) calc(100% - var(--bar) - var(--safe) - 12px), var(--ivory) 0); color: var(--ivory); text-align: center; display: grid; gap: 8px; justify-items: center; }
+footer img { width: 92px; height: auto; filter: brightness(0) invert(1); opacity: .95; }
+footer p { font-size: var(--t-label); font-weight: 500; letter-spacing: .14em; text-transform: uppercase; }
+footer nav { display: flex; flex-wrap: wrap; justify-content: center; column-gap: 20px; }
+/* the short labels (Privacy, Terms) reach 44px wide without moving the text */
+footer a { min-height: 44px; display: inline-flex; align-items: center; font-size: var(--t-small); color: var(--ivory); text-underline-offset: 3px; padding: 0 7px; margin: 0 -7px; }
+
+/* the bag (the live CartDrawer's job): every rupee before checkout, the COD figure in the fixed footer */
+.scrim { position: fixed; inset: 0; background: rgba(26,22,20,.32); z-index: 49; }
+.drawer { position: fixed; top: 0; bottom: 0; right: max(0px, calc(50% - 215px)); width: min(100%, 430px); z-index: 50; background: var(--ivory); display: flex; flex-direction: column; }
+.dr-head { display: flex; justify-content: space-between; align-items: center; padding: 10px 6px 6px 16px; border-bottom: 1px solid var(--line); }
+.dr-head h2 { margin: 0; }
+.dr-head .x { width: 44px; height: 44px; display: grid; place-items: center; }
+.dr-body { flex: 1; overflow-y: auto; padding: 0 16px; }
+.dr-lad { font-size: var(--t-small); color: var(--deep); padding: 12px 0; border-bottom: 1px solid var(--line); }
+/* a one-piece bag offers the second piece it talks about, in the card's markup, under the total */
+.dr-sug { padding: 4px 0 14px; }
+.dr-sug .k { font-size: var(--t-micro); letter-spacing: .12em; text-transform: uppercase; color: var(--deep); font-weight: 500; margin-bottom: 8px; }
+.dr-items { list-style: none; margin: 0; padding: 0; }
+/* a jeweller's bag, not a form: name and price on one line, the metal, then the stepper and Remove */
+.dr-items li { display: grid; grid-template-columns: 64px 1fr; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--line); }
+.dr-items li > img { width: 64px; height: 80px; object-fit: cover; background: var(--ivory-deep); }
+.dr-items .top2 { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+.dr-items .n { font-family: var(--serif); font-weight: 500; font-size: var(--t-name); line-height: 1.2; }
+.dr-items .m { font-size: var(--t-label); color: var(--ink-2); }
+.dr-items .ctl { display: flex; align-items: center; justify-content: space-between; margin-top: 6px; }
+.step { display: inline-flex; align-items: center; border: 1px solid var(--line-2); }
+.step button { width: 44px; height: 44px; font-size: var(--t-body); font-weight: 500; text-align: center; }
+.step span { min-width: 24px; text-align: center; font-size: var(--t-body); }
+.dr-items .pr { font-size: var(--t-name); white-space: nowrap; }
+.dr-items .rm { min-height: 44px; min-width: 44px; font-size: var(--t-label); color: var(--ink-2); text-decoration: underline; text-underline-offset: 3px; }
+.dr-tot { padding: 14px 0 16px; display: grid; gap: 4px; font-size: var(--t-small); }
+.dr-tot div { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+.dr-tot .rs { font-size: var(--t-fig); }
+.dr-tot .off { color: var(--deep); }
+.dr-tot .tt { border-top: 1px solid var(--line); padding-top: 8px; margin-top: 4px; font-size: var(--t-body); }
+.dr-tot .tt .rs { font-size: var(--t-h2); }
+/* the policy opens in place, inside the bag: she never leaves the commit point to read it */
+.dr-pol { display: block; padding: 12px 0 14px; border-top: 1px solid var(--line); border-bottom: 0; font-size: var(--t-small); line-height: 1.5; color: var(--ink-2); }
+.dr-pol summary { display: block; min-height: 44px; font-size: inherit; letter-spacing: 0; text-transform: none; font-weight: 400; }
+.dr-pol summary::-webkit-details-marker { display: none; }
+.dr-pol .dp { margin: 8px 0 0; font-size: var(--t-small); }
+.dr-pol b { font-weight: 500; color: var(--ink); }
+.dr-pol u { color: var(--ink); text-underline-offset: 3px; text-decoration-color: var(--line-2); white-space: nowrap; }
+.dr-pol[open] u { display: none; }
+.dr-foot { padding: 10px 16px calc(12px + var(--safe)); border-top: 1px solid var(--line); display: grid; gap: 6px; }
+.btn.co { border-radius: 10px; } /* the one radius exception: the bag's checkout */
+/* the COD figure sits ABOVE the button, so it is read before the decision, not as a footnote after it */
+.dr-foot p { font-size: var(--t-small); color: var(--ink-2); text-align: center; text-wrap: balance; }
+.dr-foot p .rs { font-size: var(--t-fig); color: var(--ink); }
+.dr-foot p.sv { color: var(--deep); }
+.dr-foot p.sv .rs { color: var(--deep); }
+/* when the body's policy line has scrolled under the foot (two or more pieces, or a short screen), its short form stays
+   under Secure checkout: one line at 320-412, and never wider than the foot */
+.dr-foot { grid-template-columns: minmax(0, 1fr); }
+.dr-foot p.pol { font-size: var(--t-label); }
+@media (max-width: 349px) { .dr-foot p.pol { font-size: var(--t-micro); } }
+.dr-empty { padding: 28px 0; font-size: var(--t-body); color: var(--ink-2); }
+
+/* full-screen viewer: photos at the store's largest size, Riya's clip on tap only */
+.viewer { position: fixed; inset: 0; z-index: 60; background: var(--ivory); }
+.vtrack { display: flex; height: 100%; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; overscroll-behavior: contain; }
+.vtrack::-webkit-scrollbar { display: none; }
+.vtrack > div { flex: 0 0 100%; height: 100%; display: grid; place-items: center; scroll-snap-align: center; scroll-snap-stop: always; }
+.vtrack img { max-width: 100%; max-height: 100%; object-fit: contain; touch-action: pan-x pinch-zoom; }
+.vtrack video { width: 100%; height: auto; max-height: 100%; object-fit: contain; }
+.viewer .x { position: absolute; top: calc(8px + env(safe-area-inset-top, 0px)); right: 8px; width: 44px; height: 44px; display: grid; place-items: center; background: rgba(251,243,236,.92); }
+.viewer .count { bottom: calc(14px + var(--safe)); right: 50%; transform: translateX(50%); }
+.viewer .vlabel { position: absolute; left: 12px; top: calc(14px + env(safe-area-inset-top, 0px)); font-size: var(--t-label); font-weight: 500; letter-spacing: .04em; background: rgba(251,243,236,.92); padding: 6px 9px; }
+
+/* checkout hand-off, a prototype stand-in for Fastrr */
+.hand { position: fixed; left: 50%; bottom: 0; transform: translateX(-50%); width: min(100%, 430px); z-index: 70; background: var(--ivory); border-top: 1px solid var(--ink); padding: 18px 16px calc(16px + var(--safe)); display: grid; gap: 8px; box-shadow: 0 -12px 30px rgba(26,22,20,.12); }
+.hand .k { font-size: var(--t-micro); letter-spacing: .14em; text-transform: uppercase; font-weight: 500; color: var(--deep); }
+.hand h2 { margin: 0; }
+.hand p, .hand ul { font-size: var(--t-small); color: var(--ink-2); }
+.hand ul { margin: 0; padding: 0 0 0 18px; }
+.hand .rs { font-size: var(--t-fig); color: var(--ink); }
+
+/* notes outside the page frame: proposals only, never on the page */
+.notes { max-width: 430px; margin: 0 auto; padding: 22px 16px calc(40px + var(--bar)); font-size: 13px; line-height: 1.5; color: var(--ink-2); border-top: 2px dashed var(--line-2); }
+.notes h2 { font-family: var(--sans); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; font-weight: 500; color: var(--ink); margin: 0 0 8px; }
+.notes ol { margin: 0; padding-left: 18px; display: grid; gap: 6px; }
+
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; scroll-behavior: auto !important; } }
+</style>
+</head>
+<body>
+<div class="phone">
+  <header>
+    <div class="l">
+      <button class="ico" aria-label="Menu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+      <button class="ico" aria-label="Search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4 4"/></svg></button>
+    </div>
+    <img class="logo" src="i/logo.png" width="300" height="67" alt="Naira">
+    <div class="r">
+      <button class="ico" aria-label="Wishlist"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg></button>
+      <button class="ico" id="bagbtn" aria-label="Bag, empty"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 8h14l-1 12H6L5 8z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg><i id="bagn" aria-hidden="true">0</i></button>
+    </div>
+  </header>
+
+  <main>
+  <div class="above">
+  <section class="gal" aria-roledescription="carousel" aria-label="Photos and video">
+    <div class="track" id="track" tabindex="0" role="group" aria-label="Photos, swipe for more" aria-describedby="gal-how">
+      <figure role="group" aria-roledescription="slide" aria-label="1 of 7, worn on the wrist" class="sl worn"><picture><source media="(max-aspect-ratio: 1/2)" data-srcset="i/worn-full-896.jpg 896w"><img data-src="i/worn-720.jpg" data-srcset="i/worn-360.jpg 360w, i/worn-720.jpg 720w" width="720" height="792" fetchpriority="high" decoding="async" alt="Prism Rivière Bracelet worn on the wrist"></picture></figure>
+      <figure role="group" aria-roledescription="slide" aria-label="2 of 7, the stones up close" class="sl"><img data-src="i/macro-720.jpg" data-srcset="i/macro-360.jpg 360w, i/macro-720.jpg 720w" width="720" height="792" decoding="async" alt="Close-up of the cushion-cut stones, each in a clear pavé halo"></figure>
+      <figure role="group" aria-roledescription="slide" aria-label="3 of 7, on a plaster block" class="sl"><img data-src="i/plaster-720.jpg" data-srcset="i/plaster-360.jpg 360w, i/plaster-720.jpg 720w" width="720" height="792" decoding="async" alt="The whole bracelet and its fold-over clasp on a plaster block"></figure>
+      <figure role="group" aria-roledescription="slide" aria-label="4 of 7, over blue velvet" class="sl"><img data-src="i/velvet-640.jpg" data-srcset="i/velvet-360.jpg 360w, i/velvet-640.jpg 640w" width="640" height="704" decoding="async" alt="The bracelet over blue velvet"></figure>
+      <figure role="group" aria-roledescription="slide" aria-label="5 of 7, Riya, creator collaboration" class="sl riya"><img data-src="i/riya-540.jpg" data-srcset="i/riya-360.jpg 360w, i/riya-540.jpg 540w" width="540" height="594" decoding="async" alt="Riya, a creator Naira collaborated with, wearing the bracelet with mehendi">
+        <button class="plate play two" data-play><span class="tt"><b><svg viewBox="0 0 10 10" aria-hidden="true"><path d="M1 0l9 5-9 5z"/></svg><span class="vh">Play </span><span id="riyal1">Riya's clip</span></b><span class="c2"><span class="vh">, </span>Creator collaboration</span></span></button></figure>
+      <figure role="group" aria-roledescription="slide" aria-label="6 of 7, size guide" class="sl size"><svg class="ruler" viewBox="0 0 320 78" role="img" aria-label="Size guide: an 18 cm bracelet on a centimetre scale, fitting wrists of 15 to 19 cm"><text class="w" x="208.33" y="11" text-anchor="middle">wrist 15–19 cm</text><rect x="185" y="17" width="46.67" height="6" fill="#50726A" fill-opacity=".4"/><text class="b" x="220" y="38" text-anchor="middle">bracelet 18 cm</text><path d="M10 44H220" stroke="#1A1614" stroke-width="2"/><path d="M10 58H290M10 58V49M21.67 58V53M33.33 58V53M45 58V53M56.67 58V53M68.33 58V49M80 58V53M91.67 58V53M103.33 58V53M115 58V53M126.67 58V49M138.33 58V53M150 58V53M161.67 58V53M173.33 58V53M185 58V49M196.67 58V53M208.33 58V53M220 58V53M231.67 58V53M243.33 58V49M255 58V53M266.67 58V53M278.33 58V53M290 58V49" stroke="#1A1614" fill="none"/><text x="10" y="72" text-anchor="middle">0</text><text x="68.33" y="72" text-anchor="middle">5</text><text x="126.67" y="72" text-anchor="middle">10</text><text x="185" y="72" text-anchor="middle">15</text><text x="243.33" y="72" text-anchor="middle">20</text><text x="290" y="72" text-anchor="middle">24 cm</text></svg>
+        <figcaption><b>18 cm long · fits wrists 15–19 cm</b><span>Measure around your wrist bone.</span></figcaption></figure>
+      <figure role="group" aria-roledescription="slide" aria-label="7 of 7, the gift box" class="sl"><img data-src="i/box-720.jpg" data-srcset="i/box-360.jpg 360w, i/box-720.jpg 720w" width="720" height="792" decoding="async" alt="The Naira Petite gift box the bracelet arrives in"></figure>
+    </div>
+    <button class="plate chip" id="chip"><img class="th" src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD//gAQTGF2YzYwLjMxLjEwMgD/2wBDAAYEBAUEBAYFBQUGBgYHCQ4JCQgICRINDQoOFRIWFhUSFBQXGiEcFxgfGRQUHScdHyIjJSUlFhwpLCgkKyEkJST/2wBDAQYGBgkICREJCREkGBQYJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCT/wAARCABoAFADASIAAhEBAxEB/8QAHAAAAgIDAQEAAAAAAAAAAAAABQYEBwACAwEI/8QANhAAAgEDAgQEAwYFBQAAAAAAAQIDAAQRBSESMUFRBhMiYQdxkRQyQlKBsRUjM2KhCHKC0fD/xAAZAQACAwEAAAAAAAAAAAAAAAADBAACBQH/xAAhEQADAAMAAgIDAQAAAAAAAAAAAQIDESEEEhMxIkFRgf/aAAwDAQACEQMRAD8AvmAVITGSfeo8DJxBOJeM7hc7n9K7x4BYnvSQY3J2rxnWNC7sqqoyWY4AHcmlrxH4703RmNvA3227XnFEchT/AHNyHy50kX+t6r4jcfbJTHBna3j2QfPufnXHSRecbonfET4nsVfSNCLpxrh70jZh1WP9i30qtEsmMr3diqWt9CvFPbL92ReuB8uYqwotKgnTy5okkX+4Zpdv/Dn8Mu1aHzijn+UVGMN0XJNBqmzR8dTK0gR/DLW6szd2bEW7HM8ByWtj+bAPq9u1S9M+yWS3CSTPbTheOGfj9T9gwyRn2rpbI9rO9/YIDPFlbi2U5SROrL7e3So96o4oJrWSP7HnzY+MgBSDup23NUGX3g16VcG50+G5nChmUF8cl7muU2vWcVlPMyNIvmcKgDHEp5H5c96WpNWkW6a6sNNljhKFZo1BKN77bbV7HeM1q8VopLsvlvJIc4XooHQfOu7BLDp7YSuNT1K5uIr+6W8upmyYZM5Uf7AnQbYIxnruK1vde8UrpkFpdajNDaiMsYZ5AZ3RccWWX7wAI2znHfevbayOk6dJi8W0CAzRyy5KrjnFgYyGyMAdahX/APGdaijuoII7h8MsTXkSwKnEMERR7txEbAk9sA4NacRjqG+7ZgV8yypJL1COkW0U8StGwYNuCKYILbyhy2x0pf8AA9tFaWq2kt7FNcbMBGduEjII7jFO0dsBgAc/Vv2rOvj0acdI6IwAXB77VtdadDe2zwygEuOeN196lBFXGQcnc/8AVbKpB2+6elCdBUhLuraXT7qJC7LPED5TtwpGEHPYc80MvBBGq3Vs8cVlMx8xOTQS9x+/ypx1zTU1S14AqLICXRmXOMH9jSNqdvPJJMZ0k4mGLmFI+BVQcmBPM9amxvG0zWDWX0S99QaeJ1AkUsW4h+YZ2qXoU0VuZ7mWzlgt5pC8cqD+mO23SgyWhtXWymKPye1mZcqwP4T7fsfnUiy1ibSFfEcsluxKvxAL/M64HauhHO1wsKTT4YrV5ZYlkEJEnlkc8b4HY4zvQkxy6Veln02S4dJDLDcrLHFGYzkpxOx57EbA8u+1Oy2wVmVV59xypf1HwfpWqaxapNZxyM6TW6GTLDKqHCYJwM7nkcgH5014ub1TMjOtfkitZ9ath4k02PTbtLyS38yOTylBEYdi4UOu0irxEBtuWMVcVsC0CSEDLAcu3el3xNoYtbeCewSGxuLhpI1VUXiaUKXj+RPCVONyD8zXvgfxC2s6VHcSnLBfUBzBoWW1kXvJ3C+a/gxOgAJwTnJ+RrONeAA4yAc+9bSS4AUjcdaieZxliAQUBOM4yKWG0j2RgcKNx370veJNM+1W8ksaDzUHLJ9ajfG1GLm5WKPPPGMEe9CbjUQ2fUAcd8da6WW11CRNMk8AtJnURNujqDi3Y9N+lDLhzcpiSR4rq2OJSN2Kfmx1I5H9Kl+KlktLligLQ3BBC8WFD9zSpf6ndxTpecKnyGEUr8w69D9Mj6VaRpVtbR9QMRxMwyd9j22oZ4lvY4rPzHjuuJD58U9p/VhlUbbDnkHGfrtRHPlkIw5bE5rnHkx8KL6wp5Dn+nWu4qc1sz8sKp0V1e3es3xJgtNS1GRBlLvU7xUjjLqxEixAcIIG3cFcDrUH4fhtDknsLy7hmficF0Podgdyp67/AEzT9Z2az6hqiXPBJdjypLNEJaEQt1AP41c4OeW2KQ/iImm2lzNfWl7bLPanzpDGwx5mVVo9jjiYniwMkY3wDWpfjJ4vZGRi8zXkfBr/AEsH7R5kCkY4g3q9x3qJLMEfizsvPHWgGh+IF1KxTDbmP9a2ub7hjYrvkbZ2rL9emxNHe/uAVKruCv0pdmPlyEuScct85rtcagFRcbkjJ3oLdakGJIOParKS3uzpq3l31u8b4yRsQORpAvboLJJFcOAHBikDEb9sAcsUw3mqYzg86r7xLegXspBzxqG/WiKNknLrh9hXLJ6c5PpOB0xUeKcQnBPIAge1Q7y84WO5Hp+tC7vUgGGHxkdeooCRGa+KorqYTDT7GO+aRFEarIVk4gQeH3XAO3v16V5d+GJNRXTtO1vVrqGOIhm0iwVWMQbBBP4RgHJY7HOx2ApynuJZYXkgkkWaM8UbIxU57ZBzuMj9aB3/AJ9tcXMxueAXcyypOxDBwR90qOZHCQfb61peO/dabEckKa4LOl+IF0zU5NOKvEInYKrE5UAkcJJAydu1HJNW89MKwOR1pH8e6zYQ30CxOJNReUSyMnAFQ7hgQvU4B6/4ra01j+Xni5jvQ8uNKuF4rnRkudS9BZjjpQK91QKDlqH3urhUwp6k86Xb7Uy2ctuaooLOwhqGs4Bw1K16LnV7uOC2jeWWRuBI0Us7k9ABuflRfw54Y1rx1q66Zo1q08x3dicJEv5nbkB+/TNfVHw5+D+ifDixW4QLfay64lv5F3XusY/Av+T1PSi6SBOwFe6k2QclfYb0JutS2Uk43Gah3t9nJBoTc3pbiyelJpDjYZOq+QSA2/tQLU47XVra6ae7uluLYqVt4pODzBj0jjIPDuQMArtk5OwrgbonGTtjpUYTxmedhbi4DRgGOP8AqOeLbhxuSOeADgKTtzpjDxi2fqI+t6Gun6Nf3DWunwyyIG4YIuORixwxZ2xnOQTtzGee9IGnak/llWJ4l2NOes+JtS1G+n+w2lvDDMJARc7ySLvvw/8AEHpjbPOq3iEq3DoCZHZ8ZA3Yk9vftRIVtbyC8Uv0FLq+PDgGmz4c/CbWviHcpcvx2OjhsSXrr9/usYP3j78h/inf4X/6fpbxItb8ZQtFDs8OmnZ5B0MvYf28z1xyq/IoobWOKCCNIoo1CIiKFVVHIADkKjpL6LNkHwr4U0bwXpKabotklvCDl25ySt+Z25sf/DFG5mBTGajB8g/OvJpcCqbKnzvcXAI3bcb0NmnAyc5rKyhJDjYOmvAgwGx0rjp2pSQ6pCbZ5EZgyM6fkKnjz7Fc5rKyjwugMn0yTqHiKzsYhkxQ3N0gknNpFlslR6ge2d+eB06Va3wa+FWh6Lpdj4nnK6lqd5Cs8czphIAw/Ap/F3Y79sVlZR89PSQn48Jbf9LXlfEVQ2kzg9qyspUYMWX0b1wv5ykY4TzrKyoiH//Z" width="40" height="52" alt=""><span class="tt"><b><svg viewBox="0 0 10 10" aria-hidden="true"><path d="M1 0l9 5-9 5z"/></svg><span class="vh">Play </span><span id="chipt">Riya's clip</span></b><span class="c2"><span class="vh">, </span>Creator collaboration</span></span></button>
+    <span class="count" id="count" aria-hidden="true">1 / 7</span>
+    <p class="vh" id="gal-how">Arrow keys move between photos; Enter shows one full screen.</p>
+    <p class="vh" id="gal-live" aria-live="polite"></p>
+    <button class="nav prev" id="prev" aria-label="Previous photo"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
+    <button class="nav next" id="next" aria-label="Next photo"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
+  </section>
+  <script>
+  /* Land on the ad's frame before the first paint; only that frame is fetched here (slide 1 included), so a Riya landing
+     never pulls the worn photo. The fonts and the below-the-fold images are released once that frame has loaded
+     (1.2 s at most), so they no longer share the pipe with the hero. */
+  (function () {
+    var m = window.__match || { slide: 0 }, t = document.getElementById('track'), s = t.children[m.slide], im = s && s.querySelector('img');
+    /* one loader for the landing frame and the gallery: a picture's sources are promoted with its img */
+    var Z = '(max-width: 430px) 100vw, 430px';
+    window.__promote = function (sl) {
+      if (!sl) return; var i = sl.querySelector('img'); if (!i || !i.dataset.src) return;
+      [].forEach.call(sl.querySelectorAll('source[data-srcset]'), function (so) { so.srcset = so.dataset.srcset; so.sizes = Z; so.removeAttribute('data-srcset'); });
+      if (i.dataset.srcset) { i.srcset = i.dataset.srcset; i.sizes = Z; } i.src = i.dataset.src; i.removeAttribute('data-src');
+    };
+    window.__promote(s);
+    if (m.slide) t.scrollLeft = m.slide * t.clientWidth;
+    if (m.creator) document.getElementById('riyal1').textContent = m.creator.label;
+    window.__afterHero = window.__afterHero || [];
+    var done = false, fonts = function () { if (done) return; done = true; window.__heroDone = true; window.__afterHero.forEach(function (f) { f(); }); var l = document.createElement('link'); l.rel = 'stylesheet'; l.href = 'https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500&family=Jost:wght@400;500&display=swap'; document.head.appendChild(l); };
+    if (im && !im.complete) { im.addEventListener('load', fonts); im.addEventListener('error', fonts); setTimeout(fonts, 1200); } else fonts();
+  })();
+  </script>
+
+  <div class="facts" id="product-facts">
+    <h1>Prism Rivière Bracelet</h1>
+    <div class="price"><span class="now rs">₹2,399</span><s><span class="vh">Compare at </span>₹3,999</s><small>incl. GST</small><span class="mat">Surgical steel, PVD rhodium</span></div>
+    <div class="lad">
+      <p class="lk" id="ladcap">Mix any pieces, no code · the bracelet's price</p>
+      <ul aria-label="This bracelet's price in your bag, with the offer taken off automatically">
+        <li data-q="2"><span class="k"><span class="nw">2 pieces ·</span> <span class="nw">10% off</span></span><span class="v"><span class="rs">₹2,159</span></span></li>
+        <li data-q="3"><span class="k"><span class="nw">3 pieces ·</span> <span class="nw">20% off</span></span><span class="v"><span class="rs">₹1,919</span></span></li>
+        <li data-q="4"><span class="k"><span class="nw">4 pieces ·</span> <span class="nw">30% off</span></span><span class="v"><span class="rs">₹1,679</span></span></li>
+      </ul>
+    </div>
+    <p class="ship">Free <span class="ins">insured </span>delivery, est. <b id="eta">18–20 Nov</b> · <b>COD available</b></p>
+  </div>
+  </div>
+  <script>
+  /* Tight mode: when the facts and the 180px photo floor cannot share the screen (Android "Large" text on a short in-app
+     viewport), the material and "insured" go, both repeated further down, so COD stays above the bar. Default sizes never
+     trip it; it re-checks when the fonts land and when the viewport changes. */
+  (function () {
+    var f = document.getElementById('product-facts'), r = document.documentElement, cs = getComputedStyle(r);
+    var fit = function () { r.classList.remove('nf-tight'); var col = innerHeight - parseFloat(cs.getPropertyValue('--hdr')) - parseFloat(cs.getPropertyValue('--bar')) - 13; if (f.offsetHeight + 180 > col) r.classList.add('nf-tight'); };
+    fit(); addEventListener('resize', fit); if (document.fonts) document.fonts.addEventListener('loadingdone', fit);
+  })();
+  </script>
+
+  <div class="buybar" id="bar">
+    <!-- the first state is in the HTML, so the bar is labelled from the first text paint; render() owns every later state -->
+    <button class="btn pri" id="add"><span>Add to bag</span><span aria-hidden="true">·</span><span class="rs">₹2,399</span></button>
+    <button class="btn sec" id="now"><span>Buy now</span><span class="upi" aria-hidden="true"><i><svg width="10" height="10" viewBox="283.4 284.4 171.3 171.3"><path fill="#4285F4" d="M452.93,372c0-6.26-0.56-12.25-1.6-18.01h-80.48v33L417.2,387c-1.88,10.98-7.93,20.34-17.2,26.58v21.41h27.59C443.7,420.08,452.93,398.04,452.93,372z"/><path fill="#34A853" d="M400.01,413.58c-7.68,5.18-17.57,8.21-29.14,8.21c-22.35,0-41.31-15.06-48.1-35.36h-28.46v22.08c14.1,27.98,43.08,47.18,76.56,47.18c23.14,0,42.58-7.61,56.73-20.71L400.01,413.58z"/><path fill="#FABB05" d="M320.09,370.05c0-5.7,0.95-11.21,2.68-16.39v-22.08h-28.46c-5.83,11.57-9.11,24.63-9.11,38.47s3.29,26.9,9.11,38.47l28.46-22.08C321.04,381.26,320.09,375.75,320.09,370.05z"/><path fill="#E94235" d="M370.87,318.3c12.63,0,23.94,4.350,32.87,12.85l24.45-24.43c-14.85-13.83-34.21-22.32-57.32-22.32c-33.47,0-62.46,19.2-76.56,47.18l28.46,22.08C329.56,333.36,348.52,318.3,370.87,318.3z"/></svg></i><i><svg width="12" height="12" viewBox="0 0 24 24"><path fill="#5F259F" d="M10.206 9.941h2.949v4.692c-.402.201-.938.268-1.34.268-1.072 0-1.609-.536-1.609-1.743V9.941zm13.47 4.816c-1.523 6.449-7.985 10.442-14.433 8.919C2.794 22.154-1.199 15.691.324 9.243 1.847 2.794 8.309-1.199 14.757.324c6.449 1.523 10.442 7.985 8.919 14.433zm-6.231-5.888a.887.887 0 0 0-.871-.871h-1.609l-3.686-4.222c-.335-.402-.871-.536-1.407-.402l-1.274.401c-.201.067-.268.335-.134.469l4.021 3.82H6.386c-.201 0-.335.134-.335.335v.67c0 .469.402.871.871.871h.938v3.217c0 2.413 1.273 3.82 3.418 3.82.67 0 1.206-.067 1.877-.335v2.145c0 .603.469 1.072 1.072 1.072h.938a.432.432 0 0 0 .402-.402V9.874h1.542c.201 0 .335-.134.335-.335v-.67z"/></svg></i><i><svg width="13" height="5" viewBox="0 8.1 24 7.8"><path fill="#002970" d="M0.232 9.4A.234.234 0 0 0 0 9.636v5.924c0 .132.096.238.216.241h1.09c.13 0 .237-.107.237-.24l.004-1.658H2.57c.857 0 1.453-.605 1.453-1.481v-1.538c0-.877-.596-1.484-1.453-1.484H.232zM9.264 9.4a.239.239 0 0 0-.237.241v2.47c0 .94.657 1.608 1.579 1.608h.675s.016 0 .037.004a.253.253 0 0 1 .222.253c0 .13-.096.235-.219.251l-.018.004-.303.006H9.739a.239.239 0 0 0-.236.24v1.09a.24.24 0 0 0 .236.242h1.75c.92 0 1.577-.669 1.577-1.608v-4.56a.239.239 0 0 0-.236-.24h-1.07a.239.239 0 0 0-.236.24c-.005.787 0 1.525 0 2.255a.253.253 0 0 1-.25.25h-.449a.253.253 0 0 1-.25-.255c.005-.754-.005-1.5-.005-2.25a.239.239 0 0 0-.236-.24zM5.26 9.406a.232.232 0 0 0-.238.226v1.023c0 .132.113.24.252.24h1.413c.112.017.2.1.213.23v.14c-.013.124-.1.214-.207.224h-.7c-.93 0-1.594.63-1.594 1.515v1.269c0 .88.57 1.506 1.495 1.506h1.94c.348 0 .63-.27.63-.6v-4.136c0-1.004-.508-1.637-1.72-1.637zM1.547 10.978h.678c.139 0 .25.115.25.256v.836a.253.253 0 0 1-.25.256h-.1c-.192.002-.386 0-.578 0zM6.217 12.955h.445c.139 0 .252.108.252.24v.932a.23.23 0 0 1-.014.076.25.25 0 0 1-.238.164h-.445a.247.247 0 0 1-.252-.24v-.933c0-.132.113-.239.252-.239Z"/><path fill="#00BAF2" d="M15.85 8.167a.204.204 0 0 0-.04.004c-.68.19-.543 1.148-1.781 1.23h-.12a.23.23 0 0 0-.052.005h-.001a.24.24 0 0 0-.184.235v1.09c0 .134.106.241.237.241h.645v4.623c0 .132.104.238.233.238h1.058a.236.236 0 0 0 .233-.238v-4.623h.6c.13 0 .236-.107.236-.241v-1.09a.239.239 0 0 0-.236-.24h-.612V8.386a.218.218 0 0 0-.216-.22zM20.075 9.337c-.398 0-.762.15-1.042.395v-.124a.238.238 0 0 0-.234-.224h-1.07a.24.24 0 0 0-.236.242v5.92a.24.24 0 0 0 .236.242h1.07c.12 0 .217-.091.233-.209v-4.25a.393.393 0 0 1 .371-.408h.196a.41.41 0 0 1 .226.09.405.405 0 0 1 .145.319v4.074l.004.155a.24.24 0 0 0 .237.241h1.07a.239.239 0 0 0 .235-.23l-.001-4.246c0-.14.062-.266.174-.34a.419.419 0 0 1 .196-.068h.198c.23.02.37.2.37.408.005 1.396.004 2.8.004 4.224a.24.24 0 0 0 .237.241h1.07c.13 0 .236-.108.236-.241v-4.543c0-.31-.034-.442-.08-.577a1.601 1.601 0 0 0-1.51-1.09h-.015a1.58 1.58 0 0 0-1.152.5c-.291-.308-.7-.5-1.153-.5z"/></svg></i></span></button>
+  </div>
+  <!-- after add: straight after the bar in the reading order -->
+  <div class="added" id="added" role="region" aria-label="Added to your bag" hidden></div>
+
+  <ul class="assure">
+    <li class="ask"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20l1.3-4A8 8 0 1 1 9 19.2L4 20z"/></svg><span><b>Questions before you buy?</b></span>
+      <span class="links"><a class="l44" href="https://wa.me/919561557935?text=Hi%2C%20a%20question%20about%20the%20Prism%20Rivi%C3%A8re%20Bracelet" target="_blank" rel="noopener">WhatsApp +91 95615 57935</a><a class="l44" href="https://www.instagram.com/naira.flore/" target="_blank" rel="noopener">@naira.flore</a></span></li>
+    <li><a class="rowlink" href="#policy" id="topolicy"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3z"/></svg><span><b>Faulty piece?</b> Tell us on WhatsApp within 7 days of delivery, with photos, for a repair, replacement or store credit. <u>Read the policy</u></span></a></li>
+    <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3c3 4 6 6.5 6 10a6 6 0 0 1-12 0c0-3.5 3-6 6-10z"/></svg><span><b>Surgical steel, PVD rhodium coating.</b> Waterproof and tarnish free, so daily wear and water are fine.</span></li>
+  </ul>
+
+  <section class="s" id="set" aria-labelledby="set-h">
+    <div class="g"><h2 id="set-h">Wear it as a set</h2><p class="sub">The Cushion Halo Ring matches it in rhodium; the Prism necklace and hoops are gold tone.</p><p class="setcap" id="setcap">With the bracelet in your bag</p></div>
+    <ul class="rows">
+      <li class="row" data-id="ring"><a class="pic spr" style="--o:0" href="https://nairaflore.com/jewellery/cushion-halo-ring" aria-label="Cushion Halo Ring, see the piece"><img class="lz" data-src="i/set-3.jpg" width="144" height="540" decoding="async" alt=""></a>
+        <div class="info"><div class="top"><span class="n">Cushion Halo Ring</span><span class="p rs">₹999</span></div><span class="m">PVD rhodium, like the bracelet</span><span class="m">Adjustable, US 5–9</span>
+          <div class="act"><span class="eff"></span><button class="add" aria-pressed="false" aria-label="Add Cushion Halo Ring to bag">+ Add</button></div></div></li>
+      <li class="row" data-id="necklace"><a class="pic spr" style="--o:1" href="https://nairaflore.com/jewellery/prism-pear-drop-necklace" aria-label="Prism Pear Drop Necklace, see the piece"><img class="lz" data-src="i/set-3.jpg" width="144" height="540" decoding="async" alt=""></a>
+        <div class="info"><div class="top"><span class="n">Prism Pear Drop Necklace</span><span class="p rs">₹999</span></div><span class="m">PVD 18K gold coating</span><span class="left" data-stock="3"></span>
+          <div class="act"><span class="eff"></span><button class="add" aria-pressed="false" aria-label="Add Prism Pear Drop Necklace to bag">+ Add</button></div></div></li>
+      <li class="row" data-id="hoops"><span class="pic spr" style="--o:2" role="img" aria-label="Prism Emerald-Cut Hoops"><img class="lz" data-src="i/set-3.jpg" width="144" height="540" decoding="async" alt=""></span>
+        <div class="info"><div class="top"><span class="n">Prism Emerald-Cut Hoops</span><span class="p rs">₹1,299</span></div><span class="m">Gold tone</span>
+          <div class="act"><span class="eff"></span><button class="add" aria-pressed="false" aria-label="Add Prism Emerald-Cut Hoops to bag">+ Add</button></div></div></li>
+    </ul>
+    <div class="sum" id="sum" hidden></div>
+    <p class="allnote" id="allnote"></p>
+    <button class="addall" id="addall"></button>
+  </section>
+
+  <section class="s" aria-labelledby="close-h">
+    <h2 class="g" id="close-h">Every stone in its own halo</h2>
+    <button class="zoom" id="closeup" aria-label="See the stones full screen"><img class="bleed lz" data-src="i/macro-720.jpg" data-srcset="i/macro-360.jpg 360w, i/macro-720.jpg 720w" width="720" height="792" decoding="async" alt="The pastel cushion stones, each framed in clear pavé"></button>
+    <div class="g specs">
+      <dl>
+        <dt>Stones</dt><dd>Cushion-cut pastel cubic zirconia, about 5 mm each</dd>
+        <dt>Setting</dt><dd>Each stone in a fine clear pavé halo, linked in a continuous line</dd>
+        <dt>Colours</dt><dd>Aqua blue, soft pink and pale yellow, repeating</dd>
+        <dt>Metal</dt><dd>Surgical stainless steel with a PVD rhodium coating</dd>
+        <dt>Length</dt><dd>18 cm</dd>
+        <dt>Fits</dt><dd>Wrists of 15 to 19 cm<span class="lks"><button class="l44" id="tosize">Size guide</button><a class="l44" href="https://wa.me/919561557935?text=Hi%2C%20my%20wrist%20is%20__%20cm.%20Will%20the%20Prism%20Rivi%C3%A8re%20Bracelet%20fit%3F" target="_blank" rel="noopener">Ask on WhatsApp<span class="vh"> about your wrist size</span></a></span></dd>
+        <dt>Clasp</dt><dd>Fold-over</dd>
+        <dt>Box</dt><dd>Naira Petite gift box</dd>
+      </dl>
+    </div>
+  </section>
+
+  <section class="s g" aria-labelledby="riya-h">
+    <h2 id="riya-h">As Riya wears it</h2>
+    <p class="sub">Riya, a creator we collaborated with, styling it with mehendi.</p>
+    <div class="reels">
+      <figure class="reel"><button class="frame" data-play aria-label="Play Riya's clip of the bracelet, a creator collaboration"><img src="i/reel1.jpg" width="360" height="640" loading="lazy" decoding="async" alt=""><span class="plate" aria-hidden="true"><svg viewBox="0 0 10 10"><path d="M1 0l9 5-9 5z"/></svg></span></button>
+        <figcaption><span>Her wrist, with mehendi</span><span class="lab">Creator collaboration</span></figcaption></figure>
+      <figure class="reel"><button class="frame" data-play aria-label="Play Riya's clip, a creator collaboration"><img src="i/reel2.jpg" width="360" height="640" loading="lazy" decoding="async" alt=""><span class="plate" aria-hidden="true"><svg viewBox="0 0 10 10"><path d="M1 0l9 5-9 5z"/></svg></span></button>
+        <figcaption><span>Riya, with mehendi</span><span class="lab">Creator collaboration</span></figcaption></figure>
+    </div>
+  </section>
+
+  <section class="s g" aria-labelledby="rv-h">
+    <h2 id="rv-h">Reviews</h2>
+    <p class="sub" style="margin:0">No reviews for this piece yet. Ask us anything before you buy.</p>
+    <p class="rvlinks"><a class="l44" href="https://wa.me/919561557935?text=Hi%2C%20a%20question%20about%20the%20Prism%20Rivi%C3%A8re%20Bracelet" target="_blank" rel="noopener">WhatsApp +91 95615 57935</a><a class="l44" href="https://www.instagram.com/naira.flore/" target="_blank" rel="noopener" aria-label="Instagram @naira.flore">@naira.flore</a><a class="l44" href="https://nairaflore.com/contact">Business address</a></p>
+  </section>
+
+  <div class="folds g">
+    <details id="policy">
+      <summary><h2>Delivery, COD &amp; faulty pieces</h2><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2v12M2 8h12"/></svg></summary>
+      <p class="dp">Free insured delivery across India, estimated at 3 to 5 working days, in the Naira Petite gift box. Cash on delivery is available; any COD fee is shown in rupees in your bag, and there is none if you pay online.</p>
+      <p class="dp">Returns are for manufacturing faults only. Tell us on WhatsApp within 7 days of delivery, with photos, and we will repair or replace the piece or give store credit. Refunds are considered case by case. Worn or customer-damaged pieces are not eligible, and we cannot take a piece back for a change of mind.</p>
+      <a class="l44" href="https://nairaflore.com/exchange-return-policy#standard-orders" target="_blank" rel="noopener">Full policy (store-wide)</a>
+    </details>
+    <details id="care">
+      <summary><h2>Care</h2><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2v12M2 8h12"/></svg></summary>
+      <p class="dp">Waterproof and tarnish free, so daily wear and water are fine. Keep it away from perfume and harsh chemicals.</p>
+    </details>
+    <details id="faq">
+      <summary><h2>Questions</h2><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2v12M2 8h12"/></svg></summary>
+      <div class="faq">
+        <div><b>Is it real silver?</b><span>No. It is surgical stainless steel with a PVD rhodium coating, not silver. It is waterproof and tarnish free, so daily wear and water are fine.</span></div>
+        <div><b>Can it get wet?</b><span>Yes, it is waterproof, so daily wear and water are fine. Keep it away from perfume and harsh chemicals.</span></div>
+        <div><b>Will it fit me?</b><span>It is 18 cm long and fits wrists of 15 to 19 cm. Measure around your wrist bone. Not sure? Send us your wrist measurement on WhatsApp.</span></div>
+        <div><b>What if it has a fault?</b><span>Tell us on WhatsApp within 7 days of delivery, with photos, for a repair, replacement or store credit.</span></div>
+        <div><b>Is the offer automatic?</b><span>Yes. Add any two pieces and 10% comes off in your bag, three for 20%, four for 30%. No code needed.</span></div>
+      </div>
+    </details>
+  </div>
+
+  </main>
+
+  <footer id="foot">
+    <img src="i/logo.png" width="300" height="67" loading="lazy" alt="Naira">
+    <p>Crafted for the moments you keep</p>
+    <nav aria-label="Store"><a href="https://nairaflore.com/contact">Contact &amp; business address</a><a href="https://nairaflore.com/exchange-return-policy#standard-orders">Faulty-piece policy</a><a href="https://nairaflore.com/privacy">Privacy</a><a href="https://nairaflore.com/terms">Terms</a></nav>
+  </footer>
+
+  <p class="vh" id="live" role="status" aria-live="polite"></p>
+
+  <!-- the bag -->
+  <div class="scrim" id="scrim" hidden></div>
+  <div class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="dr-h" tabindex="-1" hidden>
+    <div class="dr-head"><h2 id="dr-h">Your bag</h2><button class="x" id="drx" aria-label="Close bag"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 3l10 10M13 3L3 13"/></svg></button></div>
+    <div class="dr-body" id="drbody"></div>
+    <div class="dr-foot" id="drfoot"></div>
+  </div>
+
+  <div class="viewer" id="viewer" role="dialog" aria-modal="true" aria-label="Photos and video, full screen" hidden>
+    <div class="vtrack" id="vtrack" tabindex="0" role="group" aria-label="Photos, full screen. Arrow keys move between them."></div>
+    <span class="vlabel" id="vlabel" hidden>Creator collaboration · Riya</span>
+    <button class="x" id="vx" aria-label="Close"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 3l10 10M13 3L3 13"/></svg></button>
+    <span class="count" id="vcount" aria-hidden="true">1 / 7</span>
+  </div>
+
+  <div class="hand" id="hand" role="dialog" aria-labelledby="hand-h" hidden></div>
+</div>
+
+<aside class="notes" aria-label="Proposed changes awaiting the owner">
+  <h2>Launch blockers · the page cannot go live until each is answered</h2>
+  <ol>
+    <li>The fit. An 18 cm bracelet cannot close round a 19 cm wrist unless it adjusts, and the facts do not say it adjusts; the size slide therefore draws the wrist band 1 cm past the bracelet, as the size-guide image does. Ops: measure the bracelet closed (inside length, clasp to clasp) and check whether the fold-over clasp adjusts. Then change the range, or say how it adjusts, on the page, the Shopify description, the size-guide image and the product data together, and redraw the ruler. The live product data says "adjustable" today; this page's does not. <b>Until answered:</b> the page ships with the range ops measure, not 15–19 cm.</li>
+    <li>COD by pincode. The site's own serviceability.ts (used by the live pincode checker) says COD is unavailable, prepaid only, for J&amp;K and Ladakh, Bihar, Jharkhand, the North East, the islands and parts of UP and Haryana, while this page says "COD available". Ops: run one Fastrr checkout to 800001 (Patna) and 781001 (Guwahati) and record whether COD is offered. If it is, delete those blocks so the site never contradicts the page. <b>Until answered:</b> the fact line reads "Free insured delivery, est. 18–20 Nov · COD in most areas" (one line at 320–412px) and the fold adds "Cash on delivery is not offered on some pincodes; your bag and checkout show whether it is offered for yours."</li>
+    <li>"Worn". Does it exclude a manufacturing fault found while wearing the piece in the first 7 days? E-Commerce Rules r.7(4) bar a seller of its own stock from refusing to take back defective goods. <b>Until answered:</b> the fold says "A fault that shows while you wear it in the first 7 days is covered; accidental damage is not" only if the owner confirms it; otherwise counsel decides the wording. The live policy also excludes pieces that have been "Washed" or "Altered", "slight colour variations due to screen differences" and "minor irregularities inherent to handcrafted/artisanal work". The fold names none of them, and "Washed" sits one tap from "Waterproof… water is fine". Owner and counsel: say which of these apply to jewellery. Those that do go into FACTS, then into the fold and the #jewellery section (build note 11); the rest come off the jewellery section.</li>
+    <li>The COD fee wording, which must hold on the Buy now route too. Buy now reaches Fastrr with no rupee COD figure on our pages, and Fastrr books the 5% fee as shipping after a page that says "Free insured delivery". The delivery fold's "any COD fee is shown in rupees in your bag, and there is none if you pay online" is not true on that route, which has no bag. Two true wordings: (a) the fold reads "Cash on delivery is available with a 5% fee; paying online has none. Your bag shows it in rupees." and the fact line keeps "COD available"; (b) the fact line reads "Free insured delivery, est. 18–20 Nov · COD +5% fee" (one line at 360px; nothing moves). Dropping the COD fee would make "COD available" the whole truth. <b>Until answered:</b> the owner picks (a) or (b) before launch. After launch, nf_bag_view and nf_bag_exit are read for two weeks against the honest arm A (build note 1), never against the live page with its invented proof, before the fee moves onto the fact line.</li>
+    <li>The <span class="rs">₹3,999</span> strike on the first screen. Is it the printed MRP, or a price the bracelet was actually sold at? If it is the MRP, the price row reads "MRP <span class="rs">₹3,999</span> (incl. of all taxes)", the way CaratLane and GIVA label theirs. If it is neither, it comes off this page, the bag and every piece's Shopify compare-at. <b>Until answered:</b> as now, unlabelled, in ink-2, and never used to compute a saving.</li>
+  </ol>
+  <h2 style="margin-top:22px">Owner to confirm · not on the page</h2>
+  <ol>
+    <li>Check one live COD checkout on Fastrr: where the 5% appears and under what label. If it shows as Shipping, ask Fastrr to label it "COD fee".</li>
+    <li>Prepaid: 55 of ~105 prepaid orders carried a 5% PrepaidDiscount, so it is not on every online order. Confirm the rule before any "extra 5% off when you pay online" line.</li>
+    <li>Colour. The studio photos show the second stone as pink, while Riya's footage (slide 5, the clip and both tiles) shows it as lilac. Ops: look at a piece in daylight and confirm "soft pink" in FACTS, or correct it on the page, the listing and the JSON-LD together. The live policy's "slight colour variations" exclusion is part of launch blocker 3.</li>
+    <li>Ad map: a creator is named only when utm_content names her. Angle lines ("sugar" and any other) wait for the ads owner's copy; until then the default fold shows. Riya's real handle, whether the video was paid or gifted, written rights, and whether the ring in her reel is the Cushion Halo Ring.</li>
+    <li>Riya's full reel carries captions the facts do not support (a plating claim at about 26 s, "zircon" at about 22 s), so the page plays only 18.5–21.8 s until a clean edit exists. When this 3.3 s cut replaces the live Shopify product video, burn "Creator collaboration" into the frame for its whole length, on an ivory plate at top left: the product video also plays where this page's label is absent (on Shopify, in the catalogue and on ad surfaces). On this page the viewer's label stays as it is.</li>
+    <li>Reviews: "We ask every customer for a review 7 days after delivery" appears only once the review app is live and sending requests.</li>
+    <li>Instagram. This page, FACTS and the brand's own ad copy ("@naira.flore") use @naira.flore. The live site's footer icon (Footer.tsx L232), the contact page's LocalBusiness sameAs (ContactUs.tsx L54) and the Organization sameAs in siteMeta.ts (L44) all link instagram.com/nairaflore/. Confirm which account is Naira's (build note 10).</li>
+    <li>Damaged, wrong or missing. The policy covers manufacturing faults only, so it gives no remedy for a piece crushed in transit, a wrong piece or a missing one, while the page says "insured" three times. Confirm what she does and what she gets. Proposed fold sentence once confirmed, after "in the Naira Petite gift box.": "Arrived damaged, or not the piece you ordered? Tell us on WhatsApp within 48 hours of delivery, with photos of the parcel and the piece, and we will replace it or refund you." The window and the remedy are the owner's to set. <b>Until answered:</b> nothing about transit damage goes on the page.</li>
+    <li>Seller details for FACTS. The contact page already shows "Naira (Managed by Vandana Sanjay Kotecha), C-5, Nayantara Estate, Sambhaji Chowk, Nashik, Maharashtra 422002" and WhatsApp hours "Mon – Sat, 10 AM – 7 PM IST". Confirm them, add the GSTIN and a grievance officer (E-Commerce Rules r.4), and put them in FACTS. Then the footer reads "Sold by Naira · Nashik, Maharashtra · GSTIN …" above its links, and the WhatsApp lines add "Mon–Sat, 10 am–7 pm". Until then the page only links to the contact page ("Business address" under Reviews, and the footer).</li>
+    <li>Names she sees after she leaves this page: the payee name a UPI app shows at Fastrr checkout, and the sender name on the courier's SMS and parcel label for COD. If either is not "Naira", add it to FACTS, and the bag foot adds one line above the COD figure: "UPI shows the payee as &lt;name&gt;; your parcel comes from &lt;name&gt;."</li>
+  </ol>
+  <h2 style="margin-top:22px">Build notes for the live release · not on the page</h2>
+  <ol>
+    <li>An honest baseline before any test, for all traffic and on every jewellery page. Remove: the authored rating and review wall on PDPs (reviewSummary 4.9 · 51, the hard-coded "Verified Buyer" flag, and aggregateRating in the Product JSON-LD); FomoPopup; dailySold "N pieces sold in the last 48 hours" and JewelTrustStrip's hashed count; PressMarquee "As featured in"; the unconditional "Skin-friendly" and "Anti-tarnish" badges; from the care answers, "3-year plating assurance", "for a lifetime", "skin-safe" and "If it does not suit you, return it within 7 days"; "dispatched from our Mumbai atelier"; the " · Demi-Gold Jewellery" title suffix; "SITEWIDE SALE LIVE TODAY!" and "MADE IN LIMITED BATCHES" in the marquee; "✦ Sitewide sale live today · up to 30% off" in the bag's SimpleLadder; and BagReturns' "Easy 7-day exchange &amp; returns", replaced by the line in build note 2. Arm A is then the current layout without these, so the test compares layouts, never honest proof against invented proof. The set rows link to the ring's and necklace's live pages, which show "4.9 out of 5 from 51 reviews" today. Test: render JewelDetailNext, CartDrawerNext and Header, and fail on /51 reviews|verified buyer|pieces sold|just bought|as featured|skin|plating assurance|lifetime|sale live today|limited batches|atelier|demi-gold|7-day exchange|7-day returns|arrives by|order today|far harder|stands up to sweat|cm adjustable/i, and assert that on both arms the Prism page's Length spec reads "18 cm". Also on arm A, the same honest copy as arm B: (a) the Delivery &amp; returns fold: JewelDetailNext L1273 "Order today and it arrives by {date}." becomes "Delivery est. {date}.", and L1277 "Cash on delivery available. 7-day returns — read the policy" becomes "Cash on delivery available. Faulty piece? Tell us on WhatsApp within 7 days of delivery for a repair, replacement or store credit. We cannot take a piece back for a change of mind. Read the policy"; (b) the bag foot: CartDrawerNext L596 "Free insured shipping · arrives {date}" becomes "Free insured shipping · est. {date}"; (c) the Prism-only rewrite in jewelleryPresentation.ts L44-63, which turns "18 cm" into "15–19 cm adjustable" in the blurb, the description and the Length spec, and the test that pins it (jewelleryPresentation.test.ts L9-25): delete both, so the two arms state the same length until ops answer launch blocker 1; (d) the listing line "PVD vs plating: Regular plating is a soft layer that wears off over time. PVD is bonded to the metal in a vacuum, so it is far harder, stands up to sweat and keeps its colour much longer.", which specsOf renders as a spec row: skip any detail labelled "PVD vs plating" (keep its Care tail), remove the paragraph from the Shopify descriptions (it also feeds the Meta catalogue) and regenerate the snapshot.</li>
+    <li>Ship this bag with this page, never this page on the live bag. CartDrawerNext: replace BagReturns with this file's bag line under the total, a disclosure that opens the policy paragraph in place and never closes the bag ("Faulty piece? Tell us on WhatsApp within 7 days of delivery for a repair, replacement or store credit. We cannot take a piece back for a change of mind. Read the policy"; opening it logs nf_bag_policy, never nf_bag_exit); with two or more pieces add "Faulty pieces only, within 7 days · no change-of-mind returns" as plain text under Checkout, where the body's line has scrolled out of view; put "<span class="rs">₹</span>X paid online · <span class="rs">₹</span>Y with COD (<span class="rs">₹</span>Z fee)" from payment.ts codFeeFor directly above Checkout, in whole rupees; in arm B, drop setDrawerOpen(true) from handleAddToCart and mount the card. Test: the bag contains "change of mind" and "store credit" and does not contain "7-day exchange"; the foot contains "with COD"; the COD figure equals Math.round(total × 1.05). Today codFeeFor is used only by payment.test.ts, so the live bag shows no COD figure at all.</li>
+    <li>Header: no announcement marquee on jewellery PDPs (the announcement height set to 0 on this route). With the 34px marquee the delivery + COD line sits 21px under the bar at 360x640. Its false-urgency strings go sitewide (build note 1; 49 in stock).</li>
+    <li>Product JSON-LD from the truth-sheet fields, as in this file's head, with no aggregateRating. The live one says "a 15–19 cm adjustable bracelet" and "keeps the line flat on the wrist", neither of which is in the facts.</li>
+    <li>First screen. Build JewelDetail's hero and PdpBuyFacts as this file's .above column: its MIN-height is the visible page less the header, the bar, env(safe-area-inset-bottom) and 13px; the facts take what they need and the photo takes the rest (180px floor, min(125vw, 520px) cap), and when the facts and the floor cannot share the screen the column grows instead of painting over the next section. A tight mode drops the material and "insured" (both repeated below) when facts + 180px exceed the column. On screens 2:1 and taller a &lt;picture&gt; source serves the worn photo's whole 3:4 frame (Shopify p1 at width=900) under a min(133.4vw, 560px) cap, and each preload carries the matching media query. The landing frame paints its own pixels first (CDN width=24 as its background, or its average colour). The bar's buttons take min-height 48px and --bar follows the real bar, so 150-200% text never clips "Add to bag". Extend the first-screen budget test to font scales 1.15 and 1.3, 360x560 at 1.15, 640x360 landscape, WCAG text spacing and 412x900: the delivery + COD line ends at or above the bar, #product-facts' bottom is at or above the next section's top, and the document is never wider than the viewport. History: scroll restoration is never globally manual (sitewide rule), only while an overlay owns the entry; every scripted jump (Read the policy, See the set) pushes an entry with no URL change, so Android Back returns to the PDP rather than to the ad; Size guide opens the ruler in the viewer; the viewer pages with the arrow keys. In index.css set html { scroll-padding-top: calc(var(--navbar-h) + 8px) } sitewide and, on the PDP, scroll-padding-bottom to the sticky bar's height plus the inset; the hard-coded scrollMarginTop values can then go. Render only the landing slide eagerly; preload only the landing frame from index.html's inline head script (beside NAIRA_JEWELLERY_REDIRECT), from the Shopify CDN at width=720 with WebP/AVIF negotiation (the hero is 73 KB as JPEG, 53 KB as WebP, 47 KB as AVIF); keep the vector wordmark so the PDP makes no PNG logo request; render the bar's first state in the same pass as the price; keep this notes panel out of the shipped document.</li>
+    <li>"3 in stock" must come from live inventory at view time. Nothing in src reads inventory today (no quantityAvailable or totalInventory at origin/main bd412960). Add ProductVariant.quantityAvailable to the Storefront query; the token needs the unauthenticated_read_product_inventory scope. Render the line only after live data has arrived, never from jewellerySnapshot.ts or the pre-rendered HTML, and only when 1 ≤ n ≤ 5. Show nothing when the field is null or the call fails. Test: snapshot 3 with live 12 renders no line; live 3 renders "3 in stock".</li>
+    <li>Events for the test: nf_bag_view {source: bar, bag_icon, bag_n}, nf_bag_exit, nf_bag_policy {q} (the bag's policy opened in place), nf_drawer_add, nf_tap_guarded {control}, nf_card_shown {mode: full, compact, slim, mini, dock, none_control_under; under: facts, set, assure, specs, riya, folds, footer}, nf_contact {channel: whatsapp, instagram; place: assure, fit, reviews; q}, nf_view {i, play}, nf_fold {id}, nf_size, with Clarity tags nf_bag_seen, nf_bag_exit and nf_contact. Read IC/ATC beside nf_bag_view, by device: showing the fee before IC moves some COD drop-off from Fastrr into the bag. nf_contact separates a WhatsApp conversation from an Instagram exit, which the Instagram app opens outside its in-app browser.</li>
+    <li>The test harness. Arm: computed once per visitor from naira_vid (visitorId.ts): the first 8 hex digits of its SHA-256, mod 2 (0 = pdp_a, 1 = pdp_b). It is decided before JewelDetail renders, on every jewellery PDP, so a returning visitor never switches arms; it is set once as window.__nfArm, which this file's script reads. Mobile only; desktop stays on arm A and is left out of the read. Orders: add { key: "nf_arm", value: arm } to trackingCartAttributes() in src/lib/shopify.ts and to fastrrCartAttributes() in src/lib/fastrr.ts. naira_visitor_id already travels in both. Before launch, ops places one Fastrr test order and reads order.customAttributes. If nf_arm and naira_visitor_id are there, orders are read by arm from Shopify. If Fastrr drops them, meta-capi (which already receives InitiateCheckout and Purchase with an event_id) writes {event_id, naira_vid, arm, value, num_items} to a Supabase table, and orders are joined on the Purchase event. Freeze promo.ts and BUY2/BUY3/BUY4 for the whole test. Read per visitor, never per event: visitors who added / PDP visitors, visitors who began checkout / visitors who added, Shopify orders / PDP visitors. Pixel Purchase is never the decision metric (it runs at 3.4x real orders), and IC/ATC per event cannot decide this test: arm B has more add surfaces, and Buy now fires both events together.</li>
+    <li>The product video: when the 3.3 s cut replaces the live Shopify product video, it carries "Creator collaboration" burned into the frame for its whole length (owner list, Riya's reel).</li>
+    <li>Instagram from one constant. Once the owner confirms the handle (owner item 7), point the footer icon, ContactUs' sameAs and siteMeta's sameAs at it from one constant (e.g. INSTAGRAM_URL in siteMeta.ts). Test: every instagram.com/&lt;handle&gt; href in src equals it (post and reel links excepted).</li>
+    <li>A jewellery section on the policy page. Add a section to /exchange-return-policy with id="jewellery", titled "Jewellery". Its text is this page's fold paragraph word for word: "Returns are for manufacturing faults only. Tell us on WhatsApp within 7 days of delivery, with photos, and we will repair or replace the piece or give store credit. Refunds are considered case by case. Worn or customer-damaged pieces are not eligible, and we cannot take a piece back for a change of mind." Point the fold's link (relabelled "Full policy"; it says "store-wide" until then) and the footer's "Faulty-piece policy" at #jewellery. Change the page's meta description from "7-day window on standard pieces" to describe faulty pieces. The compact PDP footer keeps four links, as this file's: Contact &amp; business address, Faulty-piece policy, Privacy and Terms (the live one has Contact Us, Returns, Privacy and Terms, Footer.tsx L74-78): the privacy notice stays on the page that fires the pixel, CAPI and Clarity.</li>
+  </ol>
+</aside>
+<script>
+(function () {
+  'use strict';
+  var $ = function (s) { return document.querySelector(s); };
+  var $$ = function (s, r) { return [].slice.call((r || document).querySelectorAll(s)); };
+  var rs = function (n) { return '₹' + Math.round(n).toLocaleString('en-IN'); };
+  var R = function (n) { return '<span class="rs">' + rs(n) + '</span>'; };
+  var WORD = ['', 'one', 'two', 'three', 'four'], ORD = ['', 'first', 'second', 'third', 'fourth'];
+  var word = function (n) { return WORD[n] || String(n); };
+  var UPI = document.querySelector('#now .upi').outerHTML;
+  var reduced = function () { return matchMedia('(prefers-reduced-motion: reduce)').matches; };
+  var smooth = function () { return reduced() ? 'auto' : 'smooth'; };
+
+  /* Delivery estimate: today + 3 to 5 working days, never shipped as a literal. */
+  (function () {
+    var add = function (d, n) { d = new Date(d); while (n > 0) { d.setDate(d.getDate() + 1); var w = d.getDay(); if (w && w < 6) n--; } return d; };
+    var M = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    var a = add(new Date(), 3), b = add(new Date(), 5);
+    var txt = a.getMonth() === b.getMonth() ? a.getDate() + '–' + b.getDate() + ' ' + M[b.getMonth()] : a.getDate() + ' ' + M[a.getMonth()] + '–' + b.getDate() + ' ' + M[b.getMonth()];
+    window.__eta = txt; $('#eta').textContent = txt;
+  })();
+
+  /* Pixel stand-in: the live page sends these through pixel.ts and meta-capi with one event_id each.
+     One tap is one event. Every event and a Clarity tag carry the test arm, so the live test can be read
+     from Shopify orders by arm rather than from pixel counts (Purchase runs at 3.4x real orders) (build note 8).
+     The live build sets the arm in one place, before JewelDetail renders. */
+  var ARM = window.__nfArm || 'pdp_b';
+  var EV = window.__nfEvents = [];
+  var track = function (name, data) { data = data || {}; data.arm = ARM; EV.push({ name: name, data: data, event_id: name + '.' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6) }); };
+  var ctag = function (k, v) { EV.push({ name: 'clarity.set', data: { key: k, value: v } }); if (typeof window.clarity === 'function') window.clarity('set', k, v); };
+  ctag('nf_arm', ARM);
+
+  /* The bag, with the live ladder and promo.ts rounding: one code, the richest rung, rounded once on the subtotal. */
+  var P = {
+    bracelet: { n: 'Prism Rivière Bracelet', p: 2399, m: ['PVD rhodium coating on surgical stainless steel'], d: 'Surgical steel, PVD rhodium', t: 'i/plaster-360.jpg' },
+    ring: { n: 'Cushion Halo Ring', p: 999, m: ['PVD rhodium, like the bracelet', 'Adjustable, US 5–9'], d: 'PVD rhodium · adjustable, US 5–9', s: ['PVD rhodium', 'Adjustable, US 5–9'], o: 0 },
+    necklace: { n: 'Prism Pear Drop Necklace', p: 999, m: ['PVD 18K gold coating'], o: 1 },
+    hoops: { n: 'Prism Emerald-Cut Hoops', p: 1299, m: ['Gold tone'], o: 2 }
+  };
+  var thumb = function (k, w, h) { return k === 'bracelet' ? '<img src="' + P[k].t + '" width="' + w + '" height="' + h + '" alt="" style="width:' + w + 'px;height:' + h + 'px;object-fit:cover">' : '<span class="spr" style="--o:' + P[k].o + ';width:' + w + 'px;height:' + h + 'px"><img src="i/set-3.jpg" alt=""></span>'; };
+  var SET = ['ring', 'necklace', 'hoops'], ALL = ['bracelet', 'ring', 'necklace', 'hoops'];
+  var RUNGS = [[2, 0.10, 'BUY2'], [3, 0.20, 'BUY3'], [4, 0.30, 'BUY4']];
+  var rung = function (q) { var r = null; RUNGS.forEach(function (x) { if (q >= x[0]) r = x; }); return r; };
+  var nextRung = function (q) { for (var i = 0; i < RUNGS.length; i++) if (q < RUNGS[i][0]) return RUNGS[i]; return null; };
+  var pct = function (r) { return Math.round(r * 100) + '%'; };
+  var bag = {};
+  var stat = function (b) { var q = 0, s = 0; for (var k in b) { q += b[k]; s += b[k] * P[k].p; } var r = rung(q); return { q: q, sub: s, r: r, total: Math.round(s * (1 - (r ? r[1] : 0))) }; };
+  var effect = function (id, base) { var a = stat(base), c = {}; for (var k in base) c[k] = base[k]; c[id] = (c[id] || 0) + 1; var b = stat(c); return { adds: b.total - a.total, total: b.total, r: b.r, q: b.q }; };
+  var plural = function (n) { return n + (n === 1 ? ' piece' : ' pieces'); };
+  /* a suggestion's lines, one span each, so no line breaks after a middle dot. The first is the metal (.m), dropped by the
+     compact card; the rest (.ms, the ring's size range) always show: a one-tap ring add is never a blind buy. */
+  var sugInfo = function (k) { var l = P[k].s || [P[k].d || P[k].m[0]]; return l.map(function (t, i) { return '<span class="e ' + (i ? 'ms' : 'm') + '">' + t + '</span>'; }).join(''); };
+  var short = function (k) { return P[k].n.split(' ').pop().toLowerCase(); };
+  /* the bag's COD fee, as payment.ts codFeeFor: 5% of the total after the discount (Fastrr books it as shipping) */
+  var codFee = function (t) { return Math.round(t * 0.05 * 100) / 100; };
+
+  /* A control that changes meaning under the finger ignores a second tap for 700 ms: a double tap on Add to bag
+     must never become a trip to the bag, and a double tap on + Add must never become a second piece or a removal. */
+  var GUARD = 700, SHOWN = 600;
+  var hold = function (b) { b.dataset.armAt = Date.now() + GUARD; b.dataset.showUntil = Date.now() + SHOWN; };
+  var held = function (b) { return Date.now() < +(b.dataset.armAt || 0); };
+  var swallowed = function (b) { if (!held(b)) return false; track('nf_tap_guarded', { control: b.id || b.getAttribute('data-add') || (b.closest('.row') || {}).dataset.id || 'set' }); ctag('nf_tap_guarded', '1'); return true; };
+
+  var addBtn = $('#add'), nowBtn = $('#now'), live = $('#live'), bar = $('#bar');
+  var announce = function (msg) { live.textContent = ''; setTimeout(function () { live.textContent = msg; }, 60); };
+
+  var effLine = function (id) {
+    var p = P[id].p, s = stat(bag);
+    if (bag[id]) return '';
+    var base = s.q ? bag : { bracelet: 1 }, e = effect(id, base);
+    var lead = 'Adds ';
+    if (e.adds <= 0) return 'Your bag total ' + (e.adds < 0 ? 'drops ' + R(-e.adds) : 'stays the same');
+    return lead + R(e.adds) + (e.adds < p ? ', not ' + R(p) : '');
+  };
+  var CAP0 = 'Mix any pieces, no code · the bracelet\'s price';
+
+  var render = function () {
+    var s = stat(bag);
+    /* header bag */
+    var bn = $('#bagn'); bn.textContent = s.q; bn.style.display = s.q ? 'block' : 'none';
+    $('#bagbtn').setAttribute('aria-label', s.q ? 'Bag, ' + plural(s.q) : 'Bag, empty');
+    /* sticky bar: Add and Buy now until the bracelet is in. Then one button to the bag, which shows the COD fee
+       in rupees beside its checkout; for the first 700 ms it only confirms, so a double tap goes nowhere. */
+    if (bag.bracelet) {
+      bar.classList.add('one'); addBtn.dataset.mode = 'bag';
+      /* the tick can outlast the guard (1.5 s when no card can show); once the guard is over a tap opens the bag */
+      if (Date.now() < +(addBtn.dataset.showUntil || 0)) { addBtn.innerHTML = '<span>✓ Added to bag</span>'; if (held(addBtn)) addBtn.setAttribute('aria-disabled', 'true'); else addBtn.removeAttribute('aria-disabled'); addBtn.removeAttribute('aria-label'); }
+      else { addBtn.innerHTML = '<span>Bag &amp; checkout</span><span aria-hidden="true">·</span>' + R(s.total) + '<span class="vh">, ' + plural(s.q) + '</span>'; addBtn.removeAttribute('aria-disabled'); addBtn.removeAttribute('aria-label'); }
+    } else {
+      bar.classList.remove('one'); addBtn.dataset.mode = 'add'; addBtn.removeAttribute('aria-disabled'); addBtn.removeAttribute('aria-label');
+      addBtn.innerHTML = '<span>Add to bag</span><span aria-hidden="true">·</span>' + R(P.bracelet.p);
+    }
+    if (s.q && !bag.bracelet) { nowBtn.dataset.mode = 'bag'; nowBtn.innerHTML = '<span>Bag · ' + s.q + '</span><span class="vh">, ' + plural(s.q) + '</span>'; nowBtn.removeAttribute('aria-label'); }
+    else { nowBtn.dataset.mode = 'now'; nowBtn.innerHTML = '<span>Buy now</span>' + UPI; nowBtn.removeAttribute('aria-label'); }
+    /* the ladder's caption follows the bag; the rung in play is underlined */
+    var cap = $('#ladcap');
+    if (!s.q) cap.textContent = CAP0;
+    else if (!s.r) cap.textContent = s.q + ' in your bag · a ' + ORD[RUNGS[0][0]] + ' piece takes ' + pct(RUNGS[0][1]) + ' off';
+    else cap.textContent = s.q + ' in your bag · ' + pct(s.r[1]) + ' off applied' + (nextRung(s.q) ? '' : ', the top rung');
+    var on = s.r ? s.r[0] : 0;
+    $$('.lad li').forEach(function (li) { li.classList.toggle('on', +li.dataset.q === on); });
+    /* the set's caption says once what every row's rupees assume, naming what she can check in her bag, and goes when the
+       whole set is in the bag */
+    var sc = $('#setcap'), inb = ALL.filter(function (k) { return bag[k]; });
+    sc.textContent = !s.q ? 'With the bracelet in your bag' : s.q === 1 ? 'With the ' + short(inb[0]) + ' in your bag' : 'With the ' + word(s.q) + ' pieces in your bag';
+    sc.hidden = SET.every(function (k) { return bag[k]; });
+    /* set rows; a stock line only when inventory is 5 or fewer. In production the number comes from live inventory read
+       at view time (quantityAvailable), never from the snapshot or the pre-render, and no line shows if the call fails. */
+    $$('[data-stock]').forEach(function (e) { var n = +e.dataset.stock; e.textContent = n <= 5 ? n + ' in stock' : ''; });
+    $$('.row').forEach(function (row) {
+      var id = row.dataset.id, b = row.querySelector('.add'), inb = !!bag[id];
+      b.textContent = inb ? '✓ In bag' : '+ Add'; b.classList.toggle('done', inb);
+      if (inb) b.setAttribute('aria-disabled', 'true'); else b.removeAttribute('aria-disabled');
+      b.setAttribute('aria-label', inb ? 'In bag: ' + P[id].n : 'Add ' + P[id].n + ' to bag');
+      row.querySelector('.eff').innerHTML = effLine(id);
+    });
+    /* the summary is the bag, so it appears only once something is in it */
+    var sum = $('#sum');
+    if (!s.q) { sum.hidden = true; sum.innerHTML = ''; }
+    else {
+      var nx = nextRung(s.q); sum.hidden = false;
+      sum.innerHTML = '<div class="row1"><span>Your bag · ' + plural(s.q) + '</span><span class="big rs">' + rs(s.total) + '</span></div>' +
+        (s.r ? '<div class="save"><span>' + pct(s.r[1]) + ' off applied · you save ' + R(s.sub - s.total) + '</span><s>' + rs(s.sub) + '</s></div>' : '') +
+        '<div class="hint">' + (nx ? 'A ' + ORD[nx[0]] + ' piece makes it ' + pct(nx[1]) + '.' : 'The top rung: 30% off your whole bag.') + '</div>';
+    }
+    /* add the rest: only what is missing, the bracelet at most once, and it says what it adds */
+    var miss = ALL.filter(function (k) { return !bag[k]; }), aa = $('#addall'), note = $('#allnote');
+    if (!miss.length) { aa.setAttribute('aria-disabled', 'true'); aa.textContent = 'All four are in your bag'; note.textContent = ''; }
+    else {
+      var c = {}; for (var k in bag) c[k] = bag[k]; miss.forEach(function (k) { c[k] = 1; }); var a = stat(c);
+      var what = miss.length === 4 ? 'Add all four' : miss.length === 1 ? 'Add the ' + (miss[0] === 'bracelet' ? 'bracelet' : P[miss[0]].n.split(' ').pop().toLowerCase()) : bag.bracelet ? 'Add the other ' + word(miss.length) : 'Add the remaining ' + word(miss.length);
+      aa.removeAttribute('aria-disabled');
+      aa.innerHTML = '<span>' + what + '</span><span aria-hidden="true">·</span><span>' + (miss.length === 4 ? '' : 'bag ') + '</span>' + R(a.total);
+      note.innerHTML = a.r ? (a.q === 4 && miss.length === 4 ? pct(a.r[1]) + ' off all four' : 'With them: ' + pct(a.r[1]) + ' off your whole bag') + ' · you save ' + R(a.sub - a.total) : '';
+    }
+    renderDrawer();
+  };
+
+  /* after add: a card over the photo with the bracelet first and one suggestion in rupees; it waits for the shopper.
+     A tap on its + Add adds that piece and nothing else: no new piece is swapped in under the finger. */
+  var card = $('#added'), cardY = 0, chip = $('#chip');
+  var bagLine = function (s) { return plural(s.q) + ' · ' + pct(s.r[1]) + ' off · you save ' + R(s.sub - s.total) + ' · bag ' + R(s.total); };
+  var sugLine = function (k) {
+    var s = stat(bag), e = effect(k, bag), step = e.r && (!s.r || e.r[0] !== s.r[0]);
+    return '<span class="e">Adds ' + R(e.adds) + (e.adds < P[k].p ? ', not ' + R(P[k].p) : '') + '</span>' + (step ? '<span class="e off">' + pct(e.r[1]) + ' off ' + (e.q === 2 ? 'both' : 'all ' + word(e.q)) + '</span>' : '');
+  };
+  var X = '<button class="x" data-close aria-label="Close"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 3l10 10M13 3L3 13"/></svg></button>';
+  var showCard = function (id) {
+    var s = stat(bag), sug = SET.filter(function (k) { return !bag[k]; })[0], g = $('.gal').getBoundingClientRect();
+    /* the set link is offered while its heading is still hidden under the dock or the bar */
+    var avail = g.bottom - (77 + 8) - 8, bt = bar.getBoundingClientRect().top, setBelow = $('#set-h').getBoundingClientRect().top > bt - 84;
+    /* the two-line form: over the last of the photo, or docked above the bar. While the set is still below, its second
+       line is the way to it. */
+    var brief = '<div class="top"><p class="h">Added to your bag · ' + plural(s.q) + '</p>' + X + '</div>' +
+      (s.r ? '<p class="bagl">' + bagLine(s) + '</p>' : setBelow ? '<a class="bagl" href="#set" data-toset>A ' + ORD[RUNGS[0][0]] + ' piece takes ' + pct(RUNGS[0][1]) + ' off · <u>See the set</u></a>'
+        : '<p class="bagl">A ' + ORD[RUNGS[0][0]] + ' piece takes ' + pct(RUNGS[0][1]) + ' off your whole bag</p>');
+    card.className = 'added';
+    if (avail >= 60) {
+      var h = '<div class="top"><p class="h">Added to your bag</p>' + X + '</div>' +
+        '<div class="what">' + thumb(id, 48, 60) + '<p><span class="n">' + P[id].n + '</span>' + R(P[id].p) + '</p></div>';
+      /* the ring's line carries its size range: a one-tap ring add must never be a blind buy */
+      if (sug) h += '<div class="sug">' + thumb(sug, 48, 60) + '<div><span class="n">' + P[sug].n + '</span>' + sugInfo(sug) + sugLine(sug) + '</div><button class="add" data-add="' + sug + '" aria-label="Add ' + P[sug].n + ' to bag">+ Add</button></div>';
+      if (s.r) h += '<p class="bagl">' + bagLine(s) + '</p>';
+      h += '<div class="acts"><button data-close>Keep browsing</button><a href="#set" data-toset>See the whole set</a></div>';
+      card.innerHTML = h; card.hidden = false;
+      /* short viewports: drop the pictures, then the bracelet's row (never the ring: it is the pairing that moves the bag),
+         before the card could reach the title. The slim card names the bag, not the piece, so it never repeats the H1. */
+      if (card.offsetHeight > avail) card.classList.add('compact');
+      if (card.offsetHeight > avail && sug) { card.classList.add('slim'); card.querySelector('.top .h').textContent = 'Added to your bag · ' + plural(s.q); }
+      /* a strip of photo left (added after a short scroll): the two-line form, still over the photo, never the title */
+      if (card.offsetHeight > avail) { card.className = 'added mini'; card.innerHTML = brief; }
+    }
+    if (avail < 60 || card.offsetHeight > avail) {
+      /* the photo is off screen (added from the bar further down): the two-line form docked above the bar */
+      card.className = 'added dock'; card.innerHTML = brief; card.hidden = false;
+      /* Test the controls, not the section: the dock never sits over anything that can be tapped (a set row's + Add, a
+         WhatsApp link, a size link, a Riya tile, a fold, a footer link) nor over the price, ladder or delivery line (larger
+         text can bring them down to it). The macro photo is a photo, not a control: the dock may sit over it, as the card
+         sits over the gallery. Where it would cover something, there is no card: the bar's tick holds for 1.5 s, and the
+         badge and the announcement confirm the add. */
+      var cr = card.getBoundingClientRect();
+      var under = $$('#product-facts, main a, main button, main summary, footer a').filter(function (e) {
+        if (e.id === 'closeup' || card.contains(e) || bar.contains(e)) return false; var r = e.getBoundingClientRect(); return r.width && r.height && r.bottom > cr.top && r.top < cr.bottom && r.right > cr.left && r.left < cr.right; })[0];
+      if (under) {
+        card.hidden = true; card.className = 'added'; cardY = window.scrollY;
+        addBtn.dataset.showUntil = Date.now() + 1500; setTimeout(render, GUARD + 10); setTimeout(render, 1510);
+        track('nf_card_shown', { id: id, mode: 'none_control_under', under: under.id === 'product-facts' ? 'facts' : under.closest('#set') ? 'set' : under.closest('.assure') ? 'assure' : under.closest('.specs') ? 'specs' : under.closest('.reels') ? 'riya' : under.closest('.folds') ? 'folds' : under.closest('footer') ? 'footer' : 'other', suggestion: null });
+        return;
+      }
+    }
+    cardY = window.scrollY; chip.hidden = true; $('#count').style.visibility = 'hidden';
+    track('nf_card_shown', { id: id, mode: card.classList.contains('dock') ? 'dock' : card.classList.contains('mini') ? 'mini' : card.classList.contains('slim') ? 'slim' : card.classList.contains('compact') ? 'compact' : 'full', suggestion: card.querySelector('.sug') ? sug : null });
+  };
+  var hideCard = function () { if (card.hidden) return; card.hidden = true; $('#count').style.visibility = ''; showChip(); };
+  card.addEventListener('click', function (ev) {
+    var t = ev.target.closest('button, a'); if (!t) return;
+    if (t.hasAttribute('data-close')) hideCard();
+    else if (t.dataset.add) {
+      if (t.classList.contains('done') || swallowed(t)) return;
+      var k = t.dataset.add; hold(t); addPiece(k); track('nf_card_add', { id: k });
+      t.classList.add('done'); t.textContent = '✓ Added'; t.setAttribute('aria-disabled', 'true'); t.setAttribute('aria-label', 'Added: ' + P[k].n);
+      /* the bag line goes under the suggestion when the photo has room for it; otherwise it takes the offer line's place,
+         so the card never grows over the title */
+      var s = stat(bag), bl = card.querySelector('.bagl'), off = card.querySelector('.sug .off'), floor = $('.gal').getBoundingClientRect().bottom - 8;
+      if (s.r) {
+        if (bl) bl.innerHTML = bagLine(s);
+        else {
+          bl = document.createElement('p'); bl.className = 'bagl'; bl.innerHTML = bagLine(s); card.insertBefore(bl, card.querySelector('.acts'));
+          if (off && !card.classList.contains('dock') && card.getBoundingClientRect().bottom > floor) { bl.remove(); off.classList.add('bag'); off.innerHTML = 'Bag ' + R(s.total) + ' · you save ' + R(s.sub - s.total); }
+        }
+      }
+    }
+    /* a scripted jump owns a history entry (no URL change), so Android Back returns to where she was, not to the ad */
+    else if (t.hasAttribute('data-toset')) { ev.preventDefault(); hideCard(); history.pushState({ nf: 'jump' }, ''); $('#set').scrollIntoView({ behavior: smooth() }); }
+  });
+  window.addEventListener('scroll', function () { if (!card.hidden && Math.abs(window.scrollY - cardY) > 150) hideCard(); }, { passive: true });
+
+  var addPiece = function (id) {
+    bag[id] = 1; track('AddToCart', { contents: [{ id: id, quantity: 1 }], num_items: 1, value: P[id].p, currency: 'INR' });
+    render(); var s = stat(bag);
+    announce(P[id].n + ' added. ' + plural(s.q) + ' in your bag, ' + rs(s.total) + '.' + (s.r ? ' ' + pct(s.r[1]) + ' off applied.' : ' A second piece takes 10% off your whole bag.'));
+  };
+  var removePiece = function (id) { delete bag[id]; render(); var s = stat(bag); announce(P[id].n + ' removed. ' + (s.q ? plural(s.q) + ' in your bag, ' + rs(s.total) + '.' : 'Your bag is empty.')); };
+
+  addBtn.addEventListener('click', function () {
+    if (swallowed(addBtn)) return;
+    if (addBtn.dataset.mode === 'bag') return openLayer('drawer', 'bar');
+    hold(addBtn); addPiece('bracelet'); showCard('bracelet');
+    setTimeout(render, SHOWN + 10);
+  });
+  nowBtn.addEventListener('click', function () {
+    if (nowBtn.dataset.mode === 'bag') return openLayer('drawer', 'bag_n');
+    /* Buy now: this piece alone straight to checkout, as the live buyNow does */
+    track('AddToCart', { contents: [{ id: 'bracelet', quantity: 1 }], num_items: 1, value: P.bracelet.p, currency: 'INR' });
+    track('InitiateCheckout', { value: P.bracelet.p, num_items: 1 }); track('nf_checkout', { source: 'buy_now' });
+    openLayer('hand', 'now');
+  });
+  $$('.row .add').forEach(function (b) { b.addEventListener('click', function () {
+    var id = b.closest('.row').dataset.id;
+    if (bag[id] || swallowed(b)) return; hold(b);
+    addPiece(id); track('nf_set_add', { id: id });
+  }); });
+  $('#addall').addEventListener('click', function () {
+    if (this.getAttribute('aria-disabled') === 'true' || swallowed(this)) return; hold(this);
+    var before = stat(bag).total, miss = ALL.filter(function (k) { return !bag[k]; });
+    miss.forEach(function (k) { bag[k] = 1; });
+    render(); var s = stat(bag);
+    /* one tap, one AddToCart: every piece in contents, the value the rise in the bag's total */
+    track('AddToCart', { contents: miss.map(function (k) { return { id: k, quantity: 1 }; }), num_items: miss.length, value: s.total - before, currency: 'INR' });
+    track('nf_addall', { n: miss.length });
+    announce(plural(miss.length) + ' added. ' + plural(s.q) + ' in your bag, ' + rs(s.total) + ', ' + pct(s.r ? s.r[1] : 0) + ' off applied.');
+  });
+
+  /* the bag drawer: the COD figure sits in the fixed footer ABOVE Secure checkout, so it is read before the decision
+     and stays in view whatever the bag holds */
+  var drawer = $('#drawer'), scrim = $('#scrim');
+  var POLBAG = 'Tell us on WhatsApp within 7 days of delivery for a repair, replacement or store credit. We cannot take a piece back for a change of mind.';
+  var POLFOOT = 'Faulty pieces only, within 7 days · no change-of-mind returns';
+  var NEXTLINE = function (nx, o) { return pct(nx[1]) + ' off all ' + word(nx[0]) + ' with the ' + short(o.k) + ', ' + R(o.a) + ' more'; };
+  var renderDrawer = function () {
+    var s = stat(bag), body = $('#drbody'), foot = $('#drfoot');
+    if (!s.q) { body.innerHTML = '<p class="dr-empty">Your bag is empty.</p>'; foot.innerHTML = '<button class="btn sec" data-shut>Keep browsing</button>'; return; }
+    var nx = nextRung(s.q), h = '';
+    if (s.r) {
+      /* the next step only, in rupees: the piece on this page that adds least, and what it adds. The ledger below names
+         the rung already applied. Text only: nothing in the bag moves under a finger. */
+      var opts = ALL.filter(function (k) { return !bag[k]; }).map(function (k) { return { k: k, a: effect(k, bag).adds }; })
+        .filter(function (o) { return o.a > 0; }).sort(function (x, y) { return x.a - y.a; });
+      h += '<p class="dr-lad">' + (!nx ? 'The top rung: ' + pct(s.r[1]) + ' off your whole bag'
+        : opts.length ? NEXTLINE(nx, opts[0])
+        : 'A ' + ORD[nx[0]] + ' piece makes it ' + pct(nx[1]) + ' off your whole bag') + '</p>';
+    }
+    h += '<ul class="dr-items">';
+    ALL.forEach(function (k) { if (!bag[k]) return;
+      h += '<li>' + thumb(k, 64, 80) + '<div><div class="top2"><div class="n">' + P[k].n + '</div><span class="pr rs">' + rs(P[k].p * bag[k]) + '</span></div><div class="m">' + (P[k].d || P[k].m.join(' · ')) + '</div>' +
+        '<div class="ctl"><span class="step"><button data-dec="' + k + '" aria-label="One fewer ' + P[k].n + '">−</button><span>' + bag[k] + '</span><button data-inc="' + k + '" aria-label="One more ' + P[k].n + '">+</button></span>' +
+        '<button class="rm" data-rm="' + k + '" aria-label="Remove ' + P[k].n + '">Remove</button></div></div></li>'; });
+    var fee = codFee(s.total);
+    h += '</ul><div class="dr-tot"><div><span>Subtotal</span>' + R(s.sub) + '</div>' +
+      (s.r ? '<div class="off"><span>' + plural(s.q) + ' · ' + pct(s.r[1]) + ' off (' + s.r[2] + ', automatic)</span><span>−' + R(s.sub - s.total) + '</span></div>' : '') +
+      '<div><span>Insured delivery, est. ' + window.__eta + '</span><span>Free</span></div><div class="tt"><span>Total</span>' + R(s.total) + '</div></div>';
+    if (s.q === 1) {
+      /* Most bags are one piece. Instead of a line about a second piece, the second piece itself, in rupees, in the band
+         under the total; once it is added the bag shows the applied line, and nothing new is swapped in under the finger */
+      var only = ALL.filter(function (k) { return bag[k]; })[0];
+      var sg = only === 'bracelet' ? SET.filter(function (k) { return !bag[k]; })[0] : 'bracelet';
+      h += '<div class="dr-sug"><p class="k">Wear it with</p><div class="sug">' + thumb(sg, 48, 60) + '<div><span class="n">' + P[sg].n + '</span>' + sugInfo(sg) + sugLine(sg) + '</div><button class="add" data-dadd="' + sg + '" aria-label="Add ' + P[sg].n + ' to bag">+ Add</button></div></div>';
+    }
+    /* the policy where she commits, in the policy's words, the remedy before the refusal, whatever the bag holds: the live
+       bag's only policy line promised the change-of-mind return the policy denies. It opens in place, so reading it never
+       closes the bag. */
+    h += '<details class="dr-pol" id="drpol"><summary><b>Faulty piece?</b> ' + POLBAG + ' <u>Read the policy</u></summary>' + $$('#policy .dp')[1].outerHTML + '</details>';
+    body.innerHTML = h;
+    /* with three or four pieces the body's saving scrolls out of view, so the foot repeats it. When the policy line is out
+       of view too, its short form sits under Secure checkout (text, not a link): fitPol decides once the bag is drawn. */
+    foot.innerHTML = (s.r ? '<p class="sv">You save ' + R(s.sub - s.total) + '</p>' : '') +
+      '<p>' + R(s.total) + ' paid online · ' + R(s.total + fee) + ' with COD (' + R(fee) + ' fee)</p>' +
+      '<button class="btn pri co" data-co><span>Secure checkout</span><span aria-hidden="true">·</span>' + R(s.total) + UPI.replace('class="upi"', 'class="upi" style="margin-left:4px"') + '</button>' +
+      '<p class="pol" id="drpolfoot">' + POLFOOT + '</p>';
+    fitPol();
+  };
+  /* the short form shows only when the body's own policy line would not be wholly in view with the bag scrolled to the
+     top (measured without it: showing it only takes room from the body) */
+  var fitPol = function () {
+    var pf = $('#drpolfoot'), sm = $('#drpol summary'), body = $('#drbody'); if (!pf || !sm || drawer.hidden) return;
+    pf.hidden = true; pf.hidden = sm.offsetTop + sm.offsetHeight - body.offsetTop <= body.clientHeight;
+  };
+  drawer.addEventListener('click', function (ev) {
+    var t = ev.target.closest('button'); if (!t) return;
+    /* The bag opens under the finger that tapped the bar, and Secure checkout sits where the bar was. For 700 ms after
+       it opens, checkout and every other bag control but close ignore a tap, so a double tap on "Bag & checkout" never skips the COD figure
+       into Fastrr. The bag's own timestamp, not the button's: every change rebuilds the foot. */
+    if (!t.hasAttribute('data-shut') && t.id !== 'drx' && Date.now() < +(drawer.dataset.armAt || 0)) { track('nf_tap_guarded', { control: t.hasAttribute('data-co') ? 'checkout' : t.dataset.dadd ? 'drawer_add' : 'drawer' }); ctag('nf_tap_guarded', '1'); return; }
+    /* after an add from the bag everything below moves, so the bag is re-armed: a second tap never lands on a Remove */
+    if (t.dataset.dadd) { var k = t.dataset.dadd; if (bag[k]) return; drawer.dataset.armAt = Date.now() + GUARD; addPiece(k); track('nf_drawer_add', { id: k }); drawer.focus(); }
+    else if (t.dataset.inc) { bag[t.dataset.inc]++; render(); track('AddToCart', { contents: [{ id: t.dataset.inc, quantity: 1 }], num_items: 1, value: P[t.dataset.inc].p, currency: 'INR' }); }
+    else if (t.dataset.dec) { if (bag[t.dataset.dec] > 1) bag[t.dataset.dec]--; else delete bag[t.dataset.dec]; render(); }
+    else if (t.dataset.rm) { removePiece(t.dataset.rm); }
+    else if (t.hasAttribute('data-co')) { track('InitiateCheckout', { value: stat(bag).total, num_items: stat(bag).q }); track('nf_checkout', { source: 'drawer' }); openLayer('hand', 'bag'); }
+    else if (t.hasAttribute('data-shut')) closeLayer();
+  });
+  /* reading the policy in the bag is logged as such, never as a bag exit (toggle does not bubble, so it is caught) */
+  drawer.addEventListener('toggle', function (ev) { if (ev.target.id === 'drpol' && ev.target.open) track('nf_bag_policy', { q: stat(bag).q }); }, true);
+
+  /* checkout hand-off (prototype): the live page leaves for Fastrr here with one code */
+  var hand = $('#hand');
+  var fillHand = function (path) {
+    var items = path === 'now' ? { bracelet: 1 } : bag, s = stat(items), li = '';
+    for (var k in items) li += '<li>' + items[k] + ' × ' + P[k].n + ' · ' + R(P[k].p * items[k]) + '</li>';
+    hand.innerHTML = '<p class="k">Prototype · checkout hand-off</p><h2 id="hand-h">Secure checkout</h2><p>On the live page this opens Fastrr checkout with:</p><ul>' + li + '</ul>' +
+      '<p>' + (s.r ? 'Code ' + s.r[2] + ' (' + pct(s.r[1]) + ' off) · ' : '') + 'Total ' + R(s.total) + ' · free insured delivery.' + (path === 'now' ? ' Buy now skips the bag, so its COD figure is not shown on our pages first (see the notes).' : ' COD adds ' + R(codFee(s.total)) + ', as the bag showed.') + '</p>' +
+      '<button class="btn sec" data-shut>Back to the piece</button>';
+  };
+  hand.addEventListener('click', function (ev) { if (ev.target.closest('[data-shut]')) closeLayer(); });
+
+  /* gallery: swipe, a quiet counter, slides fetched only as they come near */
+  var trackEl = $('#track'), slides = $$('.sl', trackEl), N = slides.length, idx = -1, m = window.__match || { slide: 0 };
+  var RIYA = 4, SIZE = 5;
+  var load = function (i) { window.__promote(slides[i]); };
+  /* the hero chip opens Riya's clip from the default landing; an ad that names Riya lands on her slide, whose own plate plays it */
+  var cf = (m.angle && m.angle.chip) ? { text: m.angle.chip, go: m.angle.go, play: false } : (m.slide === 0 ? { play: true } : null);
+  if (cf && cf.text) { $('#chipt').textContent = cf.text; chip.classList.add('angle'); }
+  var showChip = function () { chip.hidden = !(cf && idx === m.slide) || !card.hidden; };
+  var mark = function () {
+    var k = Math.round(trackEl.scrollLeft / trackEl.clientWidth); if (k === idx) return; idx = k;
+    $('#count').textContent = (k + 1) + ' / ' + N; if (moved) $('#gal-live').textContent = (k + 1) + ' of ' + N;
+    showChip();
+    slides.forEach(function (s, j) { var b = s.querySelector('button'); if (b) b.tabIndex = j === k ? 0 : -1; });
+    load(k); if (moved) { load(k + 1); load(k - 1); }
+  };
+  var moved = false;
+  mark(); moved = true;
+  trackEl.addEventListener('scroll', mark, { passive: true });
+  var go = function (k) { load(k); trackEl.scrollTo({ left: k * trackEl.clientWidth, behavior: smooth() }); };
+  chip.addEventListener('click', function () { if (cf.play) openLayer('viewer', { i: RIYA, play: true }); else go(cf.go); });
+  $('#prev').addEventListener('click', function () { go(Math.max(0, idx - 1)); });
+  $('#next').addEventListener('click', function () { go(Math.min(N - 1, idx + 1)); });
+  trackEl.addEventListener('keydown', function (ev) {
+    if (ev.key === 'ArrowRight') go(Math.min(N - 1, idx + 1));
+    if (ev.key === 'ArrowLeft') go(Math.max(0, idx - 1));
+    if (ev.key === 'Enter' && ev.target === trackEl) { ev.preventDefault(); openLayer('viewer', { i: idx, play: idx === RIYA }); }
+  });
+  /* the neighbour of the first frame comes once the page is idle, so a first swipe never meets a blank */
+  window.addEventListener('load', function () { (window.requestIdleCallback || function (f) { setTimeout(f, 1200); })(function () { load(m.slide + 1); }, { timeout: 2500 }); });
+
+  /* full-screen viewer: the store's largest photos (896x1200 today), Riya's clip only when asked for */
+  var CDN = 'https://cdn.shopify.com/s/files/1/0680/9606/5698/files/';
+  var FULL = [CDN + 'prism-riviere-bracelet-1.jpg?v=1787277602&width=1200', CDN + 'prism-riviere-bracelet-4.jpg?v=1787277602&width=1200',
+    CDN + 'prism-riviere-bracelet-0_caf6459a-db93-4679-a68c-a74aeafa2a52.jpg?v=1787524332&width=1200', CDN + 'prism-riviere-bracelet-2.jpg?v=1787277602&width=1200',
+    'video', CDN + 'prism-riviere-bracelet-size-guide.jpg?v=1793015677&width=1200', 'i/box-720.jpg'];
+  var altOf = function (i) { var e = slides[i].querySelector('img, svg'); return e ? (e.getAttribute('alt') || e.getAttribute('aria-label') || '') : ''; };
+  var viewer = $('#viewer'), vtrack = $('#vtrack'), vIdx = 0;
+  var vfill = function (i) {
+    var d = vtrack.children[i]; if (!d || d.firstChild) return;
+    if (FULL[i] === 'video') {
+      /* once with sound, then it loops muted, so the spoken line is not repeated every 3.3 s */
+      var v = document.createElement('video'); v.setAttribute('playsinline', ''); v.controls = true; v.preload = 'none'; v.poster = 'i/riya-540.jpg'; v.src = 'v/riya-prism.mp4';
+      v.setAttribute('aria-label', "Riya's clip of the bracelet, a creator collaboration");
+      v.addEventListener('ended', function () { if (!v.loop) { v.muted = true; v.loop = true; v.play().catch(function () {}); } });
+      d.appendChild(v);
+    }
+    /* the size guide is the same ruler and caption as the gallery's slide 6, so "Size guide" can open it in place */
+    else if (i === SIZE) { var fg = slides[SIZE].cloneNode(true); fg.removeAttribute('role'); fg.removeAttribute('aria-roledescription'); fg.removeAttribute('aria-label'); fg.style.cssText = 'width:100%;height:auto;background:none;cursor:default'; d.appendChild(fg); }
+    else { var im = new Image(); im.src = FULL[i]; im.alt = altOf(i); im.decoding = 'async'; d.appendChild(im); }
+  };
+  var vmark = function () { var k = Math.round(vtrack.scrollLeft / vtrack.clientWidth); if (k !== vIdx) { var old = vtrack.children[vIdx] && vtrack.children[vIdx].querySelector('video'); if (old) old.pause(); } vIdx = k; $('#vcount').textContent = (k + 1) + ' / ' + N; $('#vlabel').hidden = FULL[k] !== 'video'; vfill(k); vfill(k + 1); vfill(k - 1); };
+  vtrack.addEventListener('scroll', vmark, { passive: true });
+  slides.forEach(function (s, i) { s.addEventListener('click', function (ev) { if (ev.target.closest('button')) return; openLayer('viewer', { i: i, play: false }); }); });
+  $$('[data-play]').forEach(function (b) { b.addEventListener('click', function (ev) { ev.stopPropagation(); openLayer('viewer', { i: RIYA, play: true }); }); });
+  $('#closeup').addEventListener('click', function () { openLayer('viewer', { i: 1, play: false }); });
+  /* Size guide opens the ruler full screen where she is reading the specs; Back or Close returns her there, focus on it */
+  $('#tosize').addEventListener('click', function () { track('nf_size'); openLayer('viewer', { i: SIZE, play: false }); });
+
+  /* Overlays (bag, viewer, checkout hand-off) each own a history entry, so Android Back closes the overlay
+     and stays on the piece. Moving from the bag to checkout replaces the entry rather than adding one. */
+  var layer = null, opener = null, afterClose = null;
+  /* Scroll restoration is manual only while an overlay owns the entry (so closing it never moves the page), and auto the
+     rest of the time: Back from a set piece's own page returns to the set, not to the top. */
+  var SR = 'scrollRestoration' in history;
+  var setInert = function (on) { ['header', 'main', 'footer'].forEach(function (q) { var e = $(q); if (e) e.inert = on; }); };
+  var UI = {
+    /* every open is logged with where it came from, so the 80% between add and checkout splits into "never opened the bag"
+       and "opened it, saw the COD figure, left" */
+    drawer: { el: drawer, show: function (src) {
+      renderDrawer(); scrim.hidden = false; drawer.hidden = false; fitPol(); drawer.dataset.armAt = Date.now() + GUARD;
+      var s = stat(bag); track('nf_bag_view', { source: src || 'other', q: s.q, total: s.total }); ctag('nf_bag_seen', '1'); $('#drx').focus();
+    }, hide: function () { scrim.hidden = true; drawer.hidden = true; } },
+    viewer: { el: viewer, show: function (a) {
+      if (!vtrack.children.length) for (var j = 0; j < N; j++) vtrack.appendChild(document.createElement('div'));
+      viewer.hidden = false; vtrack.scrollLeft = a.i * vtrack.clientWidth; vIdx = a.i; vmark(); vfill(a.i); track('nf_view', { i: a.i, play: !!a.play });
+      if (a.play) { var v = vtrack.children[a.i].querySelector('video'); if (v) v.play().catch(function () {}); }
+      $('#vx').focus();
+    }, hide: function () { $$('video', viewer).forEach(function (v) { v.pause(); }); viewer.hidden = true; } },
+    hand: { el: hand, show: function (path) { fillHand(path); hand.hidden = false; hand.querySelector('button').focus(); }, hide: function () { hand.hidden = true; } }
+  };
+  var openLayer = function (name, arg) {
+    hideCard();
+    if (layer) { UI[layer].hide(); history.replaceState({ nf: name }, ''); }
+    else { opener = document.activeElement; if (SR) history.scrollRestoration = 'manual'; history.pushState({ nf: name }, ''); }
+    layer = name; document.body.style.overflow = 'hidden'; setInert(true); UI[name].show(arg);
+  };
+  var closeLayer = function () { if (layer) history.back(); };
+  window.addEventListener('popstate', function () {
+    if (!layer) return; var l = layer; layer = null; UI[l].hide(); document.body.style.overflow = ''; setInert(false);
+    /* closed without Secure checkout (going to checkout replaces the bag's entry and never comes through here) */
+    if (l === 'drawer') { var s = stat(bag); track('nf_bag_exit', { q: s.q, total: s.total }); ctag('nf_bag_exit', '1'); }
+    if (opener && document.contains(opener)) opener.focus();
+    if (SR) history.scrollRestoration = 'auto';
+    if (afterClose) { var f = afterClose; afterClose = null; f(); }
+  });
+  $('#bagbtn').addEventListener('click', function () { openLayer('drawer', 'bag_icon'); });
+  $('#drx').addEventListener('click', closeLayer); scrim.addEventListener('click', closeLayer);
+  $('#vx').addEventListener('click', closeLayer);
+
+  /* keyboard: Escape closes, Tab stays inside the bag or the viewer, and the gallery arrows show only for keys */
+  document.addEventListener('keydown', function (ev) {
+    if (ev.key === 'Tab' || ev.key.indexOf('Arrow') === 0) document.documentElement.setAttribute('data-kbd', '');
+    if (ev.key === 'Escape') { if (layer) closeLayer(); else hideCard(); }
+    /* the full-screen photos page from the keyboard too (WCAG 2.1.1); #live sits outside main, so it is not inert */
+    if (layer === 'viewer' && (ev.key === 'ArrowRight' || ev.key === 'ArrowLeft')) { ev.preventDefault(); var vk = Math.max(0, Math.min(N - 1, vIdx + (ev.key === 'ArrowRight' ? 1 : -1))); vfill(vk); vtrack.scrollTo({ left: vk * vtrack.clientWidth, behavior: smooth() }); live.textContent = (vk + 1) + ' of ' + N; }
+    if (ev.key === 'Tab' && (layer === 'drawer' || layer === 'viewer')) {
+      var f = $$('button, summary, a[href], video[controls], #vtrack', UI[layer].el).filter(function (e) { return e.offsetParent !== null || e.tagName === 'VIDEO'; });
+      if (!f.length) return;
+      var first = f[0], last = f[f.length - 1];
+      if (ev.shiftKey && document.activeElement === first) { ev.preventDefault(); last.focus(); }
+      else if (!ev.shiftKey && document.activeElement === last) { ev.preventDefault(); first.focus(); }
+    }
+  });
+  document.addEventListener('pointerdown', function () { document.documentElement.removeAttribute('data-kbd'); }, { passive: true });
+
+  /* the policy line opens its fold, from the page and from the bag (html scroll-padding keeps it clear of the header) */
+  function openPolicy() { var d = $('#policy'); d.open = true; d.scrollIntoView({ behavior: smooth(), block: 'start' }); d.querySelector('summary').focus({ preventScroll: true }); }
+  $('#topolicy').addEventListener('click', function (ev) { ev.preventDefault(); history.pushState({ nf: 'jump' }, ''); openPolicy(); });
+
+  /* Exits and objection-handling taps, the inputs for test 5. WhatsApp opens the app with a prefilled message (often a
+     sales conversation); instagram.com is opened by the Instagram app outside its in-app browser (a bounce). */
+  document.addEventListener('click', function (ev) {
+    var a = ev.target.closest && ev.target.closest('a[href*="wa.me"], a[href*="instagram.com"]'); if (!a) return;
+    var ch = a.href.indexOf('wa.me') > -1 ? 'whatsapp' : 'instagram';
+    track('nf_contact', { channel: ch, place: a.closest('.assure') ? 'assure' : a.closest('.specs') ? 'fit' : a.closest('.rvlinks') ? 'reviews' : 'other', q: stat(bag).q });
+    ctag('nf_contact', ch);
+  }, true);
+  $$('.folds details').forEach(function (d) { d.addEventListener('toggle', function () { if (d.open) track('nf_fold', { id: d.id }); }); });
+
+  /* The set thumbnails and Up close get their src only once the hero has loaded (or after 1.2 s), and then lazily, so
+     they no longer share the pipe with the hero (macro-720 and set-3 used to load during it). (The bar no longer steps
+     aside at the footer: the footer pads for it, so the objection screens at the end of the page keep a buy control.) */
+  (function () {
+    var release = function () {
+      $$('img.lz').forEach(function (im) { if (!im.dataset.src) return; im.loading = 'lazy'; if (im.dataset.srcset) { im.srcset = im.dataset.srcset; im.sizes = '(max-width: 430px) 100vw, 430px'; } im.src = im.dataset.src; im.removeAttribute('data-src'); });
+    };
+    if (window.__heroDone) release(); else (window.__afterHero = window.__afterHero || []).push(release);
+  })();
+
+  render();
+  /* --bar follows the real bar: at Android's 150-200% text its buttons grow past 48px instead of clipping their labels, and
+     the first-screen column, the footer's padding, the dock and scroll-padding all follow. At default sizes it stays 65px. */
+  if (window.ResizeObserver) {
+    var barH = function () { var h = Math.max(addBtn.offsetHeight, nowBtn.offsetHeight); if (h) document.documentElement.style.setProperty('--bar', Math.ceil(h + 17) + 'px'); };
+    var ro = new ResizeObserver(barH); ro.observe(addBtn); ro.observe(nowBtn);
+  }
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,157 @@
+{
+ "lens": "CRO (Baymard/CXL school, D2C jewellery India), round 3. Measures add-to-cart and checkout rate for a shopper landing from an Instagram ad at 360x640 in the in-app browser: first-screen decision content, the buy path (Add to bag, Buy now, sticky bar, the moment after adding), the 20% add-to-checkout drop, the Buy 2/3/4 ladder and AOV, COD vs prepaid, ad message match, friction and distraction, and the test plan.\n\nG3 passes. fold.png, added.png, fold-ad.png, screens_*.jpg and measure.json (03:26) are newer than prototype.html (03:25:16) and match it.\n\nBehaviour was probed on an untouched copy in /tmp/claude-0/-home-user/aaed4e78-f5ea-57f6-bb8a-ea8f2c0ecee0/scratchpad/cro_r3/:\n- scripts: probe.js, probe2.js, probe3.js, probe4.js; results in probe.json;\n- screenshots: drawer_1piece.png, drawer_2piece.png, card_after_ring.png, dock.png, doubletap_viewbag.png, ring_only.png, policy_read.png, reviews_view.png, land_*.png, bench4.jpg.\n\nAll three R2 P1s are fixed. A double tap on Add to bag gives one item. The card's + Add becomes an inert '✓ Added'. The post-add bar opens the bag.\n\nTwo corrections and one regression:\n(1) My R2 premise was wrong. The live bag (CartDrawerNext at bd412960) never showed the COD fee in rupees and still says 'Easy 7-day exchange & returns'. The prototype's bag is ahead of live, not at parity, and arm B needs the new bag.\n(2) The post-add path is now one tap longer than live (add, View bag, Secure checkout, against add then Checkout).\n(3) The double tap moved one layer down: two taps on VIEW BAG land on the bag's Secure checkout.\n\nThe weighted mean of the criteria below is 8.60; score_now is held at 8.5 because that double tap sits on the step that loses 80% of adds. The critique is also saved to /tmp/claude-0/-home-user/aaed4e78-f5ea-57f6-bb8a-ea8f2c0ecee0/scratchpad/pdp10/rounds/r3_cro.json.",
+ "round": 3,
+ "score_now": 8.5,
+ "score_with_roadmap": 9.3,
+ "criteria": [
+  {
+   "id": "C1",
+   "score": 9.2,
+   "note": "All six decision items fit on screen 1 at 360x640. Worn hero 77–386, H1 398–426, ₹2,399 incl. GST with the small ₹3,999, the material line, the ladder at ₹2,159/₹1,919/₹1,679, and 'Free insured delivery, est. 18–20 Nov · COD available' ending at 562. The bar starts at 575 (measure.json firstScreen; fold.png). Nothing wraps: the ladder caption measures 272px at 12px. The date is computed and marked 'est.'. The only line that needs a second read is 'this bracelet becomes'."
+  },
+  {
+   "id": "C2",
+   "score": 9.0,
+   "note": "The hero is the worn piece, large and mid-frame (fold.png y 154–772 at 2x). Nothing covers screen 1 before a tap. The bar is solid with a 10px fade, and the '1 / 7' counter is quiet. The creator chip is a real 44px control."
+  },
+  {
+   "id": "C3",
+   "score": 9.0,
+   "note": "No Never-list item anywhere. '3 in stock' is shown only at stock ≤5. Set metal lines match FACTS (ring PVD rhodium, adjustable US 5–9; necklace PVD 18K gold coating; hoops gold tone). The fold's 'any COD fee is shown in rupees in your bag' is true of the bag route in the prototype. The ₹3,999 basis is still open with the owner. See fix 2: that sentence becomes false if the page ships with the live drawer."
+  },
+  {
+   "id": "C4",
+   "score": 7.5,
+   "note": "The 10-today set is present: a creator chip on the hero, labelled creator tiles, an honest empty state at y 2827 with WhatsApp and @naira.flore, and real photos plus the gift box. From a CRO view this is still the largest gap between this page and a 9, but it is an honest gap."
+  },
+  {
+   "id": "C5",
+   "score": 9.0,
+   "note": "The trust list starts at y 602, one short scroll below the bar, with the full faulty-piece sentence opening the fold. The fold matches FACTS word for word (policy_read.png) and links to 'Full policy (store-wide)'."
+  },
+  {
+   "id": "C6",
+   "score": 9.0,
+   "note": "One ladder on screen 1, in this piece's rupees, rounded the way the bag rounds. 'No code' and 'mix any pieces' are said outright. After an add the caption and underline follow the bag ('2 in your bag · 10% off applied', card_after_ring.png). The bag names BUY2 as automatic (−₹340 on ₹3,398)."
+  },
+  {
+   "id": "C7",
+   "score": 8.8,
+   "note": "The set sits at y 899–1507 (screens 2–3), ring first as the rhodium match. Each row has a full name, a FACTS line and a marginal rupee line ('With the bracelet it adds ₹659, not ₹999'). The 88x44 adds really change the bag, the summary reads from the bag, and add-all adds only what is missing (₹3,987, saving ₹1,709). Gaps: (a) a one-piece bag offers nothing to tap; the drawer says 'A second piece takes 10% off your whole bag' over 160px of empty space (drawer_1piece.png, fix 4). (b) A set row's '✓ In bag' removes the piece on any tap after 700ms (fix 8)."
+  },
+  {
+   "id": "C8",
+   "score": 8.5,
+   "note": "'COD available' is on the first-screen line, and Buy now carries the GPay/PhonePe/Paytm marks. The bag foot reads '₹2,399 paid online · ₹2,519 with COD (₹120 fee)', or ₹3,058 / ₹3,211 (₹153) for two pieces (probe drawer2): a true, loss-framed prepaid nudge with no discount claim. The 5% prepaid offer stays in PROPOSED notes. Gaps: Buy now, the single-piece path, never shows the rupee figure, and in the bag the figure sits under the Checkout button, after the decision (fix 1)."
+  },
+  {
+   "id": "C14",
+   "score": 8.8,
+   "note": "Buy path only. Every target is at least 44px (measure.json smallTapTargets is empty). '✓ Added to bag' is aria-disabled for 600ms, a polite live region announces each change, and ink-2 and deep-sage text pass AA. The remaining fault is about timing, not size (fix 1)."
+  },
+  {
+   "id": "C15",
+   "score": 7.8,
+   "note": "The bar is on from first paint, carries the price, never covers the facts, and after the add becomes one button to the bag. Accordions hold only secondary content. Gap: the IntersectionObserver hides the bar on the footer's first pixel (L887). In the production frame (page ends 3370, so max scroll 2730) there is no buy control from scrollY 2573 on. reviews_view.png shows the reviews empty state, the policy fold and Questions with no bar. After 'The policy' link plus a 120px scroll the bar is gone while the policy is read (probe3 afterScroll). That matches the rubric's 6/10 'scroll band' anchor on the objection screen."
+  },
+  {
+   "id": "C16",
+   "score": 9.0,
+   "note": "The builder's lab figures, not re-measured this round: LCP 1.38/1.39s, CLS 0.0029, 4 image requests and 156KB before scroll, no MP4 before a tap. Field data from inside the Instagram webview is still missing."
+  },
+  {
+   "id": "C17",
+   "score": 7.5,
+   "note": "fold-ad.png is byte-identical to fold.png (md5 1415fd76…), by design. The only confirmed token, p1, is Shopify image 1, which is already the default frame, and the guessed 'sugar' line was removed at my R2 request. That is right, but the rubric's literal check fails. prism_riya_reel lands on 5/7 with 'From Riya's reel · creator collaboration' (cro_r3/land_riya.png). dpa and catalogue tokens land on 1/7, and the query is kept. What is missing is the per-ad map, which is a real-world input."
+  },
+  {
+   "id": "C20",
+   "score": 8.0,
+   "note": "The R2 defects are fixed. A double tap on Add to bag gives one item and '✓ ADDED TO BAG' (probe at150). The card's '+ Add' becomes an inert '✓ Added' with the bag line 'Bag ₹3,058 · you save ₹340', no new piece is swapped in, and the card ends at 354, clear of the H1. But the double tap has moved one layer down. Two taps 120ms apart on the bar's VIEW BAG (180,608) open the bag, and the second lands on Secure checkout (551–599): InitiateCheckout fires and the hand-off opens (probe doubleTapViewBag_dy0 and dy-12). The card's two links both mean 'stay'; the bar under it carries the bag route."
+  },
+  {
+   "id": "C21",
+   "score": 8.3,
+   "note": "Buy now sends this piece alone (ATC then IC, probe buyNow). The bag maths match the PDP: BUY2 −₹340 gives ₹3,058, delivery 'est. 18–20 Nov · Free' is repeated, nothing is pre-added, and the COD figure is in rupees before leaving on the bag route. This is AHEAD of live: CartDrawerNext at bd412960 shows no COD figure at all (codFeeFor is used only in payment.test.ts), so my R2 claim of parity was wrong. Gaps: the double tap skips the figure (fix 1), Buy now skips it (owner rule, notes 1), and arm B depends on replacing the live drawer (fix 2)."
+  }
+ ],
+ "fixes": [
+  {
+   "priority": 1,
+   "where": "Bag drawer: UI.drawer.show (L844), the drawer click handler's data-co branch (L770), renderDrawer foot (L762–763)",
+   "change": "Two parts.\n\n(a) Guard the bag's Secure checkout for 700ms after the bag opens, just as Add to bag is guarded. In UI.drawer.show set drawer.dataset.armAt = Date.now() + GUARD. In the data-co branch, first check: if (Date.now() < +drawer.dataset.armAt) { track('nf_tap_guarded', { control: 'checkout' }); ctag('nf_tap_guarded', '1'); return; }. Use the drawer's own timestamp, not hold(button), because render() rebuilds the foot on every change.\n\n(b) Put the COD figure ABOVE the button so it is read before the decision: foot = '<p>' + R(t) + ' paid online · ' + R(t + fee) + ' with COD (' + R(fee) + ' fee)</p>' + the button. Same 13px ink-2 and centred. The foot height does not change, but the button then sits directly under the bar's old position, so (b) needs (a).",
+   "why": "C20, C21, C8.\n\nThe R2 morph has moved one layer down. Probe (cro_r3/probe.json doubleTapViewBag_dy0 and _dy-12): two taps 120ms apart on the centre of the bar's VIEW BAG (y 584–632) open the bag. The second tap lands on Secure checkout (y 551–599): elementFromPoint at y 596 is the button, and at y 608 it is the COD text, yet the tap still fired the button, which looks like Chromium's touch adjustment. The result is InitiateCheckout plus the hand-off. 'Bag · n' (x 220–348, same band) shares the risk; I did not probe it separately.\n\nThe shopper therefore skips the one place on the page that shows the COD figure in rupees, which is the reason the post-add bar now goes to the bag. It also inflates IC, the step the test is judged on. /jewellery carries 96% of the site's rage clicks (CLAUDE.md).\n\nOn placement: a fee read after the button is a footnote. Baymard found 21% abandon for not seeing the total cost upfront [S2], and NN/g says to show product-specific extra charges with the price [S13]."
+  },
+  {
+   "priority": 1,
+   "where": "Implementation, same release as the new PDP: src/components/CartDrawerNext.tsx (BagReturns L135–152 and the foot around L572–610 at bd412960), src/pages/JewelDetailNext.tsx handleAddToCart (L649–653), src/lib/payment.ts codFeeFor",
+   "change": "Ship the prototype's bag together with the page, never the page on the live bag.\n\n(a) Delete BagReturns ('Easy 7-day exchange & returns') from the bag foot.\n\n(b) Directly above the Checkout button, add: {formatPrice(orderTotal)} paid online · {formatPrice(orderTotal + codFeeFor(orderTotal))} with COD ({formatPrice(codFeeFor(orderTotal))} fee). Round to whole rupees, as the prototype does.\n\n(c) In arm B, remove setDrawerOpen(true) from handleAddToCart and mount the card; arm A stays live.\n\n(d) Add to CartDrawerNext.test.tsx: the foot contains 'with COD', contains no '7-day', and the rupee figure equals Math.round(total × 1.05).",
+   "why": "C21, C3, C5, and test validity.\n\nThis corrects my R2 premise. The live bag never showed the COD fee: at bd412960, codFeeFor is imported only by payment.test.ts. CartDrawerNext's foot is Total / You save / 'Free insured shipping · arrives …' / Checkout + UpiBadges / 'Easy 7-day exchange & returns'. CLAUDE.md's 'the fee is stated in the BAG' describes the unmounted CartDrawer.tsx.\n\nThe prototype's bag is therefore the first place on nairaflore.com that states the 5% in rupees. If arm B ships on the live bag, two things break:\n- The PDP fold's 'any COD fee is shown in rupees in your bag' becomes false.\n- The bag promises the change-of-mind return the PDP correctly denies, two taps after the PDP denied it.\n\nCOD is 44.7% of orders, with RTO at 21.4% against about 1% prepaid [N]."
+  },
+  {
+   "priority": 2,
+   "where": "render() bag mode (L609) and its aria-label",
+   "change": "Name the next step on the post-add bar. Change the label to: addBtn.innerHTML = '<span>Bag &amp; checkout</span><span aria-hidden=\"true\">·</span>' + R(s.total). Set aria-label to 'Bag and checkout, ' + plural(s.q) + ', ' + rs(s.total). Measured at 12px Jost 500 with .14em tracking, it is 137px of text plus 42px of rupees inside the 336px button. Keep '✓ Added to bag' for the first 600ms.",
+   "why": "C20, and the 20% step.\n\nAfter the add, this bar is the only route to payment, and the path is one tap longer than live:\n- Live: add, then Checkout in the auto-opened bag (JewelDetailNext L651).\n- Prototype: add, VIEW BAG, then Secure checkout.\n\n'View' is a browsing verb, so a shopper with intent has to infer that checkout sits behind it. The new label is true, because it opens the bag whose primary is Secure checkout, it costs no space, and it is the cheapest lever on the step that loses 80% of adds [N]."
+  },
+  {
+   "priority": 2,
+   "where": "renderDrawer, the .dr-lad line (L752), shown when the bag holds exactly one piece",
+   "change": "Replace the passive line 'A second piece takes 10% off your whole bag' with ONE row, in the card's markup:\n- a 48x60 thumbnail;\n- 'Cushion Halo Ring' in Cormorant 18;\n- 'PVD rhodium · adjustable, US 5–9' at 12px ink-2;\n- 'Adds ₹659, not ₹999 · 10% off both' at 13px deep sage;\n- an 88x44 '+ Add' button, with the 700ms guard and a new event nf_drawer_add.\n\nSuggest the first SET piece that is not in the bag. If the single piece is a set piece, suggest the bracelet at its own marginal rupees.\n\nAfter the tap, the row becomes the existing applied line ('10% off applied automatically · a third piece makes it 20%'). Never swap in a new suggestion under the finger. The row fits the empty band at y 380–540 in drawer_1piece.png, so the fixed foot does not move.",
+   "why": "C7 and AOV.\n\n68–74% of orders are one piece, and AOV is ₹1,511 against ₹979 of ad cost per order [N]. In the prototype the one-tap second piece exists only in the full card:\n- the card closes after 150px of scroll (L708);\n- the docked card for adds further down has no suggestion (cro_r3/dock.png).\n\nSo most single-piece bags reach Secure checkout with an offer they cannot act on without closing the bag and scrolling to y 899.\n\nThe Cushion Halo Ring sold 7 units in the last 7 days, a top-3 piece [N], and adds ₹659 for 10% off both. Guardrail: IC/ATC by arm."
+  },
+  {
+   "priority": 2,
+   "where": "showCard suggestion line (L669: P[sug].m[0])",
+   "change": "Use P[sug].d || P[sug].m[0], so the card's ring reads 'PVD rhodium · adjustable, US 5–9'. This is the string the bag already uses, and it wraps to 2 lines in the 150px column, the same height as today's wrapped 'PVD rhodium, like the bracelet'. The card bottom therefore stays at 350 (354 after the add). Keep 'like the bracelet' in the set row, which has room for it.",
+   "why": "C20 and C7.\n\nThe card asks for a one-tap ring add with no size information, so the shopper has to buy a ring blind. Multi-size rings are Naira's weakest PDPs (16–19% ATC/LPV), and size certainty is the open hypothesis there [N research_data §5].\n\n'Adjustable, US 5–9' (FACTS) removes the reason to hesitate. Measured at 100px, it costs nothing."
+  },
+  {
+   "priority": 2,
+   "where": "Footer observer (L887) and footer CSS (L273)",
+   "change": "Delete the IntersectionObserver that hides the bar on the footer's first pixel. Give the footer padding-bottom: calc(30px + var(--bar) + var(--safe)), so the bar never covers its links, and leave the bar on at every scroll position.\n\nIf the bar must still step aside, observe '#foot nav' instead of '#foot', so it hides only when the links reach the bar.",
+   "why": "C15.\n\nProbe (cro_r3/probe.json reach; probe3): the bar is 'away' from scrollY 2573 to the end of the production frame (2730).\n- reviews_view.png shows 'No reviews for this piece yet. Ask us anything before you buy.', the policy fold and Questions with no buy control.\n- After 'The policy' link and a 120px scroll, the bar disappears while the faulty-piece policy is being read.\n\nThese are the objection screens a hesitant shopper reaches last. Meta recommends sticky CTAs [S23], and the rubric's 6/10 anchor is 'a scroll band where no buy control is usable'."
+  },
+  {
+   "priority": 2,
+   "where": "UI.drawer.show (L844), popstate close (L860–863), openLayer callers (L719, L724, L864)",
+   "change": "Instrument the bag, the step between ATC and IC.\n- Add track('nf_bag_view', { source: 'bar' | 'bag_icon' | 'bag_n', q, total }) on every open.\n- Add track('nf_bag_exit', { q, total }) when the bag closes without Secure checkout.\n- Add Clarity tags nf_bag_seen=1 and nf_bag_exit=1.\n- Pass the source through openLayer('drawer', source).",
+   "why": "Test validity.\n\nThe prototype logs nf_card_shown and nf_checkout but nothing for the bag itself. The 80% leak therefore cannot be split into 'never opened the bag' and 'opened it, saw the COD rupee figure, left'.\n\nShowing the fee before IC is expected to move some COD abandonment from Fastrr (after IC) into the bag (before IC). Without nf_bag_view, an honest improvement reads as an IC/ATC loss. Android finishes checkout at 16.6% purchase/IC against 27.9% on iPhone [N], so read this by device."
+  },
+  {
+   "priority": 3,
+   "where": "Set row click handler (L730–734) and render (L627–628)",
+   "change": "Make a set row's '✓ In bag' inert, like the card's '✓ Added': add class done and aria-disabled, label it '<name> is in your bag', and leave removal to the bag's − and Remove. The row's line already reads 'In your bag'.",
+   "why": "C7 and C20 consistency.\n\nThe card's ✓ cannot remove a piece (the R2 fix), but a row's ✓ removes it on any tap after 700ms. The only feedback is a live-region message, a button flip and a bar total that silently drops, for example from ₹3,058 to ₹2,399.\n\nA shopper who taps the tick to confirm loses the piece and the rung without noticing. The same control meaning two opposite things in two places is the double-tap family again, only slower."
+  }
+ ],
+ "keep": [
+  "The first-screen stack and its maths. Worn hero framed mid-frame, H1, ₹2,399 incl. GST with the small unbadged ₹3,999, the material line, the ladder at ₹2,159/₹1,919/₹1,679, and 'Free insured delivery, est. 18–20 Nov · COD available' ending 13px above the bar. The date is computed at runtime, never a literal.",
+  "The bar from first paint: 'ADD TO BAG · ₹2,399' as the single ink primary, with 'BUY NOW' and the UPI marks in a 128px column. Buy now sends this piece alone and fires ATC then IC.",
+  "The 700ms tap guard with nf_tap_guarded logging. A double tap on Add to bag now gives one item and '✓ ADDED TO BAG', never the bag or checkout.",
+  "After the bracelet is in, the bar goes to the bag, never straight to Fastrr. Every route off the page except Buy now passes the COD figure in rupees.",
+  "The after-add card: the bracelet confirmed first, one suggestion in rupees ('Adds ₹659, not ₹999 / 10% off both'), an inert '✓ Added', the bag line 'Bag ₹3,058 · you save ₹340', the compact, nosug and dock fallbacks, the hidden chip, and no timer.",
+  "The bag. One automatic code named as such (BUY2, automatic, −₹340), insured delivery repeated with 'est.', the total, and '₹X paid online · ₹Y with COD (₹Z fee)'. Secure checkout carries the 10px exception and the UPI marks. Back closes the bag and stays on the piece.",
+  "'Wear it as a set': ring first as the rhodium match, full names, FACTS metal lines, a true '3 in stock', marginal rupees per row, a summary read from the bag, and add-all that adds only what is missing.",
+  "The trust list in words with the full faulty-piece sentence, the policy fold word for word, and WhatsApp links prefilled with the piece's name.",
+  "Ad match before paint with no redirect and the query kept. A creator is named only when utm_content names her, catalogue tokens land on image 1, and no unconfirmed angle line is printed.",
+  "One tap is one AddToCart. Add-all sends one event with contents and the rise in the total. The arm rides on every event and as a Clarity tag.",
+  "Speed: LCP about 1.4s in the lab, 4 image requests before scroll, and the clip loaded only on tap.",
+  "One offer only: no NAIRA10, no announcement ticker, no % OFF badge, and no FOMO, timer, sold count or rating."
+ ],
+ "roadmap": [
+  "Owner, Buy now and the COD fee (notes 1). Buy now is the only route that reaches Fastrr with no rupee COD figure. Decide between 'COD +5% fee' on the fact line (fits at 360px) and keeping 'COD available'. Read nf_bag_view and nf_bag_exit for two weeks first, so the decision rests on how many COD shoppers leave at the bag figure.",
+  "Fastrr: on one live COD order, record where the 5% appears and under what label (it is booked as shipping). Ask for the label 'COD fee'.",
+  "Owner: confirm the prepaid 5% (55 of ~105 prepaid orders carried it). Then the bag foot reads 'Pay online ₹2,279 · COD ₹2,519 (₹120 fee)' with equal weight, and Buy now can carry the online price.",
+  "Reviews (C4): a review app with requests 7 days after delivery and photo reviews. Rating and count go by the H1 only from 5 real reviews (Spiegel: +270% purchase likelihood at 5 reviews, more for higher-priced items [S16]).",
+  "Ad map (C17). Pull every active ad's utm_content from Ads Manager, the catalogue ads included (34.6% of 30-day spend), and adopt <piece>_<asset>_<angle>. For each angle, write the ad's own promise in the ads owner's words; only then can a token print a line. Until then fold-ad.png correctly equals fold.png for p1.",
+  "Owner: confirm the ₹3,999 basis. If it is the MRP, label it 'MRP ₹3,999 (incl. of all taxes)' as GIVA does; if not, drop it and let the ladder carry the saving.",
+  "COD by pincode: serviceability.ts keeps several regions prepaid-only. Confirm Fastrr enforces the same, or 'COD available' is untrue there.",
+  "TEST INFRA:\n- A 50/50 split by naira_vid hash, persisted.\n- The arm passed to Fastrr through sessionUtmParams (utm_term=pdp_a/pdp_b) so Shopify orders carry it.\n- The arm as a Clarity tag.\n- Ship the bag change (fix 2) for arm B only.\n- Freeze the ladder for the whole test: it changed 4–5 times in 30 days.\n- Test the template on every jewellery PDP, since Prism alone sells about 10 a month.",
+  "TEST 1, new template vs live JewelDetailNext, mobile only. Traffic is about 7,970 mobile VC a week (7d browser VC 12,161 less ~34.5% desktop).\n- Primary is ATC/VC: base ~15.8%, and +12% relative needs ~6,050 per arm (about 1.5 weeks).\n- Secondary is IC/VC: base ~3.0%, and +20% needs ~13,900 per arm (about 3.5 weeks).\n- Orders/VC (base ~0.87%) needs ~51,000 per arm for +20% (about 13 weeks), so report it as a probability-to-beat, not a significance test.\n- Pre-registered expectations: ATC/VC +10–20% (the live first screen lacks the ladder, an in-page add, delivery and COD; losing the fake 4.9★ and sold counts pulls the other way). IC/ATC between −5% and +5% (the COD figure and one extra tap push down; price certainty and no accidental ICs push up). Purchase/IC +5–15%. Items per order 1.51 → about 1.6. COD share down 3–6 points.\n- Guardrails: purchase/IC by device (watch Android), cancellations, and RTO matured at 3 weeks.",
+  "TEST 2, post-add, inside the new template and on the new bag: the card plus 'Bag & checkout' against an auto-opened bag that carries the fix-4 suggestion row. Decide on orders per ATC session, read directionally (base ~5.3%). Use IC/ATC with nf_bag_view as the diagnostic.",
+  "TEST 3, the price-row slot: 'Surgical steel, PVD rhodium' against 'Waterproof · tarnish free'. Both are true and both fit. Primary: ATC/VC.",
+  "TEST 4, bar emphasis: Buy now as the ink primary against Add to bag. 68–74% of orders are one piece, and Buy now skips a tap but also the bag's COD figure and AOV row. Primary: orders per PDP session, read directionally. Guardrails: COD share and RTO.",
+  "RUM inside the Instagram webview: field LCP, the rate of nf_tap_guarded by control, and the rate of nf_bag_exit by device."
+ ]
+}

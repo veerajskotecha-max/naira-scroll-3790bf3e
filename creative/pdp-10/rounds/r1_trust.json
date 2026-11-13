@@ -1,0 +1,163 @@
+{
+  "lens": "Trust and consumer law: a first-time Indian shopper (28, Pune, Instagram buyer who has been burnt by fake jewellery sites), combined with a reviewer who knows the CCPA 2023 dark-pattern guidelines, the Consumer Protection (E-Commerce) Rules 2020, BIS IS 19000:2022 on online reviews and ASCI's influencer rules. Scored from a fresh re-render of the current HTML, because G3 trips: fold.png and screens_*.jpg still show '7 day exchange & returns' and 'Delivery, COD & exchange', while the HTML reads 'Faulty? Sorted within 7 days' and 'Delivery, COD & returns'. The fresh render and behaviour probe are in scratchpad/r1trust/ (fold_now.png, probe.js).",
+  "score_now": 4.7,
+  "score_with_roadmap": 8.8,
+  "criteria": [
+    {
+      "id": "C1",
+      "score": 6.5,
+      "note": "Everything she needs to decide fits on the first screen: H1 at 418-447, price incl. GST, the ladder in rupees, a fact line ending at 573 with the bar at 575, and Add/Buy in the bar. But L189 reads 'Free insured delivery by 18-20 Nov'. That is courier-promise wording with no estimate marker, and the rubric's 6/10 anchor names this exact string. FACTS says it is 'an estimate, not a courier promise'."
+    },
+    {
+      "id": "C2",
+      "score": 6.0,
+      "note": "In the fresh render (r1trust/fold_now.png), the trust row (top 589) shows through the 97%-opaque bar (rgba .97, L71): glyph tops of 'Waterproof' and 'Faulty? Sorted', plus their icons, are visible at y 580-640. The '▶ VIDEO' chip (L177) is a plain span sitting on the studio hero, so it is a dead tap that suggests the hero is a video. There is no popup and no FOMO, which is good."
+    },
+    {
+      "id": "C3",
+      "score": 0.0,
+      "note": "G1 trips. (1) L262 'does not tarnish or turn your skin' is a skin claim from the Never list. (2) L232 'We ask every customer for a review seven days after delivery' describes a process that FACTS lists as roadmap, so it is untrue today. (3) L194 'Faulty? Sorted within 7 days' promises a 7-day fix, but the policy's 7 days is the window for reporting. (4) L223 '@riya' is a handle that appears in neither FACTS nor the repo, so it is probably someone else's account. Claims outside the sheet: 'in a vacuum', 'far harder than regular plating' and 'sweat' (L214), 'store it flat in its pouch' (L257; FACTS says gift box) and 'keeps the line flat' (L215)."
+    },
+    {
+      "id": "C4",
+      "score": 4.0,
+      "note": "Real proof exists: real photos, the gift box, Riya's video and a WhatsApp link. Against it: five grey ★ glyphs (L231), which is the 6/10 anchor; an empty-state process line that is not true yet; the WhatsApp number never appears as visible text; there is no @naira.flore link anywhere, though checking the Instagram profile is this shopper's first legitimacy test; and the second creator tile has no label."
+    },
+    {
+      "id": "C5",
+      "score": 4.5,
+      "note": "The fold (L252) states the defect-only policy correctly, but it is closed and about four screens down (screens_2, panel 1), with no link to /exchange-return-policy. It also leaves out 'with photos', 'refunds case by case' and 'worn or customer-damaged pieces not eligible', which is the exclusion she will run into later. The trust-row label (L194) states the wrong window and is not a link. The fold's '3 to 5 working days' is not marked as an estimate."
+    },
+    {
+      "id": "C6",
+      "score": 8.5,
+      "note": "The ladder is exemplary. There is one offer, and the per-piece rupee figures are right (2,159.1 / 1,919.2 / 1,679.3 rounded). It says 'applied in your bag', with no NAIRA10 and no ticker. Marked down for competing price anchors: the ₹3,999 strike on the hero (its basis is unverified) and three set-rail strikes at different ratios (20%, 10% and 40% off) read as a second, unexplained discount."
+    },
+    {
+      "id": "C7",
+      "score": 4.0,
+      "note": "The cards state no metal tone, although the hoops are gold tone and the necklace has a PVD 18K gold coating, under 'Make it a set' for a rhodium bracelet. With a defects-only policy, a shopper who expected a match has no remedy. 'Only 3 left' is true today but hard-coded, and in off-palette #9A3B2B (L94). The total block says '1 piece in your bag', and after a pick '2 pieces in your bag ₹3,328', before anything is in the bag. 'Add the set' adds the bracelet again (probe: bag 4 = 3 bracelets + hoops). 'More bracelets' (L271) heads a necklace and hoops."
+    },
+    {
+      "id": "C8",
+      "score": 7.0,
+      "note": "'COD available' sits on the first-screen line in the owner's words, and no prepaid discount is stated as fact. Marked down because the fold says 'any COD fee' when a 5% fee always applies. That hedge undercuts the E-Commerce Rules duty to disclose fees payable. There are also no PROPOSED notes, and Buy now gives no payment information."
+    },
+    {
+      "id": "C9",
+      "score": 8.5,
+      "note": "The Details block (L241-247) is exact and complete: 18 cm; 15-19 cm; cushion-cut pastel CZ about 5 mm; halo; colours; fold-over clasp; surgical stainless steel with PVD rhodium coating. There is no JSON-LD or og to check, and the title is a placeholder. The process claims in the proof row are counted under C3."
+    },
+    {
+      "id": "C11",
+      "score": 3.5,
+      "note": "The FAQ carries the G1 skin claim (L262). The care text (L257) invents a pouch. 'Can I wear it in the shower? Yes' stretches 'water is fine' past 'keep away from harsh chemicals'. There is no 'What if it arrives faulty?' question, though that is this shopper's main fear."
+    },
+    {
+      "id": "C13",
+      "score": 4.5,
+      "note": "The structure is right: the video is in the gallery and repeated under 'Worn by'. The labelling is not. '@riya' is an invented handle. 'Riya, styling it with mehendi, in her own video' (L221) presents a paid or barter collaboration as organic content, which is the CCPA 'disguised advertisement' pattern. 'Bracelet + Halo ring' (L224) carries no creator or collaboration label. Under ASCI, 'creator' alone does not disclose a material connection. The play icons are dead spans."
+    },
+    {
+      "id": "C19",
+      "score": 6.0,
+      "note": "The voice is quiet and mostly specific. Against it: 'Faulty? Sorted' is slangy and wrong; 'More bracelets' is a mislabel; the toast says '1 pieces added' (probe); and 'in her own video' misframes the collaboration."
+    },
+    {
+      "id": "C20",
+      "score": 2.0,
+      "note": "The toast covers the ladder and the delivery/COD line (added.png, about y 520-564 CSS), disappears after 2.6 s and has no checkout link. Worse, the 'Added · view bag' button adds another bracelet when tapped (probe: count 1→2, then the toast reads 'Add 1 more · 20% off'). That is basket sneaking under the CCPA 2023 guidelines."
+    },
+    {
+      "id": "C21",
+      "score": 3.0,
+      "note": "Buy now has no handler and no target, and there is no bag render. The pre-add 'in your bag' totals and the double-adding 'Add the set' mean the bag can hold more than she chose (probe: 4 items, '30% off applied'). One thing works and should stay: the fold says the COD fee shows in the bag before paying."
+    }
+  ],
+  "fixes": [
+    {
+      "priority": 1,
+      "where": "Script L311-320 (#add, #addall), total block L299-305, toast L145/L284/L317",
+      "change": "Stop adding pieces the shopper did not ask for. (1) After the first tap, #add becomes 'In your bag · View bag' and only opens the bag; it never calls bump() again. Quantity changes only through +/- inside the bag. (2) 'Add the set to bag' adds only the picked rail pieces, plus the bracelet only if it is not already in the bag. Its label names exactly what it adds and the bag total that results, e.g. 'Add bracelet + hoops · ₹3,328' or, if the bracelet is already in, 'Add hoops · bag ₹3,328'. With nothing picked it is aria-disabled and reads 'Pick a piece above'. (3) Until the bag really holds the pieces, the total block never says 'in your bag'. Use 'With the hoops · 2 pieces · ₹3,328 · 10% off, you save ₹370'. (4) Pluralise correctly ('1 piece added'). (5) The confirmation sits directly under the header (y 77-125), never over the ladder or the fact line. It stays at least 4 s, carries 'View bag' and 'Checkout' links, and is aria-live='polite'.",
+      "why": "Probe on a copy of the current HTML: Add sets the count to 1; tapping 'Added · view bag' sets it to 2; picking the hoops and then 'Add the set' gives 4 items (3 bracelets) with '30% off applied'; 'Add the set' with nothing picked gives '1 pieces added'. Basket sneaking is a specified dark pattern in the CCPA 2023 guidelines. The E-Commerce Rules record consent to buy only through an explicit, affirmative action. Rubric C20/C21: 'No item is pre-added'. Add to cart → checkout is already Naira's weakest step at 20% [N]."
+    },
+    {
+      "priority": 1,
+      "where": "L262, L214, L215, L257, L263 (Questions, Up close, Care)",
+      "change": "Replace every line that goes beyond FACTS. L262: 'No. It is surgical stainless steel with a PVD rhodium coating, and the listing describes it as waterproof and tarnish free.' L214 p: 'Surgical stainless steel with a PVD rhodium coating. Waterproof and tarnish free, so daily wear and water are fine; keep it away from perfume and harsh chemicals.' L215: '18 cm long, with a fold-over clasp.' L257: 'Daily wear and water are fine. Keep it away from perfume and harsh chemicals, and keep it in its Naira gift box when you are not wearing it.' L263: Q 'Can it get wet?' A 'Yes, it is waterproof, so daily wear and water are fine. Keep it away from perfume and harsh chemicals.' Add a Q: 'What if it arrives faulty?' A: 'Tell us on WhatsApp within 7 days of delivery, with photos, for a repair, replacement or store credit.'",
+      "why": "G1 trips on 'turn your skin' (the Never list; the rubric names this exact wording), which sets C3 to 0 and caps the page at 60. 'In a vacuum', 'far harder than regular plating', 'sweat', 'pouch' and 'keeps the line flat' are each outside FACTS (−2 each). Under CPA 2019, the CCPA Misleading Advertisements Guidelines 2022 and ASCI Chapter I, claims must be substantiated, and an unsubstantiated comparative also breaches ASCI Chapter IV. A shopper burnt by fakes reads 'far harder than regular plating' as exactly the line those sites use."
+    },
+    {
+      "priority": 1,
+      "where": "Trust row L194, fold L251-252, .buybar L71",
+      "change": "Trust cell 2 becomes 'Arrived faulty?<br>Tell us in 7 days'. Measured on a copy: 2 lines, 73px wide in the 108px cell. Make the whole cell an <a> that opens the policy fold. Rename the fold summary 'Delivery, COD & faulty pieces'. Replace its text with: 'Free insured delivery across India, estimated 3 to 5 working days. Cash on delivery is available; the COD fee is shown in rupees in your bag before you pay, and there is none if you pay online. Returns are for manufacturing faults only: tell us on WhatsApp within 7 days of delivery, with photos, and we will repair or replace the piece or give store credit. Refunds are considered case by case. Pieces that have been worn or damaged after delivery are not covered, and we cannot take a piece back for a change of mind.' Follow it with a 44px link 'Read the full policy' to /exchange-return-policy. Make .buybar's background opaque var(--ivory) so the row can no longer show through it.",
+      "why": "'Sorted within 7 days' promises a 7-day resolution that the policy does not make. The 7 days is the reporting window (FACTS Returns; ExchangeReturnPolicy.tsx). E-Commerce Rules Rule 6(5)(a) requires accurate return, refund and exchange information, and 6(5)(b) any fees payable. 'Any COD fee' is evasive when 5% always applies (FACTS), which edges towards CCPA drip pricing. Stating the exclusions up front prevents the dispute she would otherwise have later. Baymard: 60% look for the return policy on the PDP [S1]. fold_now.png shows the row's glyphs under the bar."
+    },
+    {
+      "priority": 1,
+      "where": "Reviews block L229-234",
+      "change": "Delete the ★★★★★ line (L231). Replace L232 with 'No reviews for this piece yet. Ask us anything before you buy.' Under it put two 44px outline buttons: 'WhatsApp +91 95615 57935' (wa.me/919561557935) and 'Instagram @naira.flore'. Behind a flag, show 'We ask every customer for a review 7 days after delivery' only once the review app is live and actually sending those requests. When it goes live, add a link 'How we collect and publish reviews' (IS 19000 terms). Do not promise 'every review appears as written': moderation under published terms is allowed and would break that promise.",
+      "why": "FACTS says no reviews have been collected and the review system is roadmap, so the current sentence describes a process that does not exist. Grey stars are the rubric's C4 6/10 anchor. BIS IS 19000:2022 requires published collection and moderation terms, no suppression of negative reviews, disclosure of incentives, and 'verified' only on a purchase check. The E-Commerce Rules bar a seller from posting reviews as a consumer. For her, a visible phone number and a real Instagram account are proof she can check in 10 seconds."
+    },
+    {
+      "priority": 1,
+      "where": "Worn by L221-224, gallery chip L177, slide alt L172",
+      "change": "L223: '@riya · creator' becomes 'Riya · creator collaboration'. Use no @ until her real handle is confirmed. L224: 'Bracelet + Halo ring' becomes 'Riya · collaboration · with the Halo ring'. L221 becomes 'Riya, a creator we collaborated with, styling it with mehendi.' The '▶ Video' chip on slide 1 becomes a <button> reading '▶ Riya's video' that scrolls the track to slide 6. Slide 6 carries its own chip, top left: 'Creator collaboration · Riya'. Alt L172: 'Riya, a creator Naira collaborated with, wearing the bracelet'. Every play control plays the real reel (poster until tapped, no bytes before) or is removed.",
+      "why": "FACTS says the video was paid or barter, and creators must be labelled as creators. '@riya' appears in neither FACTS nor the repo, so it points to a stranger's account. 'In her own video' presents sponsored content as organic, which is the CCPA disguised-advertisement pattern. The Department of Consumer Affairs' Endorsement Know-hows (2023) and ASCI's influencer guidelines require the material connection to be disclosed with labels such as Ad, Sponsored, Collaboration, Partnership or Free gift; 'creator' alone does not do this. Dead play icons read as a template site to someone who has been scammed before."
+    },
+    {
+      "priority": 1,
+      "where": "Fact line L189",
+      "change": "Change 'Free insured delivery by <b>18–20 Nov</b> · <b>COD available</b>' to 'Free insured delivery, est. <b>18–20 Nov</b> · <b>COD available</b>'. Measured with Jost loaded at the current 12.5px: one line, right edge 333px against the 344px limit, height unchanged at 18px, so the facts still end at 573, clear of the bar at 575.",
+      "why": "FACTS: the date is 'an estimate, not a courier promise'. Rubric C1/C5 (the 6/10 anchor names 'by 18–20 Nov'). As I read the E-Commerce Rules, a seller may not refuse a refund for goods 'delivered late from the stated delivery schedule'. A bare 'by' date with no courier API behind it is a stated schedule Naira cannot control."
+    },
+    {
+      "priority": 1,
+      "where": "Hero price L183; set rail L201-203",
+      "change": "Remove the three set-rail strike prices now (₹1,629, ₹1,110, ₹1,669). For the hero, the owner confirms before launch whether ₹3,999 is the MRP printed on the pack or a price the piece really sold at. If it is the MRP, render it as 'MRP ₹3,999' (strike, 13px, ink-2 rather than ink-3) beside 'incl. GST'. If it is not confirmed, drop it and let the ladder carry the saving.",
+      "why": "CPA 2019 s.2(47) treats it as an unfair trade practice to mislead the public materially about the price at which goods are ordinarily sold. The research audit marks ₹3,999 as unverified, and the store has 253 orders ever at an AOV of ₹1,511 [N]. A 40% strike on every piece is the first tell of a fake site for this shopper. The bench avoid-list flags inflated MRP anchors. GIVA labels its anchor 'MRP incl. of all taxes'. The rail's 20%, 10% and 40% ratios look arbitrary, and at 11px in 52% ink they also fail 4.5:1."
+    },
+    {
+      "priority": 2,
+      "where": "Set rail cards L201-203, 'More' section L270-276, .pc .left L94",
+      "change": "Under each card name add a 12px ink-2 line from FACTS: hoops 'Gold tone', necklace 'PVD 18K gold coating', ring 'PVD rhodium · adjustable US 5–9'. Change 'Only 3 left' to '3 in stock' in 12px ink-2, not #9A3B2B. Render it from live inventory, and only when stock is 5 or fewer. Retitle 'More bracelets' to 'More from the Prism line', or drop the section, which repeats the rail.",
+      "why": "Pairing gold-tone pieces with a rhodium bracelet under 'Make it a set' without saying so invites a 'not as described' complaint that the defects-only policy cannot absorb. CCPA false urgency allows low-stock lines only when they are true at render time, and a hard-coded '3 left' goes stale. #9A3B2B is off-palette. Rubric C7/C19, and Baymard [S10] on cross-sell attributes."
+    },
+    {
+      "priority": 2,
+      "where": "Below the trust row (new line), footer L278",
+      "change": "Add one quiet 13px row directly under the trust row: 'Questions before you buy? <a>WhatsApp +91 95615 57935</a> · <a>@naira.flore</a>', with 44px tap height and the number written out. (A probe showed the number wraps to 3 lines inside a trust cell, so it belongs on this row.) The PDP footer gets 11px+ links that meet 4.5:1 contrast: 'Contact & business address' (/contact), 'Returns policy', 'Terms', 'Privacy', and the grievance officer once one is named.",
+      "why": "E-Commerce Rules 4(2) require the seller's name, address and customer-care contact to be displayed prominently; 4(4) requires a named grievance officer. /contact already carries a business address and hours, but the PDP never links to it. FACTS allows the WhatsApp number and the Instagram handle. For a shopper burnt by fakes, a written-out number and a real Instagram account are the two checks she will actually make, and both are true."
+    },
+    {
+      "priority": 3,
+      "where": "Outside the .phone frame (new notes panel)",
+      "change": "Add a notes panel outside the page frame, labelled PROPOSED (owner to confirm). (a) The first-screen line 'COD available · extra 5% off when you pay online (₹120 on this piece)', with COD at equal weight. (b) The fold line 'COD fee ₹120 on this piece, shown in your bag; none if you pay online'. (c) The 'MRP' label for ₹3,999. Nothing in it goes on the page until the owner confirms.",
+      "why": "Rubric C8 '10 today' requires the prepaid nudge to appear only in notes labelled PROPOSED. FACTS: 55 of about 105 prepaid orders already carried 5%, and COD RTO is 21.4% against about 1% prepaid [N]. Showing the fee in rupees closes the drip-pricing gap, but the owner's rule is 'COD available' only."
+    }
+  ],
+  "keep": [
+    "Zero invented proof: no rating, no review count, no sold count, no FOMO, no timer, no press strip, no NAIRA10 and no ticker (grep of the HTML is clean of all of these).",
+    "The ladder on the first screen as per-piece rupees, ₹2,159 / ₹1,919 / ₹1,679, with 'applied in your bag' and exactly one offer.",
+    "'COD available' on the first-screen fact line, in the owner's words, with no prepaid discount stated as fact.",
+    "Price shown 'incl. GST' and the Add button carrying the price ('Add to bag · ₹2,399').",
+    "No '% OFF' badge on the strike price.",
+    "The Details block word for word: 'Surgical stainless steel, PVD rhodium coated', 'Cushion-cut pastel cubic zirconia, about 5 mm each', 18 cm, wrists 15-19 cm, fold-over clasp.",
+    "The defect-only policy sentence in plain words (manufacturing fault, WhatsApp, 7 days of delivery, repair/replacement/store credit), and the disclosure that the COD fee shows in the bag before paying.",
+    "Real Naira media only: the worn hero first, the gift box, Riya's video stills, the stone macro.",
+    "The WhatsApp link to the real public number inside the reviews block.",
+    "The facts end at 573px, clear of the bar at 575px, and nothing pops up over the name or price."
+  ],
+  "roadmap": [
+    "Owner: confirm the basis for ₹3,999 and every compare-at (printed MRP, or a price actually sold at for a reasonable period). Then label it 'MRP' or remove it sitewide.",
+    "Reviews: install Judge.me or Shopify Product Reviews to BIS IS 19000:2022: published collection and moderation terms, order-matched 'verified', dated reviews, no edits, no suppressed negatives, incentives disclosed, requests 7 days after delivery, photo reviews. At the same time delete productReviews.ts and reviewWall.ts from the PDP, along with any aggregateRating JSON-LD, FomoPopup and dailySold.",
+    "Creator: Riya's real Instagram handle; whether the video was paid or barter (label 'Paid partnership' or 'Gifted' accordingly); and written usage rights covering the website and ads.",
+    "Country of origin, and the importer's name and address if the pieces are imported, for an 'Origin' row in Details: E-Commerce Rules 6(5)(c) and the Legal Metrology e-commerce declarations. In my view this blocks launch.",
+    "Seller identity for FACTS and the PDP footer: legal name, the business address already on /contact, support hours, and a grievance officer's name, designation and contact (E-Commerce Rules 4(2), 4(4); acknowledge within 48 h, resolve within a month).",
+    "Policy (recommendation to the owner, with counsel): /exchange-return-policy is written for apparel (embroidery, stitching, fabric, 'washed'), so add jewellery defects (a stone coming loose, the clasp, the coating). Offer a refund to the original payment method for defective, not-as-described or late-delivered pieces: the E-Commerce Rules restrict refusing these, and 'store credit; refunds case by case' is exposed. Optionally add a 7-day exchange on unworn pieces. Fix its meta description, '7-day window on standard pieces', which reads as a general return window.",
+    "Owner: allow the COD fee in rupees on the PDP fold, and confirm 'extra 5% off when you pay online' as a standing offer. Both are PROPOSED.",
+    "Courier API with a pincode check, so the delivery date can become a promise only where a courier backs it.",
+    "Add 'incl. 3% GST' (the live GST_LABEL) to FACTS so the GST note is traceable.",
+    "Owner: whether a dated, live store-level count (e.g. 222 orders shipped) may appear. Until then it stays off the page."
+  ]
+}

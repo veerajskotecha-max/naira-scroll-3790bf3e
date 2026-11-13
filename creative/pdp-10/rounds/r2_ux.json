@@ -1,0 +1,131 @@
+{
+ "lens": "Mobile UX, accessibility and web performance, tested as a 360x640 Android shopper in the Instagram in-app browser, plus 360x600, 360x560, 320x568, 390x664, 390x844, 412x732 and 412x846. Covers first-screen fit, 44px tap targets, WCAG AA contrast, reading sizes, gallery and swipe, sticky bar and safe areas, Android Back, accordions, scroll length and section order, keyboard and screen-reader basics, image weight and lazy loading, LCP, and layout or JS faults. G3 holds: fold.png, added.png, fold-ad.png, screens_*.jpg and measure.json (02:28:04-08) are newer than prototype.html (02:27:24), and my own renders match them. Probes ran over http://127.0.0.1 against an untouched copy. Speed used CDP throttling (150 ms RTT, 1.6 Mbps, 4x CPU) at DPR 2 and 3. Fixes were checked on a separate variant copy; the prototype was not edited. Files are in /tmp/claude-0/-home-user/aaed4e78-f5ea-57f6-bb8a-ea8f2c0ecee0/scratchpad/ux_r2/: folds.json, fold_*.png, perf.json, interact.json, slides_sheet.jpg, upclose.png, v_upclose.png, after_viewer.png, doubletap.png, add_scrolled.png, added_320x568.png, fold_riya.png, drawer.png, perf_v2.json, vfold_*.png and the scripts.",
+ "score_now": 7.9,
+ "score_with_roadmap": 9.2,
+ "criteria": [
+  {
+   "id": "C1",
+   "score": 8.8,
+   "note": "Met at 360x640 (folds.json). Worn hero 77-386, H1 398-426, price with incl. GST 432-460, ladder 470-538 with the rupee figures ₹2,159 / ₹1,919 / ₹1,679, then one fact line 544-562 ('est.' and runtime dates, COD available). The bar sits at 575 with 'Add to bag · ₹2,399' and Buy now. That leaves 13px clear, and the fact line ends at x=311 of 344. The same 13px holds at 360x600, 360x560, 320x568, 390x664 and 412x732, with no horizontal scroll at 320. Two gaps keep it under 10. (1) The rung labels '2 pieces · 10% off' are 11px. They are the only place the 10/20/30% appears on the first screen, which the C14 anchor forbids for 11px labels. (2) In shorter webviews the crop keeps the jaw and drops the piece: at 360x560 the hero is almost all neck (fold_360x560.png), and at 360x600 the bracelet's right end is cut."
+  },
+  {
+   "id": "C2",
+   "score": 7.5,
+   "note": "On load the hero is the worn bracelet, with no popup or timer. The '1 / 7' counter is quiet and the chip is a real button. No text line straddles the bar at 360x640. Faults: (1) Tapping a photo opens the viewer, and closing it returns focus to the track. On touch, '.gal:focus-within .nav' (L101) then leaves two 44x44 arrow plates on the hero indefinitely (after_viewer.png; the same happens after the chip/clip). (2) At 360x560 the bracelet is cropped away (object-position 50% 0%, L326). (3) At 390x844 and 412x846 the orphaned word 'fine.' of the first assurance row sits in the bar's 10px fade (straddle 756-776 against bar 779). (4) On the Riya ad landing, the centred 'Play Riya's clip' plate sits on the stones (fold_riya.png, L95)."
+  },
+  {
+   "id": "C12",
+   "score": 7.5,
+   "note": "Seven real slides. Scroll-snap moves one slide at a time, the counter updates and every slide has alt text. Slide loading works: under throttle, every slide was decoded within 250 ms of arriving (slides_sheet.jpg). The full-screen viewer fetches the 896x1200 Shopify originals and Back closes it. Gaps: (1) The viewer shows the photo at 360x482, the same width as the gallery. There is no double-tap zoom, and only browser pinch magnifies the stones. (2) At DPR 3 the hero srcset tops out at 720w, an upscale of 1.5x, although Shopify serves 896. The Riya slide is 540w, also upscaled at DPR 2. (3) Up close renders the macro at 360x792 with object-fit cover, showing 1 image pixel per CSS pixel, which is a 2x upscale at DPR 2 (see C15)."
+  },
+  {
+   "id": "C13",
+   "score": 7.5,
+   "note": "The 'Creator collaboration · Riya' label is on the slide, both tiles and the viewer. Zero MP4 bytes load before a tap; one request (142 KB) follows the tap (interact.json clip). The clip plays inside the viewer, and its spoken line is burned in as an open caption. Gaps: (1) The clip is 270x480 and is drawn at 270px wide in a full-screen viewer, so it is small and soft. (2) It plays unmuted and loops every 3.3 s, repeating 'and this bracelet is the one' with sound (L729). (3) Tapping the second Riya tile (reel2.jpg) does nothing, a dead tap (secs.js deadImgs). (4) The play plate covers the stones on slide 4."
+  },
+  {
+   "id": "C14",
+   "score": 8.0,
+   "note": "axe-core 4.10 (wcag2a/aa, 21aa, 22aa, best-practice) reports 0 violations. My computed-contrast scan of every visible text run finds 0 failures: ink-2 is about 7:1, deep sage 4.8:1, and footer ivory on deep sage 4.8:1. Every target is at least 44px; the only exception is the drawer's 'Remove' at 40x44 (WCAG 2.5.8 still passes). Header icons are 8px apart, body text is 15px, and lang is en-IN. The page has <main>, one H1, ordered H2s, a polite live region and focus-visible styles, and Add to bag is tab stop 9. Gaps: (1) The 11px rung labels carry the rate. (2) The viewer cannot be opened from the keyboard: the click handler sits on the <figure> (L744). (3) The fold summaries (Details, Delivery, Care, Questions) are not headings, so screen-reader heading navigation skips them. (4) The after-add card sits after the footer in the DOM (L466), so its + Add is about 25 tab stops away. (5) aria-modal is set on the drawer, but focus is not trapped. (6) The JS smooth scrolls ignore prefers-reduced-motion."
+  },
+  {
+   "id": "C15",
+   "score": 6.5,
+   "note": "A buy control is on screen at every 100px step down to y=4400, where the footer comes into view and the bar steps aside (interact.json reach). The bar carries the price, the folds are native <details> with 52px rows, and COD and the policy summary sit outside any fold. Faults: (1) The primary button changes meaning under the thumb. Two taps 120 ms apart on 'Add to bag' added the bracelet and then opened checkout: events AddToCart then InitiateCheckout (doubletap.png). (2) Android Back with the bag drawer open leaves the page and returns to the ad (back.js: url ad.html). Only the viewer pushes history. (3) The Up close <img> keeps height=792 from its attribute because .bleed sets no CSS height (L191, L397), so aspect-ratio 1/1 never applies. It renders 360x792, a screen and a quarter of blur and plaster with a sliver of stones (upclose.png, upclose2.png). That is +432px of scroll. (4) Material and length first appear in Details at y=3375, screen 6. The Up close caption above repeats the Stones/Setting/Colours rows almost word for word."
+  },
+  {
+   "id": "C16",
+   "score": 8.5,
+   "note": "Measured in 4 runs (perf.json): LCP 1.78-1.80 s on the hero worn-720.jpg at DPR 2 and 3, FCP 0.30-0.31 s, CLS 0.0012. Before any scroll: 4 image requests (hero 73 KB, logo 18, idle neighbour macro 54, set sprite 10), 155 KB of images and 310 KB in total. No video bytes load, and fonts are non-blocking with swap. Every 10/10 threshold is met. What still slows LCP is that 88 KB of fonts is fetched at VeryHigh priority over the same 1.6 Mbps pipe as the hero. On a copy that attaches the font stylesheet after the hero's load event, LCP fell to 1.32-1.34 s (perf_v2.json) with CLS 0.0018; the brand fonts then land at about 2.2 s instead of 1.5-1.7 s. 17 KB of those fonts (Jost latin-ext) is pulled only by the ₹ in the PROPOSED notes panel, so production drops it. The figures are lab results on a static file; the live SPA adds about 352 KB of JS."
+  },
+  {
+   "id": "C20",
+   "score": 7.5,
+   "note": "At 360x640 the card sits at 85-325 and covers none of the price, ladder or delivery line. It has no timer and closes on × or Escape, Keep browsing, or 150px of scroll. The bar turns into Checkout · total + Bag · n, the badge and its aria-label count, and the live region announces each change (added.png). Faults: (1) At 320x568 the card spans 85-382 and covers the H1 (326) and the price (added_320x568.png). At 360x560 its bottom (325) cuts into the H1 (318). (2) When the add is made from the bar while scrolled into the set, the card lands over the 'Cushion Halo Ring' row and its + Add (add_scrolled.png). (3) A double tap skips the card and goes straight to checkout (C15)."
+  }
+ ],
+ "fixes": [
+  {
+   "priority": 1,
+   "where": "CSS L191 (.bleed) with the Up close <img> at L397",
+   "change": "Add 'height: auto;' to .bleed so the width/height attributes stop forcing 792px and aspect-ratio 1/1 applies: '.bleed { width: 100%; height: auto; aspect-ratio: 1 / 1; object-fit: cover; background: var(--ivory-deep); }'. Keep object-position 50% 62%. Verified on a copy: the image becomes 360x360 and shows all the stones sharply at 1:1 device pixels on DPR 2 (v_upclose.png against upclose.png). The page body goes from 4145 to 3713px, and Details moves up from 3375 to 2943.",
+   "why": "C15 and C12: the section meant as the stone close-up is a 792px-tall, 2x-upscaled band of blur and plaster with a sliver of stones, adding 432px of scroll. measure.json and screens_1.jpg panel 4 show the whole screen as background."
+  },
+  {
+   "priority": 1,
+   "where": "#add click handler L632-635 and render() checkout mode",
+   "change": "Guard the button that changes meaning under the thumb. In the add branch set 'lockUntil = Date.now() + 700' before addPiece(); at the top of the handler 'if (Date.now() < lockUntil) return;'. For those 700 ms, render the button as '✓ Added' (ink fill, no price), then switch to the checkout/bag label. Apply the same guard to every control whose label flips on tap: set-row + Add / ✓ In bag, and the card's + Add. This is compatible with either label proposal (CRO's 'Checkout · total' or trust's 'View bag · total'). Verified on a copy: a 120 ms double tap now fires one AddToCart and opens no checkout, and a deliberate tap at 0.9 s still reaches checkout.",
+   "why": "Measured: a 120 ms double tap went from Add to bag straight to the Fastrr hand-off and fired InitiateCheckout (doubletap.png, interact.json). /jewellery carries 96% of the site's rage clicks (CLAUDE.md). Add-to-checkout is the 20% step (FACTS), and a phantom InitiateCheckout corrupts the funnel the ads optimise on."
+  },
+  {
+   "priority": 1,
+   "where": "openDrawer / closeDrawer L670-673, the hand-off sheet, and the live CartDrawer.tsx",
+   "change": "Make Android Back close the bag instead of leaving the page. In openDrawer call history.pushState({ bag: 1 }, ''). Make × and the scrim call history.back(). Add window.addEventListener('popstate', () => { if (!drawer.hidden) closeDrawer(); }). Do the same for the checkout hand-off sheet. Keep focus restore. Verified on a copy: after ad.html, then the PDP, then opening the bag, Back closes the drawer and the URL stays on the PDP. × also closes it and returns focus to the Bag button. Port this to the live shadcn Sheet in CartDrawer.tsx, which has the same gap.",
+   "why": "Measured: with the bag open, Back left the PDP for the previous page (back.js: urlAfterBack ad.html). The viewer already handles Back. The Instagram Android shopper uses the system back gesture to dismiss sheets, and losing the page at the bag is a loss at the 20% add-to-checkout step (FACTS)."
+  },
+  {
+   "priority": 2,
+   "where": "CSS L101 (.gal:focus-within .nav)",
+   "change": "Show the arrows only for keyboard focus: replace L101 with '.gal:has(:focus-visible) .nav { display: grid; }' and keep the hover rule. For WebViews before Chromium 105, add a fallback: on 'keydown' set document.documentElement.dataset.kbd = '1', on 'pointerdown' delete it, and use '[data-kbd] .gal:focus-within .nav { display: grid; }'. Verified on a copy: after the viewer closes on touch, .nav is display:none; after Tab from the keyboard it is display:grid.",
+   "why": "C2/C12: today any photo tap, or the chip, leaves two 44x44 ivory arrow plates over the hero until focus leaves the gallery (after_viewer.png, interact.json navShown 'grid')."
+  },
+  {
+   "priority": 2,
+   "where": "Hero framing: .track height L83, the slide-1 img L326, .sl .play L95",
+   "change": "(a) Short webviews: '@media (max-height: 620px) { .sl:first-child img { object-position: 50% 72%; } }'. Better, set a per-slide '--fy' in the markup and use object-position: 50% var(--fy). (b) Tall phones: change the cap from min(110vw, 473px) to min(125vw, 520px) in both clamp() lines. (c) Move the Riya play plate off the stones: '.sl .play { left: 10px; bottom: 10px; transform: none; }'. Verified on a copy: at 360x560 the whole bracelet is in frame (vfold_360x560.png). At 390x844 the hero grows from 429 to 488px, the orphaned 'fine.' no longer sits in the bar fade, and the gap above the bar falls from 97 to 39px. 412x846 keeps 13px clear, and 360x640 is unchanged.",
+   "why": "C1/C2: the piece must be on the first screen worn and whole. Today it is nearly cropped out below 600px of viewport (fold_360x560.png). On the Riya ad landing the play plate covers stones 4-5 (fold_riya.png)."
+  },
+  {
+   "priority": 2,
+   "where": "showCard() L603-615 and .added CSS L233",
+   "change": "Fit the card to the space it may use. (1) After rendering, measure 'avail = track.getBoundingClientRect().bottom - (77 + 8) - 8'. If card.offsetHeight > avail, add class 'compact': hide '.what' and the suggestion's metal line (.e:first-of-type), set '.sug .n' to 16px, and allow the name 2 lines. (2) If the add happens while #product-facts is off-screen (facts.getBoundingClientRect().bottom < 77), dock the card above the bar ('top:auto; bottom: calc(var(--bar) + var(--safe) + 8px)') as two lines with no suggestion row: 'Added to your bag · 1 piece / A second piece takes 10% off your whole bag' + ×. The set rows are already on screen.",
+   "why": "C20 requires that the confirmation never covers the price. Measured: at 320x568 the card spans 85-382 over the H1 (326) and the price (added_320x568.png), and at 360x560 it cuts the H1. Added while scrolled, it covers the 'Cushion Halo Ring' row and its + Add (add_scrolled.png)."
+  },
+  {
+   "priority": 2,
+   "where": "CSS L113 (.lk) and L121 (.lad .k)",
+   "change": "Raise both to 12px at 350px and wider: '.lk { font-size: 12px; }' and '.lad .k { font-size: 12px; }'. Keep the max-width:349px rule at 10.5px. Line heights are fixed at 16px, so the first screen does not move. Measured: the rung labels are 93-94px wide in 99-109px cells at 360. The longest caption, '1 in your bag · a second piece takes 10% off', ends at about x=262 of 344. Verified with no clipping at 360x640, 390 and 412 (folds_v.json).",
+   "why": "C14: a label of 11px or less must never be the only carrier of a rate, and these labels are the only place 10/20/30% shows on the first screen. C1 asks for every fact to be fully legible in a 360px webview."
+  },
+  {
+   "priority": 2,
+   "where": "Up close L396-399, Details fold L422-433, Riya tile L407",
+   "change": "Put the specs where the eye already is. Replace the Up close paragraph (L398, which repeats Stones/Setting/Colours) with the Details <dl> itself, unfolded under the macro: Length 18 cm · Fits wrists of 15 to 19 cm · Stones · Setting · Colours · Clasp Fold-over · Metal: surgical stainless steel with a PVD rhodium coating · Box. Delete the Details <details>, leaving three folds: Delivery, COD & faulty pieces / Care / Questions. Wrap the macro in <button class='zoom' aria-label='See the stones full screen'> that calls openViewer(1). Make the second Riya tile a link to the ring row (href='#set', aria-label 'Cushion Halo Ring, in the set above') so no image is a dead tap. With fix 1, the specs start at about 2050px (screen 4) instead of 3375, and the page loses about 130px more.",
+   "why": "C15 wants the structure scannable and C9 wants the spec block close. Material and length now sit on screen 6, behind a duplicate of the same sentences. secs.js finds two dead-tap images (macro @1673, reel2 @2747) on a site where /jewellery has 63% of dead clicks (CLAUDE.md)."
+  },
+  {
+   "priority": 3,
+   "where": "Keyboard and screen reader: slides L744, summaries L423-449, #added L466, drawer, JS scrollIntoView calls",
+   "change": "(1) In the track's keydown, add 'if (ev.key === \"Enter\") openViewer(idx, idx === 3)', and add role='button' aria-label='Open photo k of 7 full screen' to each figure's image wrapper. (2) Wrap each summary's text in <h2 class='sum-h'> styled like the summary (allowed inside <summary>). (3) Move <div id='added'> to directly after #bar in the DOM so its controls are the next tab stops after Checkout. (4) Trap Tab inside the drawer while it is open (first and last focusable wrap). (5) Use behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' in the #set and #policy scrollIntoView calls. (6) Set .dr-items .rm to min-width: 44px.",
+   "why": "C14 semantics: heading navigation, keyboard reach of the zoom and the after-add actions, and reduced motion. axe is clean, so these are the remaining manual a11y gaps."
+  },
+  {
+   "priority": 3,
+   "where": "<head> L43-44 (fonts), hero srcset L326, viewer video L729, proto/v/riya-prism.mp4",
+   "change": "(1) Attach the Google Fonts stylesheet once the hero has loaded, with a 1.2 s cap. Measured on a copy: LCP 1.79 to 1.33 s across 4 runs, CLS 0.0018. Trade-off: brand fonts arrive at about 2.2 s instead of 1.5-1.7 s, so A/B it against the current order. (2) Add the store's 896w original to the hero srcset ('…/prism-riviere-bracelet-1.jpg?v=1787277602&width=896 896w') so DPR 3 phones are not served an upscaled 720. (3) Re-encode the honest 18.5-21.8 s cut at 540x960 (H.264 CRF 26, faststart, about 250-350 KB, still tap-only) and draw it at 'width: 100%; height: 100%; object-fit: contain'. Play once with sound, then loop muted ('ended' handler sets muted = true and replays).",
+   "why": "C16: the fonts are the only thing contending with the hero's bandwidth. C12: never upscale. C13: today the clip is 270px wide in a full-screen viewer and repeats a spoken line every 3.3 s."
+  }
+ ],
+ "keep": [
+  "The first-screen budget: H1, price, the ladder in rupees, one estimated-delivery + COD line and the bar, all inside 360x640 with 13px clear. It holds at 360x600/560, 320x568, 390x664 and 412x732, with no horizontal scroll.",
+  "The solid ivory bar with its 10px fade, safe-area padding, and stepping aside at the footer. No line is half-cut at 360x640.",
+  "The delivery date computed at runtime (+3-5 working days) with 'est.', and 'insured' dropped below 350px.",
+  "The loading strategy: the landing slide preloaded with fetchpriority=high; data-src slides with an idle neighbour; lazy loading with width/height; the set sprite; zero video bytes before a tap. LCP 1.79 s, 4 image requests, 310 KB, CLS 0.001.",
+  "Scroll-snap with snap-stop, the quiet '1 / 7' counter, and alt text on every slide.",
+  "The viewer pushes history so Back closes it, with a 44px close and Shopify originals.",
+  "The live region, the bag aria-label with its count, focus-visible rings, lang en-IN and <main>. axe-core reports 0 violations, and every text run passes AA.",
+  "44px targets everywhere, with 8px header spacing.",
+  "The non-modal after-add card with no timer, and the bar turning into Checkout/Bag (with the 700 ms guard added).",
+  "The bag drawer: 44px stepper, the COD fee in rupees, and the single radius exception on Secure checkout.",
+  "Native <details> folds with 52px summaries; the policy row opens its fold and scrolls with a 90px margin.",
+  "The ad-match script runs before paint and keeps the query string, with no redirect."
+ ],
+ "roadmap": [
+  "Shopify originals at 1440px wide or more for every gallery frame, so DPR 3 phones and the full-screen viewer get a true zoom (C12 '10 with input').",
+  "Field LCP/INP/CLS from the Instagram webview (web-vitals RUM tagged with an in-app-browser flag) to replace these lab figures (C16).",
+  "Port the measured budget to the live SPA. The prototype is static, while live JewelDetail renders after about 352 KB of JS. Inject the hero preload from index.html's inline head script, the same place as the NAIRA_JEWELLERY_REDIRECT rewrite, using a handle-to-hero-URL map generated with jewellerySnapshot.ts. Otherwise the live LCP stays behind JS boot.",
+  "A 6-10 s product-only macro turn and an on-wrist clip, each under 1 MB, encoded at 540x960 or larger, for the gallery and viewer (C13).",
+  "A real device pass on a low-end Android (e.g. a 2 GB RAM Samsung A-series) inside the Instagram app: system back gesture, edge-swipe on the full-bleed gallery, keyboard-free focus behaviour, and the Fastrr hand-off.",
+  "Clarity heatmaps after launch to confirm that the dead-tap and rage-tap counts on the PDP fall after fixes 2 and 8."
+ ]
+}

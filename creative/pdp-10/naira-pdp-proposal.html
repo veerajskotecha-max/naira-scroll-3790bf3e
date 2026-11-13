@@ -1,0 +1,193 @@
+<title>Naira PDP Proposal</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Jost:wght@300;400;500&display=swap">
+<style>
+/* Layout: one reading column in the brand's own type and colours; the page itself is the case for the new product page */
+:root {
+  --bg: #FBF3EC; --fg: #1A1614; --muted: #6B625C; --card: #F3E7DC; --line: rgba(26,22,20,.13);
+  --deep: #50726A; --sage: #99B4AF; --gold: #9A7A3E; --warn: #9A3B2B; --warn-bg: #F7E0D8;
+  --bar-lo: #E4D6C8; --bar-hi: #50726A;
+  --display: "Cormorant Garamond", Georgia, "Times New Roman", serif;
+  --body: "Jost", "Futura", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #171412; --fg: #F2E9E0; --muted: #A99D93; --card: #221E1B; --line: rgba(242,233,224,.14);
+  --deep: #93B8AE; --sage: #7FA19A; --gold: #D2B377; --warn: #EE9A83; --warn-bg: #3A221C; --bar-lo: #3A332E; --bar-hi: #93B8AE; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #171412; --fg: #F2E9E0; --muted: #A99D93; --card: #221E1B; --line: rgba(242,233,224,.14);
+  --deep: #93B8AE; --sage: #7FA19A; --gold: #D2B377; --warn: #EE9A83; --warn-bg: #3A221C; --bar-lo: #3A332E; --bar-hi: #93B8AE; color-scheme: dark }
+body { background: var(--bg); color: var(--fg); font-family: var(--body); font-size: 16px; line-height: 1.6; }
+.wrap { max-width: 960px; margin: 0 auto; padding-block: 40px 72px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 56px; }
+h1, h2, h3 { font-family: var(--display); font-weight: 500; line-height: 1.1; margin: 0; text-wrap: balance; }
+h1 { font-size: clamp(38px, 7vw, 58px); }
+h2 { font-size: clamp(28px, 4.5vw, 38px); }
+h3 { font-size: 22px; }
+p { margin: 0; max-width: 68ch; }
+section, header { display: grid; gap: 18px; }
+.eyebrow { font-size: 11px; letter-spacing: .22em; text-transform: uppercase; color: var(--deep); font-weight: 500; }
+.lede { font-size: 18px; color: var(--muted); }
+.cta { display: inline-flex; align-items: center; gap: 10px; justify-self: start; padding: 14px 22px; background: var(--fg); color: var(--bg); text-decoration: none; font-size: 12px; letter-spacing: .18em; text-transform: uppercase; font-weight: 500; }
+.cta:focus-visible, a:focus-visible { outline: 2px solid var(--deep); outline-offset: 3px; }
+.scores { display: flex; flex-wrap: wrap; gap: 14px; }
+.score { border: 1px solid var(--line); padding: 14px 20px 16px; display: grid; gap: 2px; min-width: 160px; }
+.score b { font-family: var(--display); font-weight: 500; font-size: 46px; line-height: 1; }
+.score b small { font-size: 20px; color: var(--muted); }
+.score span { font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+figure { margin: 0; display: grid; gap: 8px; }
+figure img { width: 100%; height: auto; display: block; border: 1px solid var(--line); }
+figcaption { font-size: 14px; color: var(--muted); }
+.pair { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; align-items: start; }
+.tbl { overflow-x: auto; border: 1px solid var(--line); }
+table { border-collapse: collapse; width: 100%; min-width: 640px; font-size: 14px; font-variant-numeric: tabular-nums; }
+th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+th { font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); font-weight: 500; background: var(--card); }
+tr:last-child td { border-bottom: 0; }
+td.n { text-align: right; white-space: nowrap; }
+.barcell { width: 34%; }
+.bar { height: 8px; background: var(--bar-lo); position: relative; }
+.bar i { position: absolute; inset: 0 auto 0 0; background: var(--bar-hi); }
+ol.list, ul.list { margin: 0; padding-left: 22px; display: grid; gap: 10px; max-width: 74ch; }
+ol.list li::marker, ul.list li::marker { color: var(--deep); font-weight: 500; }
+.list strong { font-weight: 500; }
+.decisions { display: grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); gap: 14px; }
+.d { background: var(--card); padding: 16px 18px; display: grid; gap: 6px; align-content: start; }
+.d h3 { font-size: 20px; }
+.d p { font-size: 14.5px; }
+.d .why { font-size: 13px; color: var(--muted); }
+.warn { background: var(--warn-bg); border-left: 3px solid var(--warn); padding: 16px 18px; display: grid; gap: 6px; }
+.warn strong { font-weight: 500; }
+.note { font-size: 13px; color: var(--muted); }
+hr { border: 0; border-top: 1px solid var(--line); margin: 0; }
+.phase { display: grid; grid-template-columns: 120px 1fr; gap: 6px 18px; padding: 14px 0; border-top: 1px solid var(--line); }
+.phase:last-child { border-bottom: 1px solid var(--line); }
+.phase b { font-family: var(--display); font-weight: 500; font-size: 22px; line-height: 1.1; }
+.phase div { min-width: 0; display: grid; gap: 4px; }
+.phase span { font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+@media (max-width: 520px) { .phase { grid-template-columns: 1fr; } }
+a { color: var(--deep); text-underline-offset: 3px; }
+code { font-size: 13px; }
+</style>
+
+<div class="wrap">
+<header>
+  <p class="eyebrow">Naira · product page proposal · 13 November 2026</p>
+  <h1>A product page that sells on the truth</h1>
+  <p class="lede">The proposed product page for the Prism Rivière Bracelet. It was built on the real photos, prices and offer, then scored and rebuilt in six rounds against an evidence-based rubric by four independent critics, until each round added less than a tenth of a point. Every line on it can be checked.</p>
+  <div class="scores">
+    <div class="score"><b>3.5<small>/10</small></b><span>Live page today, rough</span></div>
+    <div class="score"><b>8.9<small>/10</small></b><span>Proposed page, honest content today</span></div>
+    <div class="score"><b>9.4<small>/10</small></b><span>With the inputs listed below</span></div>
+  </div>
+  <a class="cta" href="prototype/naira-pdp.html" target="_blank" rel="noopener">Open the working prototype →</a>
+  <p class="note">Best opened on a phone. Every button works: swipe the photos, add to bag, add the ring from the card, open the bag. The launch notes for the developer sit below its footer.</p>
+</header>
+
+<section>
+  <p class="eyebrow">The first screen</p>
+  <h2>Everything needed to decide and to buy, on one phone screen</h2>
+  <p>Designed at 360×640, the Instagram browser on an Android phone, where half of your shoppers arrive. Today that screen shows the photo, an invented review score, a made-up "just bought" card over the name, and the price. The offer, delivery, COD and the in-page Add to cart sit below it.</p>
+  <div class="pair">
+    <figure><img src="first-screen.jpg" alt="Left: the live Prism Riviere Bracelet page with a purchase notification covering the name. Right: the proposed page with name, price, the Buy 2, 3 and 4 prices, delivery date and COD, and the Add to bag bar."><figcaption>Left, live: the "Lavanya, Jaipur bought…" card is generated at random and covers the name. Right, proposed: name, price with the struck price, the metal, the three offer prices in rupees, the delivery estimate, COD, and Add to bag with the price on it.</figcaption></figure>
+    <figure><img src="after-add.jpg" alt="Left: the card that appears after adding, offering the Cushion Halo Ring for 659 rupees more. Right: the bag with two pieces, 10% applied, total 3,058 rupees, and the COD fee in rupees."><figcaption>After Add to bag, where 80% of today's adds are lost. Left: the card offers the matching ring, "Adds ₹659, not ₹999", one tap. Right: the bag states the saving, the next rung ("20% off all three with the necklace, ₹460 more") and the exact COD figure, before Fastrr.</figcaption></figure>
+  </div>
+</section>
+
+<section>
+  <p class="eyebrow">Why it is built this way</p>
+  <h2>Ten decisions, each from your own numbers or published research</h2>
+  <div class="decisions">
+    <div class="d"><h3>The buy decision fits the first screen</h3><p>Price, the Buy 2/3/4 prices, delivery date and COD all sit above the buy bar, which shows from the first moment and never covers them.</p><p class="why">91% of your product-page views end without an add (Meta pixel, 28 days). Baymard: 64% look for delivery cost on the product page.</p></div>
+    <div class="d"><h3>Nothing invented</h3><p>Out: the 4.9 / 51 reviews (written in the code), "5 sold in 48 hours" (computed from the product name), the random buyer card, the press logos and "Sale live today".</p><p class="why">India's 2023 dark-pattern guidelines list false popularity and false urgency; BIS IS 19000:2022 covers review honesty.</p></div>
+    <div class="d"><h3>The offer as rupees, not percentages</h3><p>"2 pieces ₹2,159 · 3 pieces ₹1,919 · 4 pieces ₹1,679", applied automatically. The caption follows the bag: "1 in your bag · a second piece takes 10% off".</p><p class="why">68–74% of orders are one piece; AOV is ₹1,511 against ₹979 of ad cost per order. Those who buy 2+ already use the ladder.</p></div>
+    <div class="d"><h3>The next piece, offered at the right moment</h3><p>Right after the add, one card offers the ring that matches in rhodium, with its real cost after the discount. The set section adds pieces with one tap and a running total.</p><p class="why">Missoma, GIVA and Salty all cross-sell at the add; Baymard asks for a full name, price and image on every cross-sell.</p></div>
+    <div class="d"><h3>COD clear, online payment nudged honestly</h3><p>"COD available" on the first screen. The bag shows both totals in rupees: "₹3,058 paid online · ₹3,211 with COD (₹153 fee)".</p><p class="why">COD is 45% of orders and 21% of COD orders come back undelivered, against about 1% prepaid.</p></div>
+    <div class="d"><h3>The returns policy as it really is</h3><p>"Faulty piece? Tell us on WhatsApp within 7 days of delivery, with photos, for a repair, replacement or store credit." The live page promises returns the policy does not give.</p><p class="why">Baymard: 60% of shoppers look for the return policy on the product page; 15% have abandoned over it.</p></div>
+    <div class="d"><h3>Real people, labelled</h3><p>Riya's clip is cut to the 3.3 seconds that make no unsupported claim (her full reel mentions a "two years plating guarantee") and labelled "Creator collaboration".</p><p class="why">ASCI influencer rules; Meta's landing-page study asks for lifestyle shots and video in the gallery.</p></div>
+    <div class="d"><h3>Facts you can measure</h3><p>18 cm, wrists 15–19 cm, cushion-cut cubic zirconia about 5 mm, PVD rhodium on surgical steel, fold-over clasp, gift box. No "skin-friendly", no "zircone", no "Demi-Gold".</p><p class="why">Mejuri, Missoma and Astrid &amp; Miyu win trust with millimetres and grams, not adjectives.</p></div>
+    <div class="d"><h3>Quiet, so the piece is the loudest thing</h3><p>Two typefaces (Cormorant Garamond and Jost) instead of four. No "40% OFF" badge, no ticker, no icons where words do the job. Sharp corners as the brand requires.</p><p class="why">The art-direction critic scored it 9.0, against 5.3 in round one.</p></div>
+    <div class="d"><h3>Light enough for the Instagram browser</h3><p>The first photo loads first; everything below the screen waits. The video loads only when tapped. No layout shift; zero accessibility violations (axe-core) in every state.</p><p class="why">Deloitte/Google: 0.1 s faster gave 8.4% more retail conversions. The live page loads 37 of 38 images and a 3.4 MB video at once.</p></div>
+  </div>
+</section>
+
+<section>
+  <p class="eyebrow">How it got here</p>
+  <h2>Six rounds, four critics, one rubric</h2>
+  <p>The rubric has 21 weighted criteria. They come from Baymard Institute product-page research, Nielsen Norman Group, Spiegel Research Center's review studies, Meta's landing-page study and web.dev's speed case studies. Weights follow where your funnel leaks. Each round, a conversion specialist, a first-time Instagram shopper paired with a consumer-law reviewer, a luxury art director and a mobile and speed engineer scored the page from fresh renders. A builder then applied their fixes.</p>
+  <div class="tbl">
+  <table>
+    <thead><tr><th>Round</th><th class="n">Conversion</th><th class="n">Trust &amp; law</th><th class="n">Art direction</th><th class="n">Mobile &amp; speed</th><th class="n">Average</th><th>Progress</th></tr></thead>
+    <tbody>
+      <tr><td>1 · first draft</td><td class="n">4.6</td><td class="n">4.7</td><td class="n">5.3</td><td class="n">4.9</td><td class="n">4.9</td><td class="barcell"><div class="bar"><i style="width:49%"></i></div></td></tr>
+      <tr><td>2</td><td class="n">8.0</td><td class="n">7.8</td><td class="n">7.8</td><td class="n">7.9</td><td class="n">7.9</td><td class="barcell"><div class="bar"><i style="width:79%"></i></div></td></tr>
+      <tr><td>3</td><td class="n">8.5</td><td class="n">8.3</td><td class="n">8.5</td><td class="n">8.3</td><td class="n">8.4</td><td class="barcell"><div class="bar"><i style="width:84%"></i></div></td></tr>
+      <tr><td>4</td><td class="n">8.8</td><td class="n">8.7</td><td class="n">8.8</td><td class="n">8.7</td><td class="n">8.75</td><td class="barcell"><div class="bar"><i style="width:87.5%"></i></div></td></tr>
+      <tr><td>5</td><td class="n">8.9</td><td class="n">8.8</td><td class="n">8.9</td><td class="n">8.8</td><td class="n">8.85</td><td class="barcell"><div class="bar"><i style="width:88.5%"></i></div></td></tr>
+      <tr><td>6 · final</td><td class="n">8.9</td><td class="n">8.8</td><td class="n">9.0</td><td class="n">9.0</td><td class="n">8.93</td><td class="barcell"><div class="bar"><i style="width:89.3%"></i></div></td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p class="note">The last round added 0.08, so further design rounds would not move the score much. The critics put the same page at 9.3 to 9.5 once the inputs below exist. The "3.5" for the live page is a rough read from the rubric's calibration column, not a full scoring.</p>
+  <figure><img src="whole-page.jpg" alt="The proposed page as eight consecutive phone screens, from the first screen to the footer"><figcaption>The whole page, top to bottom: the first screen; trust lines; Wear it as a set; Every stone in its own halo; details; As Riya wears it; Reviews (honest empty state); delivery, COD and faulty pieces; care; questions; footer.</figcaption></figure>
+</section>
+
+<section>
+  <p class="eyebrow">From 9 to 9.5 and beyond</p>
+  <h2>What design cannot supply</h2>
+  <ul class="list">
+    <li><strong>Real reviews.</strong> A review app (Judge.me or Shopify Product Reviews) that asks every customer 7 days after delivery, with photos. Spiegel: five real reviews make a purchase 2.7 times as likely as none. The page shows a rating only once real ones exist.</li>
+    <li><strong>Sharper originals.</strong> Photos at least 1,440 px wide (today's are 896 px), a wrist photo with a ruler, and an unboxing photo for gifting.</li>
+    <li><strong>Video.</strong> A 6–10 second macro turn under a point light for the colour play, an on-wrist clip, and two or three more labelled creator clips.</li>
+    <li><strong>An ad map.</strong> A naming rule for each ad's <code>utm_content</code>, so the page can open on the same photo and promise as the ad that was tapped.</li>
+    <li><strong>A better returns policy (your call).</strong> A 7-day exchange on unworn pieces is what GIVA, Palmonas and Missoma offer, and the critics rate it the single strongest trust upgrade.</li>
+    <li><strong>Pincode-backed delivery dates</strong> from the courier instead of an estimate.</li>
+  </ul>
+</section>
+
+<section>
+  <p class="eyebrow">Before it can go live</p>
+  <h2>Questions only you can answer</h2>
+  <div class="warn"><strong>The prototype keeps safe wording until each of these is settled.</strong><p>Each one is written out in full in the prototype's launch notes, with the wording to use either way.</p></div>
+  <ol class="list">
+    <li><strong>The fit.</strong> An 18 cm bracelet cannot close round a 19 cm wrist unless the clasp adjusts. Please measure one closed and say whether it adjusts.</li>
+    <li><strong>COD by pincode.</strong> The site's own rules make some regions prepaid-only (J&amp;K and Ladakh, Bihar, Jharkhand, the North East, the islands, parts of UP and Haryana). One test checkout to Patna and Guwahati settles whether "COD available" needs "in most areas".</li>
+    <li><strong>The ₹3,999 strike.</strong> Is it the printed MRP or a price it actually sold at? If MRP, label it "MRP ₹3,999 (incl. of all taxes)". If neither, it comes off.</li>
+    <li><strong>The COD fee.</strong> Fastrr adds 5% and books it as shipping after a page that says free delivery. Can the fee be labelled "COD fee" at Fastrr? Can the page's delivery fold mention it?</li>
+    <li><strong>"Worn" in the policy.</strong> A fault found while wearing the piece in the first week should still be covered (E-Commerce Rules r.7(4)).</li>
+    <li><strong>Prepaid 5%.</strong> Only 55 of about 105 online orders carried it. If it is a standing rule, the bag can say "extra 5% off when you pay online".</li>
+    <li><strong>Damaged, wrong or missing parcels.</strong> The policy only covers manufacturing faults; the page says "insured". What does she get?</li>
+    <li><strong>Riya.</strong> Her handle, paid or gifted, and written rights to use the clip on the site and in ads.</li>
+    <li><strong>Small checks:</strong> the second stone's colour in daylight (pink or lilac), and which Instagram account is the brand's (@naira.flore or nairaflore).</li>
+  </ol>
+</section>
+
+<section>
+  <p class="eyebrow">How it ships</p>
+  <h2>In the real site, measured</h2>
+  <div>
+    <div class="phase"><b>Step 1</b><div><span>About a day · needs your yes</span><p>An honest baseline on every jewellery page: remove the authored reviews and rating, the sold counts, the buyer pop-up, the press strip, "Sale live today", "Skin-friendly", "zircone" and "Demi-Gold", and the returns promise the policy does not give. This is the fair "A" for the test.</p></div></div>
+    <div class="phase"><b>Step 2</b><div><span>About 4 days of build</span><p>The new page in <code>JewelDetailNext</code> and the bag in <code>CartDrawerNext</code>: the first-screen column, the sticky bar's states, the after-add card, the set with one tap, the honest proof sections, live stock from Shopify (today nothing reads inventory), structured data without fake ratings, and the tracking events. Tested at 320, 360 and 412 px.</p></div></div>
+    <div class="phase"><b>Step 3</b><div><span>1 to 2 weeks</span><p>An A/B test: each visitor is put in arm A or B from their existing visitor ID. Primary measures are add to cart per product-page view and checkout starts per add, which your traffic can read within about a week. Orders by arm are read from Shopify. The offer stays fixed while it runs. It changed four times in the last 30 days, which is why its effect could not be measured.</p></div></div>
+    <div class="phase"><b>Step 4</b><div><span>Ongoing</span><p>Add the inputs above as they arrive (reviews, photos, video, the ad map), then roll the winner out to every jewellery page. The design is not specific to this bracelet: every piece gets the same page.</p></div></div>
+  </div>
+  <p class="note">The live code is checked out and its tests run (989 pass; the one failure is in reels and predates this work). Building it into the site needs a new branch from the live code and your go-ahead.</p>
+</section>
+
+<hr>
+
+<section>
+  <p class="eyebrow">Sources</p>
+  <ul class="list note">
+    <li>Naira data: Meta pixel 1232524215695667 (browser events, 28 days), Shopify orders 14 Oct to 13 Nov 2026 (206 orders), the live site and its code, all read on 13 November 2026.</li>
+    <li>Baymard Institute: current state of product page UX (2023, updated 2026); shipping costs on product pages; in-scale images; human-model images; thumbnails; image resolution and zoom; product videos; cross-sell attributes; mobile e-commerce; jewellery and watches.</li>
+    <li>Nielsen Norman Group: UX guidelines for e-commerce product pages; accordions on mobile; touch-target size.</li>
+    <li>Spiegel Research Center (Northwestern): how online reviews influence sales. PowerReviews: power of reviews, 2021.</li>
+    <li>web.dev: Vodafone, Nuvemshop and "Milliseconds make millions" (Deloitte) case studies; Largest Contentful Paint.</li>
+    <li>Meta and Branding Brand, "Stick the Landing" (2022), via published summaries.</li>
+    <li>Teardown on a 360 px phone, 13 Nov 2026: GIVA, Palmonas, Salty, CaratLane, Mejuri, Ana Luisa, Missoma, Astrid &amp; Miyu.</li>
+    <li>Rules: CCPA Guidelines for Prevention and Regulation of Dark Patterns (2023); Consumer Protection (E-Commerce) Rules (2020); BIS IS 19000:2022; ASCI influencer guidelines.</li>
+  </ul>
+</section>
+</div>

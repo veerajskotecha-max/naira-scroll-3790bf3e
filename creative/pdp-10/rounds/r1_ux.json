@@ -1,0 +1,131 @@
+{
+ "lens": "Mobile UX, accessibility and web performance, tested as a 360x640 Android shopper in the Instagram in-app browser (also 390x844, 412x732, 320x568). Covers first-screen fit, tap targets (44px), WCAG AA contrast, reading sizes, gallery and swipe, sticky bar and safe areas, accordions, scroll length and order, keyboard and screen-reader basics, image weight and lazy loading, LCP, and layout/JS faults. G3 trips: pdp10/fold.png and screens_*.jpg are older than the HTML (they show '7 day exchange & returns' and 'DELIVERY, COD & EXCHANGE'; the HTML reads 'Faulty? Sorted within 7 days' and 'Delivery, COD & returns'). Everything below is scored from fresh renders and probes of an untouched copy, in scratchpad/ux_r1/ (fold_360x640.png, fold_390x844.png, fold2_412x732.png, gallery_slide6.png, probe.json, perf.js, fold2.js). Speed was measured over http://127.0.0.1 with CDP throttling (150 ms RTT, 1.6 Mbps, 4x CPU, DPR 2), not file://.",
+ "score_now": 4.9,
+ "score_with_roadmap": 8.8,
+ "criteria": [
+  {
+   "id": "C1",
+   "score": 6.0,
+   "note": "All six items are on screen 1 at 360x640: worn hero 77-406, H1 418-447, price + incl. GST 454-484, ladder 495-548 with ₹2,159/₹1,919/₹1,679, fact line 555-573, bar 575 (probe.json fold_360). Three things hold it at the 6 anchor. (1) 'by 18-20 Nov' reads as a promise, and it is a literal in the HTML (L189), not computed. (2) 'Each fully legible' fails: rung labels are 10px gold at 3.66:1, 'incl. GST' and 'each' are 11px at 52% ink (3.55:1), and the ladder caption is 9.5px gold in a ::before. (3) There are 2px of vertical headroom and 20px of horizontal headroom (text 308 of 328px, nowrap). At 320x568 the document is 324px wide and the page zooms out. At 390x844 it is fine (fact line ends 601 of 779)."
+  },
+  {
+   "id": "C2",
+   "score": 5.5,
+   "note": "The hero is right: worn, the whole bracelet in frame, no popup. But the bar is rgba .97 (L71), so the trust row's 'Faulty? Sorted' and its icons ghost through the bar and inside Buy now (fresh fold_360x640.png, bottom 70px). At 390x844 the 'Make it a set' sub-copy is sliced by the bar's top edge. At 412x732 (Pixel-class) the trust row's second lines are sliced in half (fold2_412x732.png), and the 390px .phone frame leaves #E9E1D8 strips at both sides. The 'VIDEO' chip sits on the hero, which is not a video, and stays on every slide."
+  },
+  {
+   "id": "C12",
+   "score": 5.0,
+   "note": "Eight real images in a scroll-snap swipe with a quiet dot indicator. Against it: all eight (376 KB) download at scroll 0, with no srcset/sizes. The 720px files are upscaled on DPR 3. There is no tap-to-zoom or full-screen viewer. Dots are 5px, pointer-events:none, and there is no '1 / 8' counter (the live page has one). Slide 6, the 'video', is a still of Riya's face mid-sentence with the bracelet not visible (gallery_slide6.png). Slide 7 (g7) is the same gift-box photo as box.jpg. The size-guide slide's '18 cm · fits 15-19 cm' is image text about 4px tall at 360px. There is no scroll-snap-stop, so a flick can skip slides."
+  },
+  {
+   "id": "C13",
+   "score": 4.0,
+   "note": "No video bytes load before a tap, which is good, but only because no video exists. The 'VIDEO' chip is a <span> that does nothing when tapped: the track does not move (probe interactions.videoChipTapMovesGallery=false). Both reel play icons are 30px <span>s with no handler, which makes three dead-click targets on a site where /jewellery already carries 96% of rage clicks (CLAUDE.md). The gallery's video poster does not show the piece."
+  },
+  {
+   "id": "C14",
+   "score": 4.0,
+   "note": "Targets under 44px: '+ Add' x3 at 132x36, hero heart 40x40, 'Ask us on WhatsApp' 200x40. The chip (68x25) and play icons (30x30) look tappable but are not buttons. Header icons are 44px but only 4px apart. Contrast: gold 10px labels and dt are 3.66:1; 52% ink on GST/each/strikes is 3.55:1 (3.46:1 on the rail total); the footer is white on sage at 2.21:1; the WhatsApp link renders in browser-default blue rgb(0,0,238), underlined (.ghost has no color). Type: all body copy is 13px (.sub, .pr p, .dp, .faq, .rv p), and labels run 9.5-10px. Semantics: lang='en'; no <main>; no aria-live, so the add is never announced; the ladder's aria-label sits on a plain div and is not announced; the ladder's key line lives in CSS ::before; the bag button's aria-label hides the count; the track is an unnamed focusable scroller; and the buy bar is the LAST thing in the DOM. Tab order (probe tabOrder): Menu, Search, Wishlist, Bag, unnamed track, heart, + Add x3, Add the set, WhatsApp, Details, and so on, with Add to bag after the footer. What passes: one H1, img alts, default focus ring, the prefers-reduced-motion rule, 48px primary buttons."
+  },
+  {
+   "id": "C15",
+   "score": 6.5,
+   "note": "A buy control is on screen at every scroll position: the bar is fixed from first paint, carries the price and never covers the facts. Accordions are native <details> with 52px summaries, Details open by default, and secondary content only. Faults: (1) after the first add the button reads 'Added · view bag', but a second tap ADDS another bracelet (bag 1 to 2, toast 'Add 1 more · 20% off'); it never opens the bag. (2) Buy now has no handler. (3) The 'More bracelets' section repeats the rail's necklace and hoops under a wrong heading, with untappable cards, adding about 330px. (4) The fold label 'Delivery, COD & returns' implies change-of-mind returns."
+  },
+  {
+   "id": "C16",
+   "score": 4.5,
+   "note": "Measured (perf.js, two runs): LCP 2.90 / 2.92 s (g1 hero), FCP 0.78-0.84 s, CLS 0.0035. 18 image requests, 655 KB of images and 795 KB in total before any scroll. 4 font files, 115 KB, behind a render-blocking fonts.googleapis.com stylesheet. There is no loading=lazy, fetchpriority, preload, srcset or width/height anywhere (probe a11y: imgsLazy 0, fetchprio 0). The closed Delivery fold's box.jpg downloads anyway. A copy with ONLY hero preload + fetchpriority + loading=lazy elsewhere measured LCP 1.58-1.78 s, 12 image requests, 417 KB images, 558 KB total. Chromium still pulled gallery slides inside the horizontal scroller, so lazy alone does not reach 6 requests. This is a static file with zero framework JS; the live stack adds about 352 KB JS plus about 264 KB Meta/Clarity, so the real LCP would be worse."
+  },
+  {
+   "id": "C20",
+   "score": 2.5,
+   "note": "The button turns deep sage and the badge counts. But the toast (bottom 76px, top at 521) covers the ladder's rupee row and the whole delivery + COD line (added_fresh.png), fades at 2.6 s, has no role=status, and carries no checkout or bag link. The second tap and 'Add the set to bag' both add duplicate bracelets: the bar add, then picking the hoops, then 'Add the set' gives a bag of 4 with 3 bracelets and a toast of '30% off applied'. Its bottom offset ignores env(safe-area-inset-bottom), so on an iPhone home-indicator inset it slides under the taller bar."
+  }
+ ],
+ "fixes": [
+  {
+   "priority": 1,
+   "where": "First screen: .track L40, .price L57-58, .ladder L59-65 + L184-188, .ship L66 + L189, .buybar L71, .btn.now L74",
+   "change": "Re-budget the first screen so every fact is legible and has headroom. (a) .track aspect-ratio 360/316, so the gallery is 316px tall at 360; the whole bracelet stays in frame. (b) Turn the ladder caption into real text, <p class='lad-cap'>Any pieces · applied in your bag</p>, sitting on the top border at 11px, .12em, deep sage #50726A (4.84:1), instead of a 9.5px gold ::before. (c) Rung labels: 11px, weight 500, .1em, deep sage. Rupees: 14px ink. 'each': 12px var(--ink-2) (6.8:1). Cell padding 9px 2px 7px. (d) Strike price 13px var(--ink-2); 'incl. GST' 12px var(--ink-2). (e) The fact line reads exactly 'Free insured delivery, est. <b>18–20 Nov</b> · <b>COD available</b>' at 12.5px, with the dates computed at runtime by deliveryRangeFromNow (today + 3-5 working days) and never shipped as a literal. (f) A container query on .facts below 350px drops 'insured' so the line stays one line. (g) .buybar background: var(--ivory), solid; .btn.now background: var(--ivory). (h) .buybar::before { content:''; position:absolute; left:0; right:0; top:-12px; height:12px; background:linear-gradient(rgba(251,243,236,0), var(--ivory)); pointer-events:none }. Lines that straddle the bar at other heights then fade instead of being sliced. Measured on a copy (fold2.js, fold2_360x640.png): H1 405-434, price 441-471, ladder 482-537, fact line 544-562 (13px clear of the bar at 575, was 2px), text right edge 333 of 344. At 390x844 the fact line ends at 589.",
+   "why": "C1 requires 'each fully legible' and no wrap. C14 sets 4.5:1 for text under 18.66px: gold #9A7A3E is 3.66:1 and 52% ink is 3.55:1. C2: the .97 bar lets the trust row ghost through at 360, and slices lines at 390x844 and 412x732. Rubric C1 asks for estimate wording. At 320px the nowrap line made the document 324px wide (probe fold_320). Half of sessions are about 360x640 in the Instagram WebView (FACTS)."
+  },
+  {
+   "priority": 1,
+   "where": "#add handler L319, #addall L320, .toast L145 + L284, bump() L312-318, .bagcount L161",
+   "change": "Replace the toast with an in-place confirmation that covers nothing and does not time out. On the first Add: (1) The bar becomes [CHECKOUT · ₹2,399] (ink, 1fr; goes to Fastrr with the bag) + [VIEW BAG · 1] (outline, 120px, letter-spacing .08em, opens the bag). (2) The ladder caption swaps to '1 in your bag · a 2nd piece takes 10% off', and the Buy 2 cell gets a 1px ink outline. Both use space that already exists. (3) The bag button's aria-label becomes 'Bag, 1 piece'. (4) A visually hidden <p role='status' aria-live='polite'> announces 'Prism Rivière Bracelet added. 1 piece in your bag. Add one more piece for 10% off.' (5) #add never calls bump() again: measured, the second tap took the bag to 2. (6) 'Add the set to bag' adds only picked pieces not already in the bag: measured, bar add + hoops + Add the set gave a bag of 4 with 3 bracelets. (7) Any fixed element above the bar uses bottom: calc(72px + env(safe-area-inset-bottom)), and .phone padding-bottom: calc(72px + env(safe-area-inset-bottom)).",
+   "why": "C20: the toast at top 521 covers the ladder rupees and the delivery + COD line, lasts 2.6 s, has no live region and no path to checkout (added_fresh.png). C15: 'view bag' does not view the bag. Add-to-cart to checkout is 20%, the largest step loss (FACTS). A duplicate bracelet in the bag is basket sneaking under CCPA [S29], and an RTO risk for COD."
+  },
+  {
+   "priority": 1,
+   "where": "<head> L7-9, every <img> L158-174, L201-203, L213-215, L223-224, L253, L273-274, video slide",
+   "change": "Hit the load budget. (1) Hero g1: <link rel='preload' as='image' fetchpriority='high'> plus <img fetchpriority='high' width='720' height='658'>, never lazy. (2) Gallery slide 2: loading='lazy'. Slides 3-8 get data-src, swapped in by an IntersectionObserver with root=track and rootMargin '0px 100%' after the first swipe, or on requestIdleCallback 2 s after load. (3) All other images: loading='lazy' decoding='async' with width/height. (4) 'Up close' reuses the gallery files (g4 macro, g1 worn, g2 plaster) at the same URLs, so they come from cache instead of proof1-3 (-146 KB). One gift-box file instead of g7 + box.jpg (identical photo). (5) Serve from the Shopify CDN with srcset 360w/540w/720w/896w; sizes='100vw' for the gallery, '132px' for the rail, '112px' for proof rows; the CDN negotiates WebP/AVIF. (6) Self-host woff2 latin subsets that include ₹ (U+20B9): Cormorant Garamond 400 and 500, Jost 400 and 500. Preload Cormorant 500 and Jost 400, with font-display:swap and size-adjust fallback faces. Drop the render-blocking fonts.googleapis.com stylesheet and the unused weights (Cormorant 600, italic, Jost 300; the summary '+' becomes an SVG). (7) Video: create <video muted playsinline controls preload='none' poster> only on tap. Encode an MP4 of 1.5 MB or less (540p H.264, faststart) stored as video/mp4, not application/octet-stream, which iOS Safari will not decode (CLAUDE.md; use /admin/reels 'Fix video type').",
+   "why": "C16, measured (perf.js): now LCP 2.90/2.92 s, 18 image requests, 655 KB images, 795 KB total before any scroll. Just (1) + lazy on the rest gave LCP 1.58-1.78 s, 12 requests, 417 KB images, 558 KB total. The data-src step is needed because Chromium still fetched slides inside the horizontal scroller. Targets are LCP ≤2.0 s, ≤6 image requests and ≤500 KB before scroll. Vodafone: 31% better LCP gave 8% more sales [S18]. Nuvemshop: fetchpriority on the first carousel image [S20]. The live reel loaded 3.44 MB [N audit]."
+  },
+  {
+   "priority": 1,
+   "where": ".pc button L95, .ghost L124 + L233, .heart L49 + L178, .chip.video L46-48 + L177, .reel .play L116 + L223-224, .pc cards L201-203 + L273-274, header .l/.r gap L30",
+   "change": "Make every target real and at least 44px. (1) Set-rail '+ ADD' height 44px (from 36). (2) 'Ask us on WhatsApp' height 44px, color: var(--ink), text-decoration:none. It renders browser-default blue and underlined today (screens_1 panel 4). (3) Delete the 40x40 hero heart; the header Wishlist stays. (4) The VIDEO chip becomes a <button>, 44px tall, label '▶ Riya's video'. It is shown only while slide 1 is in view, scrolls the track to the video slide and starts playback. Today it is a span, on every slide, and does nothing. (5) Reel play icons become <button aria-label='Play Riya's video'>, 44x44, square (radius 0, not the 30px round span). (6) Wrap each product card's image + name in <a href='/jewellery/<handle>'>; the Add button stays a SIBLING of the link, never inside it (CLAUDE.md JewelCard rule, tested by 'a button' being empty). (7) Header .l/.r gap 8px (from 4px).",
+   "why": "C14: 44px targets with 8px spacing [S15][S27]. measure.json uses a 40px threshold, so it misses the 40px heart and WhatsApp. C12/C13: a non-working 'VIDEO' chip and play icons are dead clicks. /jewellery already carries 96% of the site's rage clicks and 63% of its dead clicks (CLAUDE.md). Baymard: 63% of mobile users abandoned at least once over preventable issues such as hit areas [S11]."
+  },
+  {
+   "priority": 1,
+   "where": "<html> L2, body structure L152-285, .gal L165-179, .ladder L184-188, .price L183, .bagcount L161, summary::after L132-133",
+   "change": "Give keyboard and TalkBack users the same page. (1) <html lang='en-IN'>. Wrap header-to-footer content in <main>. (2) Move the .buybar markup to directly after #product-facts, keeping it position:fixed, so Add to bag is the 2nd stop after the facts instead of after the footer. (3) Gallery: <section aria-roledescription='carousel' aria-label='Photos and video'>. The track gets tabindex='0' and aria-label='Photo 1 of 8', updated on scroll. A visible counter '1 / 8' (12px ink on a 90% ivory chip, bottom-right) replaces the eight 5px dots. Prev/next 44px buttons appear on :focus-visible and on (pointer:fine). (4) The ladder becomes <ul aria-label='Offer, applied in your bag'> with three <li>s ('Buy 2 · 10% off · ₹2,159 each'), its caption as real DOM text. (5) Price: <s><span class='vh'>[owner's word for ₹3,999, e.g. MRP] </span>₹3,999</s>, because readers drop the strike and read two prices. (6) The bag aria-label carries the count ('Bag, 1 piece'). (7) The summary +/− becomes an aria-hidden SVG; CSS content '+' is read as 'plus'. (8) :focus-visible { outline: 2px solid var(--ink); outline-offset: 2px }, and on ink buttons use an ivory outline with an ink offset ring.",
+   "why": "C14 semantics checklist (lang en-IN, live region, named controls, visible focus). Probe tabOrder: the 5th stop is an unnamed scroller, and the buy bar is last in the DOM. Dots are pointer-events:none and can be misread as swatches [S6]. aria-label on a generic div is not exposed, and ::before text is announced inconsistently. Baymard and NN/g treat clear add feedback and readable structure as basics [S13]."
+  },
+  {
+   "priority": 2,
+   "where": ".sub L80, .pr p L109, .dp L137, .faq L139-140, .rv p L122, dl/dt/dd L134-136, summary L130, .trust div L82, .pc .p L92-93, .reel .who L115, footer L143",
+   "change": "Raise the reading sizes below the fold. Body copy (.sub, .pr p, .dp, .faq span, .rv p, dd) goes to 15px / 1.55 in var(--ink-2) (6.8:1; it is 13px now). .faq b: 15px, 500. dt: 11px, .12em, deep sage (not 10px gold). summary: 12px, .14em. Trust row: 12px ink-2 (from 11px). Card price 14px; card strike 12px ink-2. Reel captions move BELOW the image as 13px ink-2, instead of white 12px over a photo. Footer: ink text on sage (8.1:1) instead of white (2.21:1). Floor everywhere: 11px for tracked uppercase labels, 12px for sentence text. Gold #9A7A3E only for hairlines, borders or text 24px and up.",
+   "why": "C14 10/10 asks for 15-16px body, tracked labels of at least 11px, 4.5:1 for small text. Measured: 13px body throughout, 9.5-10px labels, footer 2.21:1. The Instagram WebView shopper reads on a 360px screen at arm's length."
+  },
+  {
+   "priority": 2,
+   "where": "Gallery slides L167-174, .track L40-42",
+   "change": "Make the gallery prove more with the same files. Order: 1 worn (g1), 2 stone macro (g4), 3 plaster block (g2), 4 Riya's video with poster reel1.jpg (her wrist with the bracelet and mehendi), 5 velvet (g3), 6 velvet (g5), 7 gift box, 8 size guide. The poster is not g6, which is her face mid-sentence with the bracelet not visible (gallery_slide6.png). On the size-guide slide, add a live-text caption bar '18 cm · fits wrists 15–19 cm · measure where you wear a watch' (13px ink on 90% ivory); the image text is about 4px tall at 360px. Add scroll-snap-stop: always on slides (one flick = one slide) and overscroll-behavior-x: contain on the track. Tapping a photo opens a full-screen viewer: pinch zoom, swipe, a 44px close button top-right, Back closes it through history.pushState, and it fetches the 896px Shopify original (the largest available today). The video slide plays inline on tap, muted with captions, and pauses when swiped away.",
+   "why": "C12: 56% of users explore images first and need zoom; low-quality images can be worse than none [S5][S7]. C13: the video poster should show the product, and video belongs in the gallery [S8]. C10: fit stated near an in-scale image [S3]."
+  },
+  {
+   "priority": 2,
+   "where": "'More bracelets' L270-276, fold summary L251, .phone L22",
+   "change": "Shorten and clarify the scroll. Delete 'More bracelets': it repeats the rail's necklace and hoops under a wrong heading, and its cards are not links (-about 330px of the 3,239px page). Rename the fold 'Delivery, COD & faulty pieces'. In production drop the 390px max-width frame (.phone), so the page is full-bleed at 412px; fold2_412x732.png shows #E9E1D8 strips and a 390px bar. Use min-height: 100svh, not 100vh, so the iOS Instagram toolbar does not leave a gap.",
+   "why": "C15: accordion headers act as a table of contents and must describe their content truthfully [S14]. C19: mislabelled heading. C2: at 412x732, a common Android width, the frame shows."
+  },
+  {
+   "priority": 2,
+   "where": "pdp10/shoot.js, render.sh",
+   "change": "Make the next rounds measurable. Raise the smallTapTargets threshold to 44 and include non-button elements that look tappable (.chip, .play). Serve proto/ over http (python3 -m http.server --bind 127.0.0.1) and record, under CDP throttling (150 ms RTT, 1.6 Mbps, 4x CPU), LCP element and time, CLS, image requests and KB before scroll, and font KB (scratchpad/ux_r1/perf.js does this). Add folds at 390x844 and 412x732. Add a double-tap-on-#add check (bag must stay 1), a bar-add-then-'Add the set' check (no duplicate), the toast/confirmation rectangle against the facts rectangle, and the first 12 Tab stops.",
+   "why": "Rubric §1 measurement gaps (no LCP, no bytes before scroll), and G3: the pdp10 renders are older than the HTML. Every fault above was found by probes that render.sh does not run."
+  },
+  {
+   "priority": 3,
+   "where": "button, a, summary base styles L23",
+   "change": "Make taps feel registered in the WebView. Set -webkit-tap-highlight-color: transparent and replace it with a 120 ms :active state: opacity .85 on ink buttons, a 4% ink background on outline buttons and summaries. Skip the transition under prefers-reduced-motion. Add touch-action: manipulation on the gallery and buttons.",
+   "why": "Rage and dead clicks concentrate on /jewellery (CLAUDE.md). Without visible feedback, a tap that is processing reads as a dead tap and gets repeated, which today ADDS a second bracelet (fix 2)."
+  }
+ ],
+ "keep": [
+  "Every decision fact on screen 1 at 360x640 in one line each, with factsClearOfBar true: worn hero, name, price incl. GST, ladder in per-piece rupees, delivery + COD, Add to bag with the price, Buy now.",
+  "The sticky bar from first paint (a buy control at every scroll position), 48px buttons, an 8px gap, an ink primary and an outline secondary, and the safe-area padding with viewport-fit=cover.",
+  "No popup, FOMO card, timer or ticker on the first screen; nothing overlays it until the shopper acts.",
+  "The worn hero first, with the whole bracelet in frame, in a scroll-snap swipe gallery of 8 real photos; aspect-ratio boxes that keep CLS at 0.0035.",
+  "No video bytes before a tap (posters only).",
+  "Native <details> accordions with 52px summaries, Details open by default, and only secondary content inside.",
+  "The set rail directly under the trust row, with a horizontal peek of the third card.",
+  "Two families only (Jost and Cormorant Garamond), radius 0 on buttons and blocks, the ivory/ink/sage tokens, and header icons at 44x44 with aria-labels.",
+  "The prefers-reduced-motion rule and alt text on every gallery image.",
+  "A page length of about 5 screens (3,239px), which drops to about 4.6 with 'More bracelets' removed."
+ ],
+ "roadmap": [
+  "Field data: send web-vitals LCP/INP/CLS from real Instagram-WebView sessions (as a Clarity custom tag or a Supabase row) to replace these lab figures; the gate is LCP p75 ≤2.5 s.",
+  "A real-device pass on a 360x640 Android inside Instagram. Check the system font scale at 115% and 130% (the fact line has 20px of horizontal headroom), the gesture-nav back swipe from the gallery's left edge, and the TalkBack reading order after fix 5.",
+  "Hi-res originals of at least 1,440px wide (Shopify serves at most 896x1200 today), so zoom and DPR 3 phones get sharp stones.",
+  "A 6-10 s product-only macro clip and an on-wrist clip, each 1 MB or less, plus Riya's reel re-encoded to 1.5 MB or less with burnt-in or VTT captions and stored as video/mp4.",
+  "A dimension-marked wrist photo (the bracelet against a cm scale) to replace the image-text size guide.",
+  "A courier API for pincode-backed dates, so 'est.' can become a dated promise.",
+  "A review app, then a re-test of the reviews block's length and its position in the scroll once real reviews exist.",
+  "An owner answer on the ₹3,999 basis, which sets the visually hidden word on the strike price (fix 5)."
+ ]
+}

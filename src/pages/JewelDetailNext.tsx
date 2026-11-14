@@ -16,6 +16,7 @@ import { Button } from "@/components/ui/button";
 import PdpOfferLadder from "@/components/jewellery/PdpOfferLadder";
 import PdpSetPicker from "@/components/jewellery/PdpSetPicker";
 import { setTiers } from "@/lib/setTiers";
+import { cartKeyOf } from "@/lib/cartLines";
 import PdpDeliveryTimeline from "@/components/jewellery/PdpDeliveryTimeline";
 import { useApprovedReviews } from "@/hooks/useApprovedReviews";
 import { discountPercent } from "@/components/jewellery/JewelPriceTag";
@@ -328,7 +329,7 @@ const JewelDetailNext = () => {
   }, [piece, lookupMissing, catalogueLoading, snapshotPending, lookup.isLoading, isLive, handle]);
   const isMobile = useIsMobile();
   const { toggleItem, isWishlisted } = useWishlist();
-  const { addItem, buyNow, checkout, setDrawerOpen, isLoading: cartLoading } = useCart();
+  const { items: bagItems, addItem, buyNow, checkout, setDrawerOpen, isLoading: cartLoading } = useCart();
   /* The set chosen in "Make it a set" (0: this piece alone). Each piece
      opens on its own, never on a bigger set. */
   const [setIndex, setSetIndex] = useState(0);
@@ -656,8 +657,11 @@ const JewelDetailNext = () => {
     for (const line of extraLines) await addItem(line);
   };
 
-  /* Buy Now takes this piece alone to checkout; a set chosen above goes in
-     the bag first and the bag checks out. */
+  /* Buy Now takes this piece alone to checkout (buyNow). A set chosen above
+     goes in the bag, each piece once: a piece already there is not added
+     again, or Add to bag then Buy Now paid for the set twice. The bag then
+     checks out, unless it also holds pieces not in this set; those would be
+     charged too, so the shopper sees the bag and pays from there. */
   const handleBuyNow = async () => {
     if (isPreorder) return handlePreOrder();
     if (buying || cartLoading) return;
@@ -666,9 +670,11 @@ const JewelDetailNext = () => {
       if (!extraLines.length) {
         await buyNow(cartItem());
       } else {
-        await addItem(cartItem());
-        for (const line of extraLines) await addItem(line);
-        checkout();
+        const set = [cartItem(), ...extraLines];
+        const inSet = (key: string) => set.some((line) => cartKeyOf(line) === key);
+        for (const line of set) if (!bagItems.some((b) => cartKeyOf(b) === cartKeyOf(line))) await addItem(line);
+        if (bagItems.some((b) => !inSet(cartKeyOf(b)))) setDrawerOpen(true);
+        else checkout();
       }
     } finally {
       setBuying(false);

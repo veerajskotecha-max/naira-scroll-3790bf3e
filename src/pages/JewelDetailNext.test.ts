@@ -165,7 +165,10 @@ describe("redesigned product page", () => {
   it("takes this piece alone through Buy Now, and a chosen set through the bag", () => {
     const handler = code.match(/const handleBuyNow = async \(\) => \{[\s\S]*?\n {2}\};/)?.[0] ?? "";
     expect(handler).toMatch(/if \(!extraLines\.length\) \{\s*await buyNow\(cartItem\(\)\);/);
-    expect(handler).toMatch(/for \(const line of extraLines\) await addItem\(line\);\s*checkout\(\);/);
+    /* Add to bag then Buy Now must not pay for the set twice, nor charge
+       for other pieces the bag holds. */
+    expect(handler).toMatch(/for \(const line of set\) if \(!bagItems\.some\(\(b\) => cartKeyOf\(b\) === cartKeyOf\(line\)\)\) await addItem\(line\);/);
+    expect(handler).toMatch(/if \(bagItems\.some\(\(b\) => !inSet\(cartKeyOf\(b\)\)\)\) setDrawerOpen\(true\);\s*else checkout\(\);/);
   });
 
   it("switches the palette on for its own lifetime only", () => {

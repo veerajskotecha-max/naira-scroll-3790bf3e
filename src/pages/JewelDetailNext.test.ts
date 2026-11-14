@@ -219,9 +219,37 @@ describe("redesigned product page", () => {
 
   /* "ADD TO BAG · ₹2,399" was cut to "DD TO BAG · ₹2,39" at 320px. */
   it("puts the price under the words when the button is too narrow for one line", () => {
-    expect(code).toMatch(/max-\[399px\]:flex-col/);
-    expect(code).toMatch(/max-\[359px\]:flex-col/);
-    expect(code.match(/<span aria-hidden="true" className="max-\[3[59]9px\]:hidden">·<\/span><span>\{inr\(payable\)\}<\/span>/g)).toHaveLength(2);
+    expect(code.match(/max-\[359px\]:flex-col/g)?.length).toBeGreaterThanOrEqual(2);
+    expect(code.match(/\{addLabel\}<span aria-hidden="true" className="max-\[359px\]:hidden">·<\/span><span>\{inr\(payable\)\}<\/span>/g)).toHaveLength(2);
+    /* A chosen set says what goes in. */
+    expect(code).toMatch(/const addLabel = tier && tier\.extras\.length \? `Add \$\{tier\.extras\.length \+ 1\} pieces` : "Add to bag";/);
+  });
+
+  /* Critique of 14 Nov 2026 (four critics, mean 6.8/10). */
+  it("puts the customers' photos before the fold-downs", () => {
+    const reviews = code.indexOf("<PdpReviews");
+    expect(reviews).toBeGreaterThan(code.indexOf('aria-label="What it is"'));
+    expect(reviews).toBeLessThan(code.indexOf("<summary className={fold}>"));
+  });
+
+  it("makes the video chip a button that goes to the reel", () => {
+    expect(code).toMatch(/aria-label="Play the video"/);
+    expect(code).toMatch(/el\.scrollTo\(\{ left: el\.clientWidth \* images\.length, behavior: "smooth" \}\)/);
+    expect(code).not.toMatch(/pointer-events-none absolute bottom-3 right-3[^"]*" aria-hidden="true">\s*▶ Video/);
+  });
+
+  it("keeps two actions in the phone bar, no third heart", () => {
+    const bar = code.slice(code.indexOf("ref={stickyBarRef}"), code.indexOf("<ImageLightbox"));
+    expect(bar).not.toMatch(/handleWishlist/);
+    expect(bar).toMatch(/grid grid-cols-2/);
+  });
+
+  it("names the struck price as the MRP and says how a piece fits first", () => {
+    expect(code).toMatch(/MRP <span className="line-through">\{shown\.compareAtLabel\}<\/span>/);
+    expect(code).toMatch(/const fit = spec\("fit"\) \?\? spec\("fitting"\) \?\? spec\("size"\);/);
+    /* Never two size facts glued together ("adjustable long"). */
+    expect(code).not.toMatch(/\$\{length\} long/);
+    expect(code).toMatch(/\.\.\.\(fitFact \? \[/);
   });
 
   it("switches the palette on for its own lifetime only", () => {

@@ -678,6 +678,8 @@ const JewelDetailNext = () => {
      this piece" at ₹2,399 while the bag took NAIRA10's 10% read as two
      prices for one thing. */
   const payable = tier ? tier.total : shown.price;
+  /* A chosen set says what goes in: "Add 2 pieces · ₹3,328". */
+  const addLabel = tier && tier.extras.length ? `Add ${tier.extras.length + 1} pieces` : "Add to bag";
 
   /* The bag opens at the tap with the piece on its way in, and says so there
      if Shopify cannot add it. It used to open only once Shopify answered,
@@ -740,8 +742,23 @@ const JewelDetailNext = () => {
     },
     ...(waterproof ? [{ q: "Can it get wet?", a: "Yes. Daily wear and water are fine." }] : []),
   ];
-  /* Two or three short lines on what it is, from the same facts. */
+  /* How it fits leads, in the listing's own words (Length, Fit, Size): size
+     is the first thing a wearable raises, and it sat only in the closed
+     Details fold or on a late slide. Nothing is said that the listing does
+     not carry. */
+  const spec = (label: string) => specs.find((s) => s.label.toLowerCase() === label)?.value;
+  /* One fact, as the listing words it: the live Prism listing's Length reads
+     "15-19cm adjustable", so joining Length to Fit printed "15–19 cm
+     adjustable long · fits wrists of 15 to 19 cm". */
+  const fitFact = (() => {
+    const fit = spec("fit") ?? spec("fitting") ?? spec("size");
+    if (fit) return /^wrists?\b/i.test(fit) ? `Fits ${fit.charAt(0).toLowerCase()}${fit.slice(1)}` : fit;
+    const length = spec("length");
+    return length ? `Length: ${length}` : null;
+  })();
+  /* Two to four short lines on what it is, from the same facts. */
   const benefits = [
+    ...(fitFact ? [fitFact.charAt(0).toUpperCase() + fitFact.slice(1)] : []),
     `${finish}${steel && !/steel/i.test(finish) ? " on surgical stainless steel" : ""}`,
     ...(waterproof ? ["Waterproof and tarnish-free"] : []),
     "Arrives in the Naira gift box",
@@ -858,10 +875,22 @@ const JewelDetailNext = () => {
           {selectedImage + 1} / {slideCount}
         </span>
       )}
+      {/* It looked like a button and did nothing (it opened the photo), on
+          the route with 96% of the site's rage clicks: it now takes the
+          gallery to the reel, which plays muted there. 44px of target round
+          the small chip. */}
       {galleryReel && selectedImage < images.length && (
-        <span className="pointer-events-none absolute bottom-3 right-3 z-10 bg-nf-ivory/85 px-2.5 py-1 font-nf-label text-[10px] uppercase tracking-nf-16 text-nf-ink backdrop-blur-sm" aria-hidden="true">
-          ▶ Video
-        </span>
+        <button
+          type="button"
+          onClick={() => {
+            const el = scrollRef.current;
+            if (el) el.scrollTo({ left: el.clientWidth * images.length, behavior: "smooth" });
+          }}
+          className="absolute bottom-1 right-1 z-10 flex min-h-[44px] items-center px-2"
+          aria-label="Play the video"
+        >
+          <span className="bg-nf-ivory/85 px-2.5 py-1 font-nf-label text-[11px] uppercase tracking-nf-16 text-nf-ink backdrop-blur-sm">▶ Video</span>
+        </button>
       )}
     </div>
   );
@@ -1043,10 +1072,20 @@ const JewelDetailNext = () => {
                 shoppers compare. */}
             <div className="mt-2 flex items-center justify-between gap-3">
               <div id="product-price" className="flex flex-wrap items-baseline gap-x-2.5 gap-y-1">
-                <span className="font-cormorant text-[22px] font-semibold leading-none text-nf-ink md:text-[24px]">{shown.priceLabel}</span>
+                {/* The display face has no ₹ of its own and fell back to a
+                    heavy sans beside hairline digits: the sign is set in the
+                    label face, a size down. */}
+                <span className="font-cormorant text-[22px] font-semibold leading-none text-nf-ink md:text-[24px]">
+                  <span className="mr-[1px] font-nf-label text-[0.8em] font-normal">₹</span>
+                  {shown.priceLabel.replace(/^₹\s*/, "")}
+                </span>
                 {shown.compareAtLabel && saving > 0 && (
                   <>
-                    <span className="text-[12.5px] text-nf-ink/65 line-through">{shown.compareAtLabel}</span>
+                    {/* Compare-at is the MRP the owner set (12 Nov 2026), and
+                        is named as one, the Indian convention. */}
+                    <span className="text-[12.5px] text-nf-ink/65">
+                      MRP <span className="line-through">{shown.compareAtLabel}</span>
+                    </span>
                     <span className="font-nf-label text-[11px] font-medium uppercase tracking-nf-8 text-nf-gold-text">
                       {discountPercent(shown)}% off
                     </span>
@@ -1132,7 +1171,7 @@ const JewelDetailNext = () => {
                             onClick={() => pick(option.name, value)}
                             className={`flex min-h-[44px] min-w-[68px] flex-col items-center justify-center border px-4 text-[12px] font-medium transition-colors duration-150 ${
                               active
-                                ? "border-[var(--nf-cta)] bg-[var(--nf-cta)] text-nf-ivory"
+                                ? "border-nf-ink bg-nf-ink text-nf-ivory"
                                 : "border-nf-ink/25 bg-transparent text-nf-ink hover:border-nf-ink/50"
                             }`}
                           >
@@ -1177,7 +1216,7 @@ const JewelDetailNext = () => {
                         onClick={() => setSelectedSize(s.value)}
                         className={`min-h-[44px] min-w-[68px] border px-4 text-[12px] font-medium transition-colors duration-150 ${
                           active
-                            ? "border-[var(--nf-cta)] bg-[var(--nf-cta)] text-nf-ivory"
+                            ? "border-nf-ink bg-nf-ink text-nf-ivory"
                             : "border-nf-ink/25 bg-transparent text-nf-ink hover:border-nf-ink/50"
                         }`}
                       >
@@ -1214,7 +1253,7 @@ const JewelDetailNext = () => {
 
             {/* The set: this piece alone, or with the pieces that go with it,
                 each priced as the bag will price it. */}
-            <PdpSetPicker piece={piece} pieceImage={variantPhoto(piece, variant) ?? piece.image} tiers={tiers} selected={setReady ? setIndex : 0} onSelect={setSetIndex} ready={setReady} />
+            <PdpSetPicker piece={piece} tiers={tiers} selected={setReady ? setIndex : 0} onSelect={setSetIndex} ready={setReady} />
 
             {/* Quantity stays in the bag; both actions use the same chosen variant. */}
             <div id="product-actions" className="mt-4 grid grid-cols-2 gap-2">
@@ -1223,7 +1262,7 @@ const JewelDetailNext = () => {
                 disabled={cartLoading || buying}
                 className={`press-scale inline-flex h-[52px] w-full items-center justify-center gap-1.5 bg-nf-ink px-2 font-nf-label text-[11.5px] font-medium uppercase tracking-nf-8 text-nf-ivory transition-colors duration-200 hover:bg-nf-ink/90 disabled:opacity-60 max-[359px]:flex-col max-[359px]:gap-0.5 max-[359px]:leading-none ${isPreorder ? "col-span-2" : "col-start-2 row-start-1"}`}
               >
-                {isPreorder ? "Reserve now" : <>Add to bag<span aria-hidden="true" className="max-[359px]:hidden">·</span><span>{inr(payable)}</span></>}
+                {isPreorder ? "Reserve now" : <>{addLabel}<span aria-hidden="true" className="max-[359px]:hidden">·</span><span>{inr(payable)}</span></>}
               </Button>
               {!isPreorder && (
                 <Button variant="outline" onClick={handleBuyNow} disabled={cartLoading || buying} className="press-scale col-start-1 row-start-1 h-[52px] w-full border-nf-ink bg-transparent px-2 font-nf-label text-[11.5px] font-medium uppercase tracking-nf-8 text-nf-ink hover:bg-nf-ink/5">
@@ -1253,11 +1292,18 @@ const JewelDetailNext = () => {
             <ul aria-label="What it is" className="mt-5 grid gap-2">
               {benefits.map((b) => (
                 <li key={b} className="flex items-start gap-2.5 text-[13px] leading-[1.45] text-nf-ink/85">
-                  <Check size={15} strokeWidth={1.8} className="mt-[1px] shrink-0 text-[var(--nf-cta)]" aria-hidden="true" />
+                  <Check size={15} strokeWidth={1.8} className="mt-[1px] shrink-0 text-nf-gold-deep" aria-hidden="true" />
                   {b}
                 </li>
               ))}
             </ul>
+
+            {/* The customers' own photos and words, right after what the
+                piece is and before the fold-downs: below them, at about
+                1,500px, almost nobody reached them. */}
+            <Suspense fallback={<div className="mt-8 min-h-[480px]" aria-hidden="true" />}>
+              <PdpReviews productName={piece.name} data={approvedReviews} whatsappHref={isRing ? sizedEnquiryHref : enquiryHref} />
+            </Suspense>
 
             {/* Details, care and delivery as fold-downs, closed until asked for
                 (Nishorama's pattern): the first screen stays the photo, the
@@ -1364,10 +1410,6 @@ const JewelDetailNext = () => {
         </div>
       </div>
 
-      <Suspense fallback={<div className="min-h-[160px] bg-nf-ivory" aria-hidden="true" />}>
-        <PdpReviews productName={piece.name} data={approvedReviews} whatsappHref={isRing ? sizedEnquiryHref : enquiryHref} />
-      </Suspense>
-
       <Suspense fallback={<div className="min-h-[420px] bg-nf-ivory-deep md:hidden" aria-hidden="true" />}>
         <ReelShopNext hrefFor={hrefFor} />
       </Suspense>
@@ -1377,7 +1419,7 @@ const JewelDetailNext = () => {
           <h2 id="more-like-this" className="px-4 font-cormorant text-[19px] leading-none text-nf-ink md:px-0">
             More {piece.category.toLowerCase()}
           </h2>
-          <div className="scrollbar-hide mt-4 flex snap-x gap-3 overflow-x-auto px-4 pb-1 md:grid md:grid-cols-4 md:overflow-visible md:px-0" style={{ overscrollBehaviorX: "contain" }}>
+          <div className="scrollbar-hide mt-4 flex snap-x scroll-pl-4 gap-3 overflow-x-auto px-4 pb-1 md:grid md:grid-cols-4 md:overflow-visible md:px-0" style={{ overscrollBehaviorX: "contain" }}>
             {similar.map((p) => (
               <div key={p.handle} className="w-[42vw] max-w-[220px] shrink-0 snap-start md:w-auto md:max-w-none">
                 <PairingCard piece={p} href={hrefFor(p.handle)} />
@@ -1394,7 +1436,7 @@ const JewelDetailNext = () => {
       {/* Phone buy bar: shown whenever Add to cart is not fully on screen. */}
       <div
         ref={stickyBarRef}
-        className="fixed inset-x-0 bottom-0 z-40 flex items-center gap-2 border-t border-nf-gold/15 bg-nf-ivory/95 px-3 pt-2 backdrop-blur transition-[transform,visibility] duration-300 ease-out md:hidden"
+        className="fixed inset-x-0 bottom-0 z-40 grid grid-cols-2 items-center gap-2 border-t border-nf-gold/15 bg-nf-ivory px-4 pt-2 transition-[transform,visibility] duration-300 ease-out before:pointer-events-none before:absolute before:inset-x-0 before:-top-6 before:h-6 before:bg-gradient-to-t before:from-nf-ivory before:to-transparent md:hidden"
         style={{
           paddingBottom: "calc(0.5rem + env(safe-area-inset-bottom, 0px))",
           transform: stickyBarVisible ? "translateY(0)" : "translateY(110%)",
@@ -1403,30 +1445,24 @@ const JewelDetailNext = () => {
         }}
         aria-hidden={!stickyBarVisible}
       >
-        <Button variant="outline"
-          onClick={handleWishlist}
-          aria-label={wishlisted ? "Remove from wishlist" : "Add to wishlist"}
-          className="press-scale flex h-[48px] w-[48px] shrink-0 items-center justify-center border border-nf-ink/25"
-        >
-          {heart}
-        </Button>
-        {/* Under 300px (a fold's cover screen) the badge sits under the
-            label: side by side they need 105px and the button has 97. */}
+        {/* Two actions and no third heart: the photo and the header carry
+            the wishlist, and its 56px went to the two buttons. Under 300px
+            (a fold's cover screen) the badge sits under the label. */}
         {!isPreorder && (
-          <Button variant="outline" onClick={handleBuyNow} disabled={cartLoading || buying} className="press-scale h-[48px] min-w-0 flex-1 border-nf-ink/40 bg-transparent px-2 font-nf-label text-[11px] uppercase tracking-nf-8 text-nf-ink hover:bg-nf-ink/5 max-[299px]:flex-col max-[299px]:gap-1">
+          <Button variant="outline" onClick={handleBuyNow} disabled={cartLoading || buying} className="press-scale h-[48px] w-full min-w-0 border-nf-ink/40 bg-transparent px-2 font-nf-label text-[11px] uppercase tracking-nf-8 text-nf-ink hover:bg-nf-ink/5 max-[299px]:flex-col max-[299px]:gap-1">
             {buying ? "Opening…" : <>Buy Now<UpiBadges size={15} /></>}
           </Button>
         )}
         <Button
           onClick={isPreorder ? handlePreOrder : handleAddToCart}
           disabled={cartLoading || buying}
-          /* The price under the words below 400px: on one line the label
-             needed 122px of the 115 it has at 320px, and centred it was cut
-             at both ends ("DD TO BAG · ₹2,39"), a wrong price; with the
-             phone's text at 115% the same happened at 360px. */
-          className="press-scale inline-flex h-[48px] min-w-0 flex-1 items-center justify-center gap-1 bg-nf-ink px-2 font-nf-label text-[11px] font-medium uppercase tracking-nf-8 text-nf-ivory hover:bg-nf-ink/90 disabled:opacity-60 max-[399px]:flex-col max-[399px]:gap-0.5 max-[399px]:leading-none"
+          /* The price under the words below 360px: on one line the label
+             was cut at both ends at 320px ("DD TO BAG · ₹2,39"), a wrong
+             price. From 360px the two buttons share the bar's width and it
+             fits on one line. */
+          className={`press-scale inline-flex h-[48px] w-full min-w-0 items-center justify-center gap-1 bg-nf-ink px-2 font-nf-label text-[11px] font-medium uppercase tracking-nf-8 text-nf-ivory hover:bg-nf-ink/90 disabled:opacity-60 max-[359px]:flex-col max-[359px]:gap-0.5 max-[359px]:leading-none ${isPreorder ? "col-span-2" : ""}`}
         >
-          {isPreorder ? "Reserve now" : <>Add to bag<span aria-hidden="true" className="max-[399px]:hidden">·</span><span>{inr(payable)}</span></>}
+          {isPreorder ? "Reserve now" : <>{addLabel}<span aria-hidden="true" className="max-[359px]:hidden">·</span><span>{inr(payable)}</span></>}
         </Button>
       </div>
 

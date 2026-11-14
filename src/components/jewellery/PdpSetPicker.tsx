@@ -30,8 +30,6 @@ const inr = (n: number) => `₹${Math.round(n).toLocaleString("en-IN")}`;
 
 type Props = {
   piece: JewelPiece;
-  /** This piece's photo in the variant chosen on the page. */
-  pieceImage: string;
   tiers: SetTier[];
   selected: number;
   onSelect: (index: number) => void;
@@ -45,7 +43,7 @@ type Props = {
 const optionName = ({ piece, variant }: SetOption) =>
   variant && (piece.variants?.length ?? 0) > 1 ? `${piece.name} (${variantLabel(variant)})` : piece.name;
 
-const PdpSetPicker = ({ piece, pieceImage, tiers, selected, onSelect, ready }: Props) => {
+const PdpSetPicker = ({ piece, tiers, selected, onSelect, ready }: Props) => {
   if (tiers.length < 2) return null;
   const best = tiers.length - 1;
   return (
@@ -54,7 +52,8 @@ const PdpSetPicker = ({ piece, pieceImage, tiers, selected, onSelect, ready }: P
         <h2 id="complete-the-look" className="font-cormorant text-[19px] leading-none text-nf-ink">
           Make it a set
         </h2>
-        <p className="font-nf-label text-[11px] uppercase tracking-nf-8 text-nf-gold-text">Saved in your bag</p>
+        {/* "Saved in your bag" read as if the pieces were already in it. */}
+        <p className="font-nf-label text-[11px] uppercase tracking-nf-8 text-nf-gold-text">No code needed</p>
       </div>
       <div
         role="radiogroup"
@@ -69,10 +68,14 @@ const PdpSetPicker = ({ piece, pieceImage, tiers, selected, onSelect, ready }: P
           const title = i === 0 ? "Just this piece" : `Set of ${count} · ${Math.round(tier.rate * 100)}% off`;
           const saving = tier.full - tier.total;
           const names = tier.extras.map(optionName);
-          const thumbs = [
-            { key: piece.handle, src: pieceImage },
-            ...tier.extras.map((o) => ({ key: o.piece.handle, src: variantPhoto(o.piece, o.variant) ?? cardCover(o.piece) })),
-          ];
+          /* Only what a set adds: listing this piece in every card made
+              the picker 483px tall for nothing the shopper did not know. */
+          const lines = tier.extras.map((o, n) => ({
+            key: o.piece.handle,
+            src: variantPhoto(o.piece, o.variant) ?? cardCover(o.piece),
+            name: names[n],
+            price: o.price,
+          }));
           return (
             <button
               key={i}
@@ -83,48 +86,47 @@ const PdpSetPicker = ({ piece, pieceImage, tiers, selected, onSelect, ready }: P
               tabIndex={rovingTabIndex(selected, i)}
               onClick={() => ready && onSelect(i)}
               aria-label={`${title}: ${i === 0 ? piece.name : names.join(" and ")}, ${inr(tier.total)}${saving > 0 ? `, you save ${inr(saving)}` : ""}${i === best ? ", best value" : ""}`}
-              className={`relative grid min-h-[58px] w-full grid-cols-[auto_1fr_auto] items-center gap-x-3 gap-y-1 border px-3 py-2.5 text-left transition-colors duration-150 ${
+              className={`relative grid min-h-[52px] w-full grid-cols-[auto_1fr_auto] items-start gap-x-3 gap-y-1.5 border px-3 py-2.5 text-left transition-colors duration-150 ${
                 active ? "border-nf-ink bg-nf-ivory-deep/70" : "border-nf-ink/35 bg-transparent hover:border-nf-ink/60"
               }`}
             >
               {/* 4:1 on ivory unselected: at /40 the box that marks these as
                   choices measured 2.5:1, under WCAG's 3:1 for controls. */}
-              <span aria-hidden="true" className={`flex h-[18px] w-[18px] items-center justify-center border ${active ? "border-nf-ink" : "border-nf-ink/60"}`}>
+              <span aria-hidden="true" className={`mt-[1px] flex h-[18px] w-[18px] items-center justify-center border ${active ? "border-nf-ink" : "border-nf-ink/60"}`}>
                 {active && <span className="h-[10px] w-[10px] bg-nf-ink" />}
               </span>
-              <span className="flex min-w-0 items-center gap-2.5">
-                <span aria-hidden="true" className="flex shrink-0 -space-x-3">
-                  {thumbs.map((t) => (
-                    <img
-                      key={t.key}
-                      src={shopifyImage(t.src, 120)}
-                      alt=""
-                      width={30}
-                      height={30}
-                      loading="lazy"
-                      decoding="async"
-                      className="h-[30px] w-[30px] border border-nf-ivory bg-nf-ivory-deep object-cover"
-                    />
-                  ))}
-                </span>
-                <span className="min-w-0 text-[13px] font-medium leading-[1.3] text-nf-ink">{title}</span>
-              </span>
+              <span className="min-w-0 text-[13.5px] font-medium leading-[1.3] text-nf-ink">{title}</span>
               <span className="text-right">
-                <span className="block font-cormorant text-[19px] font-semibold leading-none text-nf-ink">{inr(tier.total)}</span>
+                {/* The display face has no ₹ of its own: the sign is set in the
+                    label face, as on the price above. */}
+                <span className="block font-cormorant text-[19px] font-semibold leading-none text-nf-ink">
+                  <span className="mr-[1px] font-nf-label text-[0.8em] font-normal">₹</span>
+                  {Math.round(tier.total).toLocaleString("en-IN")}
+                </span>
                 {saving > 0 && <span className="mt-1 block whitespace-nowrap text-[11.5px] font-medium text-nf-gold-text">save {inr(saving)}</span>}
               </span>
-              {/* What the card puts in the bag, every piece named. */}
-              <span className="col-span-2 col-start-2 grid text-[11.5px] leading-[1.35] text-nf-ink/75">
-                {i === 0 ? (
-                  <span className="truncate">{piece.name}</span>
-                ) : (
-                  names.map((n) => (
-                    <span key={n} className="truncate">
-                      + {n}
+              {/* What the card puts in the bag: every piece, its photo, its
+                  own price. Overlapped 30px thumbnails showed 18px of each
+                  extra, and nothing said what one cost on its own. */}
+              {lines.length > 0 && (
+                <span className="col-span-2 col-start-2 -mt-0.5 grid gap-1">
+                  {lines.map((l) => (
+                    <span key={l.key} className="flex min-w-0 items-center gap-2 text-[12px] leading-[1.3] text-nf-ink/80">
+                      <img
+                        src={shopifyImage(l.src, 96)}
+                        alt=""
+                        width={32}
+                        height={32}
+                        loading="lazy"
+                        decoding="async"
+                        className="h-8 w-8 shrink-0 border border-nf-gold/20 bg-nf-ivory-deep object-cover"
+                      />
+                      <span className="min-w-0 truncate">+ {l.name}</span>
+                      <span className="ml-auto shrink-0 tabular-nums text-nf-ink/60">{inr(l.price)}</span>
                     </span>
-                  ))
-                )}
-              </span>
+                  ))}
+                </span>
+              )}
               {i === best && (
                 /* On the left edge: on the right it sat over the price. */
                 <span className="absolute -top-[9px] left-3 bg-nf-ink px-2 py-[2px] font-nf-label text-[10px] uppercase tracking-nf-8 text-nf-ivory">

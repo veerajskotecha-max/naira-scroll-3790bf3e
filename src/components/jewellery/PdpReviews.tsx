@@ -1,23 +1,27 @@
 import { useState } from "react";
-import { ChevronDown, PenLine, Star } from "lucide-react";
+import { Star } from "lucide-react";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import WriteReviewModal from "@/components/WriteReviewModal";
 import { getSupabase } from "@/integrations/supabase/lazy";
 import { toast } from "@/hooks/use-toast";
-import { reviewThumb } from "@/data/reviewThumbs";
-import type { PageReviews } from "@/hooks/useApprovedReviews";
+import { reviewCard } from "@/data/reviewCards";
+import type { PageReview, PageReviews } from "@/hooks/useApprovedReviews";
 
 /*
-  The product page's reviews, in the look of the old review wall: a featured
-  quote, the customers' own photos (tap to open), more reviews on demand, and
-  a way to write one. What fills it is only what customers wrote: reviews
-  approved for this piece first, then the team's genuine customer reviews
-  with their photographs (data/realReviews.ts), the one about this kind of
-  piece leading. Those are about pieces across the range, and the line under
-  the heading says so.
+  The product page's reviews, photo first: a swipeable row of cards, each led
+  by the customer's own photograph, then who, when, the stars and the quote;
+  a card opens to the whole review and every photo in it. The photos are the
+  page's strongest honest proof, and as 48px thumbnails two screens down,
+  behind three folds, almost nobody saw them (critique of 14 Nov 2026).
+
+  What fills it is only what customers wrote: reviews approved for this piece
+  first, then the team's genuine customer reviews with their photographs
+  (data/realReviews.ts), the one about this kind of piece leading, the two
+  without photos last. Those are about pieces across the range, and the line
+  under the heading says so.
 
   A review written here goes to Supabase for approval and appears once
-  approved. Thumbnails are square: the brand's radius is 0 (CLAUDE.md).
+  approved. Corners are square: the brand's radius is 0 (CLAUDE.md).
 */
 
 /* The stars carry their value in words for a screen reader: drawn alone they
@@ -31,14 +35,6 @@ const Stars = ({ value, size = 12 }: { value: number; size?: number }) => (
   </span>
 );
 
-const initialsOf = (name: string) =>
-  name
-    .split(/\s+/)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((w) => w[0]?.toUpperCase())
-    .join("");
-
 type Props = {
   productName: string;
   data: PageReviews;
@@ -46,10 +42,8 @@ type Props = {
 };
 
 const PdpReviews = ({ productName, data, whatsappHref }: Props) => {
-  const [open, setOpen] = useState(false);
-  const [expanded, setExpanded] = useState(false);
-  const [featuredFull, setFeaturedFull] = useState(false);
-  const [photo, setPhoto] = useState<string | null>(null);
+  const [writing, setWriting] = useState(false);
+  const [openReview, setOpenReview] = useState<PageReview | null>(null);
   const submit = async (review: { name: string; rating: number; text: string; images: string[] }) => {
     const supabase = await getSupabase();
     const { error } = await supabase.from("customer_reviews").insert({
@@ -67,152 +61,128 @@ const PdpReviews = ({ productName, data, whatsappHref }: Props) => {
     );
   };
 
-  const [featured, ...rest] = data.reviews;
-  const photos = data.reviews.flatMap((r) => r.images).filter((p, i, all) => all.indexOf(p) === i);
+  /* Photo reviews first, the ones without a photo after them. */
+  const cards = [...data.reviews.filter((r) => r.images.length), ...data.reviews.filter((r) => !r.images.length)];
 
   return (
-    <section id="customer-reviews" className="mx-auto max-w-[1400px] scroll-mt-[120px] px-4 pb-8 md:px-6 md:pt-8" aria-labelledby="pdp-reviews">
-      <div className="mx-auto max-w-[720px] border-y border-nf-gold/20 py-6">
-        <p className="font-nf-label text-[11px] uppercase tracking-nf-8 text-nf-gold-text">Kind words</p>
-        <h2 id="pdp-reviews" className="mt-1 font-cormorant text-[27px] font-semibold leading-none text-nf-ink">
-          Customer reviews
-        </h2>
-        {/* Under the heading, not beside it: beside, the heading wrapped to
-            two lines at 360px. */}
-        {data.count > 0 && data.rating !== null && (
-          <p className="mt-3 flex items-center gap-2 text-[12.5px] text-nf-ink/80">
-            <span className="font-cormorant text-[20px] font-semibold leading-none text-nf-ink">
-              {data.rating.toFixed(1)}
-              <span className="sr-only"> out of 5</span>
-            </span>
-            <span aria-hidden="true" className="inline-flex gap-[2px]">
-              {[1, 2, 3, 4, 5].map((i) => (
-                <Star key={i} size={14} strokeWidth={1.4} className="text-nf-gold-deep" fill={i <= Math.round(data.rating ?? 0) ? "currentColor" : "none"} />
-              ))}
-            </span>
-            <span>
-              {data.count} {data.count === 1 ? "review" : "reviews"}
-            </span>
-          </p>
-        )}
-        {data.count > 0 && (
-          <p className="mt-2 text-[12px] text-nf-ink/70">
-            {data.ownCount > 0
-              ? `${data.ownCount} on this piece; the rest from Naira customers across our pieces, with their own photos.`
-              : "From Naira customers across our pieces, with their own photos."}
-          </p>
-        )}
-
-        {featured ? (
-          <article className="mt-5">
-            <div className="flex items-center gap-3">
-              <span aria-hidden="true" className="flex h-8 w-8 items-center justify-center bg-nf-ivory-deep text-[10px] font-medium text-nf-ink">
-                {initialsOf(featured.name)}
-              </span>
-              <div>
-                <p className="text-[12.5px] font-medium text-nf-ink">{featured.name}</p>
-                <p className="flex items-center gap-2 text-[11px] text-nf-ink/60">
-                  <Stars value={featured.rating} size={11} />
-                  {featured.date}
-                </p>
-              </div>
-            </div>
-            {/* The body face: the site's serif sets in capitals, which made a
-                quote of three lines unreadable. */}
-            <p className={`mt-3 text-[14.5px] leading-[1.65] text-nf-ink/85 ${featuredFull ? "" : "line-clamp-3"}`}>“{featured.text}”</p>
-            {featured.text.length > 140 && (
-              <button type="button" onClick={() => setFeaturedFull((v) => !v)} className="mt-1 min-h-[44px] text-[12px] text-nf-ink underline decoration-nf-gold underline-offset-4">
-                {featuredFull ? "Show less" : "Read full review"}
-              </button>
-            )}
-          </article>
-        ) : (
-          <p className="mt-4 text-[13px] leading-[1.6] text-nf-ink/75">No reviews for this piece yet. Bought it? Tell others what you think.</p>
-        )}
-
-        {photos.length > 0 && (
-          <div className="mt-4 flex items-center justify-between gap-4 border-t border-nf-gold/20 pt-4">
-            <ul className="flex gap-1.5" aria-label="Customer photos">
-              {photos.slice(0, 5).map((src, i) => (
-                <li key={src}>
-                  <button
-                    type="button"
-                    onClick={() => setPhoto(src)}
-                    className="block h-12 w-12 overflow-hidden border border-nf-gold/25 bg-nf-ivory-deep"
-                    aria-label={`Open customer photo ${i + 1} of ${photos.length}`}
-                  >
-                    {/* loading before src: React sets attributes in the order
-                        written, and a src first starts the fetch before the
-                        image is told it is lazy (see CustomerReviews). */}
-                    <img loading="lazy" decoding="async" src={reviewThumb(src)} alt="" className="h-full w-full object-cover" />
-                  </button>
-                </li>
-              ))}
-            </ul>
-            {rest.length > 0 && (
-              <button
-                type="button"
-                onClick={() => setExpanded((v) => !v)}
-                aria-expanded={expanded}
-                aria-controls="pdp-more-reviews"
-                className="flex min-h-[44px] shrink-0 items-center gap-1.5 font-nf-label text-[11px] uppercase tracking-nf-8 text-nf-ink/70 hover:text-nf-ink"
-              >
-                {expanded ? "Show less" : `${rest.length} more`}
-                <ChevronDown size={14} className={`transition-transform duration-300 motion-reduce:transition-none ${expanded ? "rotate-180" : ""}`} aria-hidden="true" />
-              </button>
-            )}
-          </div>
-        )}
-
-        {expanded && rest.length > 0 && (
-          <ul id="pdp-more-reviews" className="mt-4 grid gap-3 sm:grid-cols-2">
-            {rest.map((r, i) => (
-              <li key={`${r.name}-${i}`} className="grid content-start gap-2 border border-nf-gold/20 p-4">
-                <div className="flex items-center justify-between gap-3 text-[12px]">
-                  <span className="font-medium text-nf-ink">{r.name}</span>
-                  <span className="text-nf-ink/60">{r.date}</span>
-                </div>
-                <Stars value={r.rating} size={11} />
-                <p className="text-[13.5px] leading-[1.6] text-nf-ink/85">“{r.text}”</p>
-                {r.images.length > 0 && (
-                  <div className="mt-1 flex gap-1.5">
-                    {r.images.slice(0, 3).map((src) => (
-                      <button key={src} type="button" onClick={() => setPhoto(src)} className="block h-12 w-12 overflow-hidden border border-nf-gold/25" aria-label={`Open ${r.name}'s photo`}>
-                        <img loading="lazy" decoding="async" src={reviewThumb(src)} alt="" className="h-full w-full object-cover" />
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </li>
+    <section id="customer-reviews" className="mt-8 scroll-mt-[120px] border-t border-nf-gold/20 pt-6" aria-labelledby="pdp-reviews">
+      <h2 id="pdp-reviews" className="font-cormorant text-[20px] font-semibold leading-none text-nf-ink">
+        Customer reviews
+      </h2>
+      {data.count > 0 && data.rating !== null && (
+        <p className="mt-2.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-[12.5px] text-nf-ink/80">
+          <span className="font-medium text-nf-ink">
+            {data.rating.toFixed(1)}
+            <span className="sr-only"> out of 5</span>
+          </span>
+          <span aria-hidden="true" className="inline-flex gap-[2px]">
+            {[1, 2, 3, 4, 5].map((i) => (
+              <Star key={i} size={13} strokeWidth={1.4} className="text-nf-gold-deep" fill={i <= Math.round(data.rating ?? 0) ? "currentColor" : "none"} />
             ))}
-          </ul>
-        )}
+          </span>
+          <span>
+            · {data.count} {data.count === 1 ? "review" : "reviews"}
+          </span>
+        </p>
+      )}
+      {data.count > 0 && (
+        <p className="mt-1 text-[12px] text-nf-ink/65">
+          {data.ownCount > 0
+            ? `${data.ownCount} on this piece; the rest from Naira customers across our pieces, in their own photos.`
+            : "From Naira customers across our pieces, in their own photos."}
+        </p>
+      )}
 
-        <div className="mt-5 grid gap-2 sm:grid-cols-[auto_auto] sm:justify-start sm:gap-5">
-          <button
-            type="button"
-            onClick={() => setOpen(true)}
-            className="press-scale inline-flex h-11 items-center justify-center gap-2 border border-nf-ink px-6 font-nf-label text-[11px] uppercase tracking-nf-16 text-nf-ink transition-colors hover:bg-nf-ink hover:text-nf-ivory"
-          >
-            <PenLine size={14} strokeWidth={1.6} aria-hidden="true" /> Write a review
-          </button>
-          <a
-            href={whatsappHref}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex min-h-[44px] items-center justify-center text-[12px] text-nf-ink underline decoration-nf-gold underline-offset-4"
-          >
-            Ask us on WhatsApp
-          </a>
-        </div>
-      </div>
+      {cards.length > 0 ? (
+        /* Bleeds to the screen's edges on a phone; the first card lines up
+           with the text above it (scroll-pl-4). */
+        <ul
+          className="scrollbar-hide -mx-4 mt-4 flex snap-x snap-mandatory scroll-pl-4 gap-3 overflow-x-auto px-4 pb-1 lg:mx-0 lg:scroll-pl-0 lg:px-0"
+          style={{ overscrollBehaviorX: "contain" }}
+          aria-label="Customer reviews"
+        >
+          {cards.map((r, i) => {
+            const photo = r.images[0];
+            return (
+              /* relative: the stars' sr-only text is absolutely placed, and
+                 with no positioned box inside the rail it hung off the page
+                 for every card past the screen, widening the document to
+                 1,589px; a phone browser then zoomed the whole page out and
+                 it would not scroll past 525px. */
+              <li key={`${r.name}-${i}`} className="relative w-[72%] max-w-[248px] shrink-0 snap-start">
+                <button
+                  type="button"
+                  onClick={() => setOpenReview(r)}
+                  className="group flex h-full w-full flex-col border border-nf-gold/25 bg-nf-ivory text-left"
+                  aria-label={`Read ${r.name}'s review${r.images.length ? ` and see ${r.images.length === 1 ? "the photo" : `${r.images.length} photos`}` : ""}`}
+                >
+                  {photo && (
+                    <span className="relative block aspect-[4/5] w-full overflow-hidden bg-nf-ivory-deep">
+                      {/* loading before src: React sets attributes in the
+                          order written, and a src first starts the fetch
+                          before the image is told it is lazy. */}
+                      <img loading="lazy" decoding="async" src={reviewCard(photo)} alt="" width={560} height={700} className="h-full w-full object-cover" />
+                      {r.images.length > 1 && (
+                        <span className="absolute right-2 top-2 bg-nf-ivory/90 px-1.5 py-0.5 font-nf-label text-[11px] tabular-nums text-nf-ink">
+                          1 / {r.images.length}
+                        </span>
+                      )}
+                    </span>
+                  )}
+                  <span className="flex flex-1 flex-col gap-1.5 p-3">
+                    <span className="flex items-center justify-between gap-2">
+                      <Stars value={r.rating} size={11} />
+                      <span className="text-[11.5px] text-nf-ink/60">{r.date}</span>
+                    </span>
+                    <span className="text-[13px] font-medium text-nf-ink">{r.name}</span>
+                    <span className={`text-[13.5px] leading-[1.55] text-nf-ink/85 ${photo ? "line-clamp-4" : "line-clamp-[9]"}`}>“{r.text}”</span>
+                    <span className="mt-auto pt-1 text-[12px] text-nf-ink underline decoration-nf-gold underline-offset-4">Read review</span>
+                  </span>
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+      ) : (
+        <p className="mt-3 text-[13px] leading-[1.6] text-nf-ink/75">No reviews for this piece yet. Bought it? Tell others what you think.</p>
+      )}
 
-      <WriteReviewModal open={open} onOpenChange={setOpen} onSubmit={submit} />
-      {/* Radix names the dialog from its Title and logs an error without one. */}
-      <Dialog open={photo !== null} onOpenChange={(v) => !v && setPhoto(null)}>
-        <DialogContent className="max-w-lg bg-nf-ivory p-2" aria-describedby={undefined}>
-          <DialogTitle className="sr-only">Customer photo</DialogTitle>
-          {photo && <img src={photo} alt="Customer photo" className="h-auto w-full" />}
+      <p className="mt-3 flex flex-wrap gap-x-5">
+        <button
+          type="button"
+          onClick={() => setWriting(true)}
+          className="inline-flex min-h-[44px] items-center text-[12.5px] text-nf-ink underline decoration-nf-gold underline-offset-4"
+        >
+          Write a review
+        </button>
+        <a
+          href={whatsappHref}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex min-h-[44px] items-center text-[12.5px] text-nf-ink underline decoration-nf-gold underline-offset-4"
+        >
+          Ask us on WhatsApp
+        </a>
+      </p>
+
+      <WriteReviewModal open={writing} onOpenChange={setWriting} onSubmit={submit} />
+      {/* The whole review: every photo, then the full text. Radix names the
+          dialog from its Title and logs an error without one. */}
+      <Dialog open={openReview !== null} onOpenChange={(v) => !v && setOpenReview(null)}>
+        <DialogContent className="max-h-[90dvh] max-w-lg overflow-y-auto bg-nf-ivory p-4" aria-describedby={undefined}>
+          {openReview && (
+            <>
+              <DialogTitle className="text-[14px] font-medium text-nf-ink">{openReview.name}</DialogTitle>
+              <p className="-mt-2 flex items-center gap-2 text-[12px] text-nf-ink/60">
+                <Stars value={openReview.rating} size={12} />
+                {openReview.date}
+              </p>
+              <p className="text-[14.5px] leading-[1.65] text-nf-ink/85">“{openReview.text}”</p>
+              {openReview.images.map((src, i) => (
+                <img key={src} src={src} alt={`Photo ${i + 1} from ${openReview.name}'s review`} loading="lazy" className="h-auto w-full" />
+              ))}
+            </>
+          )}
         </DialogContent>
       </Dialog>
     </section>

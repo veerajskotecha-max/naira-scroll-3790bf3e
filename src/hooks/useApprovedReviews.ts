@@ -44,8 +44,15 @@ export const summarise = (reviews: PageReview[]) => {
   return { reviews, rating, count };
 };
 
+/* Dates as an Indian shopper writes them ("2 Sept 2026"); a date that does
+   not parse stays as written. */
+const inDate = (d: string | Date) => {
+  const at = new Date(d);
+  return Number.isNaN(at.getTime()) ? String(d) : at.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
+};
+
 const realFor = (productName?: string): PageReview[] =>
-  orderedRealReviews(productName).map((r) => ({ name: r.name, rating: r.rating, text: r.text, images: r.images, date: r.date }));
+  orderedRealReviews(productName).map((r) => ({ name: r.name, rating: r.rating, text: r.text, images: r.images, date: inDate(r.date) }));
 
 export const useApprovedReviews = (productName?: string): PageReviews => {
   const real = useMemo(() => realFor(productName), [productName]);
@@ -72,7 +79,7 @@ export const useApprovedReviews = (productName?: string): PageReviews => {
             rating: r.rating,
             text: r.text,
             images: r.images ?? [],
-            date: new Date(r.created_at).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }),
+            date: inDate(r.created_at),
           })),
         });
       } catch {

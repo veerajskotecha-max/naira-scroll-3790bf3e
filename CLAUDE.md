@@ -120,24 +120,34 @@ live orders) and books it as shipping. The rate lives in `src/lib/payment.ts`
 with a literal test — change it there if the checkout setting changes.
 
 **The live PDP is `JewelDetailNext.tsx` (14 Nov 2026 rebuild, after a
-5%-converting reference page).** Order on a phone: photo (capped at
-`MOBILE_FRAME_MAX` so the facts fit), name, price, the offer ladder, ONE
-delivery + COD line (`#product-delivery`, "Free delivery, est. … · COD
-available" — one line at 360px even for a month-crossing range; adding
-"insured" wrapped it), then choices, **Make it a set** (`PdpSetPicker`), Add to
-bag / Buy Now, the Ordered → Packed → Delivered line (`PdpDeliveryTimeline`),
-three benefit ticks, the folds, Reviews (`PdpReviews`), reels.
-- Sets are this piece plus its `completeTheLook` pairings, priced by
-  `lib/setTiers.ts` through promo.ts's own resolver and rounding, so a card
-  never quotes a total the bag will not charge. The page always opens on
-  "Just this piece"; a bigger set is added only when chosen. Buy Now with a
-  set adds the set and goes to checkout; alone it is still `buyNow`.
-- **No invented proof on this page.** The rating and count come only from
-  approved Supabase `customer_reviews` for that piece (`useApprovedReviews`);
-  with none, no stars show and Reviews says so. Gone: the authored 4.9/51
-  rating, the review wall, FomoPopup, the "sold in the last 48 hours" strip,
-  the press marquee, "Skin-friendly" and the plating-assurance copy.
-  `JewelDetailNext.test.ts` fails if any of them come back.
+5%-converting reference page and two rounds of four-critic review).** Order
+on a phone: photo (capped at `MOBILE_FRAME_MAX` so the facts fit), the
+customers' rating row ("5.0 · 7 reviews across Naira"), name, price with MRP,
+the offer ladder, ONE delivery + COD line (`#product-delivery`, one line at
+360px), choices (metal shown as "Gold tone / Silver tone", `optionValue` in
+lib/variants; Shopify's values unchanged), **Make it a set**
+(`PdpSetPicker`), Add to bag / Buy Now, Ordered → Packed → Delivered with the
+faulty-piece line (`PdpDeliveryTimeline`), fit-first ticks, photo-first
+reviews (`PdpReviews`), folds, reels.
+- Sets are this piece plus `completeTheLook` pairings that need NO choice
+  (`choiceNeeded`: never a guessed ring size or birthstone month), each in the
+  variant that follows this piece's metal, priced by `lib/setTiers.ts` through
+  promo.ts's resolver with any typed code. Opens on "Just this piece"; the
+  choice waits for the live catalogue (`setReady`). Buy Now with a set goes
+  through `CartContext.buyNow(item, 1, extras)` (AGENTS.md): each piece in
+  once, checkout only when all went in, on a Shopify cart of their own
+  (`createShopifyCartLines`, all or nothing) when the bag holds others.
+- **Reviews are only what customers wrote**: approved Supabase reviews of the
+  piece, then `data/realReviews.ts` (the team's genuine reviews with photos;
+  card-size photos in `data/reviewCards.ts`). The bank in productReviews.ts,
+  the curated notes and the one-liners are written for the site and stay off
+  the PDP. The rating is computed from what is shown. If more genuine reviews
+  exist, add them there, low ratings included.
+- Each review card is `relative` on purpose: the stars' sr-only text, placed
+  absolutely, otherwise escaped the horizontal rail and widened the document
+  to 1,589px, so phone browsers zoomed the page out and stopped scrolling.
+- The bag states the COD fee again (`data-cod-fee`, `codFeeFor`): it had gone
+  from `CartDrawerNext`, while the PDP's "COD available only" depends on it.
 - Still on other surfaces, and the owner's call, not changed: "SITEWIDE SALE
   LIVE TODAY!" and "MADE IN LIMITED BATCHES" in the strip, and the bag's "Easy
   7-day exchange & returns", which promises more than the policy page (defects

@@ -61,8 +61,9 @@ const PdpReviews = ({ productName, data, whatsappHref }: Props) => {
     );
   };
 
-  /* Photo reviews first, the ones without a photo after them. */
-  const cards = [...data.reviews.filter((r) => r.images.length), ...data.reviews.filter((r) => !r.images.length)];
+  /* In the hook's order: this piece's approved reviews, then the ones about
+     its kind of piece, photographs first within each. */
+  const cards = data.reviews;
 
   return (
     <section id="customer-reviews" className="mt-8 scroll-mt-[120px] border-t border-nf-gold/20 pt-6" aria-labelledby="pdp-reviews">

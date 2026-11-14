@@ -141,6 +141,16 @@ export const variantLabel = (variant?: JewelVariant) => (variant ? Object.values
 export const chosenOf = (line: { selectedOptions?: Array<{ name: string; value: string }> }) =>
   Object.fromEntries((line.selectedOptions ?? []).filter((o) => !placeholder(o.name)).map((o) => [o.name, o.value]));
 
+/* Steel with a PVD coating is not gold or silver metal: the metal option reads
+   as a tone ("Gold tone"), the listings' own word. Display only: Shopify's
+   values stay, so ?variant= and ?colour= links and catalogue ads resolve. */
+export const optionTitle = (name: string) => (/^metal$/i.test(name) ? "Tone" : name);
+export const optionValue = (name: string, value: string) =>
+  /^metal$/i.test(name) && /^(gold|silver|rose gold)$/i.test(value) ? `${value} tone` : value;
+/** A variant's choices as a shopper reads them ("Gold tone · 7"). */
+export const variantDisplay = (variant?: JewelVariant) =>
+  variant ? Object.entries(variant.options).map(([name, value]) => optionValue(name, value)).join(" · ") : "";
+
 /** A cart line for a piece in one of its variants, or as it is when sold one way. */
 export const cartLineFor = (piece: JewelPiece, variant?: JewelVariant) => {
   const price = variant?.price ?? piece.price;

@@ -240,3 +240,16 @@ describe("cart lines", () => {
     expect(findCartLine([ruby], "baguette-huggies", "US 7")).toBeUndefined();
   });
 });
+
+import { optionTitle, optionValue, variantDisplay } from "./variants";
+
+/* PVD-coated steel is not gold or silver metal: the option reads as a tone. */
+describe("metal shown as a tone", () => {
+  it("relabels the metal option and its gold and silver values", () => {
+    expect(optionTitle("Metal")).toBe("Tone");
+    expect(optionValue("Metal", "Gold")).toBe("Gold tone");
+    expect(optionValue("Metal", "Silver")).toBe("Silver tone");
+    expect(optionValue("Stone", "Emerald")).toBe("Emerald");
+    expect(variantDisplay({ id: "v", options: { Metal: "Gold", Size: "7" }, availableForSale: true, price: 1 } as never)).toBe("Gold tone · 7");
+  });
+});

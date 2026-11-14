@@ -147,3 +147,25 @@ describe("the bag at four and five pieces: Buy 4, 30%", () => {
     expect((document.querySelector('[data-ladder] [role="progressbar"] > span') as HTMLElement).style.width).toBe("50%");
   });
 });
+
+/* The bag states the COD fee in rupees before the payment page: Fastrr adds
+   5% of the total to a cash-on-delivery order, and the product page says
+   only "COD available" because the bag carries the fee. The line had gone
+   from this bag, so a COD shopper met the 5% first at payment. */
+describe("the bag states the COD fee", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    localStorage.clear();
+  });
+  afterEach(cleanup);
+
+  it("prices COD at 5% of the discounted total, none online", async () => {
+    await openBagWith(PRICES.slice(0, 4));
+    expect(text("[data-cod-fee]")).toBe("Cash on delivery adds ₹245 · none if paid online.");
+  });
+
+  it("on one piece, 5% of its price", async () => {
+    await openBagWith([2399]);
+    expect(text("[data-cod-fee]")).toBe("Cash on delivery adds ₹120 · none if paid online.");
+  });
+});

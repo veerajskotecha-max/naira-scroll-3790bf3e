@@ -2,7 +2,7 @@ import { onRadioGroupKeyDown, rovingTabIndex } from "@/lib/radioGroup";
 import { shopifyImage } from "@/lib/shopifyImage";
 import { cardCover } from "@/lib/cardCover";
 import { variantPhoto } from "@/lib/colourCards";
-import { variantLabel } from "@/lib/variants";
+import { variantDisplay } from "@/lib/variants";
 import type { SetOption, SetTier } from "@/lib/setTiers";
 import type { JewelPiece } from "@/data/jewellery";
 
@@ -41,7 +41,7 @@ type Props = {
 /* What goes in the bag, named as the bag names it: "Prism Emerald-Cut Hoops
    (Gold)" when the piece comes in more than one way, its plain name when not. */
 const optionName = ({ piece, variant }: SetOption) =>
-  variant && (piece.variants?.length ?? 0) > 1 ? `${piece.name} (${variantLabel(variant)})` : piece.name;
+  variant && (piece.variants?.length ?? 0) > 1 ? `${piece.name} (${variantDisplay(variant)})` : piece.name;
 
 const PdpSetPicker = ({ piece, tiers, selected, onSelect, ready }: Props) => {
   if (tiers.length < 2) return null;
@@ -92,10 +92,15 @@ const PdpSetPicker = ({ piece, tiers, selected, onSelect, ready }: Props) => {
             >
               {/* 4:1 on ivory unselected: at /40 the box that marks these as
                   choices measured 2.5:1, under WCAG's 3:1 for controls. */}
+              {/* One of three, so not a checkbox's square tick: a diamond,
+                  square-cornered as the brand is. */}
               <span aria-hidden="true" className={`mt-[1px] flex h-[18px] w-[18px] items-center justify-center border ${active ? "border-nf-ink" : "border-nf-ink/60"}`}>
-                {active && <span className="h-[10px] w-[10px] bg-nf-ink" />}
+                {active && <span className="h-[8px] w-[8px] rotate-45 bg-nf-ink" />}
               </span>
-              <span className="min-w-0 text-[13.5px] font-medium leading-[1.3] text-nf-ink">{title}</span>
+              <span className="min-w-0">
+                {i === best && <span className="block font-nf-label text-[11px] uppercase tracking-nf-8 text-nf-gold-text">Best value</span>}
+                <span className="block text-[13.5px] font-medium leading-[1.3] text-nf-ink">{title}</span>
+              </span>
               <span className="text-right">
                 {/* The display face has no ₹ of its own: the sign is set in the
                     label face, as on the price above. */}
@@ -127,12 +132,7 @@ const PdpSetPicker = ({ piece, tiers, selected, onSelect, ready }: Props) => {
                   ))}
                 </span>
               )}
-              {i === best && (
-                /* On the left edge: on the right it sat over the price. */
-                <span className="absolute -top-[9px] left-3 bg-nf-ink px-2 py-[2px] font-nf-label text-[10px] uppercase tracking-nf-8 text-nf-ivory">
-                  Best value
-                </span>
-              )}
+
             </button>
           );
         })}

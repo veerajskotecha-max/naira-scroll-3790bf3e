@@ -118,5 +118,7 @@ export const orderedRealReviews = (productName?: string) => {
   const n = (productName ?? "").toLowerCase();
   if (!n) return realReviews;
   const score = (r: Review) => (r.match ?? []).filter((k) => n.includes(k)).length;
-  return [...realReviews].sort((a, b) => score(b) - score(a));
+  /* The kind of piece first, and within that the ones with photographs: a
+     ring page used to open on a bracelet once the block put photos first. */
+  return [...realReviews].sort((a, b) => score(b) - score(a) || Number(b.hasPhotos) - Number(a.hasPhotos));
 };

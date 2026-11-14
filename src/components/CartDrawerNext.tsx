@@ -30,6 +30,7 @@ import { shopifyImage } from "@/lib/shopifyImage";
 import { clarityEvent } from "@/lib/clarity";
 import { WHATSAPP_NUMBER, type JewelPiece, type JewelVariant } from "@/data/jewellery";
 import { GST_LABEL } from "@/lib/gst";
+import { codFeeFor } from "@/lib/payment";
 
 /*
   The bag, on every page, as the CRO plan of 16 October draws it ("Naira Bag
@@ -594,6 +595,14 @@ const CartDrawerNext = () => {
               )}
               <p className="mt-2 text-[12.5px] leading-[1.5] text-nf-ink/65">
                 Incl. {GST_LABEL}. Free insured shipping · arrives {arrivesBy}.
+              </p>
+              {/* The COD fee, in rupees, before the payment page: Fastrr adds
+                  5% of the total to a COD order (lib/payment.ts, verified on
+                  live orders) and the product page says only "COD
+                  available", the owner's call, because the bag says this.
+                  The line had gone from this bag; 45% of orders are COD. */}
+              <p data-cod-fee className="mt-0.5 text-[12.5px] leading-[1.5] text-nf-ink/65">
+                Cash on delivery adds {formatPrice(codFeeFor(orderTotal))} · none if paid online.
               </p>
               <button
                 type="button"

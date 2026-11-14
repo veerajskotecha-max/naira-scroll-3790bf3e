@@ -26,7 +26,8 @@ describe("redesigned product page", () => {
     expect(effect).toMatch(/stickyBarRef/);
     expect(effect).toMatch(/querySelector\("#product-actions > button"\)/); // the button, not the gift line under it
     expect(effect).toMatch(/getElementById\("product-price"\)/);
-    expect(effect).toMatch(/const notFullyShown = r\.bottom < 0 \|\| r\.bottom > window\.innerHeight/);
+    /* Off screen, or hidden under the fixed header. */
+    expect(effect).toMatch(/const notFullyShown = r\.top < headerBottom \|\| r\.bottom > window\.innerHeight/);
     expect(effect).toMatch(/const next = notFullyShown && priceClear && offerClear && deliveryClear/);
     /* ...nor over the delivery and COD line, the first screen's last line. */
     expect(effect).toMatch(/getElementById\("product-delivery"\)/);
@@ -351,5 +352,21 @@ describe("pairing card names", () => {
     expect(link).not.toMatch(/line-clamp/);
     expect(clamp).toMatch(/\bline-clamp-2\b/);
     expect(clamp).not.toMatch(/(?:^|\s)-?(?:p|py|pt|pb)-|min-h-|\bh-/);
+  });
+});
+
+/* Critique round 2 (14 Nov 2026). */
+describe("product page, critique round 2", () => {
+  const src = readFileSync(resolve(__dirname, "JewelDetailNext.tsx"), "utf8");
+  it("shows the bar when Add to bag hides under the fixed header", () => {
+    expect(src).toMatch(/const notFullyShown = r\.top < headerBottom \|\| r\.bottom > window\.innerHeight;/);
+  });
+  it("names the metal option as a tone, never as gold or silver metal", () => {
+    expect(src).toMatch(/optionTitle\(option\.name\)/);
+    expect(src).toMatch(/\{optionValue\(option\.name, value\)\}/);
+  });
+  it("sets the hero's srcset before its src, so it downloads once", () => {
+    const img = src.slice(src.indexOf("const MobileGallery"), src.indexOf("const DesktopGallery"));
+    expect(img.indexOf("srcSet={shopifySrcSet")).toBeLessThan(img.indexOf("src={shopifyImage(img, 900)}"));
   });
 });

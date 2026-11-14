@@ -27,12 +27,15 @@ describe("PdpReviews", () => {
     cards.forEach((li) => expect(li.className).toMatch(/\brelative\b/));
   });
 
-  it("leads with the reviews that have photos and says whose they are", () => {
+  /* The order is the hook's (orderedRealReviews): this kind of piece first,
+     photographs first within it. The block used to re-sort photos first and
+     a ring page opened on a bracelet. */
+  it("keeps the order it is given and says whose the reviews are", () => {
     const { container } = draw();
     const names = [...container.querySelectorAll("#customer-reviews ul > li")].map((li) => li.textContent);
     expect(names[0]).toMatch(/Khushi/);
-    expect(names[1]).toMatch(/Tanvi/);
-    expect(names[2]).toMatch(/Sneha/);
+    expect(names[1]).toMatch(/Sneha/);
+    expect(names[2]).toMatch(/Tanvi/);
     expect(screen.getByText(/From Naira customers across our pieces, in their own photos\./)).toBeTruthy();
   });
 

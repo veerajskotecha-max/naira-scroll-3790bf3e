@@ -39,7 +39,7 @@ import { useViewContent } from "@/hooks/useViewContent";
 import { deliveryRangeFromNow } from "@/lib/serviceability";
 import { isPreviewPath, previewProductPath } from "@/lib/preview";
 import { completeTheLook, moreLikeThis } from "@/lib/pairings";
-import { buyableValues, cartLineFor, choiceNeeded, choices, choose, findVariant, oneTapVariant, sizeOption, variantLabel } from "@/lib/variants";
+import { buyableValues, cartLineFor, choiceNeeded, choices, choose, findVariant, oneTapVariant, optionTitle, optionValue, sizeOption, variantDisplay, variantLabel } from "@/lib/variants";
 import { colourFromParam, colourOfVariant, colourOption, openingChoice, variantChoice, variantPhoto } from "@/lib/colourCards";
 import { useBackToClose } from "@/hooks/useBackToClose";
 import { coatingOf, presentJewellery, stoneOf } from "@/lib/jewelleryPresentation";
@@ -109,6 +109,7 @@ const tidy = (value: string) =>
    last spec. It is split back out here, so the spec reads "Surgical stainless
    steel" and Care gets the piece's own care text. */
 const CARE_BREAK = /\s+Care\s+(?=[A-Z])/;
+
 const specsOf = (piece: JewelPiece) => {
   let care: string | null = null;
   const specs = (piece.details ?? []).map((line) => {
@@ -246,7 +247,7 @@ const PairingCard = ({ piece, href, compact = false, prefer }: { piece: JewelPie
       </Link>
       <p className="mt-0.5 text-[12px] text-nf-ink/75">
         {variant ? `₹${variant.price.toLocaleString("en-IN")}` : piece.priceLabel}
-        {variant && !need && <span className="text-nf-ink/60"> · {variantLabel(variant)}</span>}
+        {variant && !need && <span className="text-nf-ink/60"> · {variantDisplay(variant)}</span>}
       </p>
       {compact &&
         (need ? (
@@ -483,7 +484,10 @@ const JewelDetailNext = () => {
       const target = document.querySelector("#product-actions > button");
       if (!target) return;
       const r = target.getBoundingClientRect();
-      const notFullyShown = r.bottom < 0 || r.bottom > window.innerHeight;
+      /* Hidden under the fixed header counts as off screen: the button
+         could sit behind the header with the bar still held back. */
+      const headerBottom = document.querySelector("header")?.getBoundingClientRect().bottom ?? 0;
+      const notFullyShown = r.top < headerBottom || r.bottom > window.innerHeight;
       const price = document.getElementById("product-price");
       const barHeight = stickyBarRef.current?.offsetHeight ?? 72;
       const priceClear = !price || price.getBoundingClientRect().bottom < window.innerHeight - barHeight;
@@ -837,17 +841,20 @@ const JewelDetailNext = () => {
             aria-label={openLabel(img, i)}
           >
             {(i === 0 || !prerendering) && (
+              /* sizes and srcSet before src: React sets attributes in the
+                 order written, and with src first the hero was fetched twice
+                 (900w, then the 800w its srcset chose: 136 KB + 114 KB). */
               <img
-                src={shopifyImage(img, 900)}
-                srcSet={shopifySrcSet(img, i === 0 ? HERO_WIDTHS : [480, 720, 900, 1200]) || undefined}
+                loading={i === 0 ? "eager" : "lazy"}
+                fetchPriority={i === 0 ? "high" : "auto"}
+                decoding={i === 0 ? "sync" : "async"}
                 sizes={i === 0 ? HERO_SIZES : "100vw"}
+                srcSet={shopifySrcSet(img, i === 0 ? HERO_WIDTHS : [480, 720, 900, 1200]) || undefined}
+                src={shopifyImage(img, 900)}
                 alt={galleryAlt(piece, img, i)}
                 className="h-full w-full object-cover"
                 width={900}
                 height={1200}
-                loading={i === 0 ? "eager" : "lazy"}
-                fetchPriority={i === 0 ? "high" : "auto"}
-                decoding={i === 0 ? "sync" : "async"}
               />
             )}
           </button>
@@ -1086,9 +1093,9 @@ const JewelDetailNext = () => {
                     <span className="text-[12.5px] text-nf-ink/65">
                       MRP <span className="line-through">{shown.compareAtLabel}</span>
                     </span>
-                    <span className="font-nf-label text-[11px] font-medium uppercase tracking-nf-8 text-nf-gold-text">
-                      {discountPercent(shown)}% off
-                    </span>
+                    {/* In ink, not gold: one gold offer on the first screen,
+                        the ladder's, rather than two percentages competing. */}
+                    <span className="text-[12.5px] text-nf-ink/65">{discountPercent(shown)}% off</span>
                   </>
                 )}
                 <span className="text-[11px] tracking-nf-4 text-nf-ink/65">incl. {GST_LABEL}</span>
@@ -1130,8 +1137,8 @@ const JewelDetailNext = () => {
                 <div key={option.name} className="mt-5" data-option={option.name}>
                   <div className="flex items-center justify-between">
                     <span className={label}>
-                      {ringSize ? `${option.name} · US` : option.name}
-                      {chosen[option.name] && <span className="ml-2 normal-case tracking-normal text-nf-ink/80">{chosen[option.name]}</span>}
+                      {ringSize ? `${option.name} · US` : optionTitle(option.name)}
+                      {chosen[option.name] && <span className="ml-2 normal-case tracking-normal text-nf-ink/80">{optionValue(option.name, chosen[option.name])}</span>}
                     </span>
                     {ringSize && (
                       <button
@@ -1157,7 +1164,7 @@ const JewelDetailNext = () => {
                       ))}
                     </select>
                   ) : (
-                    <div role="radiogroup" aria-label={option.name} onKeyDown={onRadioGroupKeyDown} className="mt-1 flex flex-wrap gap-2">
+                    <div role="radiogroup" aria-label={optionTitle(option.name)} onKeyDown={onRadioGroupKeyDown} className="mt-1 flex flex-wrap gap-2">
                       {option.values.map((value, i) => {
                         const active = chosen[option.name] === value;
                         const swatch = isSize ? undefined : swatchOf(value);
@@ -1177,7 +1184,7 @@ const JewelDetailNext = () => {
                           >
                             <span className="inline-flex items-center gap-1.5">
                               {swatch && <span aria-hidden="true" className="h-3 w-3 shrink-0 border border-nf-ink/15" style={{ background: swatch }} />}
-                              {value}
+                              {optionValue(option.name, value)}
                             </span>
                             {!buyable[value] && <span className="block text-[9px] font-normal uppercase tracking-nf-8 opacity-80">Pre-order</span>}
                           </button>
@@ -1203,7 +1210,7 @@ const JewelDetailNext = () => {
                     Size guide
                   </button>
                 </div>
-                <div role="radiogroup" aria-label="Ring size, US" onKeyDown={onRadioGroupKeyDown} className="mt-1 flex flex-wrap gap-2">
+                <div role="radiogroup" aria-label="Ring size, US" onKeyDown={onRadioGroupKeyDown} className="mt-1 grid grid-cols-5 gap-2">
                   {ringSizesFor(piece).map((s, i, sizes) => {
                     const active = selectedSize === s.value;
                     return (

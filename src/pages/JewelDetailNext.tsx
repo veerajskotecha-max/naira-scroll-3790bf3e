@@ -15,7 +15,8 @@ import RingSizeGuide from "@/components/jewellery/RingSizeGuide";
 import { Button } from "@/components/ui/button";
 import PdpOfferLadder from "@/components/jewellery/PdpOfferLadder";
 import PdpSetPicker from "@/components/jewellery/PdpSetPicker";
-import { setTiers } from "@/lib/setTiers";
+import { setTiers, type SetOption } from "@/lib/setTiers";
+import { getPromoCode } from "@/lib/promo";
 import { cartKeyOf } from "@/lib/cartLines";
 import PdpDeliveryTimeline from "@/components/jewellery/PdpDeliveryTimeline";
 import { useApprovedReviews } from "@/hooks/useApprovedReviews";
@@ -37,7 +38,7 @@ import { linkPlaced } from "@/lib/viewContent";
 import { useViewContent } from "@/hooks/useViewContent";
 import { deliveryRangeFromNow } from "@/lib/serviceability";
 import { isPreviewPath, previewProductPath } from "@/lib/preview";
-import { completeTheLook, isSetRow, moreLikeThis } from "@/lib/pairings";
+import { completeTheLook, moreLikeThis } from "@/lib/pairings";
 import { buyableValues, cartLineFor, choiceNeeded, choices, choose, findVariant, oneTapVariant, sizeOption, variantLabel } from "@/lib/variants";
 import { colourFromParam, colourOfVariant, colourOption, openingChoice, variantChoice, variantPhoto } from "@/lib/colourCards";
 import { useBackToClose } from "@/hooks/useBackToClose";
@@ -333,7 +334,6 @@ const JewelDetailNext = () => {
   /* The set chosen in "Make it a set" (0: this piece alone). Each piece
      opens on its own, never on a bigger set. */
   const [setIndex, setSetIndex] = useState(0);
-  useEffect(() => setSetIndex(0), [handle]);
   const [buying, setBuying] = useState(false);
 
   /* Naira's palette for everything on screen while this page is open,
@@ -561,6 +561,29 @@ const JewelDetailNext = () => {
   }, [isMobile, images.length]);
 
   const pairings = useMemo(() => (piece ? completeTheLook(piece, jewellery, 3) : []), [piece, jewellery]);
+  /* The pieces a set can add: only those bought without a choice. A ring
+     with sizes or a birthstone piece would go in at a size or month nobody
+     picked (Gold / 5, January), so they stay as pairings to choose on their
+     own page. Each goes in the variant matching the metal or stone chosen
+     here, and the card shows and prices that variant. */
+  const setOptions = useMemo<SetOption[]>(
+    () =>
+      pairings
+        .filter((p) => !choiceNeeded(p))
+        .slice(0, 2)
+        .map((p) => {
+          const v = oneTapVariant(p, variant?.options);
+          return { piece: p, variant: v, price: v?.price ?? p.price };
+        }),
+    [pairings, variant],
+  );
+  /* The selection is a place in the list, so it starts again on "Just this
+     piece" whenever the list's pieces change: the live catalogue replacing
+     the bundled one swaps pairings (Woven Gold Hoops became Prism Pear Drop
+     Hoops on the Prism bracelet), and a set picked before that would have
+     bought a piece the shopper never saw. */
+  const setKey = setOptions.map((o) => `${o.piece.handle}:${o.variant?.id ?? ""}`).join("|");
+  useEffect(() => setSetIndex(0), [handle, setKey]);
   const similar = useMemo(() => (piece ? moreLikeThis(piece, jewellery, 8) : []), [piece, jewellery]);
 
   /* Wait for the catalogue before calling a handle missing (see JewelDetail.tsx),
@@ -636,15 +659,15 @@ const JewelDetailNext = () => {
           size: noteSize,
         };
 
-  /* The set, priced as the bag will price it (PdpSetPicker). Its other
-     pieces go in the way a pairing card adds them: in the metal or stone
-     chosen here where they come in it, an adjustable ring as US 6. */
-  const tiers = isPreorder ? [] : setTiers(shown.price, pairings);
+  /* The set, priced as the bag will price it (PdpSetPicker), a typed code
+     included. Its other pieces go in the way a pairing card adds them, an
+     adjustable ring as US 6. */
+  const tiers = isPreorder ? [] : setTiers(shown.price, setOptions, getPromoCode());
   const tier = tiers[setIndex] ?? tiers[0];
-  const extraLines = (tier?.extras ?? []).map((p) => {
-    const v = oneTapVariant(p, variant?.options);
-    return { ...cartLineFor(p, v), ...(p.category === "Rings" && !v ? { size: "US 6" } : {}) };
-  });
+  const extraLines = (tier?.extras ?? []).map(({ piece: p, variant: v }) => ({
+    ...cartLineFor(p, v),
+    ...(p.category === "Rings" && !v ? { size: "US 6" } : {}),
+  }));
   const payable = tier ? (tier.extras.length ? tier.total : shown.price) : shown.price;
 
   /* The bag opens at the tap with the piece on its way in, and says so there
@@ -653,31 +676,45 @@ const JewelDetailNext = () => {
   const handleAddToCart = async () => {
     if (isPreorder) return handlePreOrder();
     setDrawerOpen(true);
-    await addItem(cartItem());
-    for (const line of extraLines) await addItem(line);
+    /* A set stops at the first piece Shopify will not add (the bag says
+       why): its other pieces alone would sit in the bag at a lower rung
+       than the card quoted. */
+    for (const line of [cartItem(), ...extraLines]) if (!(await addItem(line))) return;
   };
 
   /* Buy Now takes this piece alone to checkout (buyNow). A set chosen above
      goes in the bag, each piece once: a piece already there is not added
-     again, or Add to bag then Buy Now paid for the set twice. The bag then
-     checks out, unless it also holds pieces not in this set; those would be
-     charged too, so the shopper sees the bag and pays from there. */
+     again, or Add to bag then Buy Now paid for the set twice. It goes
+     straight to checkout only when this tap put the whole set in and the bag
+     holds nothing else. Otherwise the shopper sees the bag and pays from
+     there: when an add failed (sold out, Shopify down), when a piece was
+     already in (the bag's own sync confirms its cart still holds it), and
+     when other pieces would be charged too. */
   const handleBuyNow = async () => {
     if (isPreorder) return handlePreOrder();
     if (buying || cartLoading) return;
     setBuying(true);
+    let leaving = false;
     try {
       if (!extraLines.length) {
         await buyNow(cartItem());
       } else {
         const set = [cartItem(), ...extraLines];
-        const inSet = (key: string) => set.some((line) => cartKeyOf(line) === key);
-        for (const line of set) if (!bagItems.some((b) => cartKeyOf(b) === cartKeyOf(line))) await addItem(line);
-        if (bagItems.some((b) => !inSet(cartKeyOf(b)))) setDrawerOpen(true);
-        else checkout();
+        const before = bagItems.map(cartKeyOf);
+        for (const line of set) {
+          if (before.includes(cartKeyOf(line))) continue;
+          if (!(await addItem(line))) return setDrawerOpen(true);
+        }
+        if (before.length) return setDrawerOpen(true);
+        /* checkout() leaves the page without being awaited: the button stays
+           busy so a second tap cannot open a second checkout, and frees
+           itself if the page is still here (or comes back from Back). */
+        leaving = true;
+        window.setTimeout(() => setBuying(false), 4000);
+        checkout();
       }
     } finally {
-      setBuying(false);
+      if (!leaving) setBuying(false);
     }
   };
 
@@ -1168,7 +1205,7 @@ const JewelDetailNext = () => {
 
             {/* The set: this piece alone, or with the pieces that go with it,
                 each priced as the bag will price it. */}
-            <PdpSetPicker piece={piece} price={shown.price} tiers={tiers} selected={setIndex} onSelect={setSetIndex} />
+            <PdpSetPicker piece={piece} pieceImage={variantPhoto(piece, variant) ?? piece.image} price={shown.price} tiers={tiers} selected={setIndex} onSelect={setSetIndex} />
 
             {/* Quantity stays in the bag; both actions use the same chosen variant. */}
             <div id="product-actions" className="mt-4 grid grid-cols-2 gap-2">

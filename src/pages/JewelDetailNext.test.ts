@@ -97,10 +97,25 @@ describe("redesigned product page", () => {
     expect(picker).toBeGreaterThan(code.indexOf("choices(piece).map"));
     expect(picker).toBeLessThan(actions);
     expect(code.indexOf("<PdpDeliveryTimeline")).toBeGreaterThan(actions);
-    expect(code).toMatch(/const tiers = isPreorder \? \[\] : setTiers\(shown\.price, pairings\)/);
-    /* Every piece opens on itself alone, never on a bigger set. */
-    expect(code).toMatch(/useEffect\(\(\) => setSetIndex\(0\), \[handle\]\)/);
+    /* Priced as the bag prices it, a typed code included. */
+    expect(code).toMatch(/const tiers = isPreorder \? \[\] : setTiers\(shown\.price, setOptions, getPromoCode\(\)\)/);
+    /* Every piece opens on itself alone, never on a bigger set, and starts
+       again there when the sets' pieces change under the choice (the live
+       catalogue swapping a pairing). */
     expect(code).toMatch(/useState\(0\)/);
+    expect(code).toMatch(/useEffect\(\(\) => setSetIndex\(0\), \[handle, setKey\]\)/);
+    expect(code).toMatch(/const setKey = setOptions\.map\(\(o\) => `\$\{o\.piece\.handle\}:\$\{o\.variant\?\.id \?\? ""\}`\)/);
+  });
+
+  /* A set added rings at "Gold / 5" and birthstone pieces at "January":
+     a piece that needs a size or month is never put in a set. */
+  it("puts in a set only pieces bought without a choice, in the variant the card shows", () => {
+    const options = code.slice(code.indexOf("const setOptions"), code.indexOf("const setKey"));
+    expect(options).toMatch(/\.filter\(\(p\) => !choiceNeeded\(p\)\)/);
+    expect(options).toMatch(/const v = oneTapVariant\(p, variant\?\.options\);\s*return \{ piece: p, variant: v, price: v\?\.price \?\? p\.price \};/);
+    expect(code).toMatch(/const extraLines = \(tier\?\.extras \?\? \[\]\)\.map\(\(\{ piece: p, variant: v \}\) => \(\{\s*\.\.\.cartLineFor\(p, v\)/);
+    const picker = readFileSync(resolve(__dirname, "../components/jewellery/PdpSetPicker.tsx"), "utf8");
+    expect(picker).toMatch(/variantPhoto\(o\.piece, o\.variant\) \?\? cardCover\(o\.piece\)/);
   });
 
   /* Nothing on the page is invented: no pop-up buyers, no sold counts, no
@@ -165,10 +180,15 @@ describe("redesigned product page", () => {
   it("takes this piece alone through Buy Now, and a chosen set through the bag", () => {
     const handler = code.match(/const handleBuyNow = async \(\) => \{[\s\S]*?\n {2}\};/)?.[0] ?? "";
     expect(handler).toMatch(/if \(!extraLines\.length\) \{\s*await buyNow\(cartItem\(\)\);/);
-    /* Add to bag then Buy Now must not pay for the set twice, nor charge
-       for other pieces the bag holds. */
-    expect(handler).toMatch(/for \(const line of set\) if \(!bagItems\.some\(\(b\) => cartKeyOf\(b\) === cartKeyOf\(line\)\)\) await addItem\(line\);/);
-    expect(handler).toMatch(/if \(bagItems\.some\(\(b\) => !inSet\(cartKeyOf\(b\)\)\)\) setDrawerOpen\(true\);\s*else checkout\(\);/);
+    /* Add to bag then Buy Now must not pay for the set twice; a failed add
+       must not send the rest to checkout at a rung the card never quoted;
+       and a bag holding anything already is paid from the bag. */
+    expect(handler).toMatch(/if \(before\.includes\(cartKeyOf\(line\)\)\) continue;\s*if \(!\(await addItem\(line\)\)\) return setDrawerOpen\(true\);/);
+    expect(handler).toMatch(/if \(before\.length\) return setDrawerOpen\(true\);/);
+    /* checkout() is not awaited: a second tap must not open a second one. */
+    expect(handler).toMatch(/leaving = true;[\s\S]*checkout\(\);[\s\S]*finally \{\s*if \(!leaving\) setBuying\(false\);/);
+    const add = code.match(/const handleAddToCart = async \(\) => \{[\s\S]*?\n {2}\};/)?.[0] ?? "";
+    expect(add).toMatch(/for \(const line of \[cartItem\(\), \.\.\.extraLines\]\) if \(!\(await addItem\(line\)\)\) return;/);
   });
 
   it("switches the palette on for its own lifetime only", () => {

@@ -1,7 +1,9 @@
 import { onRadioGroupKeyDown, rovingTabIndex } from "@/lib/radioGroup";
 import { shopifyImage } from "@/lib/shopifyImage";
 import { cardCover } from "@/lib/cardCover";
-import type { SetTier } from "@/lib/setTiers";
+import { variantPhoto } from "@/lib/colourCards";
+import { variantLabel } from "@/lib/variants";
+import type { SetOption, SetTier } from "@/lib/setTiers";
 import type { JewelPiece } from "@/data/jewellery";
 
 /*
@@ -22,13 +24,20 @@ const inr = (n: number) => `₹${Math.round(n).toLocaleString("en-IN")}`;
 
 type Props = {
   piece: JewelPiece;
+  /** This piece's photo in the variant chosen on the page. */
+  pieceImage: string;
   price: number;
   tiers: SetTier[];
   selected: number;
   onSelect: (index: number) => void;
 };
 
-const PdpSetPicker = ({ piece, price, tiers, selected, onSelect }: Props) => {
+/* What goes in the bag, named as the bag names it: "Prism Emerald-Cut Hoops
+   (Gold)" when the piece comes in more than one way, its plain name when not. */
+const optionName = ({ piece, variant }: SetOption) =>
+  variant && (piece.variants?.length ?? 0) > 1 ? `${piece.name} (${variantLabel(variant)})` : piece.name;
+
+const PdpSetPicker = ({ piece, pieceImage, price, tiers, selected, onSelect }: Props) => {
   if (tiers.length < 2) return null;
   const best = tiers.length - 1;
   return (
@@ -50,8 +59,13 @@ const PdpSetPicker = ({ piece, price, tiers, selected, onSelect }: Props) => {
              cards ran 337px tall. The saving is in rupees, under the price. */
           const title = i === 0 ? "Just this piece" : `Set of ${count} · ${Math.round(tier.rate * 100)}% off`;
           const saving = tier.full - tier.total;
-          const detail = i === 0 ? piece.name : `+ ${tier.extras.map((p) => p.name).join(" & ")}`;
-          const thumbs = [piece, ...tier.extras];
+          const names = tier.extras.map(optionName);
+          const detail = i === 0 ? piece.name : `+ ${names.join(" & ")}`;
+          /* The photo of the variant the bag gets, not the piece's cover. */
+          const thumbs = [
+            { key: piece.handle, src: pieceImage },
+            ...tier.extras.map((o) => ({ key: o.piece.handle, src: variantPhoto(o.piece, o.variant) ?? cardCover(o.piece) })),
+          ];
           return (
             <button
               key={i}
@@ -60,7 +74,7 @@ const PdpSetPicker = ({ piece, price, tiers, selected, onSelect }: Props) => {
               aria-checked={active}
               tabIndex={rovingTabIndex(selected, i)}
               onClick={() => onSelect(i)}
-              aria-label={`${title}: ${i === 0 ? piece.name : tier.extras.map((p) => p.name).join(" and ")}, ${inr(i === 0 ? price : tier.total)}${i > 0 ? `, you save ${inr(saving)}` : ""}${i === best ? ", best value" : ""}`}
+              aria-label={`${title}: ${i === 0 ? piece.name : names.join(" and ")}, ${inr(i === 0 ? price : tier.total)}${i > 0 ? `, you save ${inr(saving)}` : ""}${i === best ? ", best value" : ""}`}
               className={`relative grid min-h-[58px] w-full grid-cols-[auto_1fr_auto] items-center gap-3 border px-3 py-2 text-left transition-colors duration-150 ${
                 active ? "border-nf-ink bg-nf-ivory-deep/70" : "border-nf-ink/20 bg-transparent hover:border-nf-ink/45"
               }`}
@@ -71,10 +85,10 @@ const PdpSetPicker = ({ piece, price, tiers, selected, onSelect }: Props) => {
               <span className="flex min-w-0 items-center gap-2.5">
                 {/* One width for every row, so the titles line up. */}
                 <span aria-hidden="true" className="flex w-[66px] shrink-0 -space-x-3">
-                  {thumbs.map((p) => (
+                  {thumbs.map((t) => (
                     <img
-                      key={p.handle}
-                      src={shopifyImage(p === piece ? piece.image : cardCover(p), 120)}
+                      key={t.key}
+                      src={shopifyImage(t.src, 120)}
                       alt=""
                       width={30}
                       height={30}

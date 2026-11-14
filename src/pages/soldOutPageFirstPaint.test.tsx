@@ -91,7 +91,10 @@ describe("a sold-out piece's product page before the catalogue arrives", () => {
     expect(actions()).toEqual(["Reserve now"]);
     expect(screen.queryByRole("button", { name: /Buy Now/i })).toBeNull();
     expect(document.querySelector("#product-price")?.textContent).toMatch(/₹1,300.*₹1,859/);
-    expect(document.querySelector("#product-actions")?.textContent).toMatch(/Hand-finished for you and shipped within 2 weeks, gift-boxed/);
+    /* The lead time is said once, on the first screen's delivery line just
+       above Reserve now; it used to repeat under the button. */
+    expect(document.querySelector("#product-delivery")?.textContent).toMatch(/Hand-finished for you and shipped within 2 weeks/);
+    expect(document.querySelector("#product-actions")?.textContent).not.toMatch(/within 2 weeks/);
     const ld = [...document.querySelectorAll('script[type="application/ld+json"]')].map((s) => s.textContent ?? "").join(" ");
     expect(ld).toMatch(/schema\.org\/OutOfStock/);
     expect(ld).not.toMatch(/schema\.org\/InStock/);

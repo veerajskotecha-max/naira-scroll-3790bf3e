@@ -27,7 +27,9 @@ describe("redesigned product page", () => {
     expect(effect).toMatch(/querySelector\("#product-actions > button"\)/); // the button, not the gift line under it
     expect(effect).toMatch(/getElementById\("product-price"\)/);
     expect(effect).toMatch(/const notFullyShown = r\.bottom < 0 \|\| r\.bottom > window\.innerHeight/);
-    expect(effect).toMatch(/const next = notFullyShown && priceClear && offerClear/);
+    expect(effect).toMatch(/const next = notFullyShown && priceClear && offerClear && deliveryClear/);
+    /* ...nor over the delivery and COD line, the first screen's last line. */
+    expect(effect).toMatch(/getElementById\("product-delivery"\)/);
     /* ...nor over the offer's rungs while they are fully on screen. */
     expect(effect).toMatch(/querySelector\("\[data-offer-ladder\] ul"\)/);
     expect(effect).toMatch(/const offerClear = !rungs \|\| rungs\.bottom > window\.innerHeight \|\| rungs\.bottom < window\.innerHeight - barHeight/);
@@ -71,24 +73,52 @@ describe("redesigned product page", () => {
     expect(code.match(/<details className="group/g)?.length).toBe(3);
   });
 
-  /* The owner (2 Nov 2026): the offer under the price and the badges. Once,
-     before the choices and Add to cart, priced from the chosen variant; a
-     piece sold out altogether is reserved on WhatsApp, outside the bag. */
-  it("puts the buy-more offer under the price and badges, before the choices and Add to cart", () => {
+  /* The owner (2 Nov 2026): the offer under the price. Once, before the
+     choices and Add to cart, priced from the chosen variant; a piece sold out
+     altogether is reserved on WhatsApp, outside the bag. Since 14 Nov 2026
+     the delivery and COD line closes the first screen, under the offer. */
+  it("puts the buy-more offer under the price, then delivery and COD, before the choices and Add to cart", () => {
     const offer = code.indexOf("<PdpOfferLadder");
-    expect(offer).toBeGreaterThan(code.indexOf('aria-label="Made to last"'));
-    expect(offer).toBeGreaterThan(code.indexOf("pieces sold in the last 48 hours"));
-    expect(offer).toBeLessThan(code.indexOf("choices(piece).map"));
+    expect(offer).toBeGreaterThan(code.indexOf('id="product-price"'));
+    expect(offer).toBeLessThan(code.indexOf('id="product-delivery"'));
+    expect(code.indexOf('id="product-delivery"')).toBeLessThan(code.indexOf("choices(piece).map"));
     expect(offer).toBeLessThan(code.indexOf('id="product-actions"'));
     expect(code.match(/<PdpOfferLadder/g)).toHaveLength(1);
     expect(code).toMatch(/\{!soldOut && <PdpOfferLadder price=\{shown\.price\} preorder=\{sizePreorder \|\| variantSoldOut\} \/>\}/);
+    const line = code.slice(code.indexOf('id="product-delivery"'), code.indexOf('id="product-delivery"') + 900);
+    expect(line).toMatch(/COD available/);
   });
 
-  it("keeps the shoppable reels in the page, after the press strip", () => {
-    const press = code.indexOf("<PressMarquee />");
+  /* The reference of 14 Nov 2026: the set choice sits right over the
+     button, and when it arrives under it. */
+  it("offers the set right above Add to bag, the delivery timeline under it", () => {
+    const picker = code.indexOf("<PdpSetPicker");
+    const actions = code.indexOf('id="product-actions"');
+    expect(picker).toBeGreaterThan(code.indexOf("choices(piece).map"));
+    expect(picker).toBeLessThan(actions);
+    expect(code.indexOf("<PdpDeliveryTimeline")).toBeGreaterThan(actions);
+    expect(code).toMatch(/const tiers = isPreorder \? \[\] : setTiers\(shown\.price, pairings\)/);
+    /* Every piece opens on itself alone, never on a bigger set. */
+    expect(code).toMatch(/useEffect\(\(\) => setSetIndex\(0\), \[handle\]\)/);
+    expect(code).toMatch(/useState\(0\)/);
+  });
+
+  /* Nothing on the page is invented: no pop-up buyers, no sold counts, no
+     press strip without articles, no authored rating. */
+  it("shows no invented proof", () => {
+    expect(code).not.toMatch(/FomoPopup/);
+    expect(code).not.toMatch(/recentSoldCount|pieces sold in the last/);
+    expect(code).not.toMatch(/PressMarquee/);
+    expect(code).not.toMatch(/reviewWall|reviewSummary|CustomerReviews/);
+    expect(code).toMatch(/useApprovedReviews\(piece\?\.name\)/);
+    expect(code).not.toMatch(/Skin-friendly|skin-safe|plating assurance|for a lifetime|Mumbai atelier|Demi-Gold/);
+  });
+
+  it("keeps the shoppable reels in the page, after the reviews", () => {
+    const reviews = code.indexOf("<PdpReviews");
     const reels = code.indexOf("<ReelShopNext");
-    expect(press).toBeGreaterThan(-1);
-    expect(reels).toBeGreaterThan(press);
+    expect(reviews).toBeGreaterThan(-1);
+    expect(reels).toBeGreaterThan(reviews);
     expect(code).not.toMatch(/<ReelPeek/);
   });
 
@@ -126,10 +156,16 @@ describe("redesigned product page", () => {
   });
 
   it("suggests a second piece before the reviews", () => {
-    const look = code.indexOf('id="complete-the-look"');
-    const reviews = code.indexOf("<CustomerReviews");
+    const look = code.indexOf("<PdpSetPicker");
+    const reviews = code.indexOf("<PdpReviews");
     expect(look).toBeGreaterThan(-1);
     expect(reviews).toBeGreaterThan(look);
+  });
+
+  it("takes this piece alone through Buy Now, and a chosen set through the bag", () => {
+    const handler = code.match(/const handleBuyNow = async \(\) => \{[\s\S]*?\n {2}\};/)?.[0] ?? "";
+    expect(handler).toMatch(/if \(!extraLines\.length\) \{\s*await buyNow\(cartItem\(\)\);/);
+    expect(handler).toMatch(/for \(const line of extraLines\) await addItem\(line\);\s*checkout\(\);/);
   });
 
   it("switches the palette on for its own lifetime only", () => {
@@ -157,14 +193,11 @@ describe("redesigned product page", () => {
     expect(code).toMatch(/const toReviews = [\s\S]*?e\.preventDefault\(\);[\s\S]*?scrollIntoView/);
   });
 
-  it("badges anti-tarnish, skin-friendly and the piece's own plating under the price, before Add to cart", () => {
-    const badges = code.indexOf('aria-label="Made to last"');
-    expect(badges).toBeGreaterThan(code.indexOf('id="product-price"'));
-    expect(badges).toBeLessThan(code.indexOf('id="product-actions"'));
-    const row = code.slice(badges, badges + 900);
-    expect(row).toMatch(/"Anti-tarnish"/);
-    expect(row).toMatch(/"Skin-friendly"/);
-    expect(row).toMatch(/platingBadge\(finish\)/);
+  it("says what the piece is from the listing's own facts, after Add to bag", () => {
+    const list = code.indexOf('aria-label="What it is"');
+    expect(list).toBeGreaterThan(code.indexOf('id="product-actions"'));
+    expect(code).toMatch(/const benefits = \[/);
+    expect(code).toMatch(/\.\.\.\(waterproof \? \["Waterproof and tarnish-free"\] : \[\]\)/);
   });
 });
 
@@ -212,7 +245,9 @@ describe("stock on the product page and reel cards", () => {
      days in Delivery & returns and a dated pincode promise. */
   it("says one lead time for a piece it cannot ship now", () => {
     expect(code).toMatch(/const leadTime = preorderLead\(\{ soldOut, variantSoldOut, sizePreorder, size: selectedSize \}\);/);
-    expect(code).toMatch(/\{leadTime \? `\$\{leadTime\} ` : arrivesBy \? `Order today and it arrives by \$\{arrivesBy\}\. `/);
+    /* An estimate reads as one: the courier's window is not a promise. */
+    expect(code).toMatch(/\{leadTime \? `\$\{leadTime\} ` : arrivesBy \? `Delivery est\. \$\{arrivesBy\}\. `/);
+    expect(code).not.toMatch(/it arrives by/);
     expect(code).toMatch(/<PincodeChecker preorder=\{isPreorder\} \/>/);
     expect(code).not.toMatch(/45 days|within 2 weeks/);
   });

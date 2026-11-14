@@ -119,6 +119,30 @@ online"): Fastrr adds 5% of the post-discount total to COD orders (verified on
 live orders) and books it as shipping. The rate lives in `src/lib/payment.ts`
 with a literal test — change it there if the checkout setting changes.
 
+**The live PDP is `JewelDetailNext.tsx` (14 Nov 2026 rebuild, after a
+5%-converting reference page).** Order on a phone: photo (capped at
+`MOBILE_FRAME_MAX` so the facts fit), name, price, the offer ladder, ONE
+delivery + COD line (`#product-delivery`, "Free delivery, est. … · COD
+available" — one line at 360px even for a month-crossing range; adding
+"insured" wrapped it), then choices, **Make it a set** (`PdpSetPicker`), Add to
+bag / Buy Now, the Ordered → Packed → Delivered line (`PdpDeliveryTimeline`),
+three benefit ticks, the folds, Reviews (`PdpReviews`), reels.
+- Sets are this piece plus its `completeTheLook` pairings, priced by
+  `lib/setTiers.ts` through promo.ts's own resolver and rounding, so a card
+  never quotes a total the bag will not charge. The page always opens on
+  "Just this piece"; a bigger set is added only when chosen. Buy Now with a
+  set adds the set and goes to checkout; alone it is still `buyNow`.
+- **No invented proof on this page.** The rating and count come only from
+  approved Supabase `customer_reviews` for that piece (`useApprovedReviews`);
+  with none, no stars show and Reviews says so. Gone: the authored 4.9/51
+  rating, the review wall, FomoPopup, the "sold in the last 48 hours" strip,
+  the press marquee, "Skin-friendly" and the plating-assurance copy.
+  `JewelDetailNext.test.ts` fails if any of them come back.
+- Still on other surfaces, and the owner's call, not changed: "SITEWIDE SALE
+  LIVE TODAY!" and "MADE IN LIMITED BATCHES" in the strip, and the bag's "Easy
+  7-day exchange & returns", which promises more than the policy page (defects
+  only, within 7 days, repair / replacement / store credit).
+
 Known debt: `JewelTrustStrip.tsx` shows "Last 24 hours: N pieces sold", where N
 is a hash of the product handle, not a sales figure.
 

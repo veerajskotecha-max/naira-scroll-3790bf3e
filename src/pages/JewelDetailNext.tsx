@@ -1,7 +1,7 @@
 import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState, type MouseEvent } from "react";
 import { Link, Navigate, useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
-import { ArrowLeft, Gem, Gift, Heart, Leaf, MessageSquare, Plus, Sparkles } from "lucide-react";
+import { ArrowLeft, Check, Heart, MessageSquare, Plus, Truck } from "lucide-react";
 import JsonLd from "@/components/JsonLd";
 import Footer from "@/components/Footer";
 import PincodeChecker from "@/components/product/PincodeChecker";
@@ -13,8 +13,11 @@ import { AtelierSkeleton } from "@/components/ui/atelier-skeleton";
 import RingSizeGuideModal from "@/components/jewellery/RingSizeGuideModal";
 import RingSizeGuide from "@/components/jewellery/RingSizeGuide";
 import { Button } from "@/components/ui/button";
-import PressMarquee from "@/components/jewellery/PressMarquee";
 import PdpOfferLadder from "@/components/jewellery/PdpOfferLadder";
+import PdpSetPicker from "@/components/jewellery/PdpSetPicker";
+import { setTiers } from "@/lib/setTiers";
+import PdpDeliveryTimeline from "@/components/jewellery/PdpDeliveryTimeline";
+import { useApprovedReviews } from "@/hooks/useApprovedReviews";
 import { discountPercent } from "@/components/jewellery/JewelPriceTag";
 import { useQuery } from "@tanstack/react-query";
 import { fromShopify, useLiveJewellery } from "@/hooks/useLiveJewellery";
@@ -26,7 +29,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { useWishlist } from "@/contexts/WishlistContext";
 import { useCart } from "@/contexts/CartContext";
 import { isAdjustableRing, adjustableFitNote, adjustableSizes } from "@/data/ringFit";
-import { jewelleryEnquiryUrl, preorderWhatsAppUrl, WHATSAPP_NUMBER, PREORDER_NOTE, SOLD_OUT_LEAD, SIZE_PREORDER_LEAD, VARIANT_SOLD_OUT_LEAD, preorderLead, type JewelPiece } from "@/data/jewellery";
+import { jewelleryEnquiryUrl, preorderWhatsAppUrl, WHATSAPP_NUMBER, PREORDER_NOTE, SIZE_PREORDER_LEAD, VARIANT_SOLD_OUT_LEAD, preorderLead, type JewelPiece } from "@/data/jewellery";
 import { absoluteUrl } from "@/lib/absoluteUrl";
 import { shopifyImage, shopifyOgImage, shopifySrcSet, OG_IMAGE_SIZE } from "@/lib/shopifyImage";
 import { linkPlaced } from "@/lib/viewContent";
@@ -37,10 +40,8 @@ import { completeTheLook, isSetRow, moreLikeThis } from "@/lib/pairings";
 import { buyableValues, cartLineFor, choiceNeeded, choices, choose, findVariant, oneTapVariant, sizeOption, variantLabel } from "@/lib/variants";
 import { colourFromParam, colourOfVariant, colourOption, openingChoice, variantChoice, variantPhoto } from "@/lib/colourCards";
 import { useBackToClose } from "@/hooks/useBackToClose";
-import { recentSoldCount } from "@/lib/dailySold";
-import { coatingOf, hasZirconeStone, presentJewellery, stoneOf } from "@/lib/jewelleryPresentation";
+import { coatingOf, presentJewellery, stoneOf } from "@/lib/jewelleryPresentation";
 import { reportShopperPerformance } from "@/lib/shopperPerformance";
-import { QUANTITY_OFFERS } from "@/lib/promo";
 import { clipText, fitTitle } from "@/lib/clipText";
 import UpiBadges from "@/components/checkout/UpiBadges";
 import { GST_LABEL } from "@/lib/gst";
@@ -55,11 +56,17 @@ import { GST_LABEL } from "@/lib/gst";
   first screen to what a decision needs and folds the rest away, the way
   Nishorama does:
 
-    photo (and the reel the piece is in) → name and price → anti-tarnish,
-    skin-friendly and its plating, as Palmonas badges them → ring size (rings
-    only) → Add to cart → the gift box line → Details / Care / Delivery &
-    returns, closed until asked for → complete the look → reviews → press →
-    reels → more of the category.
+    photo (and the reel the piece is in) → name and price → the buy-more
+    offer → delivery and COD (the first screen ends here, above the buy bar)
+    → ring size (rings only) → make it a set → Add to bag → when it arrives
+    and how it can be paid → what it is made of → Details / Care / Delivery
+    & returns, closed until asked for → reviews (real ones only) → reels →
+    more of the category.
+
+    14 Nov 2026, the owner's reference (a page converting at 5%): the set
+    choice over the button, a delivery line, short benefit lines and a slim
+    review block. Nothing on the page is invented: no sold counts, no
+    pop-up buyers, no authored rating, no press strip without articles.
 
   Colours are Naira's (ivory ground, ink, gold detail, deep-sage buttons); the
   html.nf-next class swaps the stock blue-grey palette the shared components
@@ -70,32 +77,23 @@ import { GST_LABEL } from "@/lib/gst";
   structured data and the embedded piece the pre-built page is drawn from.
 */
 
-const CustomerReviews = lazy(() => import("@/components/CustomerReviews"));
+const PdpReviews = lazy(() => import("@/components/jewellery/PdpReviews"));
 const ReelShopNext = lazy(() => import("@/components/reels/ReelShopNext"));
 const GalleryReel = lazy(() => import("@/components/reels/GalleryReel"));
-const FomoPopup = lazy(() => import("@/components/FomoPopup"));
 
 /* Square: 15 of the 16 hero photos are 1:1, and it keeps the name and price
    above the fold on a 390px phone (see JewelDetail.tsx). */
 const MOBILE_FRAME = "1/1";
+/* ...but never taller than the screen leaves after the header (111px), the
+   name, price, offer and delivery line (about 190px) and the buy bar (65px):
+   on a 360x640 Instagram screen the photo gives up ~70px so the whole
+   decision sits above the bar; on a taller phone it stays square. */
+const MOBILE_FRAME_MAX = "max(240px, calc(100svh - 366px))";
 /* A transparent 1×1 GIF: what a screen gets from a <picture> whose source is not for it. */
 const BLANK_PIXEL = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
 const PRICE_VALID_UNTIL = new Date(Date.now() + 365 * 864e5).toISOString().slice(0, 10);
 const inr = (n: number) => `₹${Math.round(n).toLocaleString("en-IN")}`;
 
-/* The badges under the price. Every piece is sealed anti-tarnish over a
-   hypoallergenic, nickel-free base (the anti-tarnish collection and the Care
-   answers say the same); the plating is the piece's own. */
-const platingBadge = (finish: string) => finish;
-
-/* A gold bar with a glint, drawn like the lucide icons around it. */
-const Ingot = () => (
-  <svg width={11} height={11} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round">
-    <path d="M4.5 19h15l-2.8-7.5H7.3L4.5 19Z" />
-    <path d="M8.6 15.3h6.8" />
-    <path d="M12 8.6V5.6M8.5 9.4 7.1 7.3M15.5 9.4l1.4-2.1" />
-  </svg>
-);
 
 /* "Length: 15-19cm adjustable links" → { label: "Length", value: "15–19 cm adjustable links" }. */
 const tidy = (value: string) =>
@@ -161,7 +159,6 @@ const readEmbeddedPiece = (handle?: string): EmbeddedPiece | null => {
     return null;
   }
 };
-type ReviewWall = typeof import("@/data/reviewWall");
 
 const label = "font-nf-label text-[9.5px] uppercase tracking-nf-24 text-nf-gold-text";
 /* A fold-down's row, and its plus, which turns to a cross when open. */
@@ -331,7 +328,11 @@ const JewelDetailNext = () => {
   }, [piece, lookupMissing, catalogueLoading, snapshotPending, lookup.isLoading, isLive, handle]);
   const isMobile = useIsMobile();
   const { toggleItem, isWishlisted } = useWishlist();
-  const { addItem, buyNow, setDrawerOpen, isDrawerOpen, isLoading: cartLoading } = useCart();
+  const { addItem, buyNow, checkout, setDrawerOpen, isLoading: cartLoading } = useCart();
+  /* The set chosen in "Make it a set" (0: this piece alone). Each piece
+     opens on its own, never on a bigger set. */
+  const [setIndex, setSetIndex] = useState(0);
+  useEffect(() => setSetIndex(0), [handle]);
   const [buying, setBuying] = useState(false);
 
   /* Naira's palette for everything on screen while this page is open,
@@ -361,22 +362,11 @@ const JewelDetailNext = () => {
 
   const [selectedSize, setSelectedSize] = useState<string>("One Size");
   const sizedCategory = piece?.category === "Rings";
-  const [reviewWall, setReviewWall] = useState<ReviewWall | null>(null);
-  useEffect(() => {
-    let cancelled = false;
-    import("@/data/reviewWall")
-      .then((module) => !cancelled && setReviewWall(module))
-      .catch(() => {});
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-  const pieceName = piece?.name;
-  const rating = useMemo(() => {
-    if (!pieceName) return null;
-    if (reviewWall) return reviewWall.reviewSummary(pieceName, "jewellery");
-    return embedded?.piece.name === pieceName ? embedded.rating : null;
-  }, [pieceName, reviewWall, embedded]);
+  /* The rating is worked out from this piece's approved reviews and shows
+     only once there is one (hooks/useApprovedReviews). The authored review
+     bank and its "4.9 · 51 reviews" on every piece are gone. */
+  const approvedReviews = useApprovedReviews(piece?.name);
+  const rating = approvedReviews.count > 0 && approvedReviews.rating !== null ? { rating: approvedReviews.rating, count: approvedReviews.count } : null;
   useEffect(() => {
     setSelectedSize(sizedCategory ? "6" : "One Size");
   }, [sizedCategory, piece?.handle]);
@@ -498,7 +488,10 @@ const JewelDetailNext = () => {
       const priceClear = !price || price.getBoundingClientRect().bottom < window.innerHeight - barHeight;
       const rungs = document.querySelector("[data-offer-ladder] ul")?.getBoundingClientRect();
       const offerClear = !rungs || rungs.bottom > window.innerHeight || rungs.bottom < window.innerHeight - barHeight;
-      const next = notFullyShown && priceClear && offerClear;
+      /* Nor over the delivery and COD line, the first screen's last line. */
+      const delivery = document.getElementById("product-delivery")?.getBoundingClientRect();
+      const deliveryClear = !delivery || delivery.bottom > window.innerHeight || delivery.bottom < window.innerHeight - barHeight;
+      const next = notFullyShown && priceClear && offerClear && deliveryClear;
       /* Writing the same value back keeps React from rendering at all, so a
          reflow that changed nothing cannot ask for another layout pass. */
       setStickyBarVisible((cur) => (cur === next ? cur : next));
@@ -583,7 +576,6 @@ const JewelDetailNext = () => {
   const soldOut = piece.availableForSale === false;
   const isRing = piece.category === "Rings";
   const finish = coatingOf(piece);
-  const soldCount = recentSoldCount(piece.handle);
   const stone = stoneOf(piece);
   const { specs, care: listedCare } = specsOf(piece);
   /* A size Shopify sells as variants (6, 7, 8) replaces the fixed list below. */
@@ -643,21 +635,41 @@ const JewelDetailNext = () => {
           size: noteSize,
         };
 
+  /* The set, priced as the bag will price it (PdpSetPicker). Its other
+     pieces go in the way a pairing card adds them: in the metal or stone
+     chosen here where they come in it, an adjustable ring as US 6. */
+  const tiers = isPreorder ? [] : setTiers(shown.price, pairings);
+  const tier = tiers[setIndex] ?? tiers[0];
+  const extraLines = (tier?.extras ?? []).map((p) => {
+    const v = oneTapVariant(p, variant?.options);
+    return { ...cartLineFor(p, v), ...(p.category === "Rings" && !v ? { size: "US 6" } : {}) };
+  });
+  const payable = tier ? (tier.extras.length ? tier.total : shown.price) : shown.price;
+
   /* The bag opens at the tap with the piece on its way in, and says so there
      if Shopify cannot add it. It used to open only once Shopify answered,
-     one to three seconds on 4G. */
+     one to three seconds on 4G. A set goes in piece by piece. */
   const handleAddToCart = async () => {
     if (isPreorder) return handlePreOrder();
     setDrawerOpen(true);
     await addItem(cartItem());
+    for (const line of extraLines) await addItem(line);
   };
 
+  /* Buy Now takes this piece alone to checkout; a set chosen above goes in
+     the bag first and the bag checks out. */
   const handleBuyNow = async () => {
     if (isPreorder) return handlePreOrder();
     if (buying || cartLoading) return;
     setBuying(true);
     try {
-      await buyNow(cartItem());
+      if (!extraLines.length) {
+        await buyNow(cartItem());
+      } else {
+        await addItem(cartItem());
+        for (const line of extraLines) await addItem(line);
+        checkout();
+      }
     } finally {
       setBuying(false);
     }
@@ -676,17 +688,23 @@ const JewelDetailNext = () => {
   /* Tarnish and skin, answered from the piece's own materials, in Care.
      "PVD 18K gold coated" keeps its capitals mid-sentence; "Rhodium coated" does not. */
   const finishInSentence = /^[A-Z]{2}/.test(finish) ? finish : finish.charAt(0).toLowerCase() + finish.slice(1);
+  /* Only what the listing says: the plating, the base metal, and water. No
+     plating assurance, "lifetime" or skin promise is stated anywhere the
+     store can back it, so none is made here. */
   const care = [
     {
       q: "Will it tarnish?",
       a: `It is ${finishInSentence}${steel && !/steel/i.test(finish) ? " on surgical stainless steel" : ""}${
         waterproof ? ", waterproof and made not to tarnish" : ", made to resist tarnish"
-      }, and the finish is covered by our 3-year plating assurance — cared for well, it keeps its colour for a lifetime.`,
+      }. Keep perfume and harsh chemicals off it and wipe it with a soft dry cloth.`,
     },
-    {
-      q: "Sensitive skin?",
-      a: `Every Naira piece is made to be skin-safe for everyday wear${steel ? ", on a surgical stainless steel base" : ""}. If it does not suit you, return it within 7 days.`,
-    },
+    ...(waterproof ? [{ q: "Can it get wet?", a: "Yes. Daily wear and water are fine." }] : []),
+  ];
+  /* Two or three short lines on what it is, from the same facts. */
+  const benefits = [
+    `${finish}${steel && !/steel/i.test(finish) ? " on surgical stainless steel" : ""}`,
+    ...(waterproof ? ["Waterproof and tarnish-free"] : []),
+    "Arrives in the Naira gift box",
   ];
 
   const canonical = `https://nairaflore.com/jewellery/${piece.handle}`;
@@ -713,7 +731,7 @@ const JewelDetailNext = () => {
       url: canonical,
     },
   };
-  const title = fitTitle(`${piece.name} · Demi-Gold Jewellery`);
+  const title = fitTitle(`${piece.name} · Demi-Fine Jewellery`);
   const ogImageUrl = absoluteUrl(shopifyOgImage(piece.image));
 
   const heart = (
@@ -758,7 +776,7 @@ const JewelDetailNext = () => {
             key={i}
             onClick={() => openLightbox(i)}
             className="block w-full shrink-0 cursor-zoom-in snap-center bg-nf-ivory-deep p-0"
-            style={{ aspectRatio: MOBILE_FRAME, scrollSnapStop: "always" }}
+            style={{ aspectRatio: MOBILE_FRAME, maxHeight: MOBILE_FRAME_MAX, scrollSnapStop: "always" }}
             aria-label={openLabel(img, i)}
           >
             {(i === 0 || !prerendering) && (
@@ -780,7 +798,7 @@ const JewelDetailNext = () => {
         {galleryReel && (
           <div
             className="relative w-full shrink-0 snap-center bg-nf-ink"
-            style={{ aspectRatio: MOBILE_FRAME, scrollSnapStop: "always" }}
+            style={{ aspectRatio: MOBILE_FRAME, maxHeight: MOBILE_FRAME_MAX, scrollSnapStop: "always" }}
             aria-label={`${piece.name} in a Naira reel`}
           >
             <Suspense fallback={<div className="h-full w-full bg-nf-ink" />}>
@@ -953,78 +971,61 @@ const JewelDetailNext = () => {
           <div className="hidden md:block lg:sticky lg:top-[140px] lg:h-[calc(100vh-156px)] lg:self-start">{DesktopGallery}</div>
 
           <div className="flex w-full flex-col items-stretch px-4 pt-5 md:pt-6 lg:px-10 lg:pt-2 xl:px-12">
-            {/* Category and rating; the count always travels with the average. */}
-            <div className="flex min-h-[24px] items-center justify-between gap-3">
-              <p className={label}>{piece.category}</p>
+            <h1 className="font-cormorant text-[24px] font-medium leading-[1.1] text-nf-ink md:text-[28px] lg:text-[32px]">
+              {piece.name}
+            </h1>
+
+            {/* Price, the MRP it replaces and the saving, as the percentage
+                shoppers compare; a real rating, once there is one, beside it. */}
+            <div className="mt-2 flex items-center justify-between gap-3">
+              <div id="product-price" className="flex flex-wrap items-baseline gap-x-2.5 gap-y-1">
+                <span className="font-cormorant text-[22px] font-semibold leading-none text-nf-ink md:text-[24px]">{shown.priceLabel}</span>
+                {shown.compareAtLabel && saving > 0 && (
+                  <>
+                    <span className="text-[12.5px] text-nf-ink/65 line-through">{shown.compareAtLabel}</span>
+                    <span className="font-nf-label text-[11px] font-medium uppercase tracking-nf-8 text-nf-gold-text">
+                      {discountPercent(shown)}% off
+                    </span>
+                  </>
+                )}
+                <span className="text-[11px] tracking-nf-4 text-nf-ink/65">incl. {GST_LABEL}</span>
+              </div>
               {rating && (
                 <a
                   href="#customer-reviews"
                   onClick={toReviews}
-                  className="-mr-1 -my-[10px] inline-flex min-h-[44px] shrink-0 items-center gap-1 pl-2 text-[11.5px] text-nf-ink/75"
+                  className="-my-[10px] inline-flex min-h-[44px] shrink-0 items-center gap-1 pl-2 text-[11.5px] text-nf-ink/75"
                   aria-label={`Rated ${rating.rating} out of 5 from ${rating.count} reviews. Jump to reviews.`}
                 >
                   <span aria-hidden="true" className="text-nf-gold-deep">★</span>
                   <span className="font-medium text-nf-ink">{rating.rating}</span>
-                  <span className="underline decoration-nf-ink/25 underline-offset-4">{rating.count} reviews</span>
+                  <span className="underline decoration-nf-ink/25 underline-offset-4">({rating.count})</span>
                 </a>
               )}
             </div>
 
-            <h1 className="mt-2 font-cormorant text-[22px] font-semibold leading-[1.1] text-nf-ink md:text-[26px] lg:text-[30px]">
-              {piece.name}
-            </h1>
-
-            {/* Price, the MRP it replaces and the saving, as the percentage shoppers compare. */}
-            <div id="product-price" className="mt-2.5 flex flex-wrap items-baseline gap-x-2.5 gap-y-1">
-              <span className="font-cormorant text-[19px] font-semibold leading-none text-nf-ink md:text-[22px]">{shown.priceLabel}</span>
-              {shown.compareAtLabel && saving > 0 && (
-                <>
-                  <span className="text-[12px] text-nf-ink/65 line-through">{shown.compareAtLabel}</span>
-                  <span className="font-nf-label text-[10.5px] font-medium uppercase tracking-nf-8 text-nf-gold-text">
-                    {discountPercent(shown)}% off
-                  </span>
-                </>
-              )}
-              <span className="text-[10.5px] tracking-nf-4 text-nf-ink/65">incl. {GST_LABEL}</span>
-            </div>
-
-            {/* Stone evidence comes from the listing, not the generic summary. */}
-            <ul aria-label="Made to last" className="mt-3.5 flex flex-wrap gap-[5px]">
-              {[
-                { icon: <Sparkles size={11} strokeWidth={1.7} />, text: "Anti-tarnish" },
-                { icon: <Leaf size={11} strokeWidth={1.7} />, text: "Skin-friendly" },
-                { icon: <Ingot />, text: platingBadge(finish) },
-                ...(hasZirconeStone(piece) ? [{ icon: <Gem size={11} strokeWidth={1.7} />, text: "Zircone Stone" }] : []),
-              ].map(({ icon, text }) => (
-                <li
-                  key={text}
-                  className="inline-flex items-center gap-1 border border-nf-gold/30 bg-nf-ivory-deep/70 py-[3px] pl-[3px] pr-2 text-[10px] leading-none text-nf-ink/80 min-[375px]:text-[10.5px]"
-                >
-                  <span aria-hidden="true" className="flex h-[18px] w-[18px] items-center justify-center bg-nf-blush/35 text-nf-gold-text">
-                    {icon}
-                  </span>
-                  {text}
-                </li>
-              ))}
-            </ul>
-
-            <p className="mt-2.5 flex min-h-8 items-center justify-center gap-3 border-y border-nf-gold/30 bg-nf-ivory-deep/70 px-2.5 py-1.5">
-              <svg width="10" height="10" viewBox="0 0 12 12" fill="none" aria-hidden="true" className="shrink-0 text-nf-gold">
-                <path d="M6 0L7.5 4.5L12 6L7.5 7.5L6 12L4.5 7.5L0 6L4.5 4.5L6 0Z" fill="currentColor" />
-              </svg>
-              <span className="flex items-baseline gap-1.5">
-                <span className="font-cormorant text-[15px] italic leading-none text-nf-gold-text">{soldCount}</span>
-                <span className="whitespace-nowrap font-nf-label text-[10px] font-light uppercase leading-none tracking-nf-8 text-nf-ink min-[375px]:text-[10.5px]">
-                  pieces sold in the last 48 hours
-                </span>
-              </span>
-              <span className="h-2 w-px shrink-0 bg-nf-gold/30" aria-hidden="true" />
-            </p>
-
-            {/* Buy 3 / Buy 4, priced for this piece and following the bag. A
+            {/* Buy 2 / 3 / 4, priced for this piece and following the bag. A
                 piece sold out altogether is reserved on WhatsApp and never
                 reaches the bag, so it is offered nothing it cannot get. */}
             {!soldOut && <PdpOfferLadder price={shown.price} preorder={sizePreorder || variantSoldOut} />}
+
+            {/* The first screen's last line: when it comes and that it can be
+                paid on delivery (the bag prices COD). */}
+            <p id="product-delivery" className="mt-2 flex min-h-[22px] items-center gap-2 text-[12.5px] leading-tight text-nf-ink/80">
+              <Truck size={15} strokeWidth={1.5} className="shrink-0 text-nf-gold-deep" aria-hidden="true" />
+              {leadTime ? (
+                <span>{leadTime}</span>
+              ) : (
+                <span>
+                  {/* One line at 360px with a range that crosses a month
+                      ("28 Nov – 2 Dec", 294 of 305px); "insured" put it at
+                      342 and wrapped. It is said under Add to bag instead. */}
+                  Free delivery{arrivesBy ? <>, est. <span className="font-medium text-nf-ink">{arrivesBy}</span></> : ""}
+                  {" · "}
+                  <span className="font-medium text-nf-ink">COD available</span>
+                </span>
+              )}
+            </p>
 
             {/* The ways Shopify sells this piece: a metal, a stone, a size, a
                 month. Each value shows whether it can be bought with the other
@@ -1159,17 +1160,21 @@ const JewelDetailNext = () => {
             )}
             <RingSizeGuideModal isOpen={sizeGuideOpen} onClose={guide.requestClose} highlightSize={sizeName ? chosen[sizeName] ?? selectedSize : selectedSize} adjustable={adjustable} fitSizes={adjustableSizes(piece.handle)} />
 
+            {/* The set: this piece alone, or with the pieces that go with it,
+                each priced as the bag will price it. */}
+            <PdpSetPicker piece={piece} price={shown.price} tiers={tiers} selected={setIndex} onSelect={setSetIndex} />
+
             {/* Quantity stays in the bag; both actions use the same chosen variant. */}
-            <div id="product-actions" className="mt-2 grid grid-cols-2 gap-2">
+            <div id="product-actions" className="mt-4 grid grid-cols-2 gap-2">
               <Button
                 onClick={isPreorder ? handlePreOrder : handleAddToCart}
                 disabled={cartLoading || buying}
-                className={`press-scale inline-flex h-[50px] w-full items-center justify-center bg-nf-ink px-2 font-nf-label text-[11.5px] font-medium uppercase tracking-nf-8 text-nf-ivory transition-colors duration-200 hover:bg-nf-ink/90 disabled:opacity-60 ${isPreorder ? "col-span-2" : "col-start-2 row-start-1"}`}
+                className={`press-scale inline-flex h-[52px] w-full items-center justify-center gap-1.5 bg-nf-ink px-2 font-nf-label text-[11.5px] font-medium uppercase tracking-nf-8 text-nf-ivory transition-colors duration-200 hover:bg-nf-ink/90 disabled:opacity-60 ${isPreorder ? "col-span-2" : "col-start-2 row-start-1"}`}
               >
-                {isPreorder ? "Reserve now" : "Add to cart"}
+                {isPreorder ? "Reserve now" : <>Add to bag<span aria-hidden="true">·</span>{inr(payable)}</>}
               </Button>
               {!isPreorder && (
-                <Button variant="outline" onClick={handleBuyNow} disabled={cartLoading || buying} className="press-scale col-start-1 row-start-1 h-[50px] w-full border-nf-ink bg-transparent px-2 font-nf-label text-[11.5px] font-medium uppercase tracking-nf-8 text-nf-ink hover:bg-nf-ink/5">
+                <Button variant="outline" onClick={handleBuyNow} disabled={cartLoading || buying} className="press-scale col-start-1 row-start-1 h-[52px] w-full border-nf-ink bg-transparent px-2 font-nf-label text-[11.5px] font-medium uppercase tracking-nf-8 text-nf-ink hover:bg-nf-ink/5">
                   {buying ? "Opening checkout…" : <>Buy Now<UpiBadges size={16} /></>}
                 </Button>
               )}
@@ -1184,16 +1189,23 @@ const JewelDetailNext = () => {
                   <MessageSquare size={13} strokeWidth={1.6} /> Reserve on WhatsApp
                 </a>
               )}
-              <p className="col-span-2 mt-1 flex items-center justify-center gap-2 text-center text-[11.5px] text-nf-ink/80">
-                <Gift size={14} strokeWidth={1.6} className="shrink-0 text-nf-gold-deep" aria-hidden="true" />
-                {soldOut ? `${SOLD_OUT_LEAD}, gift-boxed` : "Gift-ready: every piece arrives in the Naira gift box"}
-              </p>
-              {/* Lovable's "Naira bundle" panel (PdpOffers, 11829ae) said the same offer
-                  a second time under Buy Now; the page shows it once, in
-                  PdpOfferLadder under the price, which also follows the bag. To
-                  use the bundle panel instead, render it here and drop the
-                  ladder above. */}
+              {/* A piece reserved says its lead time once, on the first
+                  screen's delivery line just above this button. */}
             </div>
+
+            {/* When it arrives and how it can be paid (the reference's
+                Ordered → Delivered line). */}
+            {!isPreorder && <PdpDeliveryTimeline arrivesBy={arrivesBy} />}
+
+            {/* What it is, in two or three lines, from the listing's own facts. */}
+            <ul aria-label="What it is" className="mt-5 grid gap-2">
+              {benefits.map((b) => (
+                <li key={b} className="flex items-start gap-2.5 text-[13px] leading-[1.45] text-nf-ink/85">
+                  <Check size={15} strokeWidth={1.8} className="mt-[1px] shrink-0 text-[var(--nf-cta)]" aria-hidden="true" />
+                  {b}
+                </li>
+              ))}
+            </ul>
 
             {/* Details, care and delivery as fold-downs, closed until asked for
                 (Nishorama's pattern): the first screen stays the photo, the
@@ -1270,15 +1282,15 @@ const JewelDetailNext = () => {
                 <div id="pdp-panel-delivery" className="pb-6">
                   <div className="space-y-2.5 text-[13px] leading-[1.7] text-nf-ink/85">
                     <p>
-                      {leadTime ? `${leadTime} ` : arrivesBy ? `Order today and it arrives by ${arrivesBy}. ` : `${PREORDER_NOTE} `}
-                      Free insured shipping across India, dispatched from our Mumbai atelier.
+                      {leadTime ? `${leadTime} ` : arrivesBy ? `Delivery est. ${arrivesBy}. ` : `${PREORDER_NOTE} `}
+                      Free insured shipping across India, in the Naira gift box.
                     </p>
                     <p>
-                      Cash on delivery available. 7-day returns —{" "}
+                      Cash on delivery available; any COD fee is shown in your bag before you pay. Faulty piece? Tell us on WhatsApp within 7 days of delivery, with photos, for a repair, replacement or store credit ({" "}
                       <Link to="/exchange-return-policy" className="underline decoration-nf-gold underline-offset-4">
-                        read the policy
+                        the policy
                       </Link>
-                      .
+                      ).
                     </p>
                   </div>
                   <PincodeChecker preorder={isPreorder} />
@@ -1294,34 +1306,13 @@ const JewelDetailNext = () => {
               </details>
             </div>
 
-            {/* Another piece, one tap from the bag. The label is the ladder's
-                first rung, read from promo.ts, so it always quotes the first
-                rung the bag really has: three pieces at 20% since 7 Nov 2026
-                (two pieces earn nothing now). */}
-            {pairings.length > 0 && (
-              <section className="mt-10" aria-labelledby="complete-the-look">
-                <div className="flex items-end justify-between gap-3">
-                  <h2 id="complete-the-look" className="font-cormorant text-[18px] leading-none text-nf-ink">
-                    {isSetRow(piece, pairings) ? "Complete the set" : "Complete the look"}
-                  </h2>
-                  <p className="font-nf-label text-[9.5px] uppercase tracking-nf-16 text-nf-gold-text">{QUANTITY_OFFERS[0].minQuantity} pieces · {Math.round(QUANTITY_OFFERS[0].rate * 100)}% off</p>
-                </div>
-                <div className="mt-4 grid grid-cols-3 gap-3">
-                  {pairings.map((p) => (
-                    <PairingCard key={p.handle} piece={p} href={hrefFor(p.handle)} compact prefer={variant?.options} />
-                  ))}
-                </div>
-              </section>
-            )}
           </div>
         </div>
       </div>
 
-      <Suspense fallback={<div className="min-h-[240px] bg-nf-ivory" aria-hidden="true" />}>
-        <CustomerReviews productName={piece.name} variant="jewellery" />
+      <Suspense fallback={<div className="min-h-[160px] bg-nf-ivory" aria-hidden="true" />}>
+        <PdpReviews productName={piece.name} data={approvedReviews} whatsappHref={isRing ? sizedEnquiryHref : enquiryHref} />
       </Suspense>
-
-      <PressMarquee />
 
       <Suspense fallback={<div className="min-h-[420px] bg-nf-ivory-deep md:hidden" aria-hidden="true" />}>
         <ReelShopNext hrefFor={hrefFor} />
@@ -1342,14 +1333,6 @@ const JewelDetailNext = () => {
         </section>
       )}
 
-      <Suspense fallback={null}>
-        <FomoPopup
-          quiet
-          hrefFor={hrefFor}
-          suppressed={isDrawerOpen || lightboxOpen || sizeGuideOpen}
-          mobileStickyVisible={stickyBarVisible}
-        />
-      </Suspense>
       </main>
 
       <Footer compact slim />
@@ -1385,7 +1368,7 @@ const JewelDetailNext = () => {
           disabled={cartLoading || buying}
           className="press-scale inline-flex h-[48px] min-w-0 flex-1 items-center justify-center gap-1 bg-nf-ink px-2 font-nf-label text-[11px] font-medium uppercase tracking-nf-8 text-nf-ivory hover:bg-nf-ink/90 disabled:opacity-60"
         >
-          {isPreorder ? "Reserve now" : "Add to cart"}
+          {isPreorder ? "Reserve now" : <>Add to bag<span aria-hidden="true">·</span>{inr(payable)}</>}
         </Button>
       </div>
 

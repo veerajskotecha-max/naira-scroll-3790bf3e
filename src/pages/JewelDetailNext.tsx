@@ -16,8 +16,8 @@ import { Button } from "@/components/ui/button";
 import PdpOfferLadder from "@/components/jewellery/PdpOfferLadder";
 import PdpSetPicker from "@/components/jewellery/PdpSetPicker";
 import { setTiers, type SetOption } from "@/lib/setTiers";
-import { getPromoCode } from "@/lib/promo";
 import { cartKeyOf } from "@/lib/cartLines";
+import { getPromoCode } from "@/lib/promo";
 import PdpDeliveryTimeline from "@/components/jewellery/PdpDeliveryTimeline";
 import { useApprovedReviews } from "@/hooks/useApprovedReviews";
 import { discountPercent } from "@/components/jewellery/JewelPriceTag";
@@ -330,7 +330,7 @@ const JewelDetailNext = () => {
   }, [piece, lookupMissing, catalogueLoading, snapshotPending, lookup.isLoading, isLive, handle]);
   const isMobile = useIsMobile();
   const { toggleItem, isWishlisted } = useWishlist();
-  const { items: bagItems, addItem, buyNow, checkout, setDrawerOpen, isLoading: cartLoading } = useCart();
+  const { items: bagItems, addItem, buyNow, setDrawerOpen, isLoading: cartLoading } = useCart();
   /* The set chosen in "Make it a set" (0: this piece alone). Each piece
      opens on its own, never on a bigger set. */
   const [setIndex, setSetIndex] = useState(0);
@@ -582,7 +582,9 @@ const JewelDetailNext = () => {
      the bundled one swaps pairings (Woven Gold Hoops became Prism Pear Drop
      Hoops on the Prism bracelet), and a set picked before that would have
      bought a piece the shopper never saw. */
-  const setKey = setOptions.map((o) => `${o.piece.handle}:${o.variant?.id ?? ""}`).join("|");
+  /* The pieces only: a change of metal here changes each extra's variant,
+     and the card shows the new one, so the choice stands. */
+  const setKey = setOptions.map((o) => o.piece.handle).join("|");
   useEffect(() => setSetIndex(0), [handle, setKey]);
   const similar = useMemo(() => (piece ? moreLikeThis(piece, jewellery, 8) : []), [piece, jewellery]);
 
@@ -663,12 +665,19 @@ const JewelDetailNext = () => {
      included. Its other pieces go in the way a pairing card adds them, an
      adjustable ring as US 6. */
   const tiers = isPreorder ? [] : setTiers(shown.price, setOptions, getPromoCode());
-  const tier = tiers[setIndex] ?? tiers[0];
+  /* No set is taken until the live catalogue has settled the pairings: the
+     bundled one offered Woven Gold Hoops with the Prism bracelet, and a set
+     chosen in that first second had its pieces swapped under it. */
+  const setReady = isLive || !catalogueLoading;
+  const tier = (setReady ? tiers[setIndex] : undefined) ?? tiers[0];
   const extraLines = (tier?.extras ?? []).map(({ piece: p, variant: v }) => ({
     ...cartLineFor(p, v),
     ...(p.category === "Rings" && !v ? { size: "US 6" } : {}),
   }));
-  const payable = tier ? (tier.extras.length ? tier.total : shown.price) : shown.price;
+  /* What the bag charges for the choice, a typed code included: "Just
+     this piece" at ₹2,399 while the bag took NAIRA10's 10% read as two
+     prices for one thing. */
+  const payable = tier ? tier.total : shown.price;
 
   /* The bag opens at the tap with the piece on its way in, and says so there
      if Shopify cannot add it. It used to open only once Shopify answered,
@@ -679,42 +688,30 @@ const JewelDetailNext = () => {
     /* A set stops at the first piece Shopify will not add (the bag says
        why): its other pieces alone would sit in the bag at a lower rung
        than the card quoted. */
-    for (const line of [cartItem(), ...extraLines]) if (!(await addItem(line))) return;
+    /* A set completes what the bag holds: a piece of it already there is
+       not added again, or choosing "Set of 2" with the bracelet in the bag
+       made two bracelets and a bill ₹1,550 over the card. One piece on its
+       own still adds one more, as Add to bag always has. */
+    const have = extraLines.length ? bagItems.map(cartKeyOf) : [];
+    for (const line of [cartItem(), ...extraLines]) {
+      if (have.includes(cartKeyOf(line))) continue;
+      if (!(await addItem(line))) return;
+    }
   };
 
-  /* Buy Now takes this piece alone to checkout (buyNow). A set chosen above
-     goes in the bag, each piece once: a piece already there is not added
-     again, or Add to bag then Buy Now paid for the set twice. It goes
-     straight to checkout only when this tap put the whole set in and the bag
-     holds nothing else. Otherwise the shopper sees the bag and pays from
-     there: when an add failed (sold out, Shopify down), when a piece was
-     already in (the bag's own sync confirms its cart still holds it), and
-     when other pieces would be charged too. */
+  /* Buy Now goes through CartContext.buyNow (AGENTS.md), with the set's
+     other pieces when one is chosen: it checks out exactly these pieces,
+     each once, on a cart of their own when the bag holds others, and opens
+     checkout only when every one of them went in. Awaited, so the button
+     stays busy until the page leaves. */
   const handleBuyNow = async () => {
     if (isPreorder) return handlePreOrder();
     if (buying || cartLoading) return;
     setBuying(true);
-    let leaving = false;
     try {
-      if (!extraLines.length) {
-        await buyNow(cartItem());
-      } else {
-        const set = [cartItem(), ...extraLines];
-        const before = bagItems.map(cartKeyOf);
-        for (const line of set) {
-          if (before.includes(cartKeyOf(line))) continue;
-          if (!(await addItem(line))) return setDrawerOpen(true);
-        }
-        if (before.length) return setDrawerOpen(true);
-        /* checkout() leaves the page without being awaited: the button stays
-           busy so a second tap cannot open a second checkout, and frees
-           itself if the page is still here (or comes back from Back). */
-        leaving = true;
-        window.setTimeout(() => setBuying(false), 4000);
-        checkout();
-      }
+      await buyNow(cartItem(), 1, extraLines);
     } finally {
-      if (!leaving) setBuying(false);
+      setBuying(false);
     }
   };
 
@@ -1217,16 +1214,16 @@ const JewelDetailNext = () => {
 
             {/* The set: this piece alone, or with the pieces that go with it,
                 each priced as the bag will price it. */}
-            <PdpSetPicker piece={piece} pieceImage={variantPhoto(piece, variant) ?? piece.image} price={shown.price} tiers={tiers} selected={setIndex} onSelect={setSetIndex} />
+            <PdpSetPicker piece={piece} pieceImage={variantPhoto(piece, variant) ?? piece.image} tiers={tiers} selected={setReady ? setIndex : 0} onSelect={setSetIndex} ready={setReady} />
 
             {/* Quantity stays in the bag; both actions use the same chosen variant. */}
             <div id="product-actions" className="mt-4 grid grid-cols-2 gap-2">
               <Button
                 onClick={isPreorder ? handlePreOrder : handleAddToCart}
                 disabled={cartLoading || buying}
-                className={`press-scale inline-flex h-[52px] w-full items-center justify-center gap-1.5 bg-nf-ink px-2 font-nf-label text-[11.5px] font-medium uppercase tracking-nf-8 text-nf-ivory transition-colors duration-200 hover:bg-nf-ink/90 disabled:opacity-60 ${isPreorder ? "col-span-2" : "col-start-2 row-start-1"}`}
+                className={`press-scale inline-flex h-[52px] w-full items-center justify-center gap-1.5 bg-nf-ink px-2 font-nf-label text-[11.5px] font-medium uppercase tracking-nf-8 text-nf-ivory transition-colors duration-200 hover:bg-nf-ink/90 disabled:opacity-60 max-[359px]:flex-col max-[359px]:gap-0.5 max-[359px]:leading-none ${isPreorder ? "col-span-2" : "col-start-2 row-start-1"}`}
               >
-                {isPreorder ? "Reserve now" : <>Add to bag<span aria-hidden="true">·</span>{inr(payable)}</>}
+                {isPreorder ? "Reserve now" : <>Add to bag<span aria-hidden="true" className="max-[359px]:hidden">·</span><span>{inr(payable)}</span></>}
               </Button>
               {!isPreorder && (
                 <Button variant="outline" onClick={handleBuyNow} disabled={cartLoading || buying} className="press-scale col-start-1 row-start-1 h-[52px] w-full border-nf-ink bg-transparent px-2 font-nf-label text-[11.5px] font-medium uppercase tracking-nf-8 text-nf-ink hover:bg-nf-ink/5">
@@ -1341,7 +1338,9 @@ const JewelDetailNext = () => {
                       Free insured shipping across India, in the Naira gift box.
                     </p>
                     <p>
-                      Cash on delivery available; any COD fee is shown in your bag before you pay. Faulty piece? Tell us on WhatsApp within 7 days of delivery, with photos, for a repair, replacement or store credit ({" "}
+                      {/* "COD available" and no more on the product page
+                          (the owner's call); the bag states the fee. */}
+                      Cash on delivery available. Faulty piece? Tell us on WhatsApp within 7 days of delivery, with photos, for a repair, replacement or store credit (
                       <Link to="/exchange-return-policy" className="underline decoration-nf-gold underline-offset-4">
                         the policy
                       </Link>
@@ -1421,9 +1420,13 @@ const JewelDetailNext = () => {
         <Button
           onClick={isPreorder ? handlePreOrder : handleAddToCart}
           disabled={cartLoading || buying}
-          className="press-scale inline-flex h-[48px] min-w-0 flex-1 items-center justify-center gap-1 bg-nf-ink px-2 font-nf-label text-[11px] font-medium uppercase tracking-nf-8 text-nf-ivory hover:bg-nf-ink/90 disabled:opacity-60"
+          /* The price under the words below 400px: on one line the label
+             needed 122px of the 115 it has at 320px, and centred it was cut
+             at both ends ("DD TO BAG · ₹2,39"), a wrong price; with the
+             phone's text at 115% the same happened at 360px. */
+          className="press-scale inline-flex h-[48px] min-w-0 flex-1 items-center justify-center gap-1 bg-nf-ink px-2 font-nf-label text-[11px] font-medium uppercase tracking-nf-8 text-nf-ivory hover:bg-nf-ink/90 disabled:opacity-60 max-[399px]:flex-col max-[399px]:gap-0.5 max-[399px]:leading-none"
         >
-          {isPreorder ? "Reserve now" : <>Add to bag<span aria-hidden="true">·</span>{inr(payable)}</>}
+          {isPreorder ? "Reserve now" : <>Add to bag<span aria-hidden="true" className="max-[399px]:hidden">·</span><span>{inr(payable)}</span></>}
         </Button>
       </div>
 

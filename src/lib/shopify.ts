@@ -663,6 +663,43 @@ export async function createShopifyCart(variantId: string, quantity: number, siz
 }
 
 /*
+  A cart of its own for several lines at once: Buy Now on a set chosen on
+  the product page, when the bag also holds other pieces. All or nothing:
+  Shopify answers a sold-out line with a line of 0 and no error, and a set
+  that lost a piece would check out at a lower rung than the page quoted, so
+  any missing line means no cart.
+*/
+export async function createShopifyCartLines(
+  lines: Array<{ variantId: string; quantity: number; size?: string }>,
+): Promise<{ cartId: string; checkoutUrl: string; lines: Array<{ variantId: string; size?: string; lineId: string; quantity: number; price?: number }> } | null> {
+  const data = await storefrontApiRequest<{
+    data: {
+      cartCreate: {
+        cart: { id: string; checkoutUrl: string; lines: { edges: Array<{ node: CartLineNode }> } } | null;
+        userErrors: Array<{ message: string }>;
+      };
+    };
+  }>(CART_CREATE_MUTATION, {
+    input: {
+      lines: lines.map((l) => ({ quantity: l.quantity, merchandiseId: l.variantId, attributes: sizeAttributes(l.size) })),
+      attributes: trackingCartAttributes(),
+    },
+  });
+
+  const userErrors = data.data.cartCreate.userErrors;
+  if (userErrors.length) throw new Error(userErrors.map((error) => error.message).join(", "));
+
+  const cart = data.data.cartCreate.cart;
+  if (!cart?.checkoutUrl) return null;
+  const made = lines.map((l) => {
+    const line = getLineForVariant(cart.lines.edges, l.variantId, l.size);
+    return line?.id ? { variantId: l.variantId, size: l.size, lineId: line.id, quantity: line.quantity ?? l.quantity, price: linePrice(line) } : null;
+  });
+  if (made.some((m) => !m)) return null;
+  return { cartId: cart.id, checkoutUrl: formatCheckoutUrl(cart.checkoutUrl), lines: made as NonNullable<(typeof made)[number]>[] };
+}
+
+/*
   Attaches a discount code to the cart itself.
 
   The app used to rely solely on appending ?discount=CODE to the checkout URL.

@@ -20,10 +20,13 @@ import type { PageReviews } from "@/hooks/useApprovedReviews";
   approved. Thumbnails are square: the brand's radius is 0 (CLAUDE.md).
 */
 
+/* The stars carry their value in words for a screen reader: drawn alone they
+   left every review without its score. */
 const Stars = ({ value, size = 12 }: { value: number; size?: number }) => (
-  <span className="inline-flex gap-[2px]" aria-hidden="true">
+  <span className="inline-flex gap-[2px]">
+    <span className="sr-only">Rated {value} out of 5</span>
     {[1, 2, 3, 4, 5].map((i) => (
-      <Star key={i} size={size} strokeWidth={1.4} className="text-nf-gold-deep" fill={i <= Math.round(value) ? "currentColor" : "none"} />
+      <Star key={i} size={size} strokeWidth={1.4} className="text-nf-gold-deep" fill={i <= Math.round(value) ? "currentColor" : "none"} aria-hidden="true" />
     ))}
   </span>
 );
@@ -77,9 +80,16 @@ const PdpReviews = ({ productName, data, whatsappHref }: Props) => {
         {/* Under the heading, not beside it: beside, the heading wrapped to
             two lines at 360px. */}
         {data.count > 0 && data.rating !== null && (
-          <p className="mt-3 flex items-center gap-2 text-[12.5px] text-nf-ink/80" aria-label={`${data.rating.toFixed(1)} out of 5, from ${data.count} reviews`}>
-            <span className="font-cormorant text-[20px] font-semibold leading-none text-nf-ink">{data.rating.toFixed(1)}</span>
-            <Stars value={data.rating} size={14} />
+          <p className="mt-3 flex items-center gap-2 text-[12.5px] text-nf-ink/80">
+            <span className="font-cormorant text-[20px] font-semibold leading-none text-nf-ink">
+              {data.rating.toFixed(1)}
+              <span className="sr-only"> out of 5</span>
+            </span>
+            <span aria-hidden="true" className="inline-flex gap-[2px]">
+              {[1, 2, 3, 4, 5].map((i) => (
+                <Star key={i} size={14} strokeWidth={1.4} className="text-nf-gold-deep" fill={i <= Math.round(data.rating ?? 0) ? "currentColor" : "none"} />
+              ))}
+            </span>
             <span>
               {data.count} {data.count === 1 ? "review" : "reviews"}
             </span>

@@ -13,11 +13,17 @@ import type { JewelPiece } from "@/data/jewellery";
   piece with the pieces that go with it (lib/pairings, completeTheLook), not
   two of the same, and the saving is the bag's own ladder: the set price is
   what the bag charges for those pieces together, by promo.ts's resolver and
-  rounding, so the card never quotes a total the checkout will not honour.
+  rounding (a typed code included, on "Just this piece" too), so no card
+  quotes a total the checkout will not honour.
 
   The tier is a choice, never a default: the page opens on "Just this piece",
   and the bigger sets are offered beside it with their price and saving in
   rupees. Nothing is added that the shopper did not pick.
+
+  Each card names every piece it adds, one to a line under the title and the
+  full width of the card: cut to one line beside the thumbnails, "+ Prism
+  Emerald-Cut Hoops & Prism Pear Drop Necklace" showed 127px of its 309 at
+  360px and a 3-piece set never named its third piece.
 */
 
 const inr = (n: number) => `₹${Math.round(n).toLocaleString("en-IN")}`;
@@ -26,10 +32,12 @@ type Props = {
   piece: JewelPiece;
   /** This piece's photo in the variant chosen on the page. */
   pieceImage: string;
-  price: number;
   tiers: SetTier[];
   selected: number;
   onSelect: (index: number) => void;
+  /** False until the live catalogue has settled the pairings: a set chosen
+      from the bundled catalogue had its pieces swapped under it. */
+  ready: boolean;
 };
 
 /* What goes in the bag, named as the bag names it: "Prism Emerald-Cut Hoops
@@ -37,7 +45,7 @@ type Props = {
 const optionName = ({ piece, variant }: SetOption) =>
   variant && (piece.variants?.length ?? 0) > 1 ? `${piece.name} (${variantLabel(variant)})` : piece.name;
 
-const PdpSetPicker = ({ piece, pieceImage, price, tiers, selected, onSelect }: Props) => {
+const PdpSetPicker = ({ piece, pieceImage, tiers, selected, onSelect, ready }: Props) => {
   if (tiers.length < 2) return null;
   const best = tiers.length - 1;
   return (
@@ -48,20 +56,19 @@ const PdpSetPicker = ({ piece, pieceImage, price, tiers, selected, onSelect }: P
         </h2>
         <p className="font-nf-label text-[11px] uppercase tracking-nf-8 text-nf-gold-text">Saved in your bag</p>
       </div>
-      <div role="radiogroup" aria-label="Choose a set" onKeyDown={onRadioGroupKeyDown} className="mt-3 grid gap-2">
+      <div
+        role="radiogroup"
+        aria-label="Choose a set"
+        aria-busy={!ready}
+        onKeyDown={ready ? onRadioGroupKeyDown : undefined}
+        className={`mt-3 grid gap-2 transition-opacity duration-200 motion-reduce:transition-none ${ready ? "" : "opacity-60"}`}
+      >
         {tiers.map((tier, i) => {
           const active = selected === i;
           const count = tier.extras.length + 1;
-          /* Two short lines, so three sets fit in about 200px: the set and
-             its rung (the same 10% / 20% as the ladder above), then what
-             joins this piece, cut to one line (the thumbnails show it too).
-             Written out in full, the names wrapped to four lines and the
-             cards ran 337px tall. The saving is in rupees, under the price. */
           const title = i === 0 ? "Just this piece" : `Set of ${count} · ${Math.round(tier.rate * 100)}% off`;
           const saving = tier.full - tier.total;
           const names = tier.extras.map(optionName);
-          const detail = i === 0 ? piece.name : `+ ${names.join(" & ")}`;
-          /* The photo of the variant the bag gets, not the piece's cover. */
           const thumbs = [
             { key: piece.handle, src: pieceImage },
             ...tier.extras.map((o) => ({ key: o.piece.handle, src: variantPhoto(o.piece, o.variant) ?? cardCover(o.piece) })),
@@ -72,19 +79,21 @@ const PdpSetPicker = ({ piece, pieceImage, price, tiers, selected, onSelect }: P
               type="button"
               role="radio"
               aria-checked={active}
+              aria-disabled={!ready}
               tabIndex={rovingTabIndex(selected, i)}
-              onClick={() => onSelect(i)}
-              aria-label={`${title}: ${i === 0 ? piece.name : names.join(" and ")}, ${inr(i === 0 ? price : tier.total)}${i > 0 ? `, you save ${inr(saving)}` : ""}${i === best ? ", best value" : ""}`}
-              className={`relative grid min-h-[58px] w-full grid-cols-[auto_1fr_auto] items-center gap-3 border px-3 py-2 text-left transition-colors duration-150 ${
-                active ? "border-nf-ink bg-nf-ivory-deep/70" : "border-nf-ink/20 bg-transparent hover:border-nf-ink/45"
+              onClick={() => ready && onSelect(i)}
+              aria-label={`${title}: ${i === 0 ? piece.name : names.join(" and ")}, ${inr(tier.total)}${saving > 0 ? `, you save ${inr(saving)}` : ""}${i === best ? ", best value" : ""}`}
+              className={`relative grid min-h-[58px] w-full grid-cols-[auto_1fr_auto] items-center gap-x-3 gap-y-1 border px-3 py-2.5 text-left transition-colors duration-150 ${
+                active ? "border-nf-ink bg-nf-ivory-deep/70" : "border-nf-ink/35 bg-transparent hover:border-nf-ink/60"
               }`}
             >
-              <span aria-hidden="true" className={`flex h-[18px] w-[18px] items-center justify-center border ${active ? "border-nf-ink" : "border-nf-ink/40"}`}>
+              {/* 4:1 on ivory unselected: at /40 the box that marks these as
+                  choices measured 2.5:1, under WCAG's 3:1 for controls. */}
+              <span aria-hidden="true" className={`flex h-[18px] w-[18px] items-center justify-center border ${active ? "border-nf-ink" : "border-nf-ink/60"}`}>
                 {active && <span className="h-[10px] w-[10px] bg-nf-ink" />}
               </span>
               <span className="flex min-w-0 items-center gap-2.5">
-                {/* One width for every row, so the titles line up. */}
-                <span aria-hidden="true" className="flex w-[66px] shrink-0 -space-x-3">
+                <span aria-hidden="true" className="flex shrink-0 -space-x-3">
                   {thumbs.map((t) => (
                     <img
                       key={t.key}
@@ -98,14 +107,23 @@ const PdpSetPicker = ({ piece, pieceImage, price, tiers, selected, onSelect }: P
                     />
                   ))}
                 </span>
-                <span className="min-w-0">
-                  <span className="block text-[13px] font-medium leading-[1.3] text-nf-ink">{title}</span>
-                  <span className="mt-0.5 block truncate text-[11.5px] leading-[1.3] text-nf-ink/70">{detail}</span>
-                </span>
+                <span className="min-w-0 text-[13px] font-medium leading-[1.3] text-nf-ink">{title}</span>
               </span>
               <span className="text-right">
-                <span className="block font-cormorant text-[19px] font-semibold leading-none text-nf-ink">{inr(i === 0 ? price : tier.total)}</span>
-                {i > 0 && <span className="mt-1 block whitespace-nowrap text-[11.5px] font-medium text-nf-gold-text">save {inr(saving)}</span>}
+                <span className="block font-cormorant text-[19px] font-semibold leading-none text-nf-ink">{inr(tier.total)}</span>
+                {saving > 0 && <span className="mt-1 block whitespace-nowrap text-[11.5px] font-medium text-nf-gold-text">save {inr(saving)}</span>}
+              </span>
+              {/* What the card puts in the bag, every piece named. */}
+              <span className="col-span-2 col-start-2 grid text-[11.5px] leading-[1.35] text-nf-ink/75">
+                {i === 0 ? (
+                  <span className="truncate">{piece.name}</span>
+                ) : (
+                  names.map((n) => (
+                    <span key={n} className="truncate">
+                      + {n}
+                    </span>
+                  ))
+                )}
               </span>
               {i === best && (
                 /* On the left edge: on the right it sat over the price. */

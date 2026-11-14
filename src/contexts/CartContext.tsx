@@ -4,6 +4,7 @@ import {
   applyCartDiscountCodes,
   addLineToShopifyCart,
   createShopifyCart,
+  createShopifyCartLines,
   fetchShopifyCart,
   formatCheckoutUrl,
   removeLineFromShopifyCart,
@@ -36,7 +37,9 @@ export interface CartItem {
 interface CartContextType {
   items: CartItem[];
   addItem: (item: Omit<CartItem, "quantity" | "lineId">, quantity?: number) => Promise<string | null>;
-  buyNow: (item: Omit<CartItem, "quantity" | "lineId">, quantity?: number) => Promise<void>;
+  /** Checks out this piece, with `extras` the other pieces of a set chosen
+      on the product page, and nothing else the bag holds. */
+  buyNow: (item: Omit<CartItem, "quantity" | "lineId">, quantity?: number, extras?: Omit<CartItem, "quantity" | "lineId">[]) => Promise<void>;
   removeItem: (id: string, size?: string, variantId?: string) => Promise<void>;
   updateQuantity: (id: string, size: string | undefined, quantity: number, variantId?: string) => Promise<void>;
   clearCart: () => void;
@@ -628,6 +631,46 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [addItem, clearCart, commitCart]);
 
+  /* Buy Now on a set chosen on the product page: this piece and the pieces
+     picked with it, and only those, the way Buy Now takes one piece. Each
+     goes in the bag once (a piece already there is checked with Shopify, as
+     Buy Now checks its one line, never added again), and checkout opens only
+     when every one of them is in: a set missing a piece would check out at
+     a lower rung than the page quoted. With other pieces in the bag, the set
+     goes to checkout on a Shopify cart of its own and the rest stay in the
+     bag. */
+  const buySet = useCallback(async (set: Omit<CartItem, "quantity" | "lineId">[]) => {
+    const fail = () => {
+      toast.error("Could not open checkout. Please try again.");
+    };
+    for (const piece of set) {
+      const inBag = loadCart().items.find((line) => line.lineId && keyOf(line) === keyOf(piece));
+      const url = inBag ? await confirmInBag(piece, inBag, 1) : await addItem(piece, 1);
+      if (!url) return fail();
+    }
+    const bag = loadCart();
+    const keys = set.map(keyOf);
+    const lines = bag.items.filter((line) => line.lineId && keys.includes(keyOf(line)));
+    if (lines.length !== set.length || !bag.checkoutUrl) return fail();
+    if (bag.items.length > lines.length) {
+      let own: Awaited<ReturnType<typeof createShopifyCartLines>> = null;
+      try {
+        own = await createShopifyCartLines(lines.map((line) => ({ variantId: line.variantId, quantity: line.quantity, size: line.size })));
+      } catch (error) {
+        console.error("Could not start a cart for this set", error);
+      }
+      if (!own) return fail();
+      const made = own.lines;
+      const items = lines.map((line) => {
+        const m = made.find((l) => l.variantId === line.variantId && (l.size ?? "") === (line.size ?? ""))!;
+        return withShopifyPrice({ ...line, quantity: m.quantity, lineId: m.lineId }, m.price);
+      });
+      await openCheckout(own.checkoutUrl, { items, cartId: own.cartId });
+      return;
+    }
+    await openCheckout(bag.checkoutUrl);
+  }, [addItem, confirmInBag, openCheckout]);
+
   /* One-tap "Pre-order now / Shop now": add to the Shopify cart, then go straight
      to Shopify checkout using the URL that add returned (no stale-state race).
      A line already in the bag goes as it is: adding again sent a shopper who
@@ -638,7 +681,8 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
      With other pieces in the bag, only this one goes to checkout and the rest
      stay in the bag for later: Shopify's checkout (Fastrr's fallback) gets a
      cart of its own holding just this line. */
-  const buyNow = useCallback(async (item: Omit<CartItem, "quantity" | "lineId">, quantity = 1) => {
+  const buyNow = useCallback(async (item: Omit<CartItem, "quantity" | "lineId">, quantity = 1, extras: Omit<CartItem, "quantity" | "lineId">[] = []) => {
+    if (extras.length) return buySet([item, ...extras]);
     const latest = loadCart();
     const inBag = latest.items.find((line) => line.lineId && keyOf(line) === keyOf(item));
     const url = !inBag
@@ -667,7 +711,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       return;
     }
     await openCheckout(url);
-  }, [addItem, confirmInBag, openCheckout]);
+  }, [addItem, buySet, confirmInBag, openCheckout]);
 
   const totalItems = useMemo(() => items.reduce((sum, item) => sum + item.quantity, 0), [items]);
   const subtotal = useMemo(() => items.reduce((sum, item) => sum + item.price * item.quantity, 0), [items]);

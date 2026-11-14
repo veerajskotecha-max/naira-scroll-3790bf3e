@@ -105,7 +105,8 @@ describe("redesigned product page", () => {
        catalogue swapping a pairing). */
     expect(code).toMatch(/useState\(0\)/);
     expect(code).toMatch(/useEffect\(\(\) => setSetIndex\(0\), \[handle, setKey\]\)/);
-    expect(code).toMatch(/const setKey = setOptions\.map\(\(o\) => `\$\{o\.piece\.handle\}:\$\{o\.variant\?\.id \?\? ""\}`\)/);
+    /* Keyed on the pieces only: choosing another metal used to reset it. */
+    expect(code).toMatch(/const setKey = setOptions\.map\(\(o\) => o\.piece\.handle\)\.join\("\|"\);/);
   });
 
   /* A set added rings at "Gold / 5" and birthstone pieces at "January":
@@ -170,8 +171,11 @@ describe("redesigned product page", () => {
   it("routes Buy Now through checkout with the chosen variant, but reserves pre-orders on WhatsApp", () => {
     const handler = code.match(/const handleBuyNow = async \(\) => \{[\s\S]*?\n {2}\};/)?.[0] ?? "";
     expect(handler).toContain("if (isPreorder) return handlePreOrder();");
-    expect(handler).toContain("await buyNow(cartItem());");
+    /* AGENTS.md: PDP Buy Now goes through CartContext.buyNow, a chosen set
+       included (buyNowSet.test.tsx covers what it does with one). */
+    expect(handler).toContain("await buyNow(cartItem(), 1, extraLines);");
     expect(handler).toContain("if (buying || cartLoading) return;");
+    expect(handler).not.toMatch(/checkout\(\)|addItem/);
   });
 
   it("suggests a second piece before the reviews", () => {
@@ -181,18 +185,43 @@ describe("redesigned product page", () => {
     expect(reviews).toBeGreaterThan(look);
   });
 
-  it("takes this piece alone through Buy Now, and a chosen set through the bag", () => {
+  it("adds a chosen set to the bag piece by piece, stopping at a piece that will not go in", () => {
+    /* Buy Now is awaited to the end, so the button stays busy until the page
+       leaves and a second tap cannot open a second checkout. */
     const handler = code.match(/const handleBuyNow = async \(\) => \{[\s\S]*?\n {2}\};/)?.[0] ?? "";
-    expect(handler).toMatch(/if \(!extraLines\.length\) \{\s*await buyNow\(cartItem\(\)\);/);
-    /* Add to bag then Buy Now must not pay for the set twice; a failed add
-       must not send the rest to checkout at a rung the card never quoted;
-       and a bag holding anything already is paid from the bag. */
-    expect(handler).toMatch(/if \(before\.includes\(cartKeyOf\(line\)\)\) continue;\s*if \(!\(await addItem\(line\)\)\) return setDrawerOpen\(true\);/);
-    expect(handler).toMatch(/if \(before\.length\) return setDrawerOpen\(true\);/);
-    /* checkout() is not awaited: a second tap must not open a second one. */
-    expect(handler).toMatch(/leaving = true;[\s\S]*checkout\(\);[\s\S]*finally \{\s*if \(!leaving\) setBuying\(false\);/);
+    expect(handler).toMatch(/try \{\s*await buyNow\(cartItem\(\), 1, extraLines\);\s*\} finally \{\s*setBuying\(false\);/);
     const add = code.match(/const handleAddToCart = async \(\) => \{[\s\S]*?\n {2}\};/)?.[0] ?? "";
-    expect(add).toMatch(/for \(const line of \[cartItem\(\), \.\.\.extraLines\]\) if \(!\(await addItem\(line\)\)\) return;/);
+    expect(add).toMatch(/for \(const line of \[cartItem\(\), \.\.\.extraLines\]\) \{/);
+  });
+
+  /* Review of 14 Nov 2026. */
+  it("quotes what the bag charges and takes a set only once the pairings are settled", () => {
+    /* "Just this piece" and the button followed the list price while the
+       bag took a typed code off it. */
+    expect(code).toMatch(/const payable = tier \? tier\.total : shown\.price;/);
+    /* A set chosen from the bundled catalogue had its pieces swapped when
+       the live one landed. */
+    expect(code).toMatch(/const setReady = isLive \|\| !catalogueLoading;/);
+    expect(code).toMatch(/const tier = \(setReady \? tiers\[setIndex\] : undefined\) \?\? tiers\[0\];/);
+    expect(code).toMatch(/ready=\{setReady\}/);
+    /* Set of 2 with the bracelet already in the bag made two bracelets. */
+    const add = code.match(/const handleAddToCart = async \(\) => \{[\s\S]*?\n {2}\};/)?.[0] ?? "";
+    expect(add).toMatch(/const have = extraLines\.length \? bagItems\.map\(cartKeyOf\) : \[\];/);
+    expect(add).toMatch(/if \(have\.includes\(cartKeyOf\(line\)\)\) continue;\s*if \(!\(await addItem\(line\)\)\) return;/);
+  });
+
+  /* CLAUDE.md: the product page says "COD available" and no more; the fee
+     is the bag's to state. */
+  it("says COD is available on the page and leaves the fee to the bag", () => {
+    expect(code).not.toMatch(/COD fee|any fee/i);
+    expect(code).toMatch(/Cash on delivery available\. Faulty piece\?/);
+  });
+
+  /* "ADD TO BAG · ₹2,399" was cut to "DD TO BAG · ₹2,39" at 320px. */
+  it("puts the price under the words when the button is too narrow for one line", () => {
+    expect(code).toMatch(/max-\[399px\]:flex-col/);
+    expect(code).toMatch(/max-\[359px\]:flex-col/);
+    expect(code.match(/<span aria-hidden="true" className="max-\[3[59]9px\]:hidden">·<\/span><span>\{inr\(payable\)\}<\/span>/g)).toHaveLength(2);
   });
 
   it("switches the palette on for its own lifetime only", () => {

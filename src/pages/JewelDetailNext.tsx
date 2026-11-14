@@ -1,7 +1,7 @@
 import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState, type MouseEvent } from "react";
 import { Link, Navigate, useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
-import { ArrowLeft, Check, Heart, MessageSquare, Plus, Truck } from "lucide-react";
+import { ArrowLeft, Check, Heart, MessageSquare, Plus, Star, Truck } from "lucide-react";
 import JsonLd from "@/components/JsonLd";
 import Footer from "@/components/Footer";
 import PincodeChecker from "@/components/product/PincodeChecker";
@@ -90,7 +90,7 @@ const MOBILE_FRAME = "1/1";
    name, price, offer and delivery line (about 190px) and the buy bar (65px):
    on a 360x640 Instagram screen the photo gives up ~70px so the whole
    decision sits above the bar; on a taller phone it stays square. */
-const MOBILE_FRAME_MAX = "max(240px, calc(100svh - 366px))";
+const MOBILE_FRAME_MAX = "max(240px, calc(100svh - 390px))";
 /* A transparent 1×1 GIF: what a screen gets from a <picture> whose source is not for it. */
 const BLANK_PIXEL = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
 const PRICE_VALID_UNTIL = new Date(Date.now() + 365 * 864e5).toISOString().slice(0, 10);
@@ -1014,12 +1014,36 @@ const JewelDetailNext = () => {
           <div className="hidden md:block lg:sticky lg:top-[140px] lg:h-[calc(100vh-156px)] lg:self-start">{DesktopGallery}</div>
 
           <div className="flex w-full flex-col items-stretch px-4 pt-5 md:pt-6 lg:px-10 lg:pt-2 xl:px-12">
-            <h1 className="font-cormorant text-[24px] font-medium leading-[1.1] text-nf-ink md:text-[28px] lg:text-[32px]">
+            {/* The customers' rating, worked out from the reviews shown below
+                (useApprovedReviews). Most are about other pieces, so it says
+                "across Naira" rather than passing for this piece's own. The
+                photo gave up 24px for this row (MOBILE_FRAME_MAX), so the
+                delivery line still closes the first screen. A 44px target
+                round an 18px line. */}
+            {rating && (
+              <a
+                href="#customer-reviews"
+                onClick={toReviews}
+                className="-my-[13px] inline-flex min-h-[44px] items-center gap-1.5 self-start text-[12px] text-nf-ink/75"
+                aria-label={`Rated ${rating.rating.toFixed(1)} out of 5 in ${rating.count} customer reviews across Naira. Jump to reviews.`}
+              >
+                <span aria-hidden="true" className="inline-flex gap-[2px] text-nf-gold-deep">
+                  {[1, 2, 3, 4, 5].map((i) => (
+                    <Star key={i} size={12} strokeWidth={1.4} fill={i <= Math.round(rating.rating) ? "currentColor" : "none"} />
+                  ))}
+                </span>
+                <span className="font-medium text-nf-ink">{rating.rating.toFixed(1)}</span>
+                <span className="underline decoration-nf-ink/25 underline-offset-4">
+                  {rating.count} {rating.count === 1 ? "review" : "reviews"} across Naira
+                </span>
+              </a>
+            )}
+            <h1 className={`font-cormorant text-[24px] font-medium leading-[1.1] text-nf-ink md:text-[28px] lg:text-[32px] ${rating ? "mt-[6px]" : ""}`}>
               {piece.name}
             </h1>
 
             {/* Price, the MRP it replaces and the saving, as the percentage
-                shoppers compare; a real rating, once there is one, beside it. */}
+                shoppers compare. */}
             <div className="mt-2 flex items-center justify-between gap-3">
               <div id="product-price" className="flex flex-wrap items-baseline gap-x-2.5 gap-y-1">
                 <span className="font-cormorant text-[22px] font-semibold leading-none text-nf-ink md:text-[24px]">{shown.priceLabel}</span>
@@ -1033,18 +1057,6 @@ const JewelDetailNext = () => {
                 )}
                 <span className="text-[11px] tracking-nf-4 text-nf-ink/65">incl. {GST_LABEL}</span>
               </div>
-              {rating && (
-                <a
-                  href="#customer-reviews"
-                  onClick={toReviews}
-                  className="-my-[10px] inline-flex min-h-[44px] shrink-0 items-center gap-1 pl-2 text-[11.5px] text-nf-ink/75"
-                  aria-label={`Rated ${rating.rating} out of 5 from ${rating.count} reviews. Jump to reviews.`}
-                >
-                  <span aria-hidden="true" className="text-nf-gold-deep">★</span>
-                  <span className="font-medium text-nf-ink">{rating.rating}</span>
-                  <span className="underline decoration-nf-ink/25 underline-offset-4">({rating.count})</span>
-                </a>
-              )}
             </div>
 
             {/* Buy 2 / 3 / 4, priced for this piece and following the bag. A

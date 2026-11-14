@@ -1,20 +1,26 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { getSupabase } from "@/integrations/supabase/lazy";
+import { orderedRealReviews } from "@/data/realReviews";
 
 /*
-  The product page's reviews: only what shoppers wrote and the team approved
-  (Supabase `customer_reviews`, approved = true, this piece's name). Nothing
-  bundled, nothing generated. The page used to show "4.9 · 51 reviews" on
-  every piece from authored text (data/productReviews.ts, data/reviewWall.ts);
-  India's dark-pattern guidelines (CCPA, 2023) and BIS IS 19000:2022 treat
-  that as false popularity, and the rating sat on every first screen.
+  The product page's reviews: only what customers wrote. Reviews the team
+  approved for this piece (Supabase `customer_reviews`, approved = true, this
+  piece's name) lead, then the genuine customer reviews with their own
+  photographs (data/realReviews.ts), the one about this kind of piece first.
 
-  So the rating and its count appear only once real reviews exist, and are
-  worked out from them. The client loads after first paint (it is 57 KB),
-  and a pre-built page or an automated capture asks for nothing.
+  The page used to show "4.9 · 51 reviews" on every piece, built mostly from
+  text written for the site (productReviews.ts, handed out by a hash of the
+  product name, plus curated notes and one-liners). India's dark-pattern
+  guidelines (CCPA, 2023) and BIS IS 19000:2022 treat that as fake reviews,
+  and it sat on every first screen. The rating and count here are worked out
+  from the reviews shown, so they move as real ones arrive.
+
+  The real reviews are bundled, so the rating is there on first paint. The
+  Supabase client loads after first paint (it is 57 KB); a pre-built page or
+  an automated capture asks it for nothing.
 */
 
-export type ApprovedReview = {
+export type PageReview = {
   name: string;
   rating: number;
   text: string;
@@ -22,26 +28,30 @@ export type ApprovedReview = {
   date: string;
 };
 
-export type ApprovedReviews = {
-  reviews: ApprovedReview[];
+export type PageReviews = {
+  reviews: PageReview[];
   /** The average to one decimal, or null with no reviews. */
   rating: number | null;
   count: number;
+  /** How many are about this piece (approved submissions for it). */
+  ownCount: number;
   loaded: boolean;
 };
 
-const EMPTY: ApprovedReviews = { reviews: [], rating: null, count: 0, loaded: false };
-
-export const summarise = (reviews: ApprovedReview[]): Omit<ApprovedReviews, "loaded"> => {
+export const summarise = (reviews: PageReview[]) => {
   const count = reviews.length;
   const rating = count ? Math.round((reviews.reduce((s, r) => s + r.rating, 0) / count) * 10) / 10 : null;
   return { reviews, rating, count };
 };
 
-export const useApprovedReviews = (productName?: string): ApprovedReviews => {
-  const [state, setState] = useState<ApprovedReviews>(EMPTY);
+const realFor = (productName?: string): PageReview[] =>
+  orderedRealReviews(productName).map((r) => ({ name: r.name, rating: r.rating, text: r.text, images: r.images, date: r.date }));
+
+export const useApprovedReviews = (productName?: string): PageReviews => {
+  const real = useMemo(() => realFor(productName), [productName]);
+  const [own, setOwn] = useState<{ reviews: PageReview[]; loaded: boolean }>({ reviews: [], loaded: false });
   useEffect(() => {
-    setState(EMPTY);
+    setOwn({ reviews: [], loaded: false });
     if (!productName || (typeof navigator !== "undefined" && navigator.webdriver)) return;
     let cancelled = false;
     const load = async () => {
@@ -55,16 +65,18 @@ export const useApprovedReviews = (productName?: string): ApprovedReviews => {
           .order("created_at", { ascending: false })
           .limit(40);
         if (cancelled) return;
-        const reviews: ApprovedReview[] = (data ?? []).map((r) => ({
-          name: r.name,
-          rating: r.rating,
-          text: r.text,
-          images: r.images ?? [],
-          date: new Date(r.created_at).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" }),
-        }));
-        setState({ ...summarise(reviews), loaded: true });
+        setOwn({
+          loaded: true,
+          reviews: (data ?? []).map((r) => ({
+            name: r.name,
+            rating: r.rating,
+            text: r.text,
+            images: r.images ?? [],
+            date: new Date(r.created_at).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }),
+          })),
+        });
       } catch {
-        if (!cancelled) setState({ ...EMPTY, loaded: true });
+        if (!cancelled) setOwn({ reviews: [], loaded: true });
       }
     };
     /* After the first screen has settled, like the reels list. */
@@ -74,5 +86,8 @@ export const useApprovedReviews = (productName?: string): ApprovedReviews => {
       window.clearTimeout(timer);
     };
   }, [productName]);
-  return state;
+  return useMemo(() => {
+    const all = [...own.reviews, ...real];
+    return { ...summarise(all), ownCount: own.reviews.length, loaded: own.loaded };
+  }, [own, real]);
 };

@@ -47,7 +47,8 @@ describe("redesigned product page", () => {
   });
 
   it("shows the rating only with its count", () => {
-    const block = code.match(/\{rating && \([\s\S]*?\)\}/)![0];
+    const start = code.indexOf("{rating && (");
+    const block = code.slice(start, code.indexOf("across Naira", start) + 12);
     expect(block).toMatch(/rating\.rating/);
     expect(block).toMatch(/rating\.count/);
     expect(code).toMatch(/href="#customer-reviews"/);
@@ -126,6 +127,9 @@ describe("redesigned product page", () => {
     expect(code).not.toMatch(/PressMarquee/);
     expect(code).not.toMatch(/reviewWall|reviewSummary|CustomerReviews/);
     expect(code).toMatch(/useApprovedReviews\(piece\?\.name\)/);
+    /* The rating beside the name is the customers' across the range, and
+       says so: most of the reviews are about other pieces. */
+    expect(code).toMatch(/\{rating\.count\} \{rating\.count === 1 \? "review" : "reviews"\} across Naira/);
     expect(code).not.toMatch(/Skin-friendly|skin-safe|plating assurance|for a lifetime|Mumbai atelier|Demi-Gold/);
   });
 

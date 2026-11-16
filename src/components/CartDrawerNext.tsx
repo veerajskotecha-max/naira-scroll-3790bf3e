@@ -24,6 +24,7 @@ import {
 } from "@/lib/promo";
 import { SHIPPING_CHARGE, deliveryRangeFromNow } from "@/lib/serviceability";
 import UpiBadges from "@/components/checkout/UpiBadges";
+import { BagTrust } from "@/components/cart/BagTrust";
 import { useAuth } from "@/contexts/AuthContext";
 import { getSupabase } from "@/integrations/supabase/lazy";
 import { shopifyImage } from "@/lib/shopifyImage";
@@ -42,6 +43,7 @@ import { GST_LABEL } from "@/lib/gst";
     Wears well with your bracelet · a third piece, "Adds ₹360 · saves ₹1,139", Add   (row no longer drawn)
     [the box] Comes with a Naira gift box     a tap lifts it open
     Total · incl. 3% GST, one savings line (or what the next rung takes), arrival date
+    ★ star line between hairlines, then "Cards · Cash on delivery" (cart/BagTrust)
     Checkout · ₹2,399, then payment, returns and plating, and what comes next
 
   Same cart, discount resolver and checkout hand-off as before: every rupee
@@ -595,12 +597,15 @@ const CartDrawerNext = () => {
               <p className="mt-2 text-[12.5px] leading-[1.5] text-nf-ink/65">
                 Incl. {GST_LABEL}. Free insured shipping · arrives {arrivesBy}.
               </p>
+              {/* The shop's rating and the ways to pay, right above the
+                  button (the owner's ask, 16 Nov 2026). */}
+              <BagTrust />
               <button
                 type="button"
                 data-checkout
                 onClick={handleCheckout}
                 disabled={busy || opening}
-                className="press-scale mt-4 flex h-[52px] w-full items-center justify-center gap-2 bg-nf-ink text-[15px] font-medium tracking-[0.02em] text-nf-ivory transition-opacity duration-150 hover:opacity-90 disabled:opacity-80"
+                className="press-scale mt-3 flex h-[52px] w-full items-center justify-center gap-2 bg-nf-ink text-[15px] font-medium tracking-[0.02em] text-nf-ivory transition-opacity duration-150 hover:opacity-90 disabled:opacity-80"
               >
                 {busy || opening ? <Loader2 size={16} className="animate-spin" aria-hidden="true" /> : null}
                 {opening ? "Opening checkout…" : "Checkout"}

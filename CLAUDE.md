@@ -340,6 +340,15 @@ exact effect ("Adds ₹360 · saves ₹1,139" for a ₹1,499 piece as the third 
 and rounding, so the total moves by exactly that; beside one piece it adds its full price, as two pieces earn no rung), the gift box is one line that lifts open above itself on a tap,
 and Checkout has payment, returns, plating and "Next: a quick OTP…" under it.
 
+- Above Checkout sits the trust block (`cart/BagTrust.tsx`, the owner's ask
+  of 16 Nov 2026; they chose it over a row of payment tiles): "Rated 4.5/5 · Trusted by 5,000+
+  clients" between hairlines, then one line, "Visa Mastercard Cards · Cash on
+  delivery". Nothing in it is pressable; the Checkout button keeps its GPay,
+  PhonePe and Paytm discs. The figures live in `lib/trust.ts`: 5,000 is
+  clients served (most of them at exhibitions), not ratings, so the line never
+  says "rated by 5,000". Fastrr charged no COD fee on 16 Nov 2026 (six COD
+  orders at list price, ₹0 shipping), so the line names no fee;
+  `lib/payment.ts` still says 5% and nothing reads it.
 - The live bag no longer draws the add-on row (Project Shades' simpler bag);
   `addOnEffect` still drives the product page's line (`pdpOfferStatus`), and
   `bagAddOns` is kept for it.

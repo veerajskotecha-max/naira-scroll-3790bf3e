@@ -5,7 +5,8 @@ The owner sent a checkout screenshot ("The last thing buyers see") and asked for
 - trusted by 5,000+ clients (served at exhibitions);
 - a 4.5-star rating.
 
-Neither option is on `main` or live.
+**Decision, 16 Nov 2026:** the owner chose option B. It is on `main` as e161ace0 (the B commit, reworded), and goes live when the owner presses Publish in Lovable.
+Option A stays in the bundle in case it is wanted later.
 
 | | Option A, express row | Option B, quiet seal |
 |---|---|---|

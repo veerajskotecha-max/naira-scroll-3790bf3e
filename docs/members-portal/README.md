@@ -248,7 +248,7 @@ Independent check by the lead on 2206027, the final head (a separate detached wo
 
 ## Phase 9 backup: The World of Naira (work in progress, not live)
 
-`p9-world.bundle` holds the Phase 9 branches: members-portal-p9 (the six tracks merged, wired and walked on a phone), the six build tracks p9-t1 .. p9-t6 and the two wiring lanes, on top of origin/main. Restore with:
+`p9-world.bundle` holds the Phase 9 branches on top of origin/main (e161ace): members-portal-p9 (the six tracks, wow rounds 1-3, member orders, and the finishing direction's photograph cut, five campaigns in their worlds and the per-world grade, each merged and walked on a phone), the navigation repair (nav-fix), the finishing packages finish-F1A .. finish-F1D and finish-F2A .. finish-F2C (some still being built), and orders-server / orders-client. Member orders are built but not deployed: the database migration is not applied and the functions are not deployed (see docs/orders/RUNBOOK.md on members-portal-p9). Restore with:
 
     git fetch docs/members-portal/p9-world.bundle 'refs/heads/*:refs/remotes/p9/*'
 

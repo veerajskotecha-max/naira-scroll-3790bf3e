@@ -248,7 +248,7 @@ Independent check by the lead on 2206027, the final head (a separate detached wo
 
 ## Phase 9 backup: The World of Naira (work in progress, not live)
 
-`p9-world.bundle` holds the Phase 9 branches (members-portal-p9 at the contracts commit, and the six build tracks p9-t1 .. p9-t6) on top of origin/main. Restore with:
+`p9-world.bundle` holds the Phase 9 branches: members-portal-p9 (the six tracks merged, wired and walked on a phone), the six build tracks p9-t1 .. p9-t6 and the two wiring lanes, on top of origin/main. Restore with:
 
     git fetch docs/members-portal/p9-world.bundle 'refs/heads/*:refs/remotes/p9/*'
 

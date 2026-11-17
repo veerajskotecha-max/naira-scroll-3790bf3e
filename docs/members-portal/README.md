@@ -245,3 +245,11 @@ Independent check by the lead on 2206027, the final head (a separate detached wo
 - Phase 6, for the lead (the acceptance critic's four lines, now held to the plan):
   - signing out on a phone does not forget the Vanity's look ('naira-vanity') or her gold-leaf mark (naira-portal.crown). Both are tagged with her id, so another member never sees them. Making sign-out forget them means editing the shop's Account chunk (src/lib/auth/forgetDevice.ts and its test). `git revert 38e854f` puts that change back, and it also clears naira-portal.grown, the Phase 5 roses
   - a later version that wants a seventh play bit must ship a reader that keeps it before any writer sets it, because today's reader drops any number above 63
+
+## Phase 9 backup: The World of Naira (work in progress, not live)
+
+`p9-world.bundle` holds the Phase 9 branches (members-portal-p9 at the contracts commit, and the six build tracks p9-t1 .. p9-t6) on top of origin/main. Restore with:
+
+    git fetch docs/members-portal/p9-world.bundle 'refs/heads/*:refs/remotes/p9/*'
+
+Nothing in it is on main or live. It is replaced as the work moves on.

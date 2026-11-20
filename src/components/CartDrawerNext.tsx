@@ -24,6 +24,7 @@ import BagLine from "@/components/cart/BagLine";
 import BagOffer from "@/components/cart/BagOffer";
 import { BagTrust } from "@/components/cart/BagTrust";
 import { useKeptFocus } from "@/components/cart/useKeptFocus";
+import { useBagFaces } from "@/components/cart/useBagFaces";
 import { useAuth } from "@/contexts/AuthContext";
 import { getSupabase } from "@/integrations/supabase/lazy";
 import { clarityEvent } from "@/lib/clarity";
@@ -133,6 +134,8 @@ const CartDrawerNext = () => {
     pending,
     addError,
   } = useCart();
+  /* The bag's faces are asked for before its first opening. */
+  useBagFaces();
   const { jewellery } = useLiveJewellery(isDrawerOpen);
   const catalogueByHandle = useMemo(() => new Map(jewellery.map((piece) => [piece.handle, piece])), [jewellery]);
   const { user } = useAuth();

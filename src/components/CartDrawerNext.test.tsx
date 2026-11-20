@@ -3,58 +3,78 @@ import { afterEach, describe, expect, it } from "vitest";
 import { MemoryRouter } from "react-router-dom";
 import { readFileSync } from "fs";
 import { resolve } from "path";
+import { QUANTITY_OFFERS, quantityOfferProgress } from "@/lib/promo";
 import { BagReturns, SimpleLadder } from "./CartDrawerNext";
 
 afterEach(cleanup);
 
-/* The offer's explanation rides ON TOP of the track, where the eye lands
-   first — it must name the saving (up to 30% off, the top rung since the
-   owner added Buy 4 on 7 Nov 2026; 20% would now undersell it) and say it
-   runs today. */
-describe("SimpleLadder: the bag's offer track", () => {
-  it("leads with the up-to-30% explanation on top of the track", () => {
+/* What a shopper reads in a rung: its words, without the note a screen
+   reader hears on the rung the bag sits on (", in your bag"). */
+const rungText = (rung: Element) => {
+  const copy = rung.cloneNode(true) as Element;
+  copy.querySelectorAll(".nc-sr").forEach((hidden) => hidden.remove());
+  return copy.textContent;
+};
+
+/* The bag's offer is one line of words over one 2px line: the three rungs,
+   the one the bag sits on marked, and the line filling as pieces arrive. It
+   states the offer and nothing else: the line that rode on top of it, that a
+   sitewide sale was live today, described a permanent offer as a passing one
+   and is gone. */
+describe("SimpleLadder: the bag's offer strip", () => {
+  it("states all three rungs as words", () => {
     const { container } = render(<SimpleLadder totalItems={1} />);
+    const rungs = [...container.querySelectorAll("[data-ladder] [data-rung]")];
+    expect(rungs.map(rungText)).toEqual(["Buy 2 · 10% off", "Buy 3 · 20% off", "Buy 4 · 30% off"]);
+    expect(rungs.map((rung) => rung.getAttribute("data-rung"))).toEqual(QUANTITY_OFFERS.map((offer) => String(offer.minQuantity)));
+  });
+
+  it("no longer says a sitewide sale is live today", () => {
+    const { container } = render(<SimpleLadder totalItems={3} />);
     const ladder = container.querySelector("[data-ladder]") as HTMLElement;
-    expect(ladder.firstElementChild?.textContent).toContain("Sitewide sale live today");
-    expect(ladder.firstElementChild?.textContent).toContain("up to 30% off");
-    expect(ladder.textContent).not.toContain("up to 20%");
+    expect(ladder.textContent).not.toMatch(/sitewide sale/i);
+    expect(ladder.textContent).not.toMatch(/live today/i);
+    expect(ladder.textContent).not.toMatch(/up to/i);
+    expect(ladder.querySelector("p")).toBeNull();
   });
 
-  /* 8.5px was dust on a phone; 11px is the least a shopper can read. */
-  it("sets the line over the track at 10px, small enough for three rungs", () => {
-    const { container } = render(<SimpleLadder totalItems={1} />);
-    expect((container.querySelector("[data-ladder] > p") as HTMLElement).className).toMatch(/text-\[10px\]/);
-  });
-
-  it("states all three rungs under the track", () => {
-    const { container } = render(<SimpleLadder totalItems={1} />);
-    const labels = [...container.querySelectorAll("[data-rung-label]")].map((l) => [...l.children].map((c) => c.textContent).join(" "));
-    expect(labels).toEqual(["Buy 2 10% off", "Buy 3 20% off", "Buy 4 30% off"]);
-  });
-
-  /* Each label sits in its own third, under its own ring (1/6, 1/2, 5/6): at
-     the rungs' piece counts Buy 3 and Buy 4 were a quarter apart, Buy 4 at the
-     very end, and their labels met on a 280px phone. */
-  it("centres each ring in its own third, over its label", () => {
+  /* The strip is two things, the words and the line under them: no marks on
+     the line, no second row of labels, nothing to press. */
+  it("is the rungs and the line, with nothing else", () => {
     const { container } = render(<SimpleLadder totalItems={2} />);
-    const lefts = [...container.querySelectorAll("[data-rung-mark]")].map((m) => parseFloat((m as HTMLElement).style.left).toFixed(2));
-    expect(lefts).toEqual(["16.67", "50.00", "83.33"]);
-    expect(container.querySelector("[data-rung-label]")?.parentElement?.className).toMatch(/grid-cols-3/);
+    const ladder = container.querySelector("[data-ladder]") as HTMLElement;
+    expect([...ladder.children].map((child) => child.tagName)).toEqual(["UL", "DIV"]);
+    expect(ladder.lastElementChild?.getAttribute("role")).toBe("progressbar");
+    expect(ladder.querySelector("[data-rung-mark], [data-rung-label]")).toBeNull();
+    expect(ladder.querySelector("a, button, svg, img")).toBeNull();
   });
 
-  /* The track fills piece by piece and meets each ring as it is reached. */
+  /* The rung the bag sits on follows the pieces, and the line fills piece by
+     piece (promo.ts `quantityOfferProgress`). */
   it.each([
-    [1, "8.333", [false, false, false]],
-    [2, "16.667", [true, false, false]],
-    [3, "50.000", [true, true, false]],
-    [4, "100.000", [true, true, true]],
-    [5, "100.000", [true, true, true]],
-  ])("at %i pieces fills %s%% and fills the rings it has reached", (n, width, reached) => {
+    [1, null, [], "8.333"],
+    [2, "2", [], "16.667"],
+    [3, "3", ["2"], "50.000"],
+    [4, "4", ["2", "3"], "100.000"],
+    [5, "4", ["2", "3"], "100.000"],
+  ])("at %i pieces marks rung %s, steps back %j and fills %s%%", (n, current, passed, width) => {
     const { container } = render(<SimpleLadder totalItems={n} />);
-    const fill = container.querySelector('[role="progressbar"] > span') as HTMLElement;
+    const marked = [...container.querySelectorAll("[data-rung][data-current]")].map((rung) => rung.getAttribute("data-rung"));
+    expect(marked).toEqual(current ? [current] : []);
+    expect([...container.querySelectorAll("[data-rung][data-passed]")].map((rung) => rung.getAttribute("data-rung"))).toEqual(passed);
+    const bar = container.querySelector('[role="progressbar"]') as HTMLElement;
+    const fill = bar.querySelector("span") as HTMLElement;
     expect(parseFloat(fill.style.width).toFixed(3)).toBe(width);
-    expect([...container.querySelectorAll("[data-rung-mark]")].map((m) => m.className.includes("bg-nf-ink"))).toEqual(reached);
-    expect(container.querySelector('[role="progressbar"]')?.getAttribute("aria-valuenow")).toBe(String(Math.min(n, 4)));
+    expect(parseFloat(fill.style.width)).toBeCloseTo(quantityOfferProgress(n) * 100, 3);
+    expect(bar.getAttribute("aria-valuenow")).toBe(String(Math.min(n, 4)));
+    expect(bar.getAttribute("aria-valuemax")).toBe("4");
+    expect(bar.getAttribute("aria-label")).toBe(`${n} of 4 pieces`);
+  });
+
+  /* The rung the bag has reached is said, not only coloured. */
+  it("tells a screen reader which rung the bag sits on", () => {
+    const { container } = render(<SimpleLadder totalItems={3} />);
+    expect(container.querySelector("[data-current]")?.textContent).toBe("Buy 3 · 20% off, in your bag");
   });
 });
 
@@ -80,6 +100,17 @@ describe("BagReturns: the bag's exchange and returns line", () => {
     const line = screen.getByText(/easy 7-day exchange & returns/i).closest("a");
     expect(line).toHaveAttribute("href", "/exchange-return-policy");
   });
+
+  /* Words only: the arrow that used to sit before them is gone. */
+  it("is a text link with no icon", () => {
+    const { container } = render(
+      <MemoryRouter>
+        <BagReturns />
+      </MemoryRouter>,
+    );
+    expect(container.querySelector("svg, img")).toBeNull();
+    expect(container.querySelector("[data-returns]")?.className).toMatch(/\bnc-link\b/);
+  });
 });
 
 /* Three of one piece at 20% divide a rounded total by three: three ₹999
@@ -91,5 +122,53 @@ describe("bag line prices", () => {
     const src = readFileSync(resolve(__dirname, "CartDrawerNext.tsx"), "utf8");
     expect(src).toMatch(/const formatUnitPrice = \(n: number\) => `₹\$\{Math\.round\(n\)\.toLocaleString\("en-IN"\)\}`/);
     expect(src).not.toMatch(/maximumFractionDigits: 2/);
+  });
+});
+
+/* The clean system's one rule for the bag (SPEC section 2): type and colour
+   come from the nc- classes and the --nc- tokens and from nowhere else.
+   Tailwind utilities in the bag's files are layout only, so a font, a text
+   size, a brand colour utility, a radius, a shadow or a raw hex value in any
+   of them is a drift back to the old look. */
+describe("the bag's files draw from the clean system alone", () => {
+  const FILES = ["CartDrawerNext.tsx", "cart/BagLine.tsx", "cart/BagOffer.tsx", "cart/BagEmpty.tsx", "cart/BagTrust.tsx"];
+  /* Comments may name what was removed; the rule is about the code. */
+  const code = (file: string) =>
+    readFileSync(resolve(__dirname, file), "utf8")
+      .replace(/\{\/\*[\s\S]*?\*\/\}/g, "")
+      .replace(/\/\*[\s\S]*?\*\//g, "")
+      .replace(/^\s*\/\/.*$/gm, "");
+  const FORBIDDEN: Array<[string, RegExp]> = [
+    ["a font utility", /(^|[\s"'`{])!?font-[a-z]/m],
+    ["an arbitrary text size or colour", /(^|[\s"'`{:])!?text-\[/m],
+    ["a brand text colour utility", /text-nf-/],
+    ["a brand fill utility", /bg-nf-/],
+    ["a brand border utility", /border-nf-/],
+    ["a tracking utility", /(^|[\s"'`{:])!?-?tracking-/m],
+    ["a radius utility", /(^|[\s"'`{:])!?rounded(-|\b)/m],
+    ["a shadow utility", /(^|[\s"'`{:])!?shadow(-|\b)/m],
+    ["the old palette's variables", /--nf-/],
+    ["a raw hex colour", /#[0-9a-fA-F]{3,8}\b/],
+    ["an rgb or hsl colour", /\b(rgba?|hsla?)\(/],
+    ["the UPI discs", /UpiBadges/],
+    ["the card marks", /PayMarks/],
+    ["the shared button", /components\/ui\/button/],
+  ];
+
+  it.each(FILES)("%s", (file) => {
+    const text = code(file);
+    for (const [what, pattern] of FORBIDDEN) expect(pattern.test(text), `${file} uses ${what}`).toBe(false);
+  });
+
+  it("carries the clean root on the sheet and writes its stylesheet inside it", () => {
+    const text = code("CartDrawerNext.tsx");
+    expect(text).toMatch(/className=\{?[`"]nf-palette nf-clean /);
+    expect(text).toMatch(/<CleanStyles \/>/);
+    expect(text).toMatch(/closeClassName="hidden"/);
+  });
+
+  /* The bag is its own offer's only home: no "Sitewide sale live today". */
+  it("does not say a sale is live today anywhere in the bag", () => {
+    for (const file of FILES) expect(code(file)).not.toMatch(/sitewide sale|live today/i);
   });
 });

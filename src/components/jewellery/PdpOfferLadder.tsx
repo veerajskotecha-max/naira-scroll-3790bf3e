@@ -53,11 +53,15 @@ const PdpOfferLadder = ({ price, preorder = false }: { price: number; preorder?:
   return (
     <CleanFact label="Offer">
       <div data-offer-ladder data-state={Math.min(totalItems, TOP_QUANTITY_OFFER.minQuantity)} role="group" aria-label="Buy more, pay less">
+        {/* Under 360px three columns are 68px each and "Buy 2 · 10%" is as
+            wide, so the rungs ran into one another ("10%Buy 3"). There each
+            rung is a line of its own: its name, then its price. */}
         <CleanRungs
           offers={QUANTITY_OFFERS}
           totalItems={totalItems}
           muted={preorder}
           each={preorder ? undefined : (offer) => `${rupees(pieceAtRung(price, offer))} each`}
+          className="max-[359px]:!grid-flow-row max-[359px]:[&>li]:flex max-[359px]:[&>li]:gap-3"
         />
         {/* Always in the page, so a screen reader hears each new state. View
             bag floats at the right of the first line and the sentence runs

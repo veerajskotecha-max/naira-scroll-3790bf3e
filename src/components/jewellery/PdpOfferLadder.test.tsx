@@ -211,6 +211,16 @@ describe("PdpOfferLadder: Buy 2 / Buy 3 / Buy 4 on the product page", () => {
     expect(page).toContain('document.querySelector("[data-offer-ladder] ul")');
   });
 
+  /* On a 320px phone the three columns are 68px each and "Buy 2 · 10%" is as
+     wide: the rungs read "Buy 2 · 10%Buy 3 · 20%Buy 4 · 30%", no space
+     between them. Under 360px each rung is a line of its own instead. */
+  it("gives each rung its own line on a phone narrower than 360px", () => {
+    const { container } = row(<PdpOfferLadder price={999} />);
+    const list = container.querySelector("[data-offer-ladder] ul") as HTMLElement;
+    expect(list.className).toContain("max-[359px]:!grid-flow-row");
+    expect(list.className).toContain("max-[359px]:[&>li]:flex");
+  });
+
   /* Nothing in the row is under 13px, and its type comes from the clean
      system: no sizes, faces or colours of its own. */
   it("sets no type or colour of its own", () => {

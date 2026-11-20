@@ -928,7 +928,7 @@ const JewelDetailNext = () => {
               them, sized to the screen so the lower row is never cut off. */}
           <div className="hidden md:block lg:sticky lg:top-[140px] lg:h-[calc(100vh-156px)] lg:self-start">{DesktopGallery}</div>
 
-          <div className="w-full px-4 pt-3.5 md:pt-6 lg:pl-10 lg:pr-0 lg:pt-0 xl:pl-12 min-[1440px]:pl-16">
+          <div className="w-full px-4 pt-3.5 md:px-0 md:pt-6 lg:pl-10 lg:pt-0 xl:pl-12 min-[1440px]:pl-16">
           <div className="lg:max-w-[520px]">
             {/* Category, the way back to the collection; and the shop's own
                 rating (lib/trust), the way down to the reviews. */}
@@ -1134,12 +1134,15 @@ const JewelDetailNext = () => {
               <p className="nc-small col-span-2 mt-1 text-center [text-wrap:balance]">
                 {soldOut
                   ? `${SOLD_OUT_LEAD}, gift-boxed`
-                  : promise.map((fact, i) => (
+                  : promise.flatMap((fact, i) => [
+                      /* A plain space between the facts is where the line may
+                         break; the dot stays with the fact before it. */
+                      i > 0 ? " " : null,
                       <span key={fact} className="whitespace-nowrap">
                         {fact}
-                        {i < promise.length - 1 && <span aria-hidden="true">{" ·"}</span>}{" "}
-                      </span>
-                    ))}
+                        {i < promise.length - 1 ? "\u00A0\u00B7" : null}
+                      </span>,
+                    ])}
               </p>
               {/* Lovable's "Naira bundle" panel (PdpOffers, 11829ae) said the same offer
                   a second time under Buy Now; the page shows it once, in the
@@ -1169,7 +1172,12 @@ const JewelDetailNext = () => {
                 )}
                 {/* The spec list names plating and metal; the summary line is for pieces without one. */}
                 {specs.length === 0 && <p>{piece.materials}</p>}
-                {isRing && <RingSizeGuide highlightSize={sizeName ? chosen[sizeName] ?? selectedSize : selectedSize} adjustable={adjustable} fitSizes={adjustableSizes(piece.handle)} />}
+                {isRing && (
+                  /* A part of its own under the specifications: twice the panel's usual gap. */
+                  <div className="!mt-6">
+                    <RingSizeGuide highlightSize={sizeName ? chosen[sizeName] ?? selectedSize : selectedSize} adjustable={adjustable} fitSizes={adjustableSizes(piece.handle)} />
+                  </div>
+                )}
                 {/* The size guide photo again, right where the sizes are read. */}
                 {piece.sizeGuide && (
                   <img

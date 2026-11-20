@@ -135,6 +135,9 @@
 .nf-clean .nc-rung__each { display: block; }
 .nf-clean .nc-rung[data-current], .nf-clean .nc-rung[data-current] .nc-rung__name { color: var(--nc-gold); }
 .nf-clean .nc-rung[data-passed] .nc-rung__name, .nf-clean .nc-rungs[data-muted] .nc-rung__name { color: var(--nc-muted); }
+/* A muted ladder (a pre-order choice) has no price under its rungs; it keeps
+   the second line's room, so the sizes below do not jump under the finger. */
+.nf-clean .nc-rungs[data-muted] .nc-rung::after { content: "\00A0"; display: block; }
 /* " off" is read out on every screen and drawn where three columns have the room. */
 .nf-clean .nc-rungs:not(.nc-rungs--center) .nc-rung__off { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 @media (min-width: 430px) {

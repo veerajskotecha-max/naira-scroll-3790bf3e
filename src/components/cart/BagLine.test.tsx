@@ -129,3 +129,42 @@ describe("BagLine: one piece in the bag", () => {
     expect(onLeave).toHaveBeenCalledTimes(1);
   });
 });
+
+/* What the review of 20 Nov changed, pinned. */
+describe("BagLine: its rules and its edges", () => {
+  /* A line used to close with its own hairline and the foot opened with one:
+     at 390x844 four pieces left the two 2px apart, and a short bag boxed an
+     empty band between them. Rules now sit between lines only. */
+  it("is ruled off from the line above it, never under itself", () => {
+    const { line } = draw();
+    const classes = line.className.split(/\s+/);
+    expect(classes).toContain("border-t");
+    expect(classes).toContain("first:border-t-0");
+    expect(classes.some((name) => /^(last:)?border-b/.test(name))).toBe(false);
+  });
+
+  /* The name's capitals start level with the top of the photograph: its row
+     gives back the 5px of air above a 14px capital in a 20px line. */
+  it("lifts the name's row so its capitals meet the top of the photo", () => {
+    const { line } = draw();
+    const row = line.querySelector("[data-line-name]")?.parentElement as HTMLElement;
+    expect(row.className.split(/\s+/)).toContain("-mt-[5px]");
+    expect(row.contains(line.querySelector("[data-line-total]"))).toBe(true);
+  });
+
+  /* "Serpentine Whisper Chain — Silver" broke after the dash at 360px and
+     left "Silver" alone on the second line. */
+  it("breaks a two-line name evenly", () => {
+    const { line } = draw({ item: { ...item, name: "Serpentine Whisper Chain — Silver" } });
+    const clamp = line.querySelector("[data-line-name] > span") as HTMLElement;
+    expect(clamp.className.split(/\s+/)).toEqual(expect.arrayContaining(["line-clamp-2", "text-balance"]));
+  });
+
+  /* The controls sit at the foot of the photograph whatever is above them. */
+  it("keeps the stepper and Remove on the photo's foot", () => {
+    const { line } = draw();
+    const controls = line.querySelector(".nc-stepper")?.parentElement as HTMLElement;
+    expect(controls.className.split(/\s+/)).toContain("mt-auto");
+    expect(controls.lastElementChild?.textContent).toBe("Remove");
+  });
+});

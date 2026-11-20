@@ -131,6 +131,139 @@ describe("the bag's sheet", () => {
   });
 });
 
+/* What the review of 20 Nov changed, pinned. */
+describe("the bag's edges, gaps and manners", () => {
+  /* The cross is 9px wide in the middle of a 44px target. With the target
+     flush against the sheet's edge and the cross 1px to the right inside it,
+     the cross ends on the 16px line the prices, "Remove" and Checkout end on
+     (it sat 5.5px inside it). Nothing reaches past the sheet's edge. */
+  it("ends the close cross on the right edge everything else ends on", () => {
+    open([hoops]);
+    const close = screen.getByRole("button", { name: "Close bag" });
+    const header = close.parentElement as HTMLElement;
+    expect(header.className.split(/\s+/)).toContain("pl-4");
+    expect(header.className.split(/\s+/).some((name) => /^(pr|px|p)-/.test(name))).toBe(false);
+    expect(close.className).not.toMatch(/(^|\s)-m/);
+    const cross = close.querySelector("svg") as SVGElement;
+    expect(cross.getAttribute("width")).toBe("18");
+    expect((cross.getAttribute("class") ?? "").split(/\s+/)).toContain("translate-x-px");
+  });
+
+  /* 8px over the trust lines, 8px over Checkout, 12px over the returns link:
+     the link's 44px target is the 12px above it, its 20px line and the 12px
+     under it, so it stops at Checkout's edge instead of running 2px under
+     the button, and Checkout needs no layer of its own. */
+  it("gives the returns link a whole 44px target that never reaches under Checkout", () => {
+    open([hoops, ring]);
+    const foot = document.querySelector("[data-bag-foot]") as HTMLElement;
+    const has = (element: Element | null | undefined, name: string) => (element?.className ?? "").split(/\s+/).includes(name);
+    expect(has(foot.querySelector("[data-bag-trust]"), "mt-2")).toBe(true);
+    const checkout = foot.querySelector("[data-checkout]") as HTMLElement;
+    expect(has(checkout, "mt-2")).toBe(true);
+    expect(checkout.className).not.toMatch(/(^|\s)z-/);
+    const returns = foot.querySelector("[data-returns]") as HTMLElement;
+    expect(has(returns.parentElement, "mt-3")).toBe(true);
+    expect(returns.className).toContain("before:-inset-y-3");
+    expect(has(foot, "pb-[max(12px,env(safe-area-inset-bottom))]")).toBe(true);
+  });
+
+  /* The clean system stills everything inside the sheet for a shopper who
+     asked for less motion; the sheet's own 400ms slide is stilled here. */
+  it("does not slide the sheet for a shopper who asked for less motion", () => {
+    open([hoops]);
+    expect(sheet().className.split(/\s+/)).toContain("motion-reduce:!animate-none");
+  });
+
+  it("closes the list with the foot's rule alone", () => {
+    open([hoops, ring]);
+    const lines = [...document.querySelectorAll("[data-line]")];
+    for (const each of lines) expect(each.className).not.toMatch(/(^|\s)(last:)?border-b/);
+    expect((document.querySelector("[data-bag-foot]") as HTMLElement).className.split(/\s+/)).toContain("border-t");
+  });
+});
+
+/* A browser takes focus away from a button the moment it is disabled, and
+   the bag disables a line's buttons while Shopify answers: after one press of
+   "+" from the keyboard the next Tab began again at the close button. */
+describe("the bag keeps a keyboard user's place", () => {
+  const press = async (button: HTMLElement, how: "keyboard" | "pointer") => {
+    button.focus();
+    await act(async () => {
+      fireEvent.click(button, { detail: how === "keyboard" ? 0 : 1 });
+    });
+  };
+  const busyThenIdle = (view: ReturnType<typeof open>, items: Line[]) => {
+    const draw = (isLoading: boolean) => {
+      cart.state = { ...cart.state, items, totalItems: items.reduce((sum, item) => sum + item.quantity, 0), subtotal: items.reduce((sum, item) => sum + item.price * item.quantity, 0), isLoading };
+      view.rerender(
+        <MemoryRouter>
+          <CartDrawerNext />
+        </MemoryRouter>,
+      );
+    };
+    draw(true);
+    /* The browser's part. It drops focus from a button as it is disabled, and
+       the sheet's focus trap then holds it on the sheet itself (measured in
+       Chrome: the page's body, then the dialog). jsdom leaves focus on the
+       disabled button, so the sheet is focused here by hand. */
+    sheet().focus();
+    expect(document.activeElement).toBe(sheet());
+    draw(false);
+  };
+
+  it("hands focus back to + once Shopify has answered a press from the keyboard", async () => {
+    const view = open([hoops, ring]);
+    const plus = screen.getAllByRole("button", { name: "Increase quantity" })[1];
+    await press(plus, "keyboard");
+    expect(cart.calls.updateQuantity).toHaveBeenCalledTimes(1);
+    busyThenIdle(view, [hoops, { ...ring, quantity: 2 }]);
+    expect(document.activeElement).toBe(screen.getAllByRole("button", { name: "Increase quantity" })[1]);
+    expect(document.activeElement?.closest("[data-line]")?.getAttribute("data-line")).toBe("crystal-baguette-eternity-ring");
+  });
+
+  it("hands it back to − as well, under whatever name the button now has", async () => {
+    const view = open([{ ...hoops, quantity: 2 }, ring]);
+    await press(screen.getByRole("button", { name: "Decrease quantity" }), "keyboard");
+    busyThenIdle(view, [hoops, ring]);
+    expect(document.activeElement).toBe(screen.getAllByRole("button", { name: "Remove Woven Gold Hoops" })[0]);
+  });
+
+  it("leaves focus alone after a tap or a click", async () => {
+    const view = open([hoops, ring]);
+    await press(screen.getAllByRole("button", { name: "Increase quantity" })[0], "pointer");
+    busyThenIdle(view, [{ ...hoops, quantity: 2 }, ring]);
+    expect(document.activeElement?.closest("[data-line]")).toBeNull();
+  });
+
+  it("does not take focus from where the shopper has moved it since", async () => {
+    const view = open([hoops, ring]);
+    await press(screen.getAllByRole("button", { name: "Increase quantity" })[0], "keyboard");
+    const draw = (isLoading: boolean) => {
+      cart.state = { ...cart.state, isLoading };
+      view.rerender(
+        <MemoryRouter>
+          <CartDrawerNext />
+        </MemoryRouter>,
+      );
+    };
+    draw(true);
+    const close = screen.getByRole("button", { name: "Close bag" });
+    close.focus();
+    draw(false);
+    expect(document.activeElement).toBe(close);
+  });
+
+  /* After a Remove the line is gone: the line that moves up into its place
+     must not find its own Remove under the shopper's next Enter. */
+  it("never moves focus to another line when the pressed line has gone", async () => {
+    const view = open([hoops, ring]);
+    await press(screen.getAllByRole("button", { name: "Remove Woven Gold Hoops" })[1], "keyboard");
+    busyThenIdle(view, [ring]);
+    expect(document.querySelectorAll("[data-line]")).toHaveLength(1);
+    expect(document.activeElement?.closest("[data-line]")).toBeNull();
+  });
+});
+
 describe("the bag, state by state", () => {
   it("empty: no offer strip and no foot", () => {
     open([]);

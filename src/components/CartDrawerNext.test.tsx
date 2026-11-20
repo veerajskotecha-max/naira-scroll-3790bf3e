@@ -49,6 +49,22 @@ describe("SimpleLadder: the bag's offer strip", () => {
     expect(ladder.querySelector("a, button, svg, img")).toBeNull();
   });
 
+  /* The line fills to a sixth at two pieces and to a half at three. Three
+     equal columns across the whole sheet put the middle of "Buy 2" at a sixth
+     and of "Buy 3" at a half, so the line stops exactly under the rung it
+     marks. Any side padding on the rungs moves the words off it (16px of it
+     put "Buy 2" 11px to the right of where the line stopped). */
+  it("sets the rungs in three columns the full width of the line under them", () => {
+    const { container } = render(<SimpleLadder totalItems={2} />);
+    const rungs = container.querySelector("[data-ladder] > ul") as HTMLElement;
+    const classes = rungs.className.split(/\s+/);
+    expect(classes).toContain("nc-rungs--center");
+    expect(classes.filter((name) => /(^|:)-?(p[xlrse]?|m[xlrse])-/.test(name) && !/^py-/.test(name))).toEqual([]);
+    expect(rungs.querySelectorAll(":scope > li")).toHaveLength(3);
+    const ladder = container.querySelector("[data-ladder]") as HTMLElement;
+    expect(ladder.className.split(/\s+/).some((name) => /(^|:)-?(p|m)[xlrse]?-/.test(name))).toBe(false);
+  });
+
   /* The rung the bag sits on follows the pieces, and the line fills piece by
      piece (promo.ts `quantityOfferProgress`). */
   it.each([

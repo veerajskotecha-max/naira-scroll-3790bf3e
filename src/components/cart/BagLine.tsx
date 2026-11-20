@@ -12,6 +12,10 @@ import { shopifyImage } from "@/lib/shopifyImage";
                    ₹1,049  10% off           (struck, then gold)
                    [ − 1 + ]                              Remove
 
+  Rules sit between lines only: the foot's own hairline closes the list, so
+  the two never meet (they used to, 2px apart, whenever the lines filled the
+  list, and boxed an empty band when they did not).
+
   The figure at the right is what the line costs. The row under the name only
   explains it: the price it replaces and the rate taken off, and "each" once
   the line holds two or more. A single piece at full price needs no row at
@@ -56,7 +60,7 @@ type Props = {
 const RULE = "border-[color:var(--nc-rule)]";
 
 const BagLine = ({ item, href, onLeave, options, total, was, each, off, adding, busy, eager, onDecrease, onIncrease, onRemove }: Props) => (
-  <li data-line={item.id} data-variant={item.variantId} data-adding={adding ? "" : undefined} className={`flex gap-3 border-b ${RULE} p-4`}>
+  <li data-line={item.id} data-variant={item.variantId} data-adding={adding ? "" : undefined} className={`flex gap-3 border-t ${RULE} p-4 first:border-t-0`}>
     <Link to={href} onClick={onLeave} tabIndex={-1} aria-hidden="true" className="shrink-0">
       <img
         src={shopifyImage(item.image, 200) || item.image}
@@ -69,16 +73,19 @@ const BagLine = ({ item, href, onLeave, options, total, was, each, off, adding, 
       />
     </Link>
     <div className="flex min-w-0 flex-1 flex-col">
-      <div className="flex items-start justify-between gap-3">
+      {/* The name's capitals start where the photograph does: its line is
+          lifted by the 5px of air a 14px capital has above it in a 20px line. */}
+      <div className="-mt-[5px] flex items-start justify-between gap-3">
         {/* A 44px target round a 20px name, taken from the space above and
-            below it; the clamp sits inside, so it cannot cut the target off. */}
+            below it; the clamp sits inside, so it cannot cut the target off.
+            A name of two lines is broken evenly, never down to a last word. */}
         <Link
           to={href}
           onClick={onLeave}
           data-line-name
           className="nc-text relative block min-w-0 !leading-5 before:absolute before:inset-x-0 before:-inset-y-3 before:content-['']"
         >
-          <span className="line-clamp-2">{item.name}</span>
+          <span className="line-clamp-2 text-balance">{item.name}</span>
         </Link>
         <span data-line-total className="nc-text nc-text--strong shrink-0 tabular-nums !leading-5">
           {total}

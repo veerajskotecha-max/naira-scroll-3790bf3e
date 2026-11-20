@@ -28,7 +28,7 @@ export const RatingLine = ({ className = "" }: { className?: string }) => (
 );
 
 export const BagTrust = () => (
-  <div data-bag-trust className="mt-2.5">
+  <div data-bag-trust className="mt-2">
     <RatingLine />
     <p data-pay-line className="nc-small text-center">
       {WAYS_TO_PAY}

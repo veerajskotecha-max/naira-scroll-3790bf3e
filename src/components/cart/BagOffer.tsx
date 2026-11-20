@@ -15,9 +15,13 @@ const BagOffer = ({ totalItems }: { totalItems: number }) => {
   const top = TOP_QUANTITY_OFFER.minQuantity;
   return (
     <div data-ladder className="shrink-0">
-      {/* Three rungs of about 85px each: the side padding gives way on a narrow
-          phone, so the words never meet (they did at 280px). */}
-      <CleanRungs centered offers={QUANTITY_OFFERS} totalItems={totalItems} className="px-4 py-2.5 max-[339px]:px-2 max-[299px]:px-0" />
+      {/* Three equal columns the full width of the sheet, with no side padding:
+          the line under them fills to a sixth and to a half at two and three
+          pieces, which is then exactly the middle of "Buy 2" and of "Buy 3".
+          (With 16px of padding the words sat 11px to the right of where the
+          line stopped.) The rungs are about 85px wide, so they never meet,
+          down to a 280px phone. */}
+      <CleanRungs centered offers={QUANTITY_OFFERS} totalItems={totalItems} className="py-2.5" />
       <CleanTrack value={quantityOfferProgress(totalItems)} now={totalItems} max={top} label={`${totalItems} of ${top} pieces`} />
     </div>
   );

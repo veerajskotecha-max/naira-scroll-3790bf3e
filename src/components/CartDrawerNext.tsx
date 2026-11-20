@@ -23,6 +23,7 @@ import BagEmpty from "@/components/cart/BagEmpty";
 import BagLine from "@/components/cart/BagLine";
 import BagOffer from "@/components/cart/BagOffer";
 import { BagTrust } from "@/components/cart/BagTrust";
+import { useKeptFocus } from "@/components/cart/useKeptFocus";
 import { useAuth } from "@/contexts/AuthContext";
 import { getSupabase } from "@/integrations/supabase/lazy";
 import { clarityEvent } from "@/lib/clarity";
@@ -94,12 +95,11 @@ export const BagReturns = ({
 }: {
   onLeave?: (e: MouseEvent<HTMLAnchorElement>) => void;
 }) => (
-  <p className="mt-2.5 flex justify-center">
+  <p className="mt-3 flex justify-center">
     {/* A 44px target round a 20px line, drawn by a pseudo-element so the
-        focus ring keeps to the words: the line sits 12px above the sheet's
-        foot, and a ring round the whole target would be cut off there. The
-        target reaches 2px over Checkout; that button is drawn above it, so
-        it never takes the button's taps. */}
+        focus ring keeps to the words. It takes the 12px above the line, up
+        to Checkout's edge and no further, and the 12px under it, down to the
+        sheet's foot: all 44px answer to the link, none of them to the button. */}
     <Link
       to="/exchange-return-policy"
       onClick={onLeave}
@@ -197,6 +197,8 @@ const CartDrawerNext = () => {
     });
     return () => cancelAnimationFrame(frame);
   }, [isDrawerOpen, pendingKey, lines.length]);
+  /* A keyboard press on a line's + or − keeps its place while Shopify answers. */
+  const keepFocus = useKeptFocus(listRef, isLoading);
   const lineSubtotal = subtotal + (pending ? pending.price * pending.quantity : 0);
   /* One resolver for the bag and the checkout hand-off: the total shown is the total charged. */
   const discount = resolveCartDiscount({ totalItems: lineCount, promoCode });
@@ -323,12 +325,14 @@ const CartDrawerNext = () => {
            taken off; the dimmed page behind it is separation enough.
            On a screen under 480px high (a phone on its side) the pinned
            parts alone would fill it, so there the sheet scrolls as one
-           piece and Checkout is reached by scrolling, never cut off. */
+           piece and Checkout is reached by scrolling, never cut off.
+           With "reduce motion" on, the sheet is simply there: the clean
+           system stills what is inside it, and this stills its own slide. */
         style={{ boxShadow: "none" }}
-        className="nf-palette nf-clean inset-y-0 flex h-[100dvh] max-h-[100dvh] w-full flex-col gap-0 overflow-hidden border-0 p-0 sm:max-w-[420px] sm:border-l sm:border-[color:var(--nc-rule)] [@media(max-height:479px)]:overflow-y-auto"
+        className="nf-palette nf-clean inset-y-0 flex h-[100dvh] max-h-[100dvh] w-full flex-col gap-0 overflow-hidden border-0 p-0 sm:max-w-[420px] sm:border-l sm:border-[color:var(--nc-rule)] [@media(max-height:479px)]:overflow-y-auto motion-reduce:!animate-none"
       >
         <CleanStyles />
-        <div className={`flex shrink-0 items-center justify-between border-b ${RULE} pb-1.5 pl-4 pr-1 pt-[max(6px,env(safe-area-inset-top))]`}>
+        <div className={`flex shrink-0 items-center justify-between border-b ${RULE} pb-1.5 pl-4 pt-[max(6px,env(safe-area-inset-top))]`}>
           {/* The title is the sheet's name ("Your bag 2 pieces"). The two
               parts are set side by side, each in its own style: the count
               inside the heading's own element would inherit its tracking. */}
@@ -341,8 +345,12 @@ const CartDrawerNext = () => {
               </>
             )}
           </SheetTitle>
+          {/* The cross is drawn 9px wide in the middle of its 44px target.
+              The target ends at the sheet's edge and the cross is set 1px to
+              the right inside it, so it ends on the 16px line the prices,
+              "Remove" and Checkout end on (it sat 5.5px inside that line). */}
           <button type="button" onClick={requestClose} aria-label="Close bag" className="nc-iconbtn shrink-0">
-            <X size={18} strokeWidth={1.25} aria-hidden="true" />
+            <X size={18} strokeWidth={1.25} aria-hidden="true" className="translate-x-px" />
           </button>
         </div>
 
@@ -368,6 +376,7 @@ const CartDrawerNext = () => {
             <div
               ref={listRef}
               data-bag-list
+              onClickCapture={keepFocus}
               className="flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain [@media(max-height:479px)]:flex-none [@media(max-height:479px)]:overflow-visible"
             >
               <ul className="flex flex-col">
@@ -439,7 +448,7 @@ const CartDrawerNext = () => {
                 data-checkout
                 onClick={handleCheckout}
                 disabled={busy || opening}
-                className={`${cleanButton({ fill: "ink", block: true })} relative z-[1] mt-2.5`}
+                className={`${cleanButton({ fill: "ink", block: true })} mt-2`}
               >
                 {busy || opening ? <Loader2 size={14} strokeWidth={1.25} className="animate-spin motion-reduce:animate-none" aria-hidden="true" /> : null}
                 {opening ? "Opening checkout…" : "Checkout"}

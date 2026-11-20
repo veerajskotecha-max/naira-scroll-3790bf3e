@@ -1,6 +1,8 @@
 import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 
 /*
   The whole bag in each of its states, drawn from the clean system: what is
@@ -58,6 +60,34 @@ describe("the bag's sheet", () => {
     expect(sheet().firstElementChild?.tagName).toBe("STYLE");
     expect(sheet().firstElementChild?.hasAttribute("data-nf-clean")).toBe(true);
     expect(sheet().style.boxShadow).toBe("none");
+  });
+
+  /* Header, offer and foot are pinned and only the list scrolls, so the total
+     and Checkout never leave the screen. A phone on its side has no room for
+     that (the pinned parts are 330px): there the sheet scrolls as one piece,
+     so the lines can be seen and Checkout reached, where the old bag showed
+     no lines at all and cut its button off. */
+  it("pins its parts round a scrolling list, and scrolls whole on a very short screen", () => {
+    open([hoops, ring]);
+    expect(sheet().className).toMatch(/(^|\s)overflow-hidden(\s|$)/);
+    expect(sheet().className).toContain("[@media(max-height:479px)]:overflow-y-auto");
+    const list = document.querySelector("[data-bag-list]") as HTMLElement;
+    expect(list.className).toMatch(/(^|\s)overflow-y-auto(\s|$)/);
+    expect(list.className).toMatch(/(^|\s)flex-1(\s|$)/);
+    expect(list.className).toContain("[@media(max-height:479px)]:flex-none");
+    expect(list.className).toContain("[@media(max-height:479px)]:overflow-visible");
+    for (const part of [document.querySelector("[data-ladder]"), document.querySelector("[data-bag-foot]")]) expect(part?.className).toMatch(/(^|\s)shrink-0(\s|$)/);
+  });
+
+  /* The total is the product page's price figure, kept at the phone's size
+     at every width: the drawer is as narrow on a laptop as on a phone. */
+  it("sets the total in the price figure's sheet size", () => {
+    open([hoops]);
+    const total = document.querySelector("[data-total]") as HTMLElement;
+    expect(total.className).toMatch(/\bnc-price__now\b/);
+    expect(total.className).toMatch(/\bnc-price__now--sheet\b/);
+    const css = readFileSync(resolve(__dirname, "../clean/clean.css"), "utf8");
+    expect(css).toMatch(/\.nf-clean \.nc-price__now\.nc-price__now--sheet\s*\{\s*font-size:\s*20px;\s*line-height:\s*24px;?\s*\}/);
   });
 
   it("has four parts with pieces in it: header, offer, list, foot", () => {

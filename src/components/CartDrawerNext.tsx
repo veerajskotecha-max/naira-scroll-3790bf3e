@@ -320,9 +320,12 @@ const CartDrawerNext = () => {
         closeClassName="hidden"
         /* A full-height sheet: the whole screen on a phone, a 420px drawer
            with a hairline at its left from 640px. The sheet's stock shadow is
-           taken off; the dimmed page behind it is separation enough. */
+           taken off; the dimmed page behind it is separation enough.
+           On a screen under 480px high (a phone on its side) the pinned
+           parts alone would fill it, so there the sheet scrolls as one
+           piece and Checkout is reached by scrolling, never cut off. */
         style={{ boxShadow: "none" }}
-        className={`nf-palette nf-clean inset-y-0 flex h-[100dvh] max-h-[100dvh] w-full flex-col gap-0 overflow-hidden border-0 p-0 sm:max-w-[420px] sm:border-l sm:border-[color:var(--nc-rule)]`}
+        className="nf-palette nf-clean inset-y-0 flex h-[100dvh] max-h-[100dvh] w-full flex-col gap-0 overflow-hidden border-0 p-0 sm:max-w-[420px] sm:border-l sm:border-[color:var(--nc-rule)] [@media(max-height:479px)]:overflow-y-auto"
       >
         <CleanStyles />
         <div className={`flex shrink-0 items-center justify-between border-b ${RULE} pb-1.5 pl-4 pr-1 pt-[max(6px,env(safe-area-inset-top))]`}>
@@ -362,7 +365,11 @@ const CartDrawerNext = () => {
           <BagEmpty pieces={best} adding={adding} onAdd={(piece) => addPiece(piece, "bag_empty_added")} onLeave={leave} />
         ) : (
           <>
-            <div ref={listRef} data-bag-list className="flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain">
+            <div
+              ref={listRef}
+              data-bag-list
+              className="flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain [@media(max-height:479px)]:flex-none [@media(max-height:479px)]:overflow-visible"
+            >
               <ul className="flex flex-col">
                 {lines.map((item, index) => {
                   const off = discount.rate > 0;

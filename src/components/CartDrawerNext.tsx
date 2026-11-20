@@ -136,7 +136,7 @@ const CartDrawerNext = () => {
   } = useCart();
   /* The bag's faces are asked for before its first opening. */
   useBagFaces();
-  const { jewellery } = useLiveJewellery(isDrawerOpen);
+  const { jewellery, isLoading: catalogueLoading } = useLiveJewellery(isDrawerOpen);
   const catalogueByHandle = useMemo(() => new Map(jewellery.map((piece) => [piece.handle, piece])), [jewellery]);
   const { user } = useAuth();
   const contentRef = useRef<HTMLDivElement>(null);
@@ -373,7 +373,13 @@ const CartDrawerNext = () => {
         )}
 
         {lines.length === 0 ? (
-          <BagEmpty pieces={best} adding={adding} onAdd={(piece) => addPiece(piece, "bag_empty_added")} onLeave={leave} />
+          <BagEmpty
+            pieces={best}
+            adding={adding}
+            onAdd={(piece) => addPiece(piece, "bag_empty_added")}
+            onLeave={leave}
+            slots={catalogueLoading ? BEST_SELLERS : undefined}
+          />
         ) : (
           <>
             <div

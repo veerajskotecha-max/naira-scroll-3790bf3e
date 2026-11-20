@@ -75,3 +75,58 @@ describe("BagEmpty: the bag with nothing in it", () => {
     expect(screen.getByRole("link", { name: "Explore jewellery" })).toBeTruthy();
   });
 });
+
+/* The bundled catalogue cannot sell every best-seller (one has no variant in
+   it), so that row arrives with Shopify's answer, and it is the first row.
+   The row already drawn used to drop one place as it came: a finger reaching
+   for the hoops' Add met the bracelet's. Each best-seller now keeps its own
+   place from the first frame. */
+describe("BagEmpty: while the live catalogue is on its way", () => {
+  const SLOTS = ["prism-riviere-bracelet", "woven-gold-hoops"];
+
+  it("holds the place of a best-seller it cannot draw yet", () => {
+    const { container } = draw({ pieces: [PIECES[1]], slots: SLOTS });
+    const rows = [...container.querySelectorAll("ul > li")];
+    expect(rows).toHaveLength(2);
+    expect(rows[0].getAttribute("data-piece-slot")).toBe("prism-riviere-bracelet");
+    expect(rows[1].getAttribute("data-piece-card")).toBe("woven-gold-hoops");
+    /* The held place is the row's own size (a 60px block between the same
+       12px), says nothing, and cannot be pressed or read out. */
+    expect(rows[0].getAttribute("aria-hidden")).toBe("true");
+    expect(rows[0].textContent).toBe("");
+    expect(rows[0].querySelector("a, button, img, svg")).toBeNull();
+    const block = rows[0].firstElementChild as HTMLElement;
+    expect(block.className.split(/\s+/)).toEqual(expect.arrayContaining(["h-[60px]", "w-[48px]"]));
+    for (const name of ["py-3", "border-b"]) expect(rows[0].className.split(/\s+/)).toContain(name);
+    for (const name of ["py-3", "border-b"]) expect(rows[1].className.split(/\s+/)).toContain(name);
+    expect(screen.getAllByRole("button")).toHaveLength(1);
+  });
+
+  it("puts the arriving piece in the place that was held for it, above the one already there", () => {
+    const view = draw({ pieces: [PIECES[1]], slots: SLOTS });
+    const hoops = view.container.querySelector('[data-piece-card="woven-gold-hoops"]');
+    view.rerender(
+      <MemoryRouter>
+        <BagEmpty pieces={PIECES} adding={null} onAdd={view.onAdd} onLeave={view.onLeave} slots={SLOTS} />
+      </MemoryRouter>,
+    );
+    const rows = [...view.container.querySelectorAll("ul > li")];
+    expect(rows.map((row) => row.getAttribute("data-piece-card"))).toEqual(SLOTS);
+    expect(rows[1]).toBe(hoops);
+    expect(view.container.querySelector("[data-piece-slot]")).toBeNull();
+  });
+
+  it("holds every place, under the label, even before any piece can be drawn", () => {
+    const { container } = draw({ pieces: [], slots: SLOTS });
+    expect(screen.getByText("Most loved")).toBeTruthy();
+    expect(container.querySelectorAll("[data-piece-slot]")).toHaveLength(2);
+  });
+
+  /* Once Shopify has answered, a best-seller that cannot be bought has no
+     row and no held place. */
+  it("holds nothing once the catalogue has answered", () => {
+    const { container } = draw({ pieces: [PIECES[1]] });
+    expect(container.querySelectorAll("ul > li")).toHaveLength(1);
+    expect(container.querySelector("[data-piece-slot]")).toBeNull();
+  });
+});

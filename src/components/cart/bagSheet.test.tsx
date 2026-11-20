@@ -24,7 +24,8 @@ const cart = vi.hoisted(() => ({
 vi.mock("@/contexts/CartContext", () => ({ useCart: () => ({ ...cart.calls, ...cart.state }) }));
 vi.mock("@/lib/pixel", () => ({ trackPixel: vi.fn(), shopifyNumericId: (id?: string) => id?.split("/").pop(), productParams: (p: unknown) => p }));
 vi.mock("@/lib/clarity", () => ({ clarityEvent: vi.fn(), setClarityTag: vi.fn() }));
-vi.mock("@/hooks/useLiveJewellery", () => ({ useLiveJewellery: () => ({ jewellery: [] }) }));
+const live = vi.hoisted(() => ({ value: { jewellery: [] as unknown[], isLoading: false } }));
+vi.mock("@/hooks/useLiveJewellery", () => ({ useLiveJewellery: () => live.value }));
 vi.mock("@/contexts/AuthContext", () => ({ useAuth: () => ({ user: null }) }));
 
 import CartDrawerNext from "../CartDrawerNext";
@@ -49,6 +50,7 @@ const text = (selector: string) => document.querySelector(selector)?.textContent
 beforeEach(() => {
   vi.clearAllMocks();
   localStorage.clear();
+  live.value = { jewellery: [], isLoading: false };
 });
 afterEach(cleanup);
 
@@ -270,6 +272,18 @@ describe("the bag, state by state", () => {
     expect(screen.getByText("Your bag is empty")).toBeTruthy();
     expect(text("h2")).toBe("Your bag");
     expect(document.querySelector("[data-ladder], [data-bag-foot], [data-bag-list], [data-checkout]")).toBeNull();
+  });
+
+  /* While Shopify's catalogue is on its way the two best-sellers each keep
+     their place, so a row that arrives late moves nothing (cart/BagEmpty). */
+  it("empty, catalogue still loading: the best-sellers' places are held, in order", () => {
+    live.value = { jewellery: [], isLoading: true };
+    open([]);
+    expect([...document.querySelectorAll("[data-piece-slot]")].map((slot) => slot.getAttribute("data-piece-slot"))).toEqual(["prism-riviere-bracelet", "woven-gold-hoops"]);
+    cleanup();
+    live.value = { jewellery: [], isLoading: false };
+    open([]);
+    expect(document.querySelector("[data-piece-slot]")).toBeNull();
   });
 
   it("one piece: nothing struck, and the saving's line names the next rung", () => {

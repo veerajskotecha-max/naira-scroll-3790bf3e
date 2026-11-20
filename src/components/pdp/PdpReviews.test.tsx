@@ -72,10 +72,17 @@ describe("PdpReviews: the product page's reviews", () => {
     expect(document.body.textContent).not.toMatch(/4\.9|\b\d+ reviews\b/);
   });
 
-  it("shows three photographed customer reviews, this piece's first", async () => {
+  it("shows three photographed customer reviews on a phone and a fourth on a laptop, this piece's first", async () => {
     await show();
     const expected = orderedRealReviews("Woven Gold Hoops");
-    expect(names()).toEqual(expected.slice(0, 3).map((r) => r.name));
+    /* Three in a phone's single column. A laptop's two columns left the
+       second row half empty, so a fourth is in the page for it, hidden below
+       1024px by CSS (never by code: the pre-built page must match). */
+    expect(names()).toEqual(expected.slice(0, 4).map((r) => r.name));
+    const rows = [...document.querySelectorAll("[data-review]")];
+    expect(rows.slice(0, 3).every((row) => !row.classList.contains("hidden"))).toBe(true);
+    expect(rows[3].classList.contains("hidden")).toBe(true);
+    expect(rows[3].classList.contains("lg:block")).toBe(true);
     // The review that names hoops leads on a hoops page.
     expect(document.querySelector("[data-review]")?.textContent).toMatch(/hoops/i);
   });
@@ -124,7 +131,8 @@ describe("PdpReviews: the product page's reviews", () => {
     ]);
     const first = document.querySelector("[data-review]") as HTMLElement;
     expect(within(first).getByRole("img", { name: "4 out of 5" }).textContent).toBe("★★★★");
-    expect(names().slice(1)).toEqual(orderedRealReviews("Woven Gold Hoops").slice(0, 2).map((r) => r.name));
+    /* Four rows in the page: three for a phone, the fourth for a laptop's second column. */
+    expect(names().slice(1)).toEqual(orderedRealReviews("Woven Gold Hoops").slice(0, 3).map((r) => r.name));
   });
 
   it("shows a review written here at once, unverified, and saves it for moderation", async () => {

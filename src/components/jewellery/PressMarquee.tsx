@@ -6,7 +6,8 @@ import fashionistaLogo from "@/assets/press/fashionista.png";
 
 const pressLogos = [
   { name: "The Times of India", src: timesOfIndiaLogo, className: "h-10 w-[138px] md:h-12 md:w-[166px]" },
-  { name: "Maharashtra Times", src: maharashtraTimesLogo, className: "h-12 w-12 md:h-14 md:w-14" },
+  /* An app icon, not a wordmark: its pale ground is taken out in pdp.css. */
+  { name: "Maharashtra Times", src: maharashtraTimesLogo, className: "pdp-press__mark--tile h-14 w-14 md:h-16 md:w-16" },
   { name: "Lokmat", src: lokmatLogo, className: "h-9 w-[134px] md:h-10 md:w-[149px]" },
   { name: "Times Now", src: timesNowLogo, className: "h-11 w-[88px] md:h-12 md:w-24" },
   { name: "Fashionista", src: fashionistaLogo, className: "h-9 w-[140px] md:h-10 md:w-[156px]" },

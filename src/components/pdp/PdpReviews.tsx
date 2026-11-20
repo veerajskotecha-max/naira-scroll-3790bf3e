@@ -26,6 +26,10 @@ import { SHOP_RATING, clientsLabel } from "@/lib/trust";
   chips or featured quote.
 */
 const SHOWN = 3;
+/* A laptop sets the list in two columns, where three left the second row
+   half empty: it shows a fourth. Which screen it is is decided in CSS, never
+   in code, so the pre-built page and the first render agree. */
+const SHOWN_WIDE = 4;
 
 const PdpReviews = ({ productName, variant = "jewellery" }: { productName?: string; variant?: "apparel" | "jewellery" }) => {
   const real = useMemo(() => orderedRealReviews(productName), [productName]);
@@ -99,7 +103,7 @@ const PdpReviews = ({ productName, variant = "jewellery" }: { productName?: stri
   }, [productName]);
 
   const reviews = useMemo(() => [...mine, ...submitted, ...real], [mine, submitted, real]);
-  const shown = expanded ? reviews : reviews.slice(0, SHOWN);
+  const shown = expanded ? reviews : reviews.slice(0, SHOWN_WIDE);
 
   const handleNewReview = async (review: { name: string; rating: number; text: string; images: string[] }) => {
     setMine((prev) => [
@@ -153,7 +157,11 @@ const PdpReviews = ({ productName, variant = "jewellery" }: { productName?: stri
 
       <ul className="mt-4 border-b border-[color:var(--nc-rule)] lg:grid lg:grid-cols-2 lg:gap-x-12">
         {shown.map((review, i) => (
-          <li key={`${review.name}-${i}`} data-review className="border-t border-[color:var(--nc-rule)] py-4">
+          <li
+            key={`${review.name}-${i}`}
+            data-review
+            className={`border-t border-[color:var(--nc-rule)] py-4 ${!expanded && i >= SHOWN ? "hidden lg:block" : ""}`}
+          >
             <p className="nc-text nc-text--strong" data-review-name>
               {review.name}
             </p>
@@ -188,7 +196,13 @@ const PdpReviews = ({ productName, variant = "jewellery" }: { productName?: stri
 
       <div className="mt-4 grid grid-cols-2 gap-2 md:max-w-[520px]">
         {reviews.length > SHOWN && (
-          <button type="button" onClick={() => setExpanded((value) => !value)} aria-expanded={expanded} className={cleanButton({ size: "sm" })}>
+          /* With exactly four, a laptop already shows them all. */
+          <button
+            type="button"
+            onClick={() => setExpanded((value) => !value)}
+            aria-expanded={expanded}
+            className={`${cleanButton({ size: "sm" })} ${reviews.length <= SHOWN_WIDE ? "lg:hidden" : ""}`}
+          >
             {expanded ? "Show fewer" : "View all"}
           </button>
         )}

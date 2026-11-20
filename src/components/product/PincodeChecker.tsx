@@ -101,6 +101,8 @@ const PincodeChecker = ({ preorder = false, look }: { preorder?: boolean; look?:
           </p>
         )}
 
+        {/* The answer is read out when it arrives, as the error is. */}
+        <div aria-live="polite">
         {unconfirmed && (
           <p className="nc-small mt-2">
             We can't confirm delivery to {unconfirmed} here. It is checked with your full address at checkout, before you pay.
@@ -110,8 +112,16 @@ const PincodeChecker = ({ preorder = false, look }: { preorder?: boolean; look?:
         {result && !error && (
           <div className="mt-2">
             <p className="nc-small nc-small--ink">
-              Delivery to {result.pincode} in {result.days} working days
-              {preorder ? " once it ships" : ` · by ${result.eta}`}
+              {/* The same words; the date stays whole and the dot stays with
+                  the line it ends, when a narrow phone wraps the sentence. */}
+              Delivery to {result.pincode} in {result.days} working{" "}
+              {preorder ? (
+                "days once it ships"
+              ) : (
+                <>
+                  <span className="whitespace-nowrap">days ·</span> <span className="whitespace-nowrap">by {result.eta}</span>
+                </>
+              )}
             </p>
             <p className="nc-small nc-small--ink">
               {result.cod === "blocked"
@@ -120,6 +130,7 @@ const PincodeChecker = ({ preorder = false, look }: { preorder?: boolean; look?:
             </p>
           </div>
         )}
+        </div>
       </div>
     );
   }

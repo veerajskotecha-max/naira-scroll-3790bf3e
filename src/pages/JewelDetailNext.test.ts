@@ -37,6 +37,16 @@ describe("redesigned product page", () => {
     /* ...nor over the offer's rungs while they are fully on screen. */
     expect(effect).toMatch(/querySelector\("\[data-offer-ladder\] ul"\)/);
     expect(effect).toMatch(/const offerClear = !rungs \|\| rungs\.bottom > window\.innerHeight \|\| rungs\.bottom < window\.innerHeight - barHeight/);
+    /* 20 Nov 2026: the offer became a row of the table, and the gap between
+       the rungs' foot and the button's grew past the bar's own height. On a
+       360x640 phone the bar left for the rungs, came back for 40px of scroll
+       and left again as the button arrived: on, off, on, off in the first
+       180px. A bar that is away stays away while the button is already
+       coming in at the bottom edge; one that is up stays up, as before. */
+    expect(effect).toMatch(/const arriving = r\.top < window\.innerHeight && r\.bottom > window\.innerHeight/);
+    expect(effect).toMatch(/offerClear && !\(arriving && barShown\.current === false\)/);
+    expect(effect).toMatch(/barShown\.current = next/);
+    expect(code).toMatch(/barShown\.current = null;\s*const check = /);
     /* The observer used to call check() from its own callback, so the bar's
        state was written inside the browser's layout pass. When the size guide's
        chart changed the page height, Chromium threw "ResizeObserver loop

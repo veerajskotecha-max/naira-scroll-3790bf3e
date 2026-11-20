@@ -15,6 +15,7 @@ import PressMarquee from "@/components/jewellery/PressMarquee";
 import PdpOfferLadder from "@/components/jewellery/PdpOfferLadder";
 import { discountPercent } from "@/components/jewellery/JewelPriceTag";
 import { CleanDots, CleanDropdown, CleanDropdowns, CleanFact, CleanFacts, CleanPrice, CleanStyles, cleanButton, percent } from "@/components/clean";
+import PdpStyles from "@/components/pdp/PdpStyles";
 import { useQuery } from "@tanstack/react-query";
 import { fromShopify, useLiveJewellery } from "@/hooks/useLiveJewellery";
 import { fetchShopifyProductByHandle } from "@/lib/shopify";
@@ -203,6 +204,7 @@ const PairingCard = ({ piece, href, compact = false, prefer }: { piece: JewelPie
   /* The page opens on the colour the card shows, not the piece's first. */
   const colour = variant ? variant.options[colourOption(piece)?.name ?? ""] : undefined;
   const to = colour ? `${href}${href.includes("?") ? "&" : "?"}colour=${encodeURIComponent(colour.toLowerCase())}` : href;
+  const price = variant ? `₹${variant.price.toLocaleString("en-IN")}` : piece.priceLabel;
   const add = async () => {
     setAdding(true);
     setDrawerOpen(true);
@@ -216,9 +218,10 @@ const PairingCard = ({ piece, href, compact = false, prefer }: { piece: JewelPie
       setAdding(false);
     }
   };
-  /* A card's button: the small outline button, let to wrap, since three cards
-     share a 360px phone and "Choose month" is wider than a third of it. */
-  const action = `${cleanButton({ size: "sm", block: true })} mt-2 !whitespace-normal !px-1 text-center`;
+  /* A card's button: the small outline button, fitted to a third of a phone
+     (pdp.css): "Choose size" stays on one line at 360px, and "Choose month",
+     wider than the card, may take two. */
+  const action = `${cleanButton({ size: "sm", block: true })} pdp-cardbtn mt-2`;
   return (
     <article className="flex h-full min-w-0 flex-col" data-variant={variant ? variantLabel(variant) : undefined}>
       <Link to={to} className={`block aspect-square overflow-hidden ${linen}`}>
@@ -240,13 +243,19 @@ const PairingCard = ({ piece, href, compact = false, prefer }: { piece: JewelPie
           showed the top of a third line over the price. */}
       <Link to={to} className="nc-small nc-small--ink -mb-[5px] mt-[3px] block min-h-[44px] py-[5px]">
         <span className="line-clamp-2">{piece.name}</span>
+        {/* A card without a button has nothing to line up below it: its
+            price sits right under the name, inside the same link, where the
+            room kept for a second line used to leave a blank one. */}
+        {!compact && <span className="nc-small block">{price}</span>}
       </Link>
-      {/* Pushed to the card's foot, so prices and buttons line up across a
-          row whether a name takes one line or two. */}
-      <p className="nc-small mt-auto pt-0.5">
-        {variant ? `₹${variant.price.toLocaleString("en-IN")}` : piece.priceLabel}
-        {variant && !need && <span> · {variantLabel(variant)}</span>}
-      </p>
+      {/* With a button: pushed to the card's foot, so prices and buttons line
+          up across the row whether a name takes one line or two. */}
+      {compact && (
+        <p className="nc-small mt-auto pt-0.5">
+          {price}
+          {variant && !need && <span> · {variantLabel(variant)}</span>}
+        </p>
+      )}
       {compact &&
         (need ? (
           <Link to={to} aria-label={`Choose a ${need} for ${piece.name}`} className={action}>
@@ -464,8 +473,18 @@ const JewelDetailNext = () => {
      rung's gold rule included: drawn on the panel's foot 8px below the list,
      that rule sat under the bar on a 390x844 phone while the list counted as
      clear. Rungs reaching past the screen's edge do not hold it back (an
-     Instagram-sized screen keeps its bar). */
+     Instagram-sized screen keeps its bar).
+     And once it has stepped away it does not come back for the last few
+     pixels before the button it stands for: with the offer now a row of the
+     table, 104px lie between the rungs' foot and the button's (it was 63),
+     more than the bar's 65, so on a 360x640 phone the bar left for the rungs,
+     slid back in for 40px of scroll and left again as Add to cart came fully
+     into view. While the button is already arriving at the bottom edge, a bar
+     that is away stays away. A bar that is up (the page opened with the
+     button cut by the edge) stays up until the button is whole, as before. */
+  const barShown = useRef<boolean | null>(null);
   useEffect(() => {
+    barShown.current = null;
     const check = () => {
       const target = document.querySelector("#product-actions > button");
       if (!target) return;
@@ -476,7 +495,9 @@ const JewelDetailNext = () => {
       const priceClear = !price || price.getBoundingClientRect().bottom < window.innerHeight - barHeight;
       const rungs = document.querySelector("[data-offer-ladder] ul")?.getBoundingClientRect();
       const offerClear = !rungs || rungs.bottom > window.innerHeight || rungs.bottom < window.innerHeight - barHeight;
-      const next = notFullyShown && priceClear && offerClear;
+      const arriving = r.top < window.innerHeight && r.bottom > window.innerHeight;
+      const next = notFullyShown && priceClear && offerClear && !(arriving && barShown.current === false);
+      barShown.current = next;
       /* Writing the same value back keeps React from rendering at all, so a
          reflow that changed nothing cannot ask for another layout pass. */
       setStickyBarVisible((cur) => (cur === next ? cur : next));
@@ -858,6 +879,7 @@ const JewelDetailNext = () => {
           child: inside, it would inherit this root's face and line height. */}
       <div className="nf-clean min-h-screen">
       <CleanStyles />
+      <PdpStyles />
       <Helmet>
         <title>{inPreview ? `Preview · ${title}` : title}</title>
         <meta name="description" content={`${piece.name}, ${clipText(piece.blurb, 130)}`} />
@@ -1209,7 +1231,7 @@ const JewelDetailNext = () => {
                 </p>
                 <p>
                   Cash on delivery available. 7-day returns —{" "}
-                  <Link to="/exchange-return-policy" className="nc-link nc-link--ink">
+                  <Link to="/exchange-return-policy" className="nc-link nc-link--ink whitespace-nowrap">
                     read the policy
                   </Link>
                   .

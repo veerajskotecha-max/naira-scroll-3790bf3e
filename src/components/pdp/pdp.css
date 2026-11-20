@@ -1,0 +1,42 @@
+/*
+  The product page's own rules, beside the clean system's (clean/clean.css,
+  shared with the bag and not edited from here). Every rule is scoped under
+  .nf-clean and written into the page by <PdpStyles />, so the pre-built page
+  carries it. Type and colour still come from the nc- classes; what is here is
+  what only the product page needs.
+*/
+
+/* The piece's name at the weight of the owner's screenshot. Set against Jost
+   at 300, 400 and 500 at the same size, the screenshot's "Woven Gold Hoops"
+   has the ink of 400 (coverage per width squared: screenshot 21.1; Jost 300
+   15.7, 400 22.4, 500 26.8), and the letterforms are Jost's. Sizes and line
+   height stay the system's. Jost 400 runs about 3% wider than 300, which at
+   360px put two names that had fitted on one line onto two (Bougainvillea
+   Vine Bracelet and Lumière Oval Solitaire Ring, 296.4px in a 296px
+   measure), and a second line takes the buy bar off the first screen. A
+   hundredth of an em less tracking gives the width back: all 113 names take
+   the lines they took at 300. One element on the selector keeps this under
+   the preview's title B rule, which must still win. */
+.nf-clean h1.nc-title { font-weight: 400; letter-spacing: -0.015em; }
+
+/* No last line of one short word in the paragraphs a shopper reads
+   ("…return it within 7 / days.", "…by Wed, 25 / Nov"). Browsers without
+   text-wrap: pretty wrap as before. */
+.nf-clean .nc-drop__panel p,
+.nf-clean [data-review] p { text-wrap: pretty; }
+
+/* A card's button, three to a row on a phone. "Choose size" is 94px of caps
+   and a third of a 360px phone leaves the label 91: it took a second line
+   beside two one-line "Add"s. The card gives it its side padding and, under
+   380px, a little of its tracking, so it stays on one line. "Choose month"
+   (115px) may still wrap there, so the label is let to. */
+.nf-clean .nc-btn.pdp-cardbtn { padding: 0 4px; white-space: normal; text-align: center; }
+@media (max-width: 379px) {
+  .nf-clean .nc-btn.pdp-cardbtn { padding: 0 2px; letter-spacing: 0.08em; }
+}
+
+/* Maharashtra Times' mark is a 100px app icon: blue letters on a pale blue
+   ground, which in grey was a tile beside four wordmarks. Twice the contrast
+   takes the ground to white, and the page's multiply rule then lets it fall
+   away into the ivory like the others' white. */
+.nf-clean .pdp-press__mark--tile { filter: grayscale(1) contrast(2.2); }

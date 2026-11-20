@@ -326,9 +326,17 @@ const CartDrawerNext = () => {
       >
         <CleanStyles />
         <div className={`flex shrink-0 items-center justify-between border-b ${RULE} pb-1.5 pl-4 pr-1 pt-[max(6px,env(safe-area-inset-top))]`}>
-          <SheetTitle className="nc-heading nc-heading--sheet flex items-baseline gap-2.5">
-            Your bag
-            {lineCount > 0 && <span className="nc-small">{lineCount === 1 ? "1 piece" : `${lineCount} pieces`}</span>}
+          {/* The title is the sheet's name ("Your bag 2 pieces"). The two
+              parts are set side by side, each in its own style: the count
+              inside the heading's own element would inherit its tracking. */}
+          <SheetTitle className="flex items-baseline gap-2.5">
+            <span className="nc-heading nc-heading--sheet">Your bag</span>
+            {lineCount > 0 && (
+              <>
+                {" "}
+                <span className="nc-small">{lineCount === 1 ? "1 piece" : `${lineCount} pieces`}</span>
+              </>
+            )}
           </SheetTitle>
           <button type="button" onClick={requestClose} aria-label="Close bag" className="nc-iconbtn shrink-0">
             <X size={18} strokeWidth={1.25} aria-hidden="true" />
@@ -409,8 +417,12 @@ const CartDrawerNext = () => {
                   </p>
                 )
               )}
+              {/* One line where it fits. Where it does not (a narrow phone,
+                  or a window that crosses into the next month), it breaks
+                  between its two sentences, not inside the date. */}
               <p className="nc-small">
-                Incl. {GST_LABEL}. Free insured shipping · arrives {arrivesBy}.
+                <span className="inline-block">Incl. {GST_LABEL}.</span>{" "}
+                <span className="inline-block">Free insured shipping · arrives {arrivesBy}.</span>
               </p>
               {/* The shop's rating and the ways to pay, right above the
                   button (the owner's ask, 16 Nov 2026). */}
@@ -422,7 +434,7 @@ const CartDrawerNext = () => {
                 disabled={busy || opening}
                 className={`${cleanButton({ fill: "ink", block: true })} relative z-[1] mt-2.5`}
               >
-                {busy || opening ? <Loader2 size={14} strokeWidth={1.25} className="animate-spin" aria-hidden="true" /> : null}
+                {busy || opening ? <Loader2 size={14} strokeWidth={1.25} className="animate-spin motion-reduce:animate-none" aria-hidden="true" /> : null}
                 {opening ? "Opening checkout…" : "Checkout"}
               </button>
               <BagReturns onLeave={leave} />

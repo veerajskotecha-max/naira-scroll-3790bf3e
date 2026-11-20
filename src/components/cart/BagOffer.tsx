@@ -15,7 +15,9 @@ const BagOffer = ({ totalItems }: { totalItems: number }) => {
   const top = TOP_QUANTITY_OFFER.minQuantity;
   return (
     <div data-ladder className="shrink-0">
-      <CleanRungs centered offers={QUANTITY_OFFERS} totalItems={totalItems} className="px-4 py-2.5" />
+      {/* Three rungs of about 85px each: the side padding gives way on a narrow
+          phone, so the words never meet (they did at 280px). */}
+      <CleanRungs centered offers={QUANTITY_OFFERS} totalItems={totalItems} className="px-4 py-2.5 max-[339px]:px-2 max-[299px]:px-0" />
       <CleanTrack value={quantityOfferProgress(totalItems)} now={totalItems} max={top} label={`${totalItems} of ${top} pieces`} />
     </div>
   );

@@ -65,7 +65,7 @@ const BagEmpty = ({ pieces, adding, onAdd, onLeave }: Props) => (
                   aria-label={`Add ${piece.name} to bag`}
                   className={`${cleanButton({ size: "sm" })} shrink-0`}
                 >
-                  {adding === piece.handle ? <Loader2 size={14} strokeWidth={1.25} className="animate-spin" aria-hidden="true" /> : "Add"}
+                  {adding === piece.handle ? <Loader2 size={14} strokeWidth={1.25} className="animate-spin motion-reduce:animate-none" aria-hidden="true" /> : "Add"}
                 </button>
               </li>
             ))}

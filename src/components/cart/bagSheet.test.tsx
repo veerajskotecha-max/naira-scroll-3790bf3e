@@ -83,11 +83,12 @@ describe("the bag's sheet", () => {
 
   it("counts the pieces beside the title, in plain words", () => {
     open([hoops]);
-    expect(text("h2")).toBe("Your bag1 piece");
+    expect(text("h2")).toBe("Your bag 1 piece");
     cleanup();
     open([{ ...hoops, quantity: 2 }, ring]);
-    expect(text("h2")).toBe("Your bag3 pieces");
-    expect(document.querySelector("h2 span")?.className).toMatch(/\bnc-small\b/);
+    expect(text("h2")).toBe("Your bag 3 pieces");
+    expect(document.querySelector("h2 span:first-child")?.className).toMatch(/\bnc-heading--sheet\b/);
+    expect(document.querySelector("h2 span:last-child")?.className).toMatch(/\bnc-small\b/);
   });
 
   it("puts nothing in the foot between the trust lines, Checkout and the returns link", () => {
@@ -149,7 +150,7 @@ describe("the bag, state by state", () => {
   /* The piece on its way in is listed and counted from the tap. */
   it("adding: the arriving piece is a line at once, and Checkout waits", () => {
     open([ring], { pending: { ...hoops, lineId: null }, isLoading: true });
-    expect(text("h2")).toBe("Your bag2 pieces");
+    expect(text("h2")).toBe("Your bag 2 pieces");
     const arriving = document.querySelector("[data-adding]") as HTMLElement;
     expect(arriving.getAttribute("data-line")).toBe("woven-gold-hoops");
     expect(arriving.querySelector('[role="status"]')?.textContent).toContain("Adding to your bag…");

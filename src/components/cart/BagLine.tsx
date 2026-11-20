@@ -61,7 +61,7 @@ const BagLine = ({ item, href, onLeave, options, total, was, each, off, adding, 
       <img
         src={shopifyImage(item.image, 200) || item.image}
         alt={item.name}
-        className="h-[90px] w-[72px] bg-[var(--nc-linen)] object-cover"
+        className="h-[90px] w-[72px] bg-[var(--nc-linen)] object-cover max-[319px]:h-[80px] max-[319px]:w-[64px]"
         width={72}
         height={90}
         loading={eager ? "eager" : "lazy"}
@@ -87,7 +87,7 @@ const BagLine = ({ item, href, onLeave, options, total, was, each, off, adding, 
       {options ? <p className="nc-small truncate">{options}</p> : null}
       {adding && (
         <p role="status" className="nc-small nc-gold flex items-center gap-1.5">
-          <Loader2 size={14} strokeWidth={1.25} className="animate-spin" aria-hidden="true" /> Adding to your bag…
+          <Loader2 size={14} strokeWidth={1.25} className="animate-spin motion-reduce:animate-none" aria-hidden="true" /> Adding to your bag…
         </p>
       )}
       {(was || each) && (
@@ -97,7 +97,9 @@ const BagLine = ({ item, href, onLeave, options, total, was, each, off, adding, 
           {off ? <span className="nc-small nc-gold">{off}</span> : null}
         </p>
       )}
-      {/* The controls keep to the foot of the photograph, whatever sits above them. */}
+      {/* The controls keep to the foot of the photograph, whatever sits above
+          them. Under 320px the photo gives up 8px and Remove its lead-in, so
+          the stepper and the word still share the row. */}
       <div className="mt-auto flex items-center justify-between gap-2 pt-2">
         <CleanStepper
           quantity={item.quantity}
@@ -106,7 +108,7 @@ const BagLine = ({ item, href, onLeave, options, total, was, each, off, adding, 
           disabled={busy}
           decreaseLabel={item.quantity <= 1 ? `Remove ${item.name}` : "Decrease quantity"}
         />
-        <button type="button" onClick={onRemove} disabled={busy} aria-label={`Remove ${item.name}`} className="nc-small nc-link nc-tap pl-3 disabled:opacity-40">
+        <button type="button" onClick={onRemove} disabled={busy} aria-label={`Remove ${item.name}`} className="nc-small nc-link nc-tap pl-3 disabled:opacity-40 max-[319px]:pl-0">
           Remove
         </button>
       </div>

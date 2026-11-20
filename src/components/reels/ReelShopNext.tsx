@@ -86,6 +86,16 @@ const ReelPiece = ({ product, live, hrefFor }: { product: ReelProduct; live?: Je
     <img src={shopifyImage(image, 160)} alt={name} className="h-full w-full object-cover" loading="lazy" decoding="async" width={48} height={48} />
   );
 
+  const words = (
+    <>
+      <span className="nc-small nc-small--ink block truncate">{name}</span>
+      <span className="nc-small block">
+        {soldOut ? "Pre-order" : price}
+        {here && <span> · this piece</span>}
+      </span>
+    </>
+  );
+
   return (
     <li className="flex items-center gap-3 border-t border-[color:var(--nc-rule)] py-2.5">
       {here ? (
@@ -95,19 +105,15 @@ const ReelPiece = ({ product, live, hrefFor }: { product: ReelProduct; live?: Je
           {thumb}
         </Link>
       )}
-      <div className="min-w-0 flex-1">
-        {here ? (
-          <span className="nc-small nc-small--ink block truncate">{name}</span>
-        ) : (
-          <Link to={href} className="nc-small nc-small--ink block truncate">
-            {name}
-          </Link>
-        )}
-        <p className="nc-small">
-          {soldOut ? "Pre-order" : price}
-          {here && <span> · this piece</span>}
-        </p>
-      </div>
+      {/* Name and price are one 44px link to the piece; on its own page the
+          row names it instead of linking to itself. */}
+      {here ? (
+        <div className="min-w-0 flex-1">{words}</div>
+      ) : (
+        <Link to={href} className="flex min-h-[44px] min-w-0 flex-1 flex-col justify-center">
+          {words}
+        </Link>
+      )}
       {soldOut ? (
         <button type="button" onClick={reserve} className={`${cleanButton({ size: "sm" })} shrink-0`}>
           Reserve

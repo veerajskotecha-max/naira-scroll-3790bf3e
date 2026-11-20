@@ -12,11 +12,15 @@
    print and main.tsx switches it on). Until then the same words are set in
    the phone's own sans, sized to Jost's width at each weight, so a title
    does not re-wrap and nothing below it moves when the face swaps.
-   Measured against Arial: Jost 300 is 91.8% as wide, 400 is 94.8%, 500 is 99%. */
+   Measured against Arial: Jost 300 is 91.8% as wide, 400 is 94.8%, 500 is 99%.
+   Liberation Sans has Arial's widths and stands in for it where Arial is not
+   installed (Linux, and the machines these pages are measured on: local()
+   does not follow a font alias, so without it the fallback there was Inter,
+   12.7% wider than Jost, and a name re-wrapped as the face arrived). */
 @font-face {
   font-family: "Jost Fallback";
   font-weight: 300;
-  src: local("Roboto Light"), local("Roboto"), local("Helvetica Neue Light"), local("Arial");
+  src: local("Roboto Light"), local("Roboto"), local("Helvetica Neue Light"), local("Arial"), local("Liberation Sans");
   size-adjust: 91.8%;
   ascent-override: 107%;
   descent-override: 37%;
@@ -25,7 +29,7 @@
 @font-face {
   font-family: "Jost Fallback";
   font-weight: 400;
-  src: local("Roboto"), local("Helvetica Neue"), local("Arial");
+  src: local("Roboto"), local("Helvetica Neue"), local("Arial"), local("Liberation Sans");
   size-adjust: 94.8%;
   ascent-override: 107%;
   descent-override: 37%;
@@ -34,7 +38,7 @@
 @font-face {
   font-family: "Jost Fallback";
   font-weight: 500;
-  src: local("Roboto Medium"), local("Roboto"), local("Helvetica Neue Medium"), local("Arial");
+  src: local("Roboto Medium"), local("Roboto"), local("Helvetica Neue Medium"), local("Arial"), local("Liberation Sans");
   size-adjust: 99%;
   ascent-override: 107%;
   descent-override: 37%;
@@ -229,4 +233,7 @@
 }
 @media (prefers-reduced-motion: reduce) {
   .nf-clean *, .nf-clean *::before, .nf-clean *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+  /* The universal selector does not reach this pseudo-element: without its
+     own line a dropdown's height still took 220ms to open. */
+  .nf-clean .nc-drop::details-content { transition-duration: 0.01ms !important; }
 }

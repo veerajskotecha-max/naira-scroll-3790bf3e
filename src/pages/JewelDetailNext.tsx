@@ -933,9 +933,12 @@ const JewelDetailNext = () => {
             {/* Category, the way back to the collection; and the shop's own
                 rating (lib/trust), the way down to the reviews. */}
             <div className="flex items-center justify-between gap-3">
-              <Link to="/jewellery" data-pdp="eyebrow" className="nc-label nc-label--gold nc-tap">
-                {piece.category}
-              </Link>
+              {/* "RINGS" alone is 43px wide: the row gives it a 44px target. */}
+              <span className="grid min-w-[44px]">
+                <Link to="/jewellery" data-pdp="eyebrow" className="nc-label nc-label--gold nc-tap">
+                  {piece.category}
+                </Link>
+              </span>
               <a
                 href="#customer-reviews"
                 onClick={toReviews}
@@ -949,7 +952,10 @@ const JewelDetailNext = () => {
               </a>
             </div>
 
-            <div className="mt-0.5 flex items-start justify-between gap-3">
+            {/* No gap between the name and the heart's box: the 12px of air
+                inside that box is the gap, and the name keeps the width
+                (326px of a 390px phone), so fewer names take a second line. */}
+            <div className="mt-0.5 flex items-start justify-between">
               <h1 data-pdp="title" className="nc-title min-w-0">
                 {piece.name}
               </h1>
@@ -958,7 +964,6 @@ const JewelDetailNext = () => {
                 onClick={handleWishlist}
                 className="nc-iconbtn -my-1.5 -mr-3 shrink-0"
                 aria-label={wishlisted ? "Remove from wishlist" : "Add to wishlist"}
-                aria-pressed={wishlisted}
               >
                 {heart}
               </button>
@@ -1100,7 +1105,15 @@ const JewelDetailNext = () => {
                 buy bar watches the first of them. */}
             <div id="product-actions" className="nc-btnrow mt-5">
               {!isPreorder && (
-                <button type="button" onClick={handleBuyNow} disabled={cartLoading || buying} className={cleanButton()}>
+                /* "Opening checkout…" is 142px of caps; half a 360px phone leaves
+                   the label 126. While busy the button gives it its side padding
+                   and, on a narrower phone still, a second line. */
+                <button
+                  type="button"
+                  onClick={handleBuyNow}
+                  disabled={cartLoading || buying}
+                  className={`${cleanButton()} ${buying ? "!whitespace-normal !px-1 text-center" : ""}`}
+                >
                   {buying ? "Opening checkout…" : "Buy Now"}
                 </button>
               )}

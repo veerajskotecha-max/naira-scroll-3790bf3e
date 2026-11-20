@@ -37,3 +37,20 @@ describe("CustomerReviews", () => {
     expect(dialog.hasAttribute("aria-describedby")).toBe(false);
   });
 });
+
+/* The product page asks for look="clean" (components/pdp/PdpReviews): only
+   the reviews the code can vouch for, in the clean system. The default above
+   is the outfit page's list, unchanged. */
+describe('CustomerReviews look="clean"', () => {
+  it("hands the product page its own list and leaves the default alone", () => {
+    const { container, unmount } = render(<CustomerReviews productName="Star Point Band" variant="jewellery" look="clean" />);
+    expect(container.querySelector('#customer-reviews[data-reviews="clean"]')).not.toBeNull();
+    expect(screen.getByRole("heading", { level: 2, name: "Reviews" })).toBeTruthy();
+    expect(screen.queryByText("Kind words")).toBeNull();
+    unmount();
+    const classic = render(<CustomerReviews productName="Star Point Band" variant="jewellery" />);
+    expect(classic.container.querySelector("#customer-reviews")?.hasAttribute("data-reviews")).toBe(false);
+    expect(screen.getByText("Kind words")).toBeTruthy();
+    expect(screen.getByRole("heading", { level: 2, name: "Customer Reviews" })).toBeTruthy();
+  });
+});

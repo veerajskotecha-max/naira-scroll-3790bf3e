@@ -15,7 +15,11 @@ interface Result extends Serviceability {
 /* A piece that is reserved rather than in stock (sold out, a sold-out colour,
    a size made to order) ships when it is ready: the courier's days still hold,
    but a dated "by Wed, 4 Nov" would be a promise the page does not make. */
-const PincodeChecker = ({ preorder = false }: { preorder?: boolean }) => {
+/* `look="clean"` is the product page's (src/components/clean): one hairline
+   field with its action inside, the same words as plain lines, no icons and
+   no green, amber or red. Without it this renders as it always has, for the
+   outfit page. */
+const PincodeChecker = ({ preorder = false, look }: { preorder?: boolean; look?: "clean" }) => {
   const [pincode, setPincode] = useState("");
   const [result, setResult] = useState<Result | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -59,6 +63,66 @@ const PincodeChecker = ({ preorder = false }: { preorder?: boolean }) => {
     }
   };
 
+
+  if (look === "clean") {
+    return (
+      <div>
+        <form
+          className="nc-field"
+          noValidate
+          onSubmit={(event) => {
+            event.preventDefault();
+            check(pincode);
+          }}
+        >
+          <label htmlFor="pdp-pincode" className="nc-sr">
+            Pincode
+          </label>
+          <input
+            id="pdp-pincode"
+            type="text"
+            inputMode="numeric"
+            autoComplete="postal-code"
+            maxLength={6}
+            value={pincode}
+            onChange={(e) => setPincode(e.target.value.replace(/\D/g, ""))}
+            placeholder="Enter pincode"
+          />
+          {/* The field's box is 44px with its hairline, so the button inside
+              is 42: its target reaches over the hairline to the full 44. */}
+          <button type="submit" className="relative before:absolute before:inset-x-0 before:-inset-y-px before:content-['']">
+            Check
+          </button>
+        </form>
+
+        {error && (
+          <p role="alert" className="nc-small nc-small--ink mt-2">
+            {error}
+          </p>
+        )}
+
+        {unconfirmed && (
+          <p className="nc-small mt-2">
+            We can't confirm delivery to {unconfirmed} here. It is checked with your full address at checkout, before you pay.
+          </p>
+        )}
+
+        {result && !error && (
+          <div className="mt-2">
+            <p className="nc-small nc-small--ink">
+              Delivery to {result.pincode} in {result.days} working days
+              {preorder ? " once it ships" : ` · by ${result.eta}`}
+            </p>
+            <p className="nc-small nc-small--ink">
+              {result.cod === "blocked"
+                ? `Cash on Delivery is unavailable for this pincode (${result.codReason}). Prepaid only · UPI, cards, wallets and net banking accepted.`
+                : "Cash on Delivery available · UPI, cards, wallets and net banking accepted"}
+            </p>
+          </div>
+        )}
+      </div>
+    );
+  }
 
   return (
     <div className="mt-4">

@@ -12,27 +12,30 @@ const pressLogos = [
   { name: "Fashionista", src: fashionistaLogo, className: "h-9 w-[140px] md:h-10 md:w-[156px]" },
 ];
 
+/*
+  "As featured in": a credit line on the product page, not a section to read.
+  A centred caps label over the five publications' marks in grey; no colour on
+  hover, no dots between them, no rules above or below. A phone shows them as
+  a slow moving row (still under reduced motion); a laptop has the room to
+  show all five at once, so there they stand still. The page's own rule
+  (index.css) multiplies the marks onto the ivory ground.
+*/
 const PressMarquee = () => (
-  <section className="overflow-hidden border-y border-border bg-background py-7 md:py-9" aria-labelledby="press-heading">
-    <h2 id="press-heading" className="mb-6 text-center font-sans text-[10px] font-medium uppercase tracking-nf-15 text-muted-foreground">
+  <section className="overflow-hidden pt-12 lg:pt-16" aria-labelledby="press-heading">
+    <h2 id="press-heading" className="nc-label text-center">
       As featured in
     </h2>
-    <div className="group relative overflow-hidden" role="region" aria-label="Press features">
-      <div className="flex w-max animate-[marquee_26s_linear_infinite] items-center group-hover:[animation-play-state:paused] motion-reduce:animate-none">
+    <div className="mt-4 overflow-hidden" role="region" aria-label="Press features">
+      <div className="flex w-max animate-[marquee_26s_linear_infinite] items-center motion-reduce:animate-none md:mx-auto md:w-full md:max-w-[1100px] md:animate-none md:px-6">
         {[0, 1].map((copy) => (
-          <div key={copy} className="flex shrink-0 items-center" aria-hidden={copy === 1}>
+          <div key={copy} className={`flex shrink-0 items-center ${copy === 1 ? "md:hidden" : "md:w-full md:justify-between"}`} aria-hidden={copy === 1}>
             {pressLogos.map((publication) => (
-              <div key={`${copy}-${publication.name}`} className="flex items-center">
-                <div className="flex h-16 w-[210px] items-center justify-center px-7 opacity-70 grayscale transition duration-300 group-hover:opacity-100 group-hover:grayscale-0 md:w-[250px] md:px-10">
-                  <img
-                    src={publication.src}
-                    alt={`${publication.name} logo`}
-                    className={`object-contain ${publication.className}`}
-                    loading="lazy"
-                    decoding="async"
-                  />
-                </div>
-                <span className="h-1 w-1 bg-primary/55" aria-hidden="true" />
+              <div key={`${copy}-${publication.name}`} className="flex h-16 w-[210px] items-center justify-center px-7 md:w-auto md:px-0">
+                {/* Grey and softened on the mark itself, not on its box: a
+                    faded box is its own layer, and the white ground of a JPG
+                    or PNG mark then showed as a pale square instead of
+                    multiplying away into the ivory. */}
+                <img src={publication.src} alt={`${publication.name} logo`} className={`object-contain opacity-70 grayscale ${publication.className}`} loading="lazy" decoding="async" />
               </div>
             ))}
           </div>

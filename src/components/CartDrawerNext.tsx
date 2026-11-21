@@ -175,18 +175,19 @@ export const SimpleLadder = ({ totalItems }: { totalItems: number }) => {
           broke it mid-phrase ("Sitewide sale live / today · up to 30% off"),
           so each half is held together and the dot stays with the first.
           "Up to" is the top rung, so the line moves when the ladder does. */}
-      <p className="mb-5 text-balance text-center font-nf-label text-[10px] font-medium uppercase leading-[1.4] tracking-nf-8 text-nf-ink/60">
+      <p className="mb-5 text-balance text-center font-sans text-[11px] font-normal leading-[1.4] text-nf-ink/60">
         <span className="whitespace-nowrap">✦ Sitewide sale live today ·</span>{" "}
         <span className="whitespace-nowrap">up to {pct(TOP_QUANTITY_OFFER.rate)} off</span>
       </p>
-      <div className="relative h-[3px] bg-nf-ink/25" role="progressbar" aria-valuemin={0} aria-valuemax={top} aria-valuenow={Math.min(totalItems, top)} aria-label={`${totalItems} of ${top} pieces`}>
-        <span className="block h-full bg-nf-ink transition-[width] duration-500 motion-reduce:transition-none" style={{ width: `${fill * 100}%` }} />
+      <div className="relative h-[2px] bg-nf-ink/15" role="progressbar" aria-valuemin={0} aria-valuemax={top} aria-valuenow={Math.min(totalItems, top)} aria-label={`${totalItems} of ${top} pieces`}>
+        <span className="block h-full bg-nf-gold-deep transition-[width] duration-500 motion-reduce:transition-none" style={{ width: `${fill * 100}%` }} />
         {QUANTITY_OFFERS.map((o, i) => (
           <span
             key={o.code}
             aria-hidden="true"
             data-rung-mark={o.minQuantity}
-            className={`absolute top-1/2 h-4 w-4 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 transition-colors duration-300 motion-reduce:transition-none ${totalItems >= o.minQuantity ? "border-nf-ink bg-nf-ink" : "border-nf-ink/40 bg-[var(--nf-surface)]"}`}
+            data-reached={totalItems >= o.minQuantity}
+            className={`absolute top-1/2 h-2.5 w-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full border transition-colors duration-300 motion-reduce:transition-none ${totalItems >= o.minQuantity ? "border-nf-gold-deep bg-nf-gold-deep" : "border-nf-ink/30 bg-[var(--nf-surface)]"}`}
             style={{ left: `${rungPosition(i) * 100}%` }}
           />
         ))}
@@ -197,8 +198,8 @@ export const SimpleLadder = ({ totalItems }: { totalItems: number }) => {
           const reached = totalItems >= o.minQuantity;
           return (
             <li key={o.code} data-rung-label={o.minQuantity} className="min-w-0 leading-[1.3]">
-              <span className={`block text-[10.5px] tracking-wide ${reached ? "text-nf-ink" : "text-nf-ink/70"}`}>Buy {o.minQuantity}</span>
-              <span className={`block text-[11px] ${reached ? "font-medium text-nf-ink" : "text-nf-ink/80"}`}>{pct(o.rate)} off</span>
+              <span className="block font-sans text-[11px] font-normal text-nf-ink/60">Buy {o.minQuantity}</span>
+              <span className={`block font-sans text-[12px] font-normal tabular-nums ${reached ? "text-nf-gold-text" : "text-nf-ink"}`}>{pct(o.rate)} off</span>
             </li>
           );
         })}

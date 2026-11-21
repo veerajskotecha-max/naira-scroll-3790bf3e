@@ -83,7 +83,7 @@ const PdpOfferLadder = ({ price, preorder = false }: { price: number; preorder?:
     >
       <div className={`relative border-y border-nf-gold-deep/30 px-1 pt-[9px] ${preorder ? "pb-[7px]" : "pb-[4px]"}`}>
         {/* On the top rule, like a fieldset's legend: no row of its own. */}
-        <p className="absolute -top-[7px] left-1/2 -translate-x-1/2 whitespace-nowrap bg-nf-ivory px-2 font-sans text-[11px] font-medium leading-[14px] text-nf-gold-text">
+        <p className="absolute -top-[7px] left-1/2 -translate-x-1/2 whitespace-nowrap bg-nf-ivory px-2 font-sans text-[11px] font-normal leading-[14px] text-nf-gold-text">
           {preorder ? "Not on pre-orders" : "Applied in your bag · no code"}
         </p>
         <ul className="grid grid-cols-3">
@@ -100,11 +100,11 @@ const PdpOfferLadder = ({ price, preorder = false }: { price: number; preorder?:
                 className={`relative min-w-0 px-0.5 text-center min-[310px]:px-1 ${preorder ? "" : "pb-[3px]"} ${i > 0 ? "border-l border-nf-gold-deep/15" : ""}`}
               >
                 <p className="flex flex-col items-center whitespace-nowrap min-[310px]:h-[22px] min-[310px]:flex-row min-[310px]:items-baseline min-[310px]:justify-center min-[310px]:gap-1.5">
-                  <span className={`font-sans text-[11px] font-medium leading-[14px] ${passed ? "text-nf-ink/65" : "text-nf-gold-text"}`}>
+                  <span className={`font-sans text-[11px] font-normal leading-[14px] ${passed ? "text-nf-ink/65" : "text-nf-gold-text"}`}>
                     Buy {offer.minQuantity}
                   </span>
                   <span
-                    className={`font-sans text-[23px] font-medium leading-[22px] lining-nums tabular-nums transition-colors duration-300 motion-reduce:transition-none ${
+                    className={`font-sans text-[20px] font-normal leading-[22px] lining-nums tabular-nums transition-colors duration-300 motion-reduce:transition-none ${
                       isCurrent ? "text-nf-gold-text" : passed ? "text-nf-ink/65" : "text-nf-ink"
                     }`}
                   >
@@ -116,7 +116,7 @@ const PdpOfferLadder = ({ price, preorder = false }: { price: number; preorder?:
                   /* A fixed height: the figure and the pre-order note take the
                      same room, or picking a pre-order size moves the sizes. */
                   <p className={`h-4 whitespace-nowrap leading-4 ${passed ? "text-nf-ink/65" : "text-nf-ink"}`}>
-                    <span className="text-[12.5px] font-medium tabular-nums min-[310px]:text-[13.5px]">{rupees(pieceAtRung(price, offer))}</span>
+                    <span className="text-[12.5px] font-normal tabular-nums min-[310px]:text-[13.5px]">{rupees(pieceAtRung(price, offer))}</span>
                     <span className="font-sans text-[11px] text-nf-ink/65 min-[310px]:text-[11.5px]"> each</span>
                   </p>
                 )}

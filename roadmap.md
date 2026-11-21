@@ -1,4 +1,5 @@
 # Roadmap
+- [x] Soften PDP font weights and refine the bag offer track; verified a real add-to-bag on phone/tablet, normal-weight title and 59 passing checks.
 - [x] Show individual discounted bag prices as quantity offers change; verified totals, two-/three-piece transitions and removal back to original prices.
 
 - [x] Audit price-filter boundaries and variant prices against Shopify; correct mismatches and verify browsing/back flow.

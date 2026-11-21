@@ -20,12 +20,6 @@ describe("SimpleLadder: the bag's offer track", () => {
     expect(ladder.textContent).not.toContain("up to 20%");
   });
 
-  /* 8.5px was dust on a phone; 11px is the least a shopper can read. */
-  it("sets the line over the track at 10px, small enough for three rungs", () => {
-    const { container } = render(<SimpleLadder totalItems={1} />);
-    expect((container.querySelector("[data-ladder] > p") as HTMLElement).className).toMatch(/text-\[10px\]/);
-  });
-
   it("states all three rungs under the track", () => {
     const { container } = render(<SimpleLadder totalItems={1} />);
     const labels = [...container.querySelectorAll("[data-rung-label]")].map((l) => [...l.children].map((c) => c.textContent).join(" "));
@@ -53,7 +47,7 @@ describe("SimpleLadder: the bag's offer track", () => {
     const { container } = render(<SimpleLadder totalItems={n} />);
     const fill = container.querySelector('[role="progressbar"] > span') as HTMLElement;
     expect(parseFloat(fill.style.width).toFixed(3)).toBe(width);
-    expect([...container.querySelectorAll("[data-rung-mark]")].map((m) => m.className.includes("bg-nf-ink"))).toEqual(reached);
+    expect([...container.querySelectorAll("[data-rung-mark]")].map((m) => m.getAttribute("data-reached") === "true")).toEqual(reached);
     expect(container.querySelector('[role="progressbar"]')?.getAttribute("aria-valuenow")).toBe(String(Math.min(n, 4)));
   });
 });

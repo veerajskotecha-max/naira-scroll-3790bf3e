@@ -81,9 +81,9 @@ const PdpOfferLadder = ({ price, preorder = false }: { price: number; preorder?:
       aria-label="Buy more, pay less"
       className="mt-3"
     >
-      <div className={`relative border border-nf-gold-deep/45 px-1 pt-[9px] ${preorder ? "pb-[7px]" : "pb-[4px]"}`}>
+      <div className={`relative border-y border-nf-gold-deep/30 px-1 pt-[9px] ${preorder ? "pb-[7px]" : "pb-[4px]"}`}>
         {/* On the top rule, like a fieldset's legend: no row of its own. */}
-        <p className="absolute -top-[7px] left-1/2 -translate-x-1/2 whitespace-nowrap bg-nf-ivory px-2 font-nf-label text-[11px] font-medium uppercase leading-[14px] tracking-nf-8 text-nf-gold-text">
+        <p className="absolute -top-[7px] left-1/2 -translate-x-1/2 whitespace-nowrap bg-nf-ivory px-2 font-sans text-[11px] font-medium leading-[14px] text-nf-gold-text">
           {preorder ? "Not on pre-orders" : "Applied in your bag · no code"}
         </p>
         <ul className="grid grid-cols-3">
@@ -97,21 +97,19 @@ const PdpOfferLadder = ({ price, preorder = false }: { price: number; preorder?:
                 data-rung={offer.minQuantity}
                 data-reached={reached ? "" : undefined}
                 data-current={isCurrent ? "" : undefined}
-                className={`relative min-w-0 px-0.5 text-center min-[310px]:px-1 ${preorder ? "" : "pb-[3px]"} ${i > 0 ? "border-l border-nf-gold-deep/25" : ""}`}
+                className={`relative min-w-0 px-0.5 text-center min-[310px]:px-1 ${preorder ? "" : "pb-[3px]"} ${i > 0 ? "border-l border-nf-gold-deep/15" : ""}`}
               >
                 <p className="flex flex-col items-center whitespace-nowrap min-[310px]:h-[22px] min-[310px]:flex-row min-[310px]:items-baseline min-[310px]:justify-center min-[310px]:gap-1.5">
-                  <span className={`font-nf-label text-[11px] font-medium uppercase leading-[14px] tracking-nf-8 ${passed ? "text-nf-ink/65" : "text-nf-gold-text"}`}>
+                  <span className={`font-sans text-[11px] font-medium leading-[14px] ${passed ? "text-nf-ink/65" : "text-nf-gold-text"}`}>
                     Buy {offer.minQuantity}
                   </span>
                   <span
-                    className={`font-nf-editorial text-[23px] font-medium leading-[22px] lining-nums tabular-nums transition-colors duration-300 motion-reduce:transition-none ${
+                    className={`font-sans text-[23px] font-medium leading-[22px] lining-nums tabular-nums transition-colors duration-300 motion-reduce:transition-none ${
                       isCurrent ? "text-nf-gold-text" : passed ? "text-nf-ink/65" : "text-nf-ink"
                     }`}
                   >
                     {pct(offer.rate)}
-                    {/* "off" fits beside the rate from 350px (every common
-                        phone); a narrower one still hears it. */}
-                    <span className="sr-only font-nf-label text-[11.5px] font-normal leading-none tracking-normal text-nf-ink/70 min-[350px]:not-sr-only"> off</span>
+                    <span className="sr-only"> off</span>
                   </span>
                 </p>
                 {!preorder && (
@@ -119,7 +117,7 @@ const PdpOfferLadder = ({ price, preorder = false }: { price: number; preorder?:
                      same room, or picking a pre-order size moves the sizes. */
                   <p className={`h-4 whitespace-nowrap leading-4 ${passed ? "text-nf-ink/65" : "text-nf-ink"}`}>
                     <span className="text-[12.5px] font-medium tabular-nums min-[310px]:text-[13.5px]">{rupees(pieceAtRung(price, offer))}</span>
-                    <span className="font-nf-label text-[11px] text-nf-ink/65 min-[310px]:text-[11.5px]"> each</span>
+                    <span className="font-sans text-[11px] text-nf-ink/65 min-[310px]:text-[11.5px]"> each</span>
                   </p>
                 )}
                 {isCurrent && (
@@ -135,7 +133,7 @@ const PdpOfferLadder = ({ price, preorder = false }: { price: number; preorder?:
           })}
         </ul>
         {preorder && (
-          <p className="h-4 text-center font-nf-label text-[11.5px] leading-4 text-nf-ink/70">In-stock pieces only</p>
+          <p className="h-4 text-center font-sans text-[11.5px] leading-4 text-nf-ink/70">In-stock pieces only</p>
         )}
       </div>
       {/* Always in the page, so a screen reader hears each new state. View
@@ -144,14 +142,14 @@ const PdpOfferLadder = ({ price, preorder = false }: { price: number; preorder?:
       <div aria-live="polite" className="flex items-start justify-between gap-3">
         {status && (
           <>
-            <p key={status} className="mt-1.5 min-w-0 animate-in fade-in-0 font-nf-label text-[11.5px] leading-[16px] text-nf-ink/75 duration-150 motion-reduce:animate-none">
+            <p key={status} className="mt-1.5 min-w-0 animate-in fade-in-0 font-sans text-[11.5px] leading-[16px] text-nf-ink/75 duration-150 motion-reduce:animate-none">
               {status}
             </p>
             {totalItems > 0 && (
               <button
                 type="button"
                 onClick={() => setDrawerOpen(true)}
-                className="-mb-[6px] -mr-2 -mt-[16px] inline-flex min-h-[44px] shrink-0 items-end px-2 pb-[6px] font-nf-label text-[11px] leading-[16px] text-nf-ink underline decoration-nf-gold underline-offset-4"
+                className="-mb-[6px] -mr-2 -mt-[16px] inline-flex min-h-[44px] shrink-0 items-end px-2 pb-[6px] font-sans text-[11px] leading-[16px] text-nf-ink underline decoration-nf-gold underline-offset-4"
               >
                 View bag
               </button>

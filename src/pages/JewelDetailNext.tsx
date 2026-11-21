@@ -242,7 +242,7 @@ const PairingCard = ({ piece, href, compact = false, prefer }: { piece: JewelPie
           taken back from the margins, so nothing below moves. The clamp sits
           inside: a clamped box clips at its padding edge, so padding on it
           showed the top of a third line over the price. */}
-      <Link to={to} className="-mb-[5px] mt-[3px] block min-h-[44px] py-[5px] font-cormorant text-[13px] leading-[1.2] text-nf-ink">
+      <Link to={to} className="-mb-[5px] mt-[3px] block min-h-[44px] py-[5px] font-sans text-[13px] leading-[1.2] text-nf-ink">
         <span className="line-clamp-2">{piece.name}</span>
       </Link>
       <p className="mt-0.5 text-[12px] text-nf-ink/75">
@@ -970,13 +970,13 @@ const JewelDetailNext = () => {
               )}
             </div>
 
-            <h1 className="mt-2 font-cormorant text-[22px] font-semibold leading-[1.1] text-nf-ink md:text-[26px] lg:text-[30px]">
+            <h1 className="mt-2 font-sans text-[22px] font-semibold leading-[1.1] text-nf-ink md:text-[26px] lg:text-[30px]">
               {piece.name}
             </h1>
 
             {/* Price, the MRP it replaces and the saving, as the percentage shoppers compare. */}
             <div id="product-price" className="mt-2.5 flex flex-wrap items-baseline gap-x-2.5 gap-y-1">
-              <span className="font-cormorant text-[19px] font-semibold leading-none text-nf-ink md:text-[22px]">{shown.priceLabel}</span>
+              <span className="font-sans text-[19px] font-semibold leading-none text-nf-ink md:text-[22px]">{shown.priceLabel}</span>
               {shown.compareAtLabel && saving > 0 && (
                 <>
                   <span className="text-[12px] text-nf-ink/65 line-through">{shown.compareAtLabel}</span>
@@ -1013,7 +1013,7 @@ const JewelDetailNext = () => {
                 <path d="M6 0L7.5 4.5L12 6L7.5 7.5L6 12L4.5 7.5L0 6L4.5 4.5L6 0Z" fill="currentColor" />
               </svg>
               <span className="flex items-baseline gap-1.5">
-                <span className="font-cormorant text-[15px] italic leading-none text-nf-gold-text">{soldCount}</span>
+                <span className="font-sans text-[15px] font-medium leading-none text-nf-gold-text">{soldCount}</span>
                 <span className="whitespace-nowrap font-nf-label text-[10px] font-light uppercase leading-none tracking-nf-8 text-nf-ink min-[375px]:text-[10.5px]">
                   pieces sold in the last 48 hours
                 </span>
@@ -1239,7 +1239,7 @@ const JewelDetailNext = () => {
                     />
                   )}
                   {piece.stylingTip && (
-                    <p className="mt-4 border-l-2 border-nf-gold/60 pl-3 font-nf-editorial text-[15px] italic leading-[1.5] text-nf-ink/85">
+                    <p className="mt-4 border-l-2 border-nf-gold/60 pl-3 font-sans text-[14px] leading-[1.6] text-nf-ink/85">
                       {piece.stylingTip}
                     </p>
                   )}
@@ -1301,7 +1301,7 @@ const JewelDetailNext = () => {
             {pairings.length > 0 && (
               <section className="mt-10" aria-labelledby="complete-the-look">
                 <div className="flex items-end justify-between gap-3">
-                  <h2 id="complete-the-look" className="font-cormorant text-[18px] leading-none text-nf-ink">
+                  <h2 id="complete-the-look" className="font-sans text-[18px] font-medium leading-none text-nf-ink">
                     {isSetRow(piece, pairings) ? "Complete the set" : "Complete the look"}
                   </h2>
                   <p className="font-nf-label text-[9.5px] uppercase tracking-nf-16 text-nf-gold-text">{QUANTITY_OFFERS[0].minQuantity} pieces · {Math.round(QUANTITY_OFFERS[0].rate * 100)}% off</p>
@@ -1329,7 +1329,7 @@ const JewelDetailNext = () => {
 
       {similar.length > 0 && (
         <section className="mx-auto max-w-[1400px] py-10 md:px-6" aria-labelledby="more-like-this">
-          <h2 id="more-like-this" className="px-4 font-cormorant text-[19px] leading-none text-nf-ink md:px-0">
+          <h2 id="more-like-this" className="px-4 font-sans text-[19px] font-medium leading-none text-nf-ink md:px-0">
             More {piece.category.toLowerCase()}
           </h2>
           <div className="scrollbar-hide mt-4 flex snap-x gap-3 overflow-x-auto px-4 pb-1 md:grid md:grid-cols-4 md:overflow-visible md:px-0" style={{ overscrollBehaviorX: "contain" }}>

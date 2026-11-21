@@ -27,10 +27,7 @@ describe("redesigned product page", () => {
     expect(effect).toMatch(/querySelector\("#product-actions > button"\)/); // the button, not the gift line under it
     expect(effect).toMatch(/getElementById\("product-price"\)/);
     expect(effect).toMatch(/const notFullyShown = r\.bottom < 0 \|\| r\.bottom > window\.innerHeight/);
-    expect(effect).toMatch(/const next = notFullyShown && priceClear && offerClear/);
-    /* ...nor over the offer's rungs while they are fully on screen. */
-    expect(effect).toMatch(/querySelector\("\[data-offer-ladder\] ul"\)/);
-    expect(effect).toMatch(/const offerClear = !rungs \|\| rungs\.bottom > window\.innerHeight \|\| rungs\.bottom < window\.innerHeight - barHeight/);
+    expect(effect).toMatch(/const next = notFullyShown && priceClear/);
     /* The observer used to call check() from its own callback, so the bar's
        state was written inside the browser's layout pass. When the size guide's
        chart changed the page height, Chromium threw "ResizeObserver loop
@@ -69,19 +66,6 @@ describe("redesigned product page", () => {
     expect(code).not.toMatch(/id="product-facts"/);
     expect(code).not.toMatch(/role="tablist"/);
     expect(code.match(/<details className="group/g)?.length).toBe(3);
-  });
-
-  /* The owner (2 Nov 2026): the offer under the price and the badges. Once,
-     before the choices and Add to cart, priced from the chosen variant; a
-     piece sold out altogether is reserved on WhatsApp, outside the bag. */
-  it("puts the buy-more offer under the price and badges, before the choices and Add to cart", () => {
-    const offer = code.indexOf("<PdpOfferLadder");
-    expect(offer).toBeGreaterThan(code.indexOf('aria-label="Made to last"'));
-    expect(offer).toBeGreaterThan(code.indexOf("pieces sold in the last 48 hours"));
-    expect(offer).toBeLessThan(code.indexOf("choices(piece).map"));
-    expect(offer).toBeLessThan(code.indexOf('id="product-actions"'));
-    expect(code.match(/<PdpOfferLadder/g)).toHaveLength(1);
-    expect(code).toMatch(/\{!soldOut && <PdpOfferLadder price=\{shown\.price\} preorder=\{sizePreorder \|\| variantSoldOut\} \/>\}/);
   });
 
   it("keeps the shoppable reels in the page, after the press strip", () => {
@@ -157,7 +141,7 @@ describe("redesigned product page", () => {
     expect(code).toMatch(/const toReviews = [\s\S]*?e\.preventDefault\(\);[\s\S]*?scrollIntoView/);
   });
 
-  it("badges anti-tarnish, skin-friendly and the piece's own plating under the price, before Add to cart", () => {
+  it("mentions anti-tarnish, skin-friendly and the piece's own plating under the price, before Add to cart", () => {
     const badges = code.indexOf('aria-label="Made to last"');
     expect(badges).toBeGreaterThan(code.indexOf('id="product-price"'));
     expect(badges).toBeLessThan(code.indexOf('id="product-actions"'));

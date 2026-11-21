@@ -14,3 +14,5 @@
 - Shopper performance uses a small production-only observer and anonymous bounded events; keep order paths, click IDs and shopper details out of telemetry to protect privacy and page speed.
 - Performance reports are served only after server-side admin validation; aggregate in SQL and lazy-load the private dashboard so shopper pages never download reporting UI.
 - Shop and menu collection cards share cached 30-day visit counts for top-ten in-stock bestseller badges; stock placement runs after pinning/sorting with at most one sold-out card per twenty until buyable cards end, so merchandising never bypasses the stock limit.
+
+- Routed PDP offers use a quiet note derived from QUANTITY_OFFERS rather than the interactive ladder; keep discount resolution in the bag so presentation never changes checkout rules.

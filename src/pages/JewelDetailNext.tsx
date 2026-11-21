@@ -1,7 +1,7 @@
 import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState, type MouseEvent } from "react";
 import { Link, Navigate, useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
-import { ArrowLeft, Gem, Gift, Heart, Leaf, MessageSquare, Plus, Sparkles } from "lucide-react";
+import { ArrowLeft, Heart, MessageSquare, Plus } from "lucide-react";
 import JsonLd from "@/components/JsonLd";
 import Footer from "@/components/Footer";
 import PincodeChecker from "@/components/product/PincodeChecker";
@@ -14,7 +14,6 @@ import RingSizeGuideModal from "@/components/jewellery/RingSizeGuideModal";
 import RingSizeGuide from "@/components/jewellery/RingSizeGuide";
 import { Button } from "@/components/ui/button";
 import PressMarquee from "@/components/jewellery/PressMarquee";
-import PdpOfferLadder from "@/components/jewellery/PdpOfferLadder";
 import { discountPercent } from "@/components/jewellery/JewelPriceTag";
 import { useQuery } from "@tanstack/react-query";
 import { fromShopify, useLiveJewellery } from "@/hooks/useLiveJewellery";
@@ -37,7 +36,6 @@ import { completeTheLook, isSetRow, moreLikeThis } from "@/lib/pairings";
 import { buyableValues, cartLineFor, choiceNeeded, choices, choose, findVariant, oneTapVariant, sizeOption, variantLabel } from "@/lib/variants";
 import { colourFromParam, colourOfVariant, colourOption, openingChoice, variantChoice, variantPhoto } from "@/lib/colourCards";
 import { useBackToClose } from "@/hooks/useBackToClose";
-import { recentSoldCount } from "@/lib/dailySold";
 import { coatingOf, hasZirconeStone, presentJewellery, stoneOf } from "@/lib/jewelleryPresentation";
 import { reportShopperPerformance } from "@/lib/shopperPerformance";
 import { QUANTITY_OFFERS } from "@/lib/promo";
@@ -87,15 +85,6 @@ const inr = (n: number) => `₹${Math.round(n).toLocaleString("en-IN")}`;
    hypoallergenic, nickel-free base (the anti-tarnish collection and the Care
    answers say the same); the plating is the piece's own. */
 const platingBadge = (finish: string) => finish;
-
-/* A gold bar with a glint, drawn like the lucide icons around it. */
-const Ingot = () => (
-  <svg width={11} height={11} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round">
-    <path d="M4.5 19h15l-2.8-7.5H7.3L4.5 19Z" />
-    <path d="M8.6 15.3h6.8" />
-    <path d="M12 8.6V5.6M8.5 9.4 7.1 7.3M15.5 9.4l1.4-2.1" />
-  </svg>
-);
 
 /* "Length: 15-19cm adjustable links" → { label: "Length", value: "15–19 cm adjustable links" }. */
 const tidy = (value: string) =>
@@ -479,14 +468,7 @@ const JewelDetailNext = () => {
      so a buy button is visible from the moment the page opens — but never
      over the price. It watches the button itself: the gift line below it
      reaching past the screen's edge put the bar over a button in full view.
-     Nor over the offer's rungs while they are on screen: the panel sits
-     right above Add to cart, so on a 360x780 phone the bar covered the
-     per-piece prices on the first screen. "The rungs" is the offer panel's
-     list, and everything that marks a rung lives inside it, the reached
-     rung's gold rule included: drawn on the panel's foot 8px below the list,
-     that rule sat under the bar on a 390x844 phone while the list counted as
-     clear. Rungs reaching past the screen's edge do not hold it back (an
-     Instagram-sized screen keeps its bar). */
+     */
   useEffect(() => {
     const check = () => {
       const target = document.querySelector("#product-actions > button");
@@ -496,9 +478,7 @@ const JewelDetailNext = () => {
       const price = document.getElementById("product-price");
       const barHeight = stickyBarRef.current?.offsetHeight ?? 72;
       const priceClear = !price || price.getBoundingClientRect().bottom < window.innerHeight - barHeight;
-      const rungs = document.querySelector("[data-offer-ladder] ul")?.getBoundingClientRect();
-      const offerClear = !rungs || rungs.bottom > window.innerHeight || rungs.bottom < window.innerHeight - barHeight;
-      const next = notFullyShown && priceClear && offerClear;
+      const next = notFullyShown && priceClear;
       /* Writing the same value back keeps React from rendering at all, so a
          reflow that changed nothing cannot ask for another layout pass. */
       setStickyBarVisible((cur) => (cur === next ? cur : next));
@@ -583,7 +563,6 @@ const JewelDetailNext = () => {
   const soldOut = piece.availableForSale === false;
   const isRing = piece.category === "Rings";
   const finish = coatingOf(piece);
-  const soldCount = recentSoldCount(piece.handle);
   const stone = stoneOf(piece);
   const { specs, care: listedCare } = specsOf(piece);
   /* A size Shopify sells as variants (6, 7, 8) replaces the fixed list below. */
@@ -988,43 +967,20 @@ const JewelDetailNext = () => {
               <span className="text-[10.5px] tracking-nf-4 text-nf-ink/65">incl. {GST_LABEL}</span>
             </div>
 
-            {/* Stone evidence comes from the listing, not the generic summary. */}
-            <ul aria-label="Made to last" className="mt-3.5 flex flex-wrap gap-[5px]">
+            {/* Plain feature text keeps the listing's coating and stone evidence. */}
+            <ul aria-label="Made to last" className="mt-4 flex flex-wrap gap-x-3 gap-y-1.5 font-sans text-[11.5px] font-normal leading-[1.6] text-nf-ink/65">
               {[
-                { icon: <Sparkles size={11} strokeWidth={1.7} />, text: "Anti-tarnish" },
-                { icon: <Leaf size={11} strokeWidth={1.7} />, text: "Skin-friendly" },
-                { icon: <Ingot />, text: platingBadge(finish) },
-                ...(hasZirconeStone(piece) ? [{ icon: <Gem size={11} strokeWidth={1.7} />, text: "Zircone Stone" }] : []),
-              ].map(({ icon, text }) => (
-                <li
-                  key={text}
-                  className="inline-flex items-center gap-1 border border-nf-gold/30 bg-nf-ivory-deep/70 py-[3px] pl-[3px] pr-2 text-[10px] leading-none text-nf-ink/80 min-[375px]:text-[10.5px]"
-                >
-                  <span aria-hidden="true" className="flex h-[18px] w-[18px] items-center justify-center bg-nf-blush/35 text-nf-gold-text">
-                    {icon}
-                  </span>
+                "Anti-tarnish",
+                "Skin-friendly",
+                platingBadge(finish),
+                ...(hasZirconeStone(piece) ? ["Zircone Stone"] : []),
+              ].map((text, i) => (
+                <li key={text} className="inline-flex items-center gap-3">
+                  {i > 0 && <span aria-hidden="true" className="text-nf-ink/30">·</span>}
                   {text}
                 </li>
               ))}
             </ul>
-
-            <p className="mt-2.5 flex min-h-8 items-center justify-center gap-3 border-y border-nf-gold/30 bg-nf-ivory-deep/70 px-2.5 py-1.5">
-              <svg width="10" height="10" viewBox="0 0 12 12" fill="none" aria-hidden="true" className="shrink-0 text-nf-gold">
-                <path d="M6 0L7.5 4.5L12 6L7.5 7.5L6 12L4.5 7.5L0 6L4.5 4.5L6 0Z" fill="currentColor" />
-              </svg>
-              <span className="flex items-baseline gap-1.5">
-                <span className="font-sans text-[15px] font-medium leading-none text-nf-gold-text">{soldCount}</span>
-                <span className="whitespace-nowrap font-nf-label text-[10px] font-light uppercase leading-none tracking-nf-8 text-nf-ink min-[375px]:text-[10.5px]">
-                  pieces sold in the last 48 hours
-                </span>
-              </span>
-              <span className="h-2 w-px shrink-0 bg-nf-gold/30" aria-hidden="true" />
-            </p>
-
-            {/* Buy 3 / Buy 4, priced for this piece and following the bag. A
-                piece sold out altogether is reserved on WhatsApp and never
-                reaches the bag, so it is offered nothing it cannot get. */}
-            {!soldOut && <PdpOfferLadder price={shown.price} preorder={sizePreorder || variantSoldOut} />}
 
             {/* The ways Shopify sells this piece: a metal, a stone, a size, a
                 month. Each value shows whether it can be bought with the other
@@ -1184,15 +1140,15 @@ const JewelDetailNext = () => {
                   <MessageSquare size={13} strokeWidth={1.6} /> Reserve on WhatsApp
                 </a>
               )}
-              <p className="col-span-2 mt-1 flex items-center justify-center gap-2 text-center text-[11.5px] text-nf-ink/80">
-                <Gift size={14} strokeWidth={1.6} className="shrink-0 text-nf-gold-deep" aria-hidden="true" />
-                {soldOut ? `${SOLD_OUT_LEAD}, gift-boxed` : "Gift-ready: every piece arrives in the Naira gift box"}
+              {!isPreorder && (
+                <p data-pdp-offer-note className="col-span-2 mt-2 text-center font-sans text-[11px] font-normal leading-[1.7] text-nf-ink/60">
+                  {QUANTITY_OFFERS.map((offer) => `Buy ${offer.minQuantity} · ${Math.round(offer.rate * 100)}% off`).join(" / ")}
+                  <span className="block">Automatically applied in your bag</span>
+                </p>
+              )}
+              <p className="col-span-2 mt-1 text-center font-sans text-[11px] font-normal leading-[1.6] text-nf-ink/60">
+                {soldOut ? `${SOLD_OUT_LEAD}, gift-boxed` : "Every piece arrives in the Naira gift box"}
               </p>
-              {/* Lovable's "Naira bundle" panel (PdpOffers, 11829ae) said the same offer
-                  a second time under Buy Now; the page shows it once, in
-                  PdpOfferLadder under the price, which also follows the bag. To
-                  use the bundle panel instead, render it here and drop the
-                  ladder above. */}
             </div>
 
             {/* Details, care and delivery as fold-downs, closed until asked for

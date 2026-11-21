@@ -202,8 +202,6 @@ describe("PdpOfferLadder: Buy 2 / Buy 3 / Buy 4 on the product page", () => {
     expect(rule.className).not.toMatch(/-bottom-/);
     expect(rung(2).className).toMatch(/\bpb-\[3px\]/);
     expect((container.querySelector("[data-offer-ladder] > div") as HTMLElement).className).toMatch(/\bpb-\[4px\]/);
-    const page = readFileSync(resolve(__dirname, "../../pages/JewelDetailNext.tsx"), "utf8");
-    expect(page).toContain('document.querySelector("[data-offer-ladder] ul")');
   });
 
   /* Nothing moves for a shopper who has asked for less motion. */

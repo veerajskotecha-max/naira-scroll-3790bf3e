@@ -1,4 +1,5 @@
 # Roadmap
+- [x] Remove PDP gift-box sentence and keep feature/offer rows on one line with quiet separators; verified at 320/360/393px and 27 passing checks. Narrow feature rows scroll without shrinking text.
 - [x] Simplify PDP stickers into plain feature text, remove sales/offer panels and leave one quiet offer note; verified phone/desktop, real add-to-bag and 58 checks.
 - [x] Soften PDP font weights and refine the bag offer track; verified a real add-to-bag on phone/tablet, normal-weight title and 59 passing checks.
 - [x] Show individual discounted bag prices as quantity offers change; verified totals, two-/three-piece transitions and removal back to original prices.

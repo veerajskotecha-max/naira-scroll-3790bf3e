@@ -968,15 +968,15 @@ const JewelDetailNext = () => {
             </div>
 
             {/* Plain feature text keeps the listing's coating and stone evidence. */}
-            <ul aria-label="Made to last" className="mt-4 flex flex-wrap gap-x-3 gap-y-1.5 font-sans text-[11.5px] font-normal leading-[1.6] text-nf-ink/65">
+            <ul aria-label="Made to last" className="scrollbar-hide mt-4 flex min-h-6 flex-nowrap items-center gap-2 overflow-x-auto font-sans text-[11px] font-normal leading-[1.6] text-nf-ink/65">
               {[
                 "Anti-tarnish",
                 "Skin-friendly",
                 platingBadge(finish),
                 ...(hasZirconeStone(piece) ? ["Zircone Stone"] : []),
               ].map((text, i) => (
-                <li key={text} className="inline-flex items-center gap-3">
-                  {i > 0 && <span aria-hidden="true" className="text-nf-ink/30">·</span>}
+                <li key={text} className="inline-flex shrink-0 items-center gap-2 whitespace-nowrap">
+                  {i > 0 && <span aria-hidden="true" className="h-2.5 w-px bg-nf-ink/20" />}
                   {text}
                 </li>
               ))}
@@ -1141,14 +1141,15 @@ const JewelDetailNext = () => {
                 </a>
               )}
               {!isPreorder && (
-                <p data-pdp-offer-note className="col-span-2 mt-2 text-center font-sans text-[11px] font-normal leading-[1.7] text-nf-ink/60">
-                  {QUANTITY_OFFERS.map((offer) => `Buy ${offer.minQuantity} · ${Math.round(offer.rate * 100)}% off`).join(" / ")}
-                  <span className="block">Automatically applied in your bag</span>
-                </p>
+                <ul data-pdp-offer-note aria-label="Offers automatically applied in your bag" className="scrollbar-hide col-span-2 mt-2 flex flex-nowrap items-center justify-between gap-2 overflow-x-auto font-sans text-[11px] font-normal leading-[1.7] text-nf-ink/60">
+                  {QUANTITY_OFFERS.map((offer, i) => (
+                    <li key={offer.code} className="inline-flex shrink-0 items-center gap-2 whitespace-nowrap">
+                      {i > 0 && <span aria-hidden="true" className="h-2.5 w-px bg-nf-ink/20" />}
+                      Buy {offer.minQuantity} · {Math.round(offer.rate * 100)}% off
+                    </li>
+                  ))}
+                </ul>
               )}
-              <p className="col-span-2 mt-1 text-center font-sans text-[11px] font-normal leading-[1.6] text-nf-ink/60">
-                {soldOut ? `${SOLD_OUT_LEAD}, gift-boxed` : "Every piece arrives in the Naira gift box"}
-              </p>
             </div>
 
             {/* Details, care and delivery as fold-downs, closed until asked for

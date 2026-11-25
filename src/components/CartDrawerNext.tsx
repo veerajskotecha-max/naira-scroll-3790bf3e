@@ -40,11 +40,11 @@ import { GST_LABEL } from "@/lib/gst";
   (components/clean): one face, six colours, one hairline, one button.
 
     Your bag  2 pieces                                    ×
-    Buy 2 · 10% off   Buy 3 · 20% off   Buy 4 · 30% off      the offer, as words
+    Buy 2 · 10% off            Buy 3 · 15% off              the offer, as words
     ━━━━━────────────────────────────────────────────────    over one 2px line
     [photo]  the piece, what the line costs, the MRP it
              replaces and the saving, − 1 +, Remove
-    A third piece takes 20% off your bag           (cart/BagAddOn)
+    A third piece takes 15% off your bag           (cart/BagAddOn)
     [photo]  one piece that goes with the bag            [Add]
     ─────────────────────────────────────────────────────
     Total  incl. 3% GST                    ₹3,448  ₹1,843
@@ -69,9 +69,10 @@ const formatPrice = (n: number) => `₹${Math.round(n).toLocaleString("en-IN")}`
    its own: the product page's figure for that rung (`pieceAtRung`) and, to
    the rupee, the per-piece price Shopify charges. It used to be the line's
    share of the bag's rounded total divided by its pieces, which gave
-   "₹799.33 each" for three ₹999 pieces at 20%, and, once rounded, put two
-   ₹1,499 pieces at 30% at "₹1,050 each" against ₹1,049 on the product page
-   (Shopify: ₹1,049.30) whenever the bag's leftover rupee landed on that line.
+   "₹799.33 each" for three ₹999 pieces at the 20% of the time, and, once
+   rounded, puts two ₹1,499 pieces at 15% at "₹1,275 each" against ₹1,274 on
+   the product page (Shopify: ₹1,274.15) whenever the bag's leftover rupee
+   lands on that line.
    The line's total stays its share of the bag's total, so the lines still
    add up to it. */
 const formatUnitPrice = (n: number) => `₹${Math.round(n).toLocaleString("en-IN")}`;

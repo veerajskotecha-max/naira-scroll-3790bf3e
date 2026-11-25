@@ -97,7 +97,7 @@ const ORDINAL = ["", "first", "second", "third", "fourth", "fifth"];
 
 /**
  * The bag suggestion's heading: what the next piece does, in the words the
- * bag's foot has always used ("A third piece takes 20% off your bag"). Empty
+ * bag's foot has always used ("A third piece takes 15% off your bag"). Empty
  * when one more piece reaches no richer step.
  */
 export const nextPieceLine = (totalItems: number, rateNow: number, rateAfter: number): string =>

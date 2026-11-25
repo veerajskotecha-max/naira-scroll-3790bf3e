@@ -8,7 +8,8 @@ import { usePromoCode } from "./usePromoCode";
 /*
   The buy-more offer on the renewed product page: a padded panel under the
   reassurances, with a 2px line that fills as the bag does. The reel's pattern
-  ("add one more to unlock…") with the shop's real offer: Buy 2 / 3 / 4.
+  ("add one more to unlock…") with the shop's real offer: Buy 2 and Buy 3
+  (10% and 15% since 25 Nov 2026), however many steps promo.ts holds.
 
   Every figure is promo.ts's: the rates from QUANTITY_OFFERS, this piece's
   price at each step from `pieceAtRung`, the line's fill from

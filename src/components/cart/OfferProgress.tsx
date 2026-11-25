@@ -24,7 +24,7 @@ const pieces = (n: number) => (n === 1 ? "1 piece" : `${n} pieces`);
  *    richer rung is further along. A list of percentages states the offer; a
  *    track makes the next piece feel close. Each rung takes an equal share
  *    of the track (`rungPosition`), so its label has room at any width: two
- *    rungs since 7 Nov 2026 (Buy 3 and Buy 4; Buy 2 is gone), each with
+ *    rungs since 25 Nov 2026 (Buy 2 and Buy 3; Buy 4 is gone), each with
  *    half.
  *  - The bar measures the whole ladder rather than the current rung, so
  *    adding a piece always moves it forward instead of resetting to empty
@@ -105,8 +105,8 @@ const OfferProgress = ({ totalItems, quiet = false, appliedRate }: { totalItems:
       {/* Each rung is labelled under its own marker, in that rung's share of
           the width (one column per rung, `RUNG_GRID_COLS`), so the ladder
           reads as a distance rather than as unrelated coupons and no label
-          can reach its neighbour's: with three rungs at their piece counts,
-          "3 pieces" and "4 pieces" overlapped at 280px. Stacked over two
+          can reach its neighbour's: placed at their piece counts, two
+          neighbouring labels overlapped at 280px. Stacked over two
           short lines, at 11px, the least a phone reads. */}
       {!quiet && (
         <ul className={`mt-1.5 grid ${RUNG_GRID_COLS} text-center sm:mt-2`}>

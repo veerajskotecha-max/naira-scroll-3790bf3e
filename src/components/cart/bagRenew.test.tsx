@@ -91,9 +91,9 @@ describe("the bag's suggestion: one piece that goes with it", () => {
     open([hoops, bracelet]);
     const row = document.querySelector("[data-bag-addon]") as HTMLElement;
     expect(row.getAttribute("data-bag-addon")).toBe("toggle-link-chain");
-    /* 3,448 at 10% is 3,103; with the chain 4,447 at 20% is 3,557.60 → 3,558: it adds 455. */
-    expect(row.textContent).toMatch(/A third piece takes 20% off your bag/);
-    expect(row.textContent).toMatch(/Adds ₹455 to your total/);
+    /* 3,448 at 10% is 3,103 (3,103.20); with the chain 4,447 at 15% is 3,779.95 → 3,780: it adds 677. */
+    expect(row.textContent).toMatch(/A third piece takes 15% off your bag/);
+    expect(row.textContent).toMatch(/Adds ₹677 to your total/);
   });
 
   it("offers nothing when the catalogue has no match, and nothing in an empty bag", () => {

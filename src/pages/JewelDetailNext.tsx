@@ -70,7 +70,7 @@ import { SHOP_RATING, clientsLabel } from "@/lib/trust";
     photo, nothing laid over it, a 2px line showing which one → category and
     the shop's rating → name and the wishlist heart → price, MRP, saving and
     the tax note → one quiet table: QUALITY (anti-tarnish, skin-friendly, its
-    plating) and OFFER (Buy 2 / 3 / 4 priced for this piece) → metal, stone or
+    plating) and OFFER (each Buy step priced for this piece) → metal, stone or
     size → Buy Now and Add to cart → delivery in one line → four dropdowns
     (Description open; Details and size, Care and plating, Delivery and
     returns closed) → complete the look → reviews → press → reels → more of
@@ -1330,7 +1330,7 @@ const JewelDetailNext = () => {
             </p>
             {/* Four promises the shop already makes, and the ways to pay. */}
             <PdpTrust reserved={isPreorder} questionHref={questionHref} />
-            {/* Buy 2 / 3 / 4, priced for this piece and filling with the bag:
+            {/* The Buy steps, priced for this piece and filling with the bag:
                 under the buttons and their reassurance, so Add to cart stays
                 on the first screen of a tall phone. A piece sold out
                 altogether is reserved on WhatsApp and never reaches the bag,

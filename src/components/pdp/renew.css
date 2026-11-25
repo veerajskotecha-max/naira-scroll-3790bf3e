@@ -168,7 +168,7 @@
 .nf-clean .rn-bundle__sum { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 2px 12px; margin-top: 12px; }
 .nf-clean .rn-bundle__total { display: inline-flex; align-items: baseline; gap: 8px; font-weight: 500; font-size: 20px; line-height: 24px; color: var(--nc-ink); font-variant-numeric: tabular-nums; }
 .nf-clean .rn-bundle__total del { font-weight: 400; font-size: 13px; line-height: 20px; color: var(--nc-muted); }
-/* "Tick one more for 20% off all three": a row of its own under the total. */
+/* "Tick one more for 15% off all three": a row of its own under the total. */
 .nf-clean .rn-bundle__nudge { flex-basis: 100%; }
 .nf-clean .rn-tick-in { animation: rn-tick var(--nc-slow) var(--nc-ease); }
 @keyframes rn-tick {

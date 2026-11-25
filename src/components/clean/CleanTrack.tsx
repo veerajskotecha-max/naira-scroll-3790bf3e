@@ -5,7 +5,7 @@
 type Props = {
   /** 0 to 1: how much of the line is filled. */
   value: number;
-  /** What a screen reader hears, e.g. "2 of 4 pieces". */
+  /** What a screen reader hears, e.g. "2 of 3 pieces". */
   label: string;
   /** The count behind the line, for aria-valuenow / aria-valuemax. */
   now: number;

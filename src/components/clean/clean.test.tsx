@@ -21,6 +21,9 @@ import {
 
 afterEach(cleanup);
 
+/* A ladder for these parts to draw, not the shop's offer (that is promo.ts,
+   two rungs since 25 Nov 2026): three rungs here, so a rung still ahead of a
+   three-piece bag can be drawn. */
 const OFFERS = [
   { code: "BUY2", minQuantity: 2, rate: 0.1 },
   { code: "BUY3", minQuantity: 3, rate: 0.2 },

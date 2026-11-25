@@ -10,7 +10,7 @@ import { getPromoCode, pdpOfferStatus, pieceAtRung, PROMO_EVENT, QUANTITY_OFFERS
 
   It used to be a gold box with a legend on its top rule, serif numerals and
   dividers. Now it is words in a table row, like the qualities above it: the
-  three rungs in equal columns ("Buy 2 · 10%"), this piece's price at each
+  rungs in equal columns ("Buy 2 · 10%"), this piece's price at each
   rung under its name, and one line saying what the offer does to the bag.
   No box, no rule between rungs, no icon. The rung the bag has reached turns
   gold; one it has climbed past steps back.
@@ -53,7 +53,7 @@ const PdpOfferLadder = ({ price, preorder = false }: { price: number; preorder?:
   return (
     <CleanFact label="Offer">
       <div data-offer-ladder data-state={Math.min(totalItems, TOP_QUANTITY_OFFER.minQuantity)} role="group" aria-label="Buy more, pay less">
-        {/* Under 360px three columns are 68px each and "Buy 2 · 10%" is as
+        {/* Under 360px three columns were 68px each and "Buy 2 · 10%" is as
             wide, so the rungs ran into one another ("10%Buy 3"). There each
             rung is a line of its own: its name, then its price. */}
         <CleanRungs

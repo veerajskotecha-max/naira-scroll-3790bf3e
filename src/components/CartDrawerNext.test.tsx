@@ -16,16 +16,20 @@ const rungText = (rung: Element) => {
   return copy.textContent;
 };
 
-/* The bag's offer is one line of words over one 2px line: the three rungs,
+/* The bag's offer is one line of words over one 2px line: the rungs,
    the one the bag sits on marked, and the line filling as pieces arrive. It
    states the offer and nothing else: the line that rode on top of it, that a
    sitewide sale was live today, described a permanent offer as a passing one
    and is gone. */
 describe("SimpleLadder: the bag's offer strip", () => {
-  it("states all three rungs as words", () => {
+  /* The owner's offer of 25 Nov 2026, as literals: Buy 2 at 10%, Buy 3 at
+     15%, and no Buy 4 ("Keep buy 2 get 10% and buy 3 get 15 only on the cart
+     on additional offers. Remove buy 4 offer"). */
+  it("states both rungs as words, and no Buy 4", () => {
     const { container } = render(<SimpleLadder totalItems={1} />);
     const rungs = [...container.querySelectorAll("[data-ladder] [data-rung]")];
-    expect(rungs.map(rungText)).toEqual(["Buy 2 · 10% off", "Buy 3 · 20% off", "Buy 4 · 30% off"]);
+    expect(rungs.map(rungText)).toEqual(["Buy 2 · 10% off", "Buy 3 · 15% off"]);
+    expect(container.textContent).not.toMatch(/Buy 4|20%|30%/);
     expect(rungs.map((rung) => rung.getAttribute("data-rung"))).toEqual(QUANTITY_OFFERS.map((offer) => String(offer.minQuantity)));
   });
 
@@ -40,7 +44,7 @@ describe("SimpleLadder: the bag's offer strip", () => {
 
   /* The strip is two things, the words and the line under them: no second
      row of labels, nothing to press. The line carries a stop at each step,
-     the product page's own diamonds, gold once reached: without them three
+     the product page's own diamonds, gold once reached: without them the
      labels over an underline read as tabs (the design review, 25 Nov 2026). */
   it("is the rungs and the line with a stop at each step, and nothing else", () => {
     const { container } = render(<SimpleLadder totalItems={2} />);
@@ -49,37 +53,39 @@ describe("SimpleLadder: the bag's offer strip", () => {
     const line = ladder.lastElementChild as HTMLElement;
     expect(line.firstElementChild?.getAttribute("role")).toBe("progressbar");
     const stops = [...line.querySelectorAll("i")];
-    expect(stops.map((stop) => stop.hasAttribute("data-reached"))).toEqual([true, false, false]);
-    expect(stops.map((stop) => Number.parseFloat((stop as HTMLElement).style.left).toFixed(2))).toEqual(["16.67", "50.00", "83.33"]);
+    expect(stops.map((stop) => stop.hasAttribute("data-reached"))).toEqual([true, false]);
+    expect(stops.map((stop) => Number.parseFloat((stop as HTMLElement).style.left).toFixed(2))).toEqual(["25.00", "75.00"]);
     for (const stop of stops) expect(stop.getAttribute("aria-hidden")).toBe("true");
     expect(ladder.querySelector("[data-rung-label]")).toBeNull();
     expect(ladder.querySelector("a, button, svg, img")).toBeNull();
   });
 
-  /* The line fills to a sixth at two pieces and to a half at three. Three
-     equal columns across the whole sheet put the middle of "Buy 2" at a sixth
-     and of "Buy 3" at a half, so the line stops exactly under the rung it
-     marks. Any side padding on the rungs moves the words off it (16px of it
-     put "Buy 2" 11px to the right of where the line stopped). */
-  it("sets the rungs in three columns the full width of the line under them", () => {
+  /* The line fills to a quarter at two pieces. Two equal columns across the
+     whole sheet put the middle of "Buy 2" at a quarter and of "Buy 3" at
+     three quarters, so the line stops exactly under the rung it marks. Any
+     side padding on the rungs moves the words off it (16px of it put "Buy 2"
+     11px to the right of where the line stopped). */
+  it("sets the rungs in two columns the full width of the line under them", () => {
     const { container } = render(<SimpleLadder totalItems={2} />);
     const rungs = container.querySelector("[data-ladder] > ul") as HTMLElement;
     const classes = rungs.className.split(/\s+/);
     expect(classes).toContain("nc-rungs--center");
     expect(classes.filter((name) => /(^|:)-?(p[xlrse]?|m[xlrse])-/.test(name) && !/^py-/.test(name))).toEqual([]);
-    expect(rungs.querySelectorAll(":scope > li")).toHaveLength(3);
+    expect(rungs.querySelectorAll(":scope > li")).toHaveLength(2);
     const ladder = container.querySelector("[data-ladder]") as HTMLElement;
     expect(ladder.className.split(/\s+/).some((name) => /(^|:)-?(p|m)[xlrse]?-/.test(name))).toBe(false);
   });
 
   /* The rung the bag sits on follows the pieces, and the line fills piece by
-     piece (promo.ts `quantityOfferProgress`). */
+     piece (promo.ts `quantityOfferProgress`): an eighth at one piece, a
+     quarter at two, and full at three, the top since 25 Nov 2026. A fourth
+     and a fifth piece stay on Buy 3. */
   it.each([
-    [1, null, [], "8.333"],
-    [2, "2", [], "16.667"],
-    [3, "3", ["2"], "50.000"],
-    [4, "4", ["2", "3"], "100.000"],
-    [5, "4", ["2", "3"], "100.000"],
+    [1, null, [], "12.500"],
+    [2, "2", [], "25.000"],
+    [3, "3", ["2"], "100.000"],
+    [4, "3", ["2"], "100.000"],
+    [5, "3", ["2"], "100.000"],
   ])("at %i pieces marks rung %s, steps back %j and fills %s%%", (n, current, passed, width) => {
     const { container } = render(<SimpleLadder totalItems={n} />);
     const marked = [...container.querySelectorAll("[data-rung][data-current]")].map((rung) => rung.getAttribute("data-rung"));
@@ -89,16 +95,16 @@ describe("SimpleLadder: the bag's offer strip", () => {
     const fill = bar.querySelector("span") as HTMLElement;
     expect(parseFloat(fill.style.width).toFixed(3)).toBe(width);
     expect(parseFloat(fill.style.width)).toBeCloseTo(quantityOfferProgress(n) * 100, 3);
-    expect(bar.getAttribute("aria-valuenow")).toBe(String(Math.min(n, 4)));
-    expect(bar.getAttribute("aria-valuemax")).toBe("4");
-    /* A bag of five is still "4 of 4": the line has no fifth step. */
-    expect(bar.getAttribute("aria-label")).toBe(`${Math.min(n, 4)} of 4 pieces`);
+    expect(bar.getAttribute("aria-valuenow")).toBe(String(Math.min(n, 3)));
+    expect(bar.getAttribute("aria-valuemax")).toBe("3");
+    /* A bag of five is still "3 of 3": the line has no fourth step. */
+    expect(bar.getAttribute("aria-label")).toBe(`${Math.min(n, 3)} of 3 pieces`);
   });
 
   /* The rung the bag has reached is said, not only coloured. */
   it("tells a screen reader which rung the bag sits on", () => {
     const { container } = render(<SimpleLadder totalItems={3} />);
-    expect(container.querySelector("[data-current]")?.textContent).toBe("Buy 3 · 20% off, in your bag");
+    expect(container.querySelector("[data-current]")?.textContent).toBe("Buy 3 · 15% off, in your bag");
   });
 });
 
@@ -139,8 +145,9 @@ describe("BagReturns: the bag's returns line", () => {
   });
 });
 
-/* Three of one piece at 20% divide a rounded total by three: three ₹999
-   pieces come to ₹2,398, and "₹799.33 each" would read like an error. Each
+/* Three of one piece divide a rounded total by three: at 20%, the rate when
+   this was found, three ₹999 pieces came to ₹2,398, and "₹799.33 each"
+   would read like an error. Each
    shows in whole rupees, as the product page quotes it; the line total stays
    the exact rupee figure the checkout charges. */
 describe("bag line prices", () => {

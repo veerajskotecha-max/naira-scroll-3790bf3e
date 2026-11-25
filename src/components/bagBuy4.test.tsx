@@ -76,6 +76,8 @@ const openBagWith = async (prices: number[]) => {
 };
 
 const text = (selector: string) => document.querySelector(selector)?.textContent ?? "";
+/* The rungs of the bag's offer strip that carry a mark, by their piece count. */
+const rungs = (mark: string) => [...document.querySelectorAll(`[data-ladder] [data-rung]${mark}`)].map((r) => r.getAttribute("data-rung"));
 
 describe("the bag at four and five pieces: Buy 4, 30%", () => {
   beforeEach(() => {
@@ -94,10 +96,13 @@ describe("the bag at four and five pieces: Buy 4, 30%", () => {
     // Each line's offer price, from the bag's one rounded total: they add up to it.
     const totals = [...document.querySelectorAll("[data-line-total]")].map((t) => Number(t.textContent?.replace(/[₹,]/g, "")));
     expect(totals.reduce((a, b) => a + b, 0)).toBe(4897);
-    // Every rung is reached, and the track is full.
-    expect([...document.querySelectorAll("[data-rung-mark]")].map((m) => m.className.includes("bg-nf-ink"))).toEqual([true, true, true]);
+    // The bag sits on the top rung, the two under it are passed, and the line is full.
+    expect(rungs("[data-current]")).toEqual(["4"]);
+    expect(rungs("[data-reached]")).toEqual(["2", "3", "4"]);
     expect((document.querySelector('[data-ladder] [role="progressbar"] > span') as HTMLElement).style.width).toBe("100%");
-    expect(text("[data-ladder] > p")).toContain("up to 30% off");
+    // The strip states the offer and nothing else: no line that a sale is live today.
+    expect(document.querySelector("[data-ladder] > p")).toBeNull();
+    expect(text("[data-ladder]")).not.toMatch(/sitewide sale|live today|up to/i);
   });
 
   it("keeps 30% at five pieces", async () => {
@@ -138,12 +143,13 @@ describe("the bag at four and five pieces: Buy 4, 30%", () => {
     expect(totals.reduce((a, b) => a + b, 0)).toBe(4617);
   });
 
-  /* Three pieces are 20%, and the fourth ring is still open. */
+  /* Three pieces are 20%, and the fourth rung is still ahead. */
   it("shows 20% at three pieces, with Buy 4 still ahead", async () => {
     await openBagWith(PRICES.slice(0, 3));
     expect(text("[data-total]")).toBe("₹4,558");
     expect(text("[data-you-save]")).toBe("You save ₹1,139 · 20% for 3 pieces");
-    expect([...document.querySelectorAll("[data-rung-mark]")].map((m) => m.className.includes("bg-nf-ink"))).toEqual([true, true, false]);
+    expect(rungs("[data-current]")).toEqual(["3"]);
+    expect(rungs("[data-reached]")).toEqual(["2", "3"]);
     expect((document.querySelector('[data-ladder] [role="progressbar"] > span') as HTMLElement).style.width).toBe("50%");
   });
 });

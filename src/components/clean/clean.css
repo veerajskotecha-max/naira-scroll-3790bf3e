@@ -115,6 +115,10 @@
 .nf-clean .nc-price__was { font: 400 13px/20px var(--nc-font); color: var(--nc-muted); text-decoration: line-through; }
 .nf-clean .nc-price__off { font: 400 13px/20px var(--nc-font); color: var(--nc-gold); }
 .nf-clean .nc-price__note { font: 400 13px/20px var(--nc-font); color: var(--nc-muted); }
+/* The same figure inside a sheet (the bag's total): it keeps the phone's size
+   at every width, as the sheet's heading does, because the drawer is as
+   narrow on a laptop as it is on a phone. */
+.nf-clean .nc-price__now.nc-price__now--sheet { font-size: 20px; line-height: 24px; }
 
 /* ── facts: a label and its values, one hairline between rows ─── */
 .nf-clean .nc-facts { border-top: 1px solid var(--nc-rule); border-bottom: 1px solid var(--nc-rule); }

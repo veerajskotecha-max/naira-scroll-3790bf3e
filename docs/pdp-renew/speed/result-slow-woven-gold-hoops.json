@@ -1,0 +1,154 @@
+{
+ "profile": "slow",
+ "handle": "woven-gold-hoops",
+ "runs": 7,
+ "results": {
+  "base": {
+   "median": {
+    "ttfb": 7.5,
+    "fcp": 1344,
+    "lcp": 1900,
+    "cls": 0.000227523411686591,
+    "long": 639,
+    "longCount": 4,
+    "dcl": 2338.60000000149,
+    "load": 2344,
+    "total": 1021024,
+    "js": 328926,
+    "css": 29446,
+    "img": 365503,
+    "font": 166737,
+    "doc": 41543,
+    "requests": 72
+   },
+   "lcpEl": [
+    "IMG woven-gold-hoops-2.jpg?v=1787277440&width=800",
+    "IMG woven-gold-hoops-2.jpg?v=1787277440&width=800",
+    "IMG woven-gold-hoops-2.jpg?v=1787277440&width=800",
+    "IMG woven-gold-hoops-2.jpg?v=1787277440&width=800",
+    "IMG woven-gold-hoops-2.jpg?v=1787277440&width=800",
+    "IMG woven-gold-hoops-2.jpg?v=1787277440&width=800",
+    "IMG woven-gold-hoops-2.jpg?v=1787277440&width=800"
+   ],
+   "h1": "Woven Gold Hoops",
+   "hasButton": true,
+   "n": 7,
+   "lcps": [
+    2044,
+    1988,
+    1888,
+    1900,
+    1908,
+    1752,
+    1896
+   ],
+   "clss": [
+    0.0002,
+    0.0002,
+    0.0002,
+    0.0002,
+    0.0002,
+    0.0002,
+    0.0002
+   ]
+  },
+  "clean": {
+   "median": {
+    "ttfb": 8.400000000372529,
+    "fcp": 1320,
+    "lcp": 1900,
+    "cls": 0.000274121575586053,
+    "long": 527,
+    "longCount": 4,
+    "dcl": 2234.9000000003725,
+    "load": 2243.0999999996275,
+    "total": 966438,
+    "js": 324058,
+    "css": 29019,
+    "img": 357867,
+    "font": 129629,
+    "doc": 36999,
+    "requests": 66
+   },
+   "lcpEl": [
+    "IMG woven-gold-hoops-2.jpg?v=1787277440&width=800",
+    "IMG woven-gold-hoops-2.jpg?v=1787277440&width=800",
+    "IMG woven-gold-hoops-2.jpg?v=1787277440&width=800",
+    "IMG woven-gold-hoops-2.jpg?v=1787277440&width=800",
+    "IMG woven-gold-hoops-2.jpg?v=1787277440&width=800",
+    "IMG woven-gold-hoops-2.jpg?v=1787277440&width=800",
+    "IMG woven-gold-hoops-2.jpg?v=1787277440&width=800"
+   ],
+   "h1": "Woven Gold Hoops",
+   "hasButton": true,
+   "n": 7,
+   "lcps": [
+    1904,
+    1900,
+    1896,
+    1896,
+    1884,
+    1900,
+    1924
+   ],
+   "clss": [
+    0.0003,
+    0.0003,
+    0.0003,
+    0.0003,
+    0.0003,
+    0.0003,
+    0.0003
+   ]
+  },
+  "renew": {
+   "median": {
+    "ttfb": 8,
+    "fcp": 1336,
+    "lcp": 1908,
+    "cls": 0.0004447512687040803,
+    "long": 611,
+    "longCount": 4,
+    "dcl": 2263.199999999255,
+    "load": 2270.2999999988824,
+    "total": 714134,
+    "js": 306977,
+    "css": 28996,
+    "img": 117959,
+    "font": 129629,
+    "doc": 42994,
+    "requests": 49
+   },
+   "lcpEl": [
+    "IMG woven-gold-hoops-2.jpg?v=1787277440&width=800",
+    "IMG woven-gold-hoops-2.jpg?v=1787277440&width=800",
+    "IMG woven-gold-hoops-2.jpg?v=1787277440&width=800",
+    "IMG woven-gold-hoops-2.jpg?v=1787277440&width=800",
+    "IMG woven-gold-hoops-2.jpg?v=1787277440&width=800",
+    "IMG woven-gold-hoops-2.jpg?v=1787277440&width=800",
+    "IMG woven-gold-hoops-2.jpg?v=1787277440&width=800"
+   ],
+   "h1": "Woven Gold Hoops",
+   "hasButton": true,
+   "n": 7,
+   "lcps": [
+    1924,
+    1900,
+    1920,
+    1908,
+    1896,
+    1912,
+    1908
+   ],
+   "clss": [
+    0.0005,
+    0.0004,
+    0.0005,
+    0.0005,
+    0.0004,
+    0.0004,
+    0.0004
+   ]
+  }
+ }
+}

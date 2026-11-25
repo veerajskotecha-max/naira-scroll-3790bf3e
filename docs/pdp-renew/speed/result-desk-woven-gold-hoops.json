@@ -1,0 +1,93 @@
+{
+ "profile": "desk",
+ "handle": "woven-gold-hoops",
+ "runs": 5,
+ "results": {
+  "base": {
+   "median": {
+    "ttfb": 8.699999999254942,
+    "fcp": 232,
+    "lcp": 452,
+    "cls": 0.00005141203871152692,
+    "long": 78,
+    "longCount": 2,
+    "dcl": 232.39999999850988,
+    "load": 261.19999999925494,
+    "total": 1257724,
+    "js": 328926,
+    "css": 29415,
+    "img": 568489,
+    "font": 201072,
+    "doc": 41543,
+    "requests": 88
+   },
+   "lcpEl": [
+    "IMG woven-gold-hoops-2.jpg?v=1787277440&width=720",
+    "IMG woven-gold-hoops-2.jpg?v=1787277440&width=720",
+    "IMG woven-gold-hoops-2.jpg?v=1787277440&width=720",
+    "IMG woven-gold-hoops-2.jpg?v=1787277440&width=720",
+    "IMG woven-gold-hoops-2.jpg?v=1787277440&width=720"
+   ],
+   "h1": "Woven Gold Hoops",
+   "hasButton": true,
+   "n": 5,
+   "lcps": [
+    452,
+    464,
+    256,
+    432,
+    464
+   ],
+   "clss": [
+    0.0001,
+    0.0001,
+    0.0001,
+    0.0001,
+    0.0001
+   ]
+  },
+  "renew": {
+   "median": {
+    "ttfb": 8.599999999627471,
+    "fcp": 200,
+    "lcp": 364,
+    "cls": 0.0000781541361239712,
+    "long": 50,
+    "longCount": 2,
+    "dcl": 199.7999999988824,
+    "load": 202.09999999962747,
+    "total": 976289,
+    "js": 306977,
+    "css": 28965,
+    "img": 345878,
+    "font": 163909,
+    "doc": 42994,
+    "requests": 66
+   },
+   "lcpEl": [
+    "IMG woven-gold-hoops-2.jpg?v=1787277440&width=720",
+    "IMG woven-gold-hoops-2.jpg?v=1787277440&width=720",
+    "IMG woven-gold-hoops-2.jpg?v=1787277440&width=720",
+    "IMG woven-gold-hoops-2.jpg?v=1787277440&width=720",
+    "IMG woven-gold-hoops-2.jpg?v=1787277440&width=720"
+   ],
+   "h1": "Woven Gold Hoops",
+   "hasButton": true,
+   "n": 5,
+   "lcps": [
+    384,
+    352,
+    364,
+    388,
+    364
+   ],
+   "clss": [
+    0.0001,
+    0.0001,
+    0.0001,
+    0,
+    0.0001
+   ]
+  }
+ }
+}

@@ -12,13 +12,13 @@
 
 | | Offer it shows | State |
 |---|---|---|
-| The live site (nairaflore.com) | Buy 2 = 10%, Buy 3 = **15%**, no Buy 4 | Published the evening of 25 Nov from `main` at `c18a5c8b`, the first reading of the ask. **Not what the owner wants.** |
-| `main` | the same (`c18a5c8b`) | |
-| The corrected version | Buy 2 = **extra 10%**, Buy 3 = **extra 20%**, no Buy 4 | Commit `cf0a0b57` on top of `c18a5c8b`. Built and checked. Kept here as `offer-two-steps.bundle` until the owner says to send it to `main`. |
-| Shopify | BUY2 10%, BUY3 20%, BUY4 30%, all active | Untouched. Read only. |
+| `main` | Buy 2 = **extra 10%**, Buy 3 = **extra 20%**, no Buy 4 | Commit `cf0a0b57`, sent on the evening of 25 Nov after the owner said yes. It goes live at the next Publish in Lovable. |
+| The live site (nairaflore.com) | Buy 2 = 10%, Buy 3 = **15%**, no Buy 4 | Published earlier that evening from `c18a5c8b`, the first reading of the ask. Not what the owner wants; the next Publish replaces it. |
+| Shopify | BUY2 10%, BUY3 20%, BUY4 30%, all active | Untouched. Read only. The one edit left is to switch BUY4 off, after the Publish. |
 
 While the 15% version is live, a three-piece order is charged 20% off
 (Shopify's BUY3) where the bag quotes 15%: the shopper pays less than quoted.
+The same commit is kept here as `offer-two-steps.bundle`.
 
 ## What a shopper gets with the corrected version
 
@@ -46,10 +46,7 @@ prices: two pieces ₹3,103, three ₹3,558, four ₹4,117).
 
 ## To make it live, in this order
 
-1. **Put `cf0a0b57` on `main`** (needs the owner's word). From `main` at
-   `c18a5c8b`:
-   `git fetch docs/offer-two-steps/offer-two-steps.bundle offer-extra && git merge --ff-only FETCH_HEAD`
-   (a real merge commit if `main` has moved; never rebase or force-push).
+1. **Put `cf0a0b57` on `main`.** Done on 25 Nov 2026.
 2. **Press Publish in Lovable.**
 3. **Only after it is live, in Shopify admin → Discounts: deactivate `BUY4`.**
    BUY2 (10%) and BUY3 (20%) already match the site and need no edit.

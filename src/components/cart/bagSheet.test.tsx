@@ -129,7 +129,10 @@ describe("the bag's sheet", () => {
     const order = [...foot.children].map((child) => (child.hasAttribute("data-bag-trust") ? "trust" : child.hasAttribute("data-checkout") ? "checkout" : child.querySelector("[data-returns]") ? "returns" : child.querySelector("[data-total]") ? "total" : "line"));
     expect(order).toEqual(["total", "line", "line", "trust", "checkout", "returns"]);
     expect(foot.querySelectorAll(".nc-btn--ink")).toHaveLength(1);
-    expect(foot.querySelector("svg, img")).toBeNull();
+    /* The only drawings in the foot are the ways to pay (25 Nov 2026, the
+       renewed layer), inside the trust block; the button carries none. */
+    expect(foot.querySelectorAll("svg, img")).toHaveLength(foot.querySelectorAll("[data-bag-trust] [data-pay-line] svg").length);
+    expect(foot.querySelector("[data-checkout] svg, [data-checkout] img")).toBeNull();
   });
 });
 

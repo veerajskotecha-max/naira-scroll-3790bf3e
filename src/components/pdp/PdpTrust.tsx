@@ -1,6 +1,5 @@
 import { BadgeCheck, Banknote, RotateCcw, Truck } from "lucide-react";
-import UpiBadges from "@/components/checkout/UpiBadges";
-import { MastercardMark, VisaMark } from "@/components/cart/PayMarks";
+import PayRow from "./PayRow";
 
 /*
   Reassurance right under the buttons, where the reel's pages put it: four
@@ -36,21 +35,7 @@ const PdpTrust = ({ reserved = false }: { reserved?: boolean }) => (
         </li>
       ))}
     </ul>
-    {!reserved && (
-      <p className="rn-pay">
-        <span className="nc-sr">Pay by UPI, Visa, Mastercard or cash on delivery.</span>
-        <span aria-hidden="true">
-          <UpiBadges size={20} />
-          UPI
-        </span>
-        <span aria-hidden="true">
-          <VisaMark height={10} />
-          <MastercardMark height={15} />
-          Cards
-        </span>
-        <span aria-hidden="true">Cash on delivery</span>
-      </p>
-    )}
+    {!reserved && <PayRow />}
   </>
 );
 

@@ -1,4 +1,5 @@
 import { clientsLabel, SHOP_RATING } from "@/lib/trust";
+import PayRow from "@/components/pdp/PayRow";
 
 /*
   The bag's trust block, directly above Checkout (the owner's ask of
@@ -15,7 +16,6 @@ import { clientsLabel, SHOP_RATING } from "@/lib/trust";
 */
 
 const RATING_TEXT = `Rated ${SHOP_RATING}/5 · Trusted by ${clientsLabel} clients`;
-const WAYS_TO_PAY = "UPI · Cards · Cash on delivery";
 
 /** The rating line. The star is decoration: the rating is written out beside it. */
 export const RatingLine = ({ className = "" }: { className?: string }) => (
@@ -27,11 +27,12 @@ export const RatingLine = ({ className = "" }: { className?: string }) => (
   </p>
 );
 
+/* 25 Nov 2026, the renewed layer: the ways to pay are their own marks again
+   (the three UPI apps, Visa, Mastercard), the same line the product page
+   shows under its buttons, with cash on delivery in words. */
 export const BagTrust = () => (
   <div data-bag-trust className="mt-2">
     <RatingLine />
-    <p data-pay-line className="nc-small text-center">
-      {WAYS_TO_PAY}
-    </p>
+    <PayRow tight />
   </div>
 );

@@ -27,33 +27,43 @@ describe("RatingLine: the rating line above Checkout", () => {
 });
 
 describe("BagTrust: the rating over one line of ways to pay", () => {
-  it("leads with the rating line, then names the ways to pay in words", () => {
+  /* 25 Nov 2026, the renewed layer: the ways to pay are their own marks (the
+     three UPI apps, Visa, Mastercard) with cash on delivery in words, the
+     same line the product page shows under its buttons. */
+  it("leads with the rating line, then shows the ways to pay", () => {
     const { container } = render(<BagTrust />);
     const block = container.querySelector("[data-bag-trust]") as HTMLElement;
     expect(block.firstElementChild?.hasAttribute("data-rating-line")).toBe(true);
     const pay = block.querySelector("[data-pay-line]") as HTMLElement;
-    expect(pay.textContent).toBe("UPI · Cards · Cash on delivery");
+    expect(pay.querySelector("[data-upi-badges]")).not.toBeNull();
+    expect(pay.querySelector("[data-mark='visa']")).not.toBeNull();
+    expect(pay.querySelector("[data-mark='mastercard']")).not.toBeNull();
+    expect(pay.textContent).toMatch(/Cash on delivery$/);
   });
 
-  /* The card marks and the banknote were the only foreign colours left in
-     the bag: the ways to pay are words now. */
-  it("draws no card marks, no banknote and no logo", () => {
+  /* The marks are decoration: one sentence says the same to a screen reader. */
+  it("says the ways to pay once in words, and hides the marks from the reading order", () => {
     const { container } = render(<BagTrust />);
-    expect(container.querySelector("[data-mark], svg, img")).toBeNull();
+    const pay = container.querySelector("[data-pay-line]") as HTMLElement;
+    expect(pay.querySelector(".nc-sr")?.textContent).toBe("Pay by UPI, Visa, Mastercard or cash on delivery.");
+    const groups = [...pay.children].filter((child) => !child.classList.contains("nc-sr"));
+    expect(groups).toHaveLength(3);
+    for (const group of groups) expect(group.getAttribute("aria-hidden")).toBe("true");
   });
 
-  /* Nothing here is pressable, and nothing looks it: the one action in the
-     foot stays the filled button under it. */
+  /* Nothing here is pressable: the one action in the foot stays the filled
+     button under it. */
   it("adds no second thing to tap", () => {
     const { container } = render(<BagTrust />);
-    expect(container.querySelectorAll("button, a")).toHaveLength(0);
-    expect(container.innerHTML).not.toMatch(/border/);
+    expect(container.querySelectorAll("button, a, input")).toHaveLength(0);
   });
 
-  it("sets both lines in the one supporting text style", () => {
+  it("is two lines: the rating, then the ways to pay, close under it", () => {
     const { container } = render(<BagTrust />);
     const lines = [...container.querySelectorAll("[data-bag-trust] > p")];
     expect(lines).toHaveLength(2);
-    for (const line of lines) expect(line.className).toMatch(/\bnc-small\b/);
+    expect(lines[0].className).toMatch(/\bnc-small\b/);
+    expect(lines[1].className).toMatch(/\brn-pay\b/);
+    expect(lines[1].className).toMatch(/\brn-pay--tight\b/);
   });
 });

@@ -75,10 +75,16 @@ describe("the bag's trust block", () => {
 
   /* UPI is said in the line above the button, first of the three ways to
      pay; no payment disc or logo is drawn anywhere in the bag. */
-  it("names UPI in words and draws no payment discs, on the button or anywhere else", async () => {
+  /* 25 Nov 2026, the renewed layer: the ways to pay are their own marks
+     again, once, in the trust block above the button; the button itself
+     stays a plain word. */
+  it("shows the ways to pay as marks above the button, and none on the button", async () => {
     await openBag();
-    expect(document.querySelectorAll("[data-upi-badges]")).toHaveLength(0);
-    expect(document.querySelector("[data-pay-line]")?.textContent).toBe("UPI · Cards · Cash on delivery");
+    expect(document.querySelectorAll("[data-upi-badges]")).toHaveLength(1);
+    const pay = document.querySelector("[data-bag-trust] [data-pay-line]") as HTMLElement;
+    expect(pay.textContent).toBe("Pay by UPI, Visa, Mastercard or cash on delivery.UPICardsCash on delivery");
+    expect(pay.querySelector("[data-mark='visa']")).not.toBeNull();
+    expect(pay.querySelector("[data-mark='mastercard']")).not.toBeNull();
     const button = document.querySelector("[data-checkout]") as HTMLElement;
     expect(button.textContent).toBe("Checkout");
     expect(button.querySelector("svg, img")).toBeNull();

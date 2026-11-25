@@ -86,6 +86,8 @@
 /* The ways to pay, as their own marks, under the reassurances. */
 .nf-clean .rn-pay { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 6px 14px; margin-top: 12px; font-size: 13px; line-height: 20px; color: var(--nc-muted); }
 .nf-clean .rn-pay > span { display: inline-flex; align-items: center; gap: 8px; }
+/* The same line in the bag's foot, close under the rating. */
+.nf-clean .rn-pay.rn-pay--tight { gap: 4px 12px; margin-top: 4px; }
 
 /* ── the bundle: tick the pieces, see the total, one button ────── */
 .nf-clean .rn-bundle { margin-top: 12px; border-top: 1px solid var(--nc-rule); list-style: none; }

@@ -41,7 +41,7 @@ const BagAddOn = ({ piece, effect, rate, adding, disabled, onAdd, onLeave }: Pro
   const adds =
     effect.adds > 0 ? `Adds ${rupees(effect.adds)}` : effect.adds < 0 ? `Your total drops ${rupees(-effect.adds)}` : "Your total stays the same";
   return (
-    <aside data-bag-addon={piece.handle} className="bg-[var(--nc-linen)] px-4 pb-3 pt-3" aria-label="Goes with your bag">
+    <aside data-bag-addon={piece.handle} className="rn-tick-in bg-[var(--nc-linen)] px-4 pb-3 pt-3" aria-label="Goes with your bag">
       <p className="nc-label nc-label--gold">{lifts ? `One more piece · ${percent(effect.rate)} off everything` : "Goes with your bag"}</p>
       <div className="mt-2 flex items-center gap-3">
         <Link to={href} onClick={onLeave} tabIndex={-1} aria-hidden="true" className="shrink-0">

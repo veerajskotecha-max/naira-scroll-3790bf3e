@@ -20,6 +20,7 @@ import {
 } from "@/lib/promo";
 import { SHIPPING_CHARGE, deliveryRangeFromNow } from "@/lib/serviceability";
 import { CleanStyles, cleanButton } from "@/components/clean";
+import RenewStyles from "@/components/pdp/RenewStyles";
 import BagEmpty from "@/components/cart/BagEmpty";
 import BagAddOn from "@/components/cart/BagAddOn";
 import { bagAddOns } from "@/lib/pairings";
@@ -344,6 +345,7 @@ const CartDrawerNext = () => {
         className="nf-palette nf-clean inset-y-0 flex h-[100dvh] max-h-[100dvh] w-full flex-col gap-0 overflow-hidden border-0 p-0 sm:max-w-[420px] sm:border-l sm:border-[color:var(--nc-rule)] [@media(max-height:479px)]:overflow-y-auto motion-reduce:!animate-none"
       >
         <CleanStyles />
+        <RenewStyles />
         <div className={`flex shrink-0 items-center justify-between border-b ${RULE} pb-1.5 pl-4 pt-[max(6px,env(safe-area-inset-top))]`}>
           {/* The title is the sheet's name ("Your bag 2 pieces"). The two
               parts are set side by side, each in its own style: the count
@@ -445,7 +447,17 @@ const CartDrawerNext = () => {
             <div data-bag-foot className={`shrink-0 border-t ${RULE} px-4 pb-[max(12px,env(safe-area-inset-bottom))] pt-3`}>
               <div className="flex items-baseline justify-between gap-3">
                 <span className="nc-text nc-text--strong">Total</span>
-                <span data-total className="nc-price__now nc-price__now--sheet tabular-nums">{formatPrice(orderTotal)}</span>
+                <span className="flex items-baseline gap-2">
+                  {/* The total before the offer, struck, beside the one that is charged. */}
+                  {discountAmount > 0 && (
+                    <del data-total-was className="nc-small tabular-nums">
+                      {formatPrice(lineSubtotal + SHIPPING_CHARGE)}
+                    </del>
+                  )}
+                  <span key={orderTotal} data-total className="nc-price__now nc-price__now--sheet rn-tick-in tabular-nums">
+                    {formatPrice(orderTotal)}
+                  </span>
+                </span>
               </div>
               {discountAmount > 0 ? (
                 <p data-you-save className="nc-small nc-gold">

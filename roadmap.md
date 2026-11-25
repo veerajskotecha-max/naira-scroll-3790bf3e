@@ -1,4 +1,5 @@
 # Roadmap
+- [x] Renewed product page and bag, approved by the owner from a preview on 25 Nov 2026: proof above the name, ticked benefits, Buy now and Add to bag with the price inside, reassurance and pay marks under the buttons, the Buy 2/3/4 offer as a panel that fills with the bag, a tick-and-add bundle, the MRP saving kept in the bag and a one-tap suggestion there. Reviewed by a designer, a copy editor and a conversion specialist; 1,214 checks pass, the full pre-render builds, and the first paint is level with the page it replaces at about 30% less data.
 - [x] Remove PDP gift-box sentence and keep feature/offer rows on one line with quiet separators; verified at 320/360/393px and 27 passing checks. Narrow feature rows scroll without shrinking text.
 - [x] Simplify PDP stickers into plain feature text, remove sales/offer panels and leave one quiet offer note; verified phone/desktop, real add-to-bag and 58 checks.
 - [x] Soften PDP font weights and refine the bag offer track; verified a real add-to-bag on phone/tablet, normal-weight title and 59 passing checks.

@@ -15,4 +15,7 @@
 - Performance reports are served only after server-side admin validation; aggregate in SQL and lazy-load the private dashboard so shopper pages never download reporting UI.
 - Shop and menu collection cards share cached 30-day visit counts for top-ten in-stock bestseller badges; stock placement runs after pinning/sorting with at most one sold-out card per twenty until buyable cards end, so merchandising never bypasses the stock limit.
 
-- Routed PDP offers use a quiet note derived from QUANTITY_OFFERS rather than the interactive ladder; keep discount resolution in the bag so presentation never changes checkout rules.
+- Routed PDP offers use the renewed offer panel (components/pdp/PdpOfferTracker) and the "Complete the look" bundle (components/pdp/PdpBundle), which the owner approved from a preview on 25 Nov 2026 in place of the quiet note; every figure comes from QUANTITY_OFFERS through promo.ts, and discount resolution stays in the bag so presentation never changes checkout rules.
+- The product page and the bag are drawn from two scoped style layers, components/clean (nc- classes) and components/pdp/renew.css (rn- classes); keep new rules inside those scopes so no other page changes, and keep every price worked by promo.ts rather than in a component.
+- A piece already in the bag is never added a second time by the product page's filled button or by the bundle (the button reads "View bag"); the bundle once added it twice, and renewParts.test.tsx pins the fix.
+- The product page and bag promise only what the shop can show: cash on delivery "on most pincodes", returns "on eligible pieces", no sold counts, no invented ratings and no sale that ends; do not reintroduce those lines.

@@ -326,7 +326,69 @@ what the third piece does ("A third piece takes 20% off your bag", from
 `ladderHeadline`). `cart/OfferProgress.tsx` and `cart/LadderBand.tsx` serve
 only the old `CartDrawer.tsx`; both use the same geometry.
 
+## The product page and the bag since 25 Nov 2026 (the "renewed" version)
+
+The owner approved it from a preview on 25 Nov 2026 ("Push it live") and it was
+merged into `main` that day. It replaces what the sections below say about how
+the bag and the product page LOOK. What they say about discounts, variants,
+pairings, the one-PDP rule and measurement still holds: none of that code
+changed (`src/contexts/*`, `shopify.ts`, `promo.ts`, `pixel.ts`, `index.html`,
+`main.tsx` and the configs were not touched).
+
+- **Two style layers, both scoped, both inlined.** `src/components/clean/`
+  (classes `nc-*`, tokens `--nc-*`, root `.nf-clean`) is the plain system: one
+  face (Jost), six colours, one hairline, square corners, no shadows, gold
+  never a button's fill. `src/components/pdp/renew.css` (classes `rn-*`, root
+  `.nf-clean.rn-page`) is the renewed layer on top. Each is a `?inline`
+  stylesheet drawn by a component (`CleanStyles`, `PdpStyles`, `RenewStyles`),
+  so the pre-built page carries it and no other page is touched.
+  `cleanCss.test.ts` and `pdp/renew.test.ts` pin the scope, the palette and
+  the motion; put new rules inside those scopes.
+- **The page** (`JewelDetailNext.tsx`), top to bottom: the photos ("Popular"
+  where `bestsellerHandles` earns it, which is views, not sales; "Video" to
+  the piece's reel slide; on a short screen the frame gives up height,
+  `.rn-frame`, so the name, the price and a buy button share the first
+  screen), the rating and clients (`lib/trust.ts`), the name, the price, one
+  sentence (`ledeOf`, or `setLede` for a piece sold as a set), ticked benefits
+  (`PdpAssurances`), the choices, Buy now and Add to bag with the price in it,
+  the stock and delivery line (a pincode checked before gets its own date),
+  `PdpTrust`, `PdpOfferTracker`, four dropdowns, `PdpBundle`, then the
+  reviews (`pdp/PdpReviews`), press, reels and "more", each drawn only once
+  the shopper is near it (`pdp/NearView`; the pre-built page gets them all).
+- **Every rupee is promo.ts's.** `pdp/renew.ts` only words it (`offerLine`,
+  `bundleEffect`, `nextPieceLine`). Never price anything in a component.
+- **A piece already in the bag is not sold twice.** `inBag` (`cartKeyOf`) turns
+  the filled button into "View bag" and stops the bundle adding the piece
+  again. The bundle once did add it twice; `renewParts.test.tsx` pins it.
+- **Say no more than the shop can show.** Cash on delivery is "on most
+  pincodes" (`lib/serviceability` refuses it in some regions, and the checker's
+  product-page look gives no reason for a refusal). Returns are "7-day returns
+  · On eligible pieces" and the bag's link reads "7-day returns policy": the
+  published policy covers a piece that arrives faulty. Not carried over from
+  the old page because nothing backs them, and not to be brought back
+  unprompted: "N pieces sold in the last 48 hours" (`lib/dailySold`), "4.9 ·
+  50 reviews", the "someone just bought" pop-up, "sitewide sale live today"
+  in the bag, "keeps its colour for a lifetime".
+- **The bag** (`CartDrawerNext.tsx`): `cart/BagOffer` (the rungs as words over
+  a 2px line with a stop at each step), the lines (`cart/BagLine`: where the
+  catalogue has a compare-at price, that MRP is struck and the percent is the
+  whole saving against it, the offer included), one suggestion pinned to the
+  list's foot (`cart/BagAddOn`, from `bagAddOns`), then Total with "incl. 3%
+  GST" beside its name, one saving line, the delivery line, `cart/BagTrust`,
+  Checkout and the returns link. The mechanics described under "The bag"
+  below (`cartPricing`, `addOnEffect`, `bagAddOns`, `followOut`) are unchanged.
+- **The film grain is not drawn over the product page** on a laptop
+  (`renew.css` hides `.film-grain` while `html.nf-next` is set, the class only
+  this page sets): it turned the ivory ground grey.
+- **Where the rest is.** The preview the owner approved from, the three
+  reviews (designer, copy, conversion), the speed measurements and the
+  questions still open for the owner are in `docs/pdp-renew/` on the branch
+  `claude/install-mem-skill-jsd971` (`OWNER-QUESTIONS.md` first).
+
 ## The bag (`CartDrawerNext.tsx`)
+
+*How it looked until 25 Nov 2026 is described here; what is live now is in
+the section above. The pricing and add-on mechanics below still apply.*
 
 The live bag; `App.tsx` lazy-loads it and `CartDrawer.tsx` is kept so the switch
 back is one line. Since 16 Oct it is the bag of the "Naira Bag CRO Plan": the
@@ -349,9 +411,9 @@ and Checkout has payment, returns, plating and "Next: a quick OTP…" under it.
   says "rated by 5,000". Fastrr charged no COD fee on 16 Nov 2026 (six COD
   orders at list price, ₹0 shipping), so the line names no fee;
   `lib/payment.ts` still says 5% and nothing reads it.
-- The live bag no longer draws the add-on row (Project Shades' simpler bag);
-  `addOnEffect` still drives the product page's line (`pdpOfferStatus`), and
-  `bagAddOns` is kept for it.
+- From 16 Nov to 25 Nov 2026 the live bag drew no add-on row (Project Shades'
+  simpler bag). Since 25 Nov 2026 it draws one again, `cart/BagAddOn`, pinned
+  to the foot of the list; `addOnEffect` prices it and `bagAddOns` picks it.
 - The add-on comes from `bagAddOns` (`src/lib/pairings.ts`) and only ever from
   `DEEP_STOCK`, the 31 non-ring pieces Shopify held 20 or more of on 18 Oct, so
   a one-tap add never meets a piece about to sell out. Re-check the list when
@@ -427,7 +489,7 @@ to Shopify as a note on its size-6 variant, and silver showed the gold price.
 ## Verification expected before any push
 
 ```
-npx vitest run                          # currently 1013 tests
+npx vitest run                          # currently 1,215 tests; one fails on main and always has: src/hooks/useReels.test.ts
 npx tsc --noEmit -p tsconfig.app.json
 npx vite build
 ```

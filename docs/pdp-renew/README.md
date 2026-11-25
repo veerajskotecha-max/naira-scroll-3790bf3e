@@ -1,9 +1,20 @@
-# Product page and bag: the renewed version (preview, not live)
+# Product page and bag: the renewed version (on `main` since 25 Nov 2026)
 
-Status on 25 Nov 2026: built, reviewed from three angles, fixed and measured on the
-local branch `pdp-renew` (head `d8f3f8ec`, on top of the clean redesign `pdp-clean`
-`d7d59907`, itself based on `main` at `e161ace0`). Nothing is on `main`. The owner
-approves from the preview before anything goes live.
+Status on 25 Nov 2026: the owner approved the preview ("Push it live") and the branch
+was merged into `main` the same day: merge commit `63e667c0`, `main` at `0957ed00`.
+The live site shows it once **Publish** is pressed in Lovable (pushing to GitHub does
+not deploy). To undo: `git revert -m 1 63e667c0` on `main`, then Publish again.
+
+`main` had moved while the branch was being built: five Lovable edits of 21 Nov had
+simplified the live product page (plain feature text, no "sold in the last 48 hours"
+panel, no gift-box sentence, softer type, the offer as one quiet line). The renewed
+page already does all of that except the last, where it shows the offer as a panel
+that fills with the bag; the six files both sides had changed were taken from the
+renewed branch, and Lovable's other files were kept. `AGENTS.md`, `roadmap.md` and
+`CLAUDE.md` on `main` now describe the renewed page.
+
+Built on the local branch `pdp-renew` (head `d8f3f8ec`, on top of the clean redesign
+`pdp-clean` `d7d59907`, itself based on `main` at `e161ace0`).
 
 Preview for the owner (private): https://claude.ai/artifact/9nsb5Y4ixVFWyAtDNWThnT
 Today's page ("Today") beside the renewed one ("Renewed"), six pieces, a working local
@@ -66,6 +77,11 @@ Held for the owner rather than built: see `OWNER-QUESTIONS.md`.
   fails on `main` too.
 - `npx vite build`: passes. The site's own pre-render (`scripts/prerender.ts`) was run on
   this branch for the speed test: 239 of 239 routes.
+- On the merged tree, before the push: `tsc` and `eslint` clean, `vitest` 1,214 of 1,215
+  (the same one failure), `npm run build` with its pre-render 239 of 239, and a browser
+  walk of the built site (`golive-walk.cjs`: 15 product page loads on three screens, add
+  to bag with every Shopify write refused, the bag on the product page, the listing and
+  the home page, the already-in-bag state, an ad link's hop). All passed.
 - Preview check (`preview-kit/check.cjs`): 36 product pages, 66 flow steps, 0 requests to
   any outside host.
 - Only product-page and bag files changed (64 files against `main`, 35 since the clean
@@ -75,7 +91,21 @@ Held for the owner rather than built: see `OWNER-QUESTIONS.md`.
 - `PincodeChecker` (shared with the outfit page) changed only in its product-page look
   and gained an optional listener; its default look is pinned by a test.
 
-## Load speed, measured (lab, local production builds, Woven Gold Hoops)
+## Load speed against the page that was live on 25 Nov (after Lovable's edits)
+
+Measured again at go-live, `main` at `27dea572` against the merged build:
+
+| Profile | Page | Main photo shown | Layout shift | Requests | Data |
+|---|---|---|---|---|---|
+| Slow phone, 7 loads | Live on 25 Nov | 1.88 s | 0 | 75 | 952 KB |
+| | Renewed | 1.94 s | 0 | 49 | 698 KB |
+| Good phone, 5 loads | Live on 25 Nov | 0.38 s | 0 | 74 | 926 KB |
+| | Renewed | 0.40 s | 0 | 46 | 627 KB |
+
+Level on the first paint (0.06 s apart on the slow profile, inside the spread between
+runs), with about 27 to 32% less data and a third fewer requests.
+
+## Load speed against the page of 20 Nov (lab, local production builds, Woven Gold Hoops)
 
 `speed/measure.cjs` loads each pre-built page in a throttled browser; medians below.
 Real phones add the distance to the server to both alike.
@@ -103,8 +133,9 @@ press strip, the reels, the "more" rail and the size guide photo load only when 
   `PREVIEW_DIST=<out dir> ./build.sh <pdp-renew worktree>` (needs a worktree of `main` at
   `/tmp/pdp-base` for "Today"; its photograph cache is fetched again on the first build).
 
-## Before going live
+## After going live
 
-- The owner's approval of the preview, and her answers in `OWNER-QUESTIONS.md`.
-- The full production build with its pre-render (`npm run build`), and `CLAUDE.md`'s
-  description of the product page brought up to date.
+- Press **Publish** in Lovable; then the live page can be checked for the renewed markup.
+- The questions in `OWNER-QUESTIONS.md` are still open. They went live with the defaults
+  described there (title A, "Add to bag", returns "on eligible pieces", cash on delivery
+  "on most pincodes").

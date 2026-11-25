@@ -1,0 +1,105 @@
+{
+ "profile": "slow",
+ "handle": "woven-gold-hoops",
+ "runs": 7,
+ "results": {
+  "live-today": {
+   "median": {
+    "ttfb": 8.699999999953434,
+    "fcp": 1328,
+    "lcp": 1884,
+    "cls": 0.000011947756827806411,
+    "long": 572,
+    "longCount": 4,
+    "dcl": 2400,
+    "load": 2404.3000000000466,
+    "total": 974557,
+    "js": 326755,
+    "css": 29332,
+    "img": 422076,
+    "font": 66298,
+    "doc": 41233,
+    "requests": 75
+   },
+   "lcpEl": [
+    "IMG woven-gold-hoops-2.jpg?v=1787277440&width=800",
+    "IMG woven-gold-hoops-2.jpg?v=1787277440&width=800",
+    "IMG woven-gold-hoops-2.jpg?v=1787277440&width=800",
+    "IMG woven-gold-hoops-2.jpg?v=1787277440&width=800",
+    "IMG woven-gold-hoops-2.jpg?v=1787277440&width=800",
+    "IMG woven-gold-hoops-2.jpg?v=1787277440&width=800",
+    "IMG woven-gold-hoops-2.jpg?v=1787277440&width=800"
+   ],
+   "h1": "Woven Gold Hoops",
+   "hasButton": true,
+   "n": 7,
+   "lcps": [
+    1976,
+    1912,
+    1884,
+    1884,
+    1740,
+    1872,
+    1880
+   ],
+   "clss": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  "renewed": {
+   "median": {
+    "ttfb": 9,
+    "fcp": 1356,
+    "lcp": 1944,
+    "cls": 0.00048621380381427603,
+    "long": 543,
+    "longCount": 4,
+    "dcl": 2277.1999999999534,
+    "load": 2284.3000000000466,
+    "total": 714519,
+    "js": 306977,
+    "css": 28996,
+    "img": 118334,
+    "font": 129629,
+    "doc": 43001,
+    "requests": 49
+   },
+   "lcpEl": [
+    "IMG woven-gold-hoops-2.jpg?v=1787277440&width=800",
+    "IMG woven-gold-hoops-2.jpg?v=1787277440&width=800",
+    "IMG woven-gold-hoops-2.jpg?v=1787277440&width=800",
+    "IMG woven-gold-hoops-2.jpg?v=1787277440&width=800",
+    "IMG woven-gold-hoops-2.jpg?v=1787277440&width=800",
+    "IMG woven-gold-hoops-2.jpg?v=1787277440&width=800",
+    "IMG woven-gold-hoops-2.jpg?v=1787277440&width=800"
+   ],
+   "h1": "Woven Gold Hoops",
+   "hasButton": true,
+   "n": 7,
+   "lcps": [
+    1944,
+    1992,
+    1920,
+    1944,
+    1944,
+    1936,
+    1920
+   ],
+   "clss": [
+    0.0004,
+    0.0005,
+    0.0005,
+    0.0005,
+    0.0005,
+    0.0004,
+    0.0004
+   ]
+  }
+ }
+}

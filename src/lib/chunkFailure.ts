@@ -19,6 +19,8 @@ const CHUNK_IMPORT_FAILED =
   /Importing a module script failed|Failed to fetch dynamically imported module|error loading dynamically imported module|Unable to preload CSS|Loading chunk \S+ failed/i;
 
 const RELOAD_KEY = "naira:chunk-reload";
+/** A reload within this span of the last one means the file is really gone. */
+export const RELOAD_WINDOW_MS = 30_000;
 
 /** True for any browser's "this code file could not be downloaded" error. */
 export const isChunkImportFailure = (reason: unknown): boolean =>
@@ -34,8 +36,12 @@ export const isChunkImportFailure = (reason: unknown): boolean =>
  */
 export const reloadForStaleChunk = (): boolean => {
   try {
-    if (sessionStorage.getItem(RELOAD_KEY)) return false;
-    sessionStorage.setItem(RELOAD_KEY, "1");
+    // Time-bound, not once per session: Instagram's in-app browser keeps one
+    // session for hours, so a second publish in that span used to land the
+    // shopper on the "didn't load" panel instead of the fresh build.
+    const last = Number(sessionStorage.getItem(RELOAD_KEY));
+    if (last && Date.now() - last < RELOAD_WINDOW_MS) return false;
+    sessionStorage.setItem(RELOAD_KEY, String(Date.now()));
   } catch {
     return false;
   }

@@ -108,3 +108,16 @@ describe("handlePreloadError", () => {
     expect(three.defaultPrevented).toBe(false);
   });
 });
+
+import { describe as d2, it as i2, expect as e2, vi as v2 } from "vitest";
+import { reloadForStaleChunk as r2, RELOAD_WINDOW_MS } from "./chunkFailure";
+// A long Instagram session met a second publish and showed the error panel.
+d2("reload window", () => {
+  i2("reloads again once the window has passed", () => {
+    const reload = v2.fn();
+    Object.defineProperty(window, "location", { value: { reload }, configurable: true });
+    sessionStorage.setItem("naira:chunk-reload", String(Date.now() - RELOAD_WINDOW_MS - 1));
+    e2(r2()).toBe(true);
+    e2(r2()).toBe(false);
+  });
+});

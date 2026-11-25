@@ -8,14 +8,16 @@ import { discountedSubtotal, resolveCartDiscount } from "@/lib/promo";
 /**
  * One sentence to sit under the price: the first sentence of the piece's own
  * description, when it is short enough to be read at a glance. A long first
- * sentence gives nothing (the description, open below, says it in full).
+ * sentence gives nothing (the description, open below, says it in full), and
+ * so does one that is an announcement or a question rather than a line about
+ * the piece ("Adjustable version is live!" on Cushion Halo Ring).
  */
 export const ledeOf = (blurb: string | undefined, max = 90): string | null => {
   const text = (blurb ?? "").trim();
   if (!text) return null;
   const end = text.search(/[.!?](\s|$)/);
   const first = (end < 0 ? text : text.slice(0, end + 1)).trim();
-  return first.length >= 12 && first.length <= max && first.length < text.length ? first : null;
+  return first.length >= 12 && first.length <= max && first.length < text.length && first.endsWith(".") ? first : null;
 };
 
 type Bag = { subtotal: number; totalItems: number; promoCode?: string | null };

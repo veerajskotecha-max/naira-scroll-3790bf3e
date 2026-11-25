@@ -187,7 +187,7 @@ describe("redesigned product page", () => {
 
   it("suggests a second piece before the reviews", () => {
     const look = code.indexOf('id="complete-the-look"');
-    const reviews = code.indexOf("<CustomerReviews");
+    const reviews = code.indexOf("<PdpReviews");
     expect(look).toBeGreaterThan(-1);
     expect(reviews).toBeGreaterThan(look);
   });
@@ -307,7 +307,7 @@ describe("redesigned product page", () => {
     expect(bundle).toMatch(/pieces=\{pairings\}/);
     expect(code).toMatch(/\{pairings\.length > 0 && isPreorder && \(/);
     expect(code.indexOf("<PdpBundle")).toBeGreaterThan(code.indexOf("<CleanDropdowns"));
-    expect(code.indexOf("<PdpBundle")).toBeLessThan(code.indexOf("<CustomerReviews"));
+    expect(code.indexOf("<PdpBundle")).toBeLessThan(code.indexOf("<PdpReviews"));
   });
 
   /* Sections below the buy area rise in as they are reached. Only wrappers
@@ -315,9 +315,15 @@ describe("redesigned product page", () => {
      inside one, so nothing can arrive hidden with no one watching for it. */
   it("lets the lower sections rise in, each inside a wrapper the page renders itself", () => {
     expect(code).toMatch(/useReveal\(rootRef, /);
-    expect(code).toMatch(/<div className="rn-reveal">\s*<Suspense fallback=\{[^}]*\}>\s*<CustomerReviews/);
-    expect(code).toMatch(/<div className="rn-reveal">\s*<PressMarquee \/>/);
-    expect(code).toMatch(/<div className="rn-reveal">\s*<Suspense fallback=\{[^}]*\}>\s*<ReelShopNext/);
+    expect(code).toMatch(/<NearView className="rn-reveal" minHeight=\{520\} slot="reviews">\s*<Suspense fallback=\{[^}]*\}>\s*<PdpReviews/);
+    /* The page loads its own reviews by themselves, not through the shared
+       component, whose chunk also carries the outfit page's list and bank. */
+    expect(code).toMatch(/const PdpReviews = lazy\(\(\) => import\("@\/components\/pdp\/PdpReviews"\)\);/);
+    expect(code).not.toMatch(/CustomerReviews/);
+    expect(code).toMatch(/<NearView className="rn-reveal" minHeight=\{144\}>\s*<PressMarquee \/>/);
+    expect(code).toMatch(/<NearView className="rn-reveal" minHeight=\{0\}>\s*<Suspense fallback=\{[^}]*\}>\s*<ReelShopNext/);
+    /* The rating's link can reach the reviews before they are drawn. */
+    expect(code).toMatch(/getElementById\("customer-reviews"\) \?\? document\.querySelector\('\[data-slot="reviews"\]'\)/);
     const above = code.slice(code.indexOf("<main"), code.indexOf("<CleanDropdowns"));
     expect(above).not.toMatch(/rn-reveal/);
   });

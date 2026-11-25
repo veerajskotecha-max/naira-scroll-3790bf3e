@@ -25,6 +25,11 @@ describe("ledeOf: one sentence of the piece's own description, under the price",
     expect(ledeOf(long)).toBeNull();
   });
 
+  it("gives nothing for an announcement or a question: only a plain sentence about the piece", () => {
+    expect(ledeOf("Adjustable version is live! A cushion-cut stone in a halo of smaller ones.")).toBeNull();
+    expect(ledeOf("Looking for an everyday ring? This is the one.")).toBeNull();
+  });
+
   it("gives nothing when the description is one sentence (it would only be said twice), too short, or missing", () => {
     expect(ledeOf("Texture does the talking here.")).toBeNull();
     expect(ledeOf("Gold. And then a long second sentence about it.")).toBeNull();

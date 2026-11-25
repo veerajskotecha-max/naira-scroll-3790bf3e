@@ -19,6 +19,7 @@ import PdpBundle from "@/components/pdp/PdpBundle";
 import RenewStyles from "@/components/pdp/RenewStyles";
 import { ledeOf } from "@/components/pdp/renew";
 import { useReveal } from "@/components/pdp/useReveal";
+import NearView from "@/components/pdp/NearView";
 import { bestsellerHandles, readCachedVisits } from "@/lib/shopOrder";
 import { discountPercent } from "@/components/jewellery/JewelPriceTag";
 import { CleanDropdown, CleanDropdowns, CleanFact, CleanFacts, CleanPrice, CleanStyles, cleanButton, percent } from "@/components/clean";
@@ -106,7 +107,10 @@ import { SHOP_RATING, clientsLabel } from "@/lib/trust";
   structured data and the embedded piece the pre-built page is drawn from.
 */
 
-const CustomerReviews = lazy(() => import("@/components/CustomerReviews"));
+/* The product page's own reviews, loaded by themselves. Through
+   CustomerReviews (look="clean") the chunk also carried the outfit page's
+   list and its bundled review bank: 104 kB where this is a fraction of it. */
+const PdpReviews = lazy(() => import("@/components/pdp/PdpReviews"));
 const ReelShopNext = lazy(() => import("@/components/reels/ReelShopNext"));
 const GalleryReel = lazy(() => import("@/components/reels/GalleryReel"));
 
@@ -456,7 +460,9 @@ const JewelDetailNext = () => {
      back and ← still go where the shopper came from. */
   const toReviews = (e: MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
-    document.getElementById("customer-reviews")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    /* The reviews are drawn as the shopper nears them: until then the link
+       goes to the place kept for them, which is what brings them in. */
+    (document.getElementById("customer-reviews") ?? document.querySelector('[data-slot="reviews"]'))?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
   const scrollRef = useRef<HTMLDivElement>(null);
   const [stickyBarVisible, setStickyBarVisible] = useState(false);
@@ -1343,21 +1349,23 @@ const JewelDetailNext = () => {
         </div>
       </div>
 
-      <div className="rn-reveal">
+      {/* The parts below are drawn as the shopper nears them (NearView), so
+          their code and photographs do not compete with the first screen. */}
+      <NearView className="rn-reveal" minHeight={520} slot="reviews">
         <Suspense fallback={<div className="min-h-[240px]" aria-hidden="true" />}>
-          <CustomerReviews productName={piece.name} variant="jewellery" look="clean" />
+          <PdpReviews productName={piece.name} variant="jewellery" />
         </Suspense>
-      </div>
+      </NearView>
 
-      <div className="rn-reveal">
+      <NearView className="rn-reveal" minHeight={144}>
         <PressMarquee />
-      </div>
+      </NearView>
 
-      <div className="rn-reveal">
+      <NearView className="rn-reveal" minHeight={0}>
         <Suspense fallback={<div className="min-h-[420px] md:hidden" aria-hidden="true" />}>
           <ReelShopNext hrefFor={hrefFor} />
         </Suspense>
-      </div>
+      </NearView>
 
       {similar.length > 0 && (
         <section className="rn-reveal mx-auto max-w-[1400px] pt-12 md:px-6 lg:pt-16" aria-labelledby="more-like-this">

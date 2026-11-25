@@ -10,15 +10,31 @@
 
 ## Where things stand
 
-| | Offer it shows | State |
-|---|---|---|
-| `main` | Buy 2 = **extra 10%**, Buy 3 = **extra 20%**, no Buy 4 | Commit `cf0a0b57`, sent on the evening of 25 Nov after the owner said yes. It goes live at the next Publish in Lovable. |
-| The live site (nairaflore.com) | Buy 2 = 10%, Buy 3 = **15%**, no Buy 4 | Published earlier that evening from `c18a5c8b`, the first reading of the ask. Not what the owner wants; the next Publish replaces it. |
-| Shopify | BUY2 10%, BUY3 20%, BUY4 30%, all active | Untouched. Read only. The one edit left is to switch BUY4 off, after the Publish. |
+**Live and checked.** The corrected offer (Buy 2 = extra 10%, Buy 3 = extra
+20%, no Buy 4) is on `main` as `cf0a0b57` and has been live on nairaflore.com
+since about 21:33 UTC on 25 Nov 2026 (03:03 IST on 26 Nov).
 
-While the 15% version is live, a three-piece order is charged 20% off
-(Shopify's BUY3) where the bag quotes 15%: the shopper pays less than quoted.
-The same commit is kept here as `offer-two-steps.bundle`.
+`live-check.cjs` read the live site right after (no write, no tracking
+request leaving): the strip, the product page's two steps ("Extra 10% off ·
+₹944 each", "Extra 20% off · ₹839 each"), the home line, and the bag at two,
+three and four real pieces: ₹3,103, ₹3,558 and ₹4,117, each with its "extra"
+saving line. Pictures in `live/`.
+
+Before that, for about half an hour, the live site showed the first reading
+of the ask (Buy 3 = 15%, commit `c18a5c8b`). Shopify charged 20% throughout,
+so anyone who ordered three pieces in that window paid less than the bag
+quoted.
+
+**One step is left, in Shopify admin → Discounts: deactivate `BUY4`.** Do it a
+few hours after the publish, not at once: a shopper who still has an older
+copy of the page open has a bag that hands BUY4 to the checkout, and a
+deactivated code would leave that order with no discount at all. BUY2 (10%)
+and BUY3 (20%) already match the site and need no edit. Shopify was only read
+(25 Nov: BUY2 10%, BUY3 20%, BUY4 30%, NAIRA10 10%, FRIENDSANDFAMILY 20%, all
+active).
+
+To correct on `main` with the next change there: `CLAUDE.md` says of
+`c18a5c8b` that "it was never published". It was, for that half hour.
 
 ## What a shopper gets with the corrected version
 
@@ -43,13 +59,6 @@ of its saving on MRP. It is said that way wherever the offer is stated:
 
 Pictures of the built site are in `screens/` (real pieces at their real
 prices: two pieces ₹3,103, three ₹3,558, four ₹4,117).
-
-## To make it live, in this order
-
-1. **Put `cf0a0b57` on `main`.** Done on 25 Nov 2026.
-2. **Press Publish in Lovable.**
-3. **Only after it is live, in Shopify admin → Discounts: deactivate `BUY4`.**
-   BUY2 (10%) and BUY3 (20%) already match the site and need no edit.
 
 ## The code
 

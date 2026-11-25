@@ -107,7 +107,7 @@ describe("redesigned product page", () => {
      has them; the paragraph that sells the piece is open, the rest closed.
      Every panel stays in the page, so all of it is in the HTML. */
   it("folds the rest into four dropdowns, the description open only when no sentence of it is under the price", () => {
-    const rows = [...code.matchAll(/<CleanDropdown title="([^"]+)" id="([^"]+)"( defaultOpen=\{!lede\})?>/g)].map((m) => [m[1], m[2], Boolean(m[3])]);
+    const rows = [...code.matchAll(/<CleanDropdown title="([^"]+)" id="([^"]+)"( defaultOpen=\{!lede\})?(?: onToggle=\{[^\n]*?\})?>\n/g)].map((m) => [m[1], m[2], Boolean(m[3])]);
     expect(rows).toEqual([
       ["Description", "pdp-panel-description", true],
       ["Details and size", "pdp-panel-details", false],
@@ -115,6 +115,10 @@ describe("redesigned product page", () => {
       ["Delivery and returns", "pdp-panel-delivery", false],
     ]);
     expect(code.match(/<CleanDropdown\s/g)).toHaveLength(4);
+    /* The size guide's photograph under "Details and size" waits for that row
+       to be opened: folded away, it was downloaded on every visit (65 KB). */
+    expect(code).toMatch(/id="pdp-panel-details" onToggle=\{\(open\) => open && setDetailsSeen\(true\)\}/);
+    expect(code).toMatch(/\{piece\.sizeGuide && detailsSeen && \(/);
     expect(code.match(/<CleanDropdowns\s/g)).toHaveLength(1);
     expect(code).not.toMatch(/<details/);
     /* The description leads with the piece's own paragraph, whole: the

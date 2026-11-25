@@ -403,6 +403,11 @@ const JewelDetailNext = () => {
     setSelectedSize(sizedCategory ? "6" : "One Size");
   }, [sizedCategory, piece?.handle]);
   const [sizeGuideOpen, setSizeGuideOpen] = useState(false);
+  /* The size guide photo under "Details and size" is drawn once that row has
+     been opened. Folded away it was still downloaded on every visit (65 KB on
+     Woven Gold Hoops): a closed row has no place on the page, so a browser
+     cannot tell the photo is out of sight. The gallery shows it too. */
+  const [detailsSeen, setDetailsSeen] = useState(false);
 
   /* The metal, stone, size or month chosen, for a piece Shopify sells more than
      one way. It opens on the first variant that can be bought; once the shopper
@@ -1342,7 +1347,7 @@ const JewelDetailNext = () => {
                 {piece.stylingTip && <p>{piece.stylingTip}</p>}
               </CleanDropdown>
 
-              <CleanDropdown title="Details and size" id="pdp-panel-details">
+              <CleanDropdown title="Details and size" id="pdp-panel-details" onToggle={(open) => open && setDetailsSeen(true)}>
                 {specs.length > 0 && (
                   <CleanFacts bare>
                     {specs.map((s, i) => (
@@ -1362,7 +1367,7 @@ const JewelDetailNext = () => {
                   </div>
                 )}
                 {/* The size guide photo again, right where the sizes are read. */}
-                {piece.sizeGuide && (
+                {piece.sizeGuide && detailsSeen && (
                   <img
                     src={shopifyImage(piece.sizeGuide, 720)}
                     srcSet={shopifySrcSet(piece.sizeGuide, [480, 720, 960]) || undefined}
@@ -1467,7 +1472,8 @@ const JewelDetailNext = () => {
       </NearView>
 
       {similar.length > 0 && (
-        <section className="rn-reveal mx-auto max-w-[1400px] pt-12 md:px-6 lg:pt-16" aria-labelledby="more-like-this">
+        <NearView className="rn-reveal" minHeight={360} slot="more">
+        <section className="mx-auto max-w-[1400px] pt-12 md:px-6 lg:pt-16" aria-labelledby="more-like-this">
           <h2 id="more-like-this" className="nc-heading px-4 md:px-0">
             More {piece.category.toLowerCase()}
           </h2>
@@ -1487,6 +1493,7 @@ const JewelDetailNext = () => {
             ))}
           </div>
         </section>
+        </NearView>
       )}
       </main>
       </div>

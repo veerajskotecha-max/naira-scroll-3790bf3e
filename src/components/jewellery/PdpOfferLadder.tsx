@@ -1,64 +1,38 @@
 import { useEffect, useState } from "react";
 import { useCart } from "@/contexts/CartContext";
-import {
-  getPromoCode,
-  getPromoDiscountRate,
-  pdpOfferStatus,
-  pieceAtRung,
-  PROMO_EVENT,
-  QUANTITY_OFFERS,
-  TOP_QUANTITY_OFFER,
-} from "@/lib/promo";
+import { CleanFact, CleanRungs, rupees } from "@/components/clean";
+import { getPromoCode, pdpOfferStatus, pieceAtRung, PROMO_EVENT, QUANTITY_OFFERS, TOP_QUANTITY_OFFER } from "@/lib/promo";
 
 /*
-  The buy-more offer on the product page, under the price and the badges (the
-  owner, 2 Nov 2026: "offer display on pdp too below price and features like
-  Palmonas"). Palmonas shows three coupon cards on a rail, with bundle prices
-  that ignore the piece and a code to copy. Here every rung is always in view,
-  priced for THIS piece (the chosen variant's price), and there is no code:
-  the bag applies the rung itself and hands Fastrr the one code.
+  The buy-more offer on the product page: the OFFER row of the facts table
+  under the price (the owner, 2 Nov 2026: "offer display on pdp too below
+  price and features like Palmonas"; 20 Nov 2026: "cleaner, remove clutter").
+
+  It used to be a gold box with a legend on its top rule, serif numerals and
+  dividers. Now it is words in a table row, like the qualities above it: the
+  three rungs in equal columns ("Buy 2 · 10%"), this piece's price at each
+  rung under its name, and one line saying what the offer does to the bag.
+  No box, no rule between rungs, no icon. The rung the bag has reached turns
+  gold; one it has climbed past steps back.
 
   Every figure comes from promo.ts: the rates from QUANTITY_OFFERS, the piece
   price at each rung from `pieceAtRung` (the bag's own rounding), and the line
-  under the panel from `pdpOfferStatus`, which follows the bag as Shopify last
-  confirmed it (a piece still on its way in does not count yet).
+  from `pdpOfferStatus`, which follows the bag as Shopify last confirmed it (a
+  piece still on its way in does not count yet). There is no code to copy:
+  the bag applies the rung itself and hands Fastrr the one code.
 
-  Three rungs since 7 Nov 2026 (the owner added Buy 4 at 30%, and asked for
-  this box to be calmer and easier to read). Three equal columns between gold
-  hairlines, each read in one glance: the rate, largest, in the serif; the
-  piece's price at that rung under it; "Buy 2" as the small label beside the
-  rate. The rung the bag has reached takes the rate in gold and a gold rule
-  under its column, and a rung it has climbed past steps back. No fill
-  behind the text, and nothing under 11px.
-
-  That rule is drawn INSIDE the list of rungs, in a 3px foot each column
-  keeps for it (taken from the panel's own bottom padding, so the panel's
-  height does not move). The phone's buy bar (JewelDetailNext) keeps off the
-  list while it is on screen; laid on the panel's foot 8px under the list,
-  the rule sat under the bar on a 390x844 phone (Prism Rivière, two pieces
-  in the bag: list to 775px, bar from 779px, rule at 781-783px) and the
-  reached rung lost its mark.
-
-  Still two rows, because the panel sits right above Add to cart: on a 390x844
-  phone the most-advertised piece (Prism Rivière, its badges on two lines)
-  kept Add to cart on the first screen with 3px to spare, so the panel holds
-  the height it had. That is why the label sits beside the rate rather than
-  over it. Below 310px three columns cannot carry both on one line, so the
-  label stacks over the rate there and the price steps down a size (no
-  first-screen promise holds on so small a screen anyway). "Applied in your bag · no code" rides on the panel's top
-  rule, costing no row. The line saying what this piece does to the bag
-  appears under it only once the bag holds a piece (or a code is typed); that
-  change happens behind the bag, which opens at the tap.
+  The list of rungs is the element the phone's buy bar keeps off while it is
+  on screen (JewelDetailNext reads `[data-offer-ladder] ul`), so everything
+  that marks a rung lives inside that list.
 
   A pre-order choice (a size or metal Shopify has sold out of) is reserved on
   WhatsApp and never reaches the bag, so the per-piece figures would be a
-  price the shopper cannot get: they give way to one note in the same row, so
-  the choices below do not jump under the finger. A piece sold out altogether
-  gets no panel at all (JewelDetailNext).
+  price the shopper cannot get: the rungs step back and the line says so. The
+  row keeps its height (the rungs hold their second line's room, and the line
+  holds two lines' room while the bag has pieces), so the sizes below do not
+  jump under the finger. A piece sold out altogether gets no row at all
+  (JewelDetailNext).
 */
-const pct = (rate: number) => `${Math.round(rate * 100)}%`;
-const rupees = (n: number) => `₹${n.toLocaleString("en-IN")}`;
-
 const PdpOfferLadder = ({ price, preorder = false }: { price: number; preorder?: boolean }) => {
   const { totalItems, subtotal, setDrawerOpen } = useCart();
   const [promoCode, setCode] = useState<string | null>(() => getPromoCode());
@@ -69,97 +43,43 @@ const PdpOfferLadder = ({ price, preorder = false }: { price: number; preorder?:
   }, []);
 
   if (!(price > 0)) return null;
-  const bagHasSomething = totalItems > 0 || getPromoDiscountRate(promoCode) > 0;
-  const status = !preorder && bagHasSomething ? pdpOfferStatus({ subtotal, totalItems, promoCode }, price) : "";
-  /* The highest rung the bag has reached; a lower one it has climbed past steps back. */
-  const current = [...QUANTITY_OFFERS].reverse().find((offer) => totalItems >= offer.minQuantity);
+  /* What the offer does for this piece, or, when promo.ts has nothing to say
+     about this bag, what it says of an empty one: where the offer applies. */
+  const line = preorder
+    ? "Not on pre-orders. In-stock pieces only."
+    : pdpOfferStatus({ subtotal, totalItems, promoCode }, price) || pdpOfferStatus({ subtotal: 0, totalItems: 0 }, price);
+  const bagHasPieces = totalItems > 0;
 
   return (
-    <section
-      data-offer-ladder
-      data-state={Math.min(totalItems, TOP_QUANTITY_OFFER.minQuantity)}
-      aria-label="Buy more, pay less"
-      className="mt-3"
-    >
-      <div className={`relative border border-nf-gold-deep/45 px-1 pt-[9px] ${preorder ? "pb-[7px]" : "pb-[4px]"}`}>
-        {/* On the top rule, like a fieldset's legend: no row of its own. */}
-        <p className="absolute -top-[7px] left-1/2 -translate-x-1/2 whitespace-nowrap bg-nf-ivory px-2 font-nf-label text-[11px] font-medium uppercase leading-[14px] tracking-nf-8 text-nf-gold-text">
-          {preorder ? "Not on pre-orders" : "Applied in your bag · no code"}
-        </p>
-        <ul className="grid grid-cols-3">
-          {QUANTITY_OFFERS.map((offer, i) => {
-            const reached = !preorder && totalItems >= offer.minQuantity;
-            const isCurrent = reached && offer.code === current?.code;
-            const passed = reached && !isCurrent;
-            return (
-              <li
-                key={offer.code}
-                data-rung={offer.minQuantity}
-                data-reached={reached ? "" : undefined}
-                data-current={isCurrent ? "" : undefined}
-                className={`relative min-w-0 px-0.5 text-center min-[310px]:px-1 ${preorder ? "" : "pb-[3px]"} ${i > 0 ? "border-l border-nf-gold-deep/25" : ""}`}
-              >
-                <p className="flex flex-col items-center whitespace-nowrap min-[310px]:h-[22px] min-[310px]:flex-row min-[310px]:items-baseline min-[310px]:justify-center min-[310px]:gap-1.5">
-                  <span className={`font-nf-label text-[11px] font-medium uppercase leading-[14px] tracking-nf-8 ${passed ? "text-nf-ink/65" : "text-nf-gold-text"}`}>
-                    Buy {offer.minQuantity}
-                  </span>
-                  <span
-                    className={`font-nf-editorial text-[23px] font-medium leading-[22px] lining-nums tabular-nums transition-colors duration-300 motion-reduce:transition-none ${
-                      isCurrent ? "text-nf-gold-text" : passed ? "text-nf-ink/65" : "text-nf-ink"
-                    }`}
-                  >
-                    {pct(offer.rate)}
-                    {/* "off" fits beside the rate from 350px (every common
-                        phone); a narrower one still hears it. */}
-                    <span className="sr-only font-nf-label text-[11.5px] font-normal leading-none tracking-normal text-nf-ink/70 min-[350px]:not-sr-only"> off</span>
-                  </span>
-                </p>
-                {!preorder && (
-                  /* A fixed height: the figure and the pre-order note take the
-                     same room, or picking a pre-order size moves the sizes. */
-                  <p className={`h-4 whitespace-nowrap leading-4 ${passed ? "text-nf-ink/65" : "text-nf-ink"}`}>
-                    <span className="text-[12.5px] font-medium tabular-nums min-[310px]:text-[13.5px]">{rupees(pieceAtRung(price, offer))}</span>
-                    <span className="font-nf-label text-[11px] text-nf-ink/65 min-[310px]:text-[11.5px]"> each</span>
-                  </p>
-                )}
-                {isCurrent && (
-                  <>
-                    <span className="sr-only">, in your bag</span>
-                    {/* The reached rung's rule, in the column's own foot: inside
-                        the list, so the buy bar never covers it. */}
-                    <span aria-hidden="true" data-rung-rule className="absolute inset-x-2 bottom-0 h-[2px] bg-nf-gold-deep" />
-                  </>
-                )}
-              </li>
-            );
-          })}
-        </ul>
-        {preorder && (
-          <p className="h-4 text-center font-nf-label text-[11.5px] leading-4 text-nf-ink/70">In-stock pieces only</p>
-        )}
+    <CleanFact label="Offer">
+      <div data-offer-ladder data-state={Math.min(totalItems, TOP_QUANTITY_OFFER.minQuantity)} role="group" aria-label="Buy more, pay less">
+        {/* Under 360px three columns are 68px each and "Buy 2 · 10%" is as
+            wide, so the rungs ran into one another ("10%Buy 3"). There each
+            rung is a line of its own: its name, then its price. */}
+        <CleanRungs
+          offers={QUANTITY_OFFERS}
+          totalItems={totalItems}
+          muted={preorder}
+          each={preorder ? undefined : (offer) => `${rupees(pieceAtRung(price, offer))} each`}
+          className="max-[359px]:!grid-flow-row max-[359px]:[&>li]:flex max-[359px]:[&>li]:gap-3"
+        />
+        {/* Always in the page, so a screen reader hears each new state. View
+            bag floats at the right of the first line and the sentence runs
+            round it, so on a 360px phone the longest sentence is two lines,
+            never three; the line holds two lines' room while the bag has
+            pieces. */}
+        <div aria-live="polite" className={`flow-root ${bagHasPieces ? "min-h-[40px]" : ""}`}>
+          {bagHasPieces && !preorder && (
+            <button type="button" onClick={() => setDrawerOpen(true)} className="nc-small nc-link nc-link--ink nc-tap float-right ml-3">
+              View bag
+            </button>
+          )}
+          <p key={line} className="nc-small">
+            {line}
+          </p>
+        </div>
       </div>
-      {/* Always in the page, so a screen reader hears each new state. View
-          bag's 44px reaches up over the panel's rule, never down onto Buy Now
-          and Add to cart 8px below. */}
-      <div aria-live="polite" className="flex items-start justify-between gap-3">
-        {status && (
-          <>
-            <p key={status} className="mt-1.5 min-w-0 animate-in fade-in-0 font-nf-label text-[11.5px] leading-[16px] text-nf-ink/75 duration-150 motion-reduce:animate-none">
-              {status}
-            </p>
-            {totalItems > 0 && (
-              <button
-                type="button"
-                onClick={() => setDrawerOpen(true)}
-                className="-mb-[6px] -mr-2 -mt-[16px] inline-flex min-h-[44px] shrink-0 items-end px-2 pb-[6px] font-nf-label text-[11px] leading-[16px] text-nf-ink underline decoration-nf-gold underline-offset-4"
-              >
-                View bag
-              </button>
-            )}
-          </>
-        )}
-      </div>
-    </section>
+    </CleanFact>
   );
 };
 

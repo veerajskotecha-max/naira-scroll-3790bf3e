@@ -18,6 +18,7 @@ import {
   type Review,
 } from "@/data/reviewWall";
 import { reviewThumb } from "@/data/reviewThumbs";
+import PdpReviews from "@/components/pdp/PdpReviews";
 
 
 /* 1★ and 2★ used to be unreachable. Baymard found 53% of test subjects
@@ -42,10 +43,15 @@ interface CustomerReviewsProps {
   /** Drives the product's own numbered one-line reviews. */
   productName?: string;
   variant?: "apparel" | "jewellery";
+  /** "clean" is the product page's list (components/pdp/PdpReviews): only the
+      photographed reviews and the approved ones submitted for the product, in
+      the clean system. Without it this is the list the outfit page has
+      always shown, unchanged. */
+  look?: "clean";
 }
 
 
-const CustomerReviews = ({ productName, variant = "apparel" }: CustomerReviewsProps = {}) => {
+const ClassicReviews = ({ productName, variant = "apparel" }: CustomerReviewsProps = {}) => {
   const isJewellery = variant === "jewellery";
   const basePhotos = isJewellery ? jewelleryPhotos : customerPhotos;
   const [activeFilter, setActiveFilter] = useState("All Reviews");
@@ -416,5 +422,8 @@ const CustomerReviews = ({ productName, variant = "apparel" }: CustomerReviewsPr
     </section>
   );
 };
+
+const CustomerReviews = ({ look, ...props }: CustomerReviewsProps = {}) =>
+  look === "clean" ? <PdpReviews productName={props.productName} variant={props.variant} /> : <ClassicReviews {...props} />;
 
 export default CustomerReviews;

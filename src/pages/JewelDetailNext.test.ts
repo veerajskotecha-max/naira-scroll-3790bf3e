@@ -6,6 +6,12 @@ import { resolve } from "path";
   The redesigned product page keeps the live page's hard-won rules (see
   JewelDetail.test.ts for the measurements behind each), and stays out of
   search while it is in preview.
+
+  20 Nov 2026: the clean redesign (src/components/clean). The rules about
+  behaviour, order, tracking and search are unchanged below; the ones that
+  pinned the old look now pin the new one: a QUALITY row for the badges, four
+  dropdowns for the three fold-downs, the shop's own rating for the bundled
+  review count, and nothing invented (no sold count, no "someone bought" card).
 */
 const src = readFileSync(resolve(__dirname, "JewelDetailNext.tsx"), "utf8");
 const code = src.replace(/\/\*[\s\S]*?\*\//g, "").replace(/\/\/.*$/gm, "").replace(/\{\s*\}/g, "{}");
@@ -31,6 +37,16 @@ describe("redesigned product page", () => {
     /* ...nor over the offer's rungs while they are fully on screen. */
     expect(effect).toMatch(/querySelector\("\[data-offer-ladder\] ul"\)/);
     expect(effect).toMatch(/const offerClear = !rungs \|\| rungs\.bottom > window\.innerHeight \|\| rungs\.bottom < window\.innerHeight - barHeight/);
+    /* 20 Nov 2026: the offer became a row of the table, and the gap between
+       the rungs' foot and the button's grew past the bar's own height. On a
+       360x640 phone the bar left for the rungs, came back for 40px of scroll
+       and left again as the button arrived: on, off, on, off in the first
+       180px. A bar that is away stays away while the button is already
+       coming in at the bottom edge; one that is up stays up, as before. */
+    expect(effect).toMatch(/const arriving = r\.top < window\.innerHeight && r\.bottom > window\.innerHeight/);
+    expect(effect).toMatch(/offerClear && !\(arriving && barShown\.current === false\)/);
+    expect(effect).toMatch(/barShown\.current = next/);
+    expect(code).toMatch(/barShown\.current = null;\s*const check = /);
     /* The observer used to call check() from its own callback, so the bar's
        state was written inside the browser's layout pass. When the size guide's
        chart changed the page height, Chromium threw "ResizeObserver loop
@@ -44,11 +60,19 @@ describe("redesigned product page", () => {
     expect(observer).toMatch(/check\(\)/);
   });
 
-  it("shows the rating only with its count", () => {
-    const block = code.match(/\{rating && \([\s\S]*?\)\}/)![0];
-    expect(block).toMatch(/rating\.rating/);
-    expect(block).toMatch(/rating\.count/);
-    expect(code).toMatch(/href="#customer-reviews"/);
+  /* The head used to say "4.9 · 50 reviews" on every piece: the average and
+     count of one bundled list, most of it dealt to each product by a hash of
+     its name. It now carries the shop's own figures (lib/trust), the ones the
+     bag shows, and still jumps to the reviews. */
+  it("shows the shop's own rating and client count in the head, not a bundled review count", () => {
+    expect(code).toMatch(/import \{ SHOP_RATING, clientsLabel \} from "@\/lib\/trust"/);
+    const link = code.match(/<a\s+href="#customer-reviews"[\s\S]*?<\/a>/)![0];
+    expect(link).toMatch(/\{SHOP_RATING\}/);
+    expect(link).toMatch(/\{clientsLabel\} clients/);
+    expect(link).toMatch(/aria-label=\{`Rated \$\{SHOP_RATING\} out of 5\. Trusted by \$\{clientsLabel\} clients\. Jump to reviews\.`\}/);
+    expect(code).not.toMatch(/reviewSummary|reviewWall|rating\.count/);
+    /* The embedded piece keeps its shape; the rating it carried is gone. */
+    expect(code).toMatch(/JSON\.stringify\(\{ piece, rating: null \}\)/);
   });
 
   it("chooses ring size with buttons", () => {
@@ -68,16 +92,40 @@ describe("redesigned product page", () => {
     expect(details).toBeGreaterThan(actions);
     expect(code).not.toMatch(/id="product-facts"/);
     expect(code).not.toMatch(/role="tablist"/);
-    expect(code.match(/<details className="group/g)?.length).toBe(3);
+  });
+
+  /* The owner, 20 Nov 2026: "see how to put drop downs and remove clutter".
+     Four native <details> rows (CleanDropdown), named and ordered as the spec
+     has them; the paragraph that sells the piece is open, the rest closed.
+     Every panel stays in the page, so all of it is in the HTML. */
+  it("folds the rest into four dropdowns, the description open", () => {
+    const rows = [...code.matchAll(/<CleanDropdown title="([^"]+)" id="([^"]+)"( defaultOpen)?>/g)].map((m) => [m[1], m[2], Boolean(m[3])]);
+    expect(rows).toEqual([
+      ["Description", "pdp-panel-description", true],
+      ["Details and size", "pdp-panel-details", false],
+      ["Care and plating", "pdp-panel-care", false],
+      ["Delivery and returns", "pdp-panel-delivery", false],
+    ]);
+    expect(code.match(/<CleanDropdown\s/g)).toHaveLength(4);
+    expect(code.match(/<CleanDropdowns\s/g)).toHaveLength(1);
+    expect(code).not.toMatch(/<details/);
+    /* The description leads with the piece's own paragraph. */
+    const description = code.slice(code.indexOf('id="pdp-panel-description"'), code.indexOf('id="pdp-panel-details"'));
+    expect(description).toMatch(/\{piece\.blurb\}/);
+    expect(description).toMatch(/\{piece\.stylingTip && <p>\{piece\.stylingTip\}<\/p>\}/);
   });
 
   /* The owner (2 Nov 2026): the offer under the price and the badges. Once,
      before the choices and Add to cart, priced from the chosen variant; a
      piece sold out altogether is reserved on WhatsApp, outside the bag. */
-  it("puts the buy-more offer under the price and badges, before the choices and Add to cart", () => {
+  it("puts the buy-more offer under the price and qualities, before the choices and Add to cart", () => {
     const offer = code.indexOf("<PdpOfferLadder");
-    expect(offer).toBeGreaterThan(code.indexOf('aria-label="Made to last"'));
-    expect(offer).toBeGreaterThan(code.indexOf("pieces sold in the last 48 hours"));
+    expect(offer).toBeGreaterThan(code.indexOf('id="product-price"'));
+    expect(offer).toBeGreaterThan(code.indexOf("<CleanDots"));
+    /* The qualities and the offer are two rows of one table. */
+    const table = code.slice(code.indexOf("<CleanFacts"), code.indexOf("</CleanFacts>"));
+    expect(table).toMatch(/<CleanFact label="Quality">/);
+    expect(table).toContain("<PdpOfferLadder");
     expect(offer).toBeLessThan(code.indexOf("choices(piece).map"));
     expect(offer).toBeLessThan(code.indexOf('id="product-actions"'));
     expect(code.match(/<PdpOfferLadder/g)).toHaveLength(1);
@@ -157,14 +205,71 @@ describe("redesigned product page", () => {
     expect(code).toMatch(/const toReviews = [\s\S]*?e\.preventDefault\(\);[\s\S]*?scrollIntoView/);
   });
 
-  it("badges anti-tarnish, skin-friendly and the piece's own plating under the price, before Add to cart", () => {
-    const badges = code.indexOf('aria-label="Made to last"');
-    expect(badges).toBeGreaterThan(code.indexOf('id="product-price"'));
-    expect(badges).toBeLessThan(code.indexOf('id="product-actions"'));
-    const row = code.slice(badges, badges + 900);
-    expect(row).toMatch(/"Anti-tarnish"/);
-    expect(row).toMatch(/"Skin-friendly"/);
-    expect(row).toMatch(/platingBadge\(finish\)/);
+  /* Three bordered badges with icons became one row of plain words: the same
+     values, in the same order, with the stone only where the listing has one. */
+  it("says anti-tarnish, skin-friendly and the piece's own plating in the QUALITY row under the price, before Add to cart", () => {
+    const quality = code.indexOf("<CleanDots");
+    expect(quality).toBeGreaterThan(code.indexOf('id="product-price"'));
+    expect(quality).toBeLessThan(code.indexOf('id="product-actions"'));
+    expect(code.slice(quality - 80, quality)).toMatch(/<CleanFact label="Quality">/);
+    const row = code.slice(quality, quality + 300);
+    expect(row).toMatch(/items=\{\["Anti-tarnish", "Skin-friendly", platingBadge\(finish\), hasZirconeStone\(piece\) && "Zircone Stone"\]\}/);
+    expect(code).not.toMatch(/aria-label="Made to last"/);
+  });
+
+  /* What the code map showed to be made up is not carried into the new page:
+     the "sold in the last 48 hours" count is a number from the handle's
+     letters (lib/dailySold), the "someone bought" card picks names, cities and
+     minutes at random (FomoPopup). */
+  it("carries nothing invented: no sold count, no bought card", () => {
+    expect(src).not.toMatch(/pieces sold in the last 48 hours/);
+    expect(code).not.toMatch(/recentSoldCount|dailySold/);
+    expect(code).not.toMatch(/FomoPopup/);
+    expect(code).not.toMatch(/sold in the last|bought the/i);
+  });
+
+  /* The preview's title switch is CSS only; these are its hooks. */
+  it("marks the title and the eyebrow for the preview's title switch", () => {
+    expect(code).toMatch(/<h1 data-pdp="title" className="nc-title[^"]*">\s*\{piece\.name\}\s*<\/h1>/);
+    expect(code.match(/<h1[\s>]/g)).toHaveLength(1);
+    expect(code).toMatch(/<Link to="\/jewellery" data-pdp="eyebrow" className="nc-label nc-label--gold nc-tap">\s*\{piece\.category\}\s*<\/Link>/);
+  });
+
+  /* The wishlist heart sits beside the name; nothing is laid over the phone's
+     photo, and the laptop's grid keeps only "+N photos". */
+  it("lays nothing over the photographs but the count of more", () => {
+    const phone = code.slice(code.indexOf("const MobileGallery"), code.indexOf("const DesktopGallery"));
+    expect(phone).not.toMatch(/\babsolute\b/);
+    expect(phone).toMatch(/className="nc-segs"/);
+    const laptop = code.slice(code.indexOf("const DesktopGallery"), code.indexOf("const sizeGuideLink"));
+    expect(laptop.match(/\babsolute\b/g)).toHaveLength(1);
+    expect(laptop).toMatch(/\+\{more\} \{more === 1 \? "photo" : "photos"\}/);
+    expect(code.match(/onClick=\{handleWishlist\}/g)).toHaveLength(1);
+  });
+
+  /* One pair of buttons in the page, the same pair in the phone's bar; no
+     payment discs in either, and the bar's first watcher is a direct child of
+     #product-actions. */
+  it("keeps the buttons as #product-actions' own children, with the delivery line under them", () => {
+    const actions = code.slice(code.indexOf('id="product-actions"'), code.indexOf("<CleanDropdowns"));
+    expect(actions).toMatch(/\{buying \? "Opening checkout…" : "Buy Now"\}/);
+    expect(actions).toMatch(/\{isPreorder \? "Reserve now" : "Add to cart"\}/);
+    expect(actions).toMatch(/`\$\{SOLD_OUT_LEAD\}, gift-boxed`/);
+    expect(code).toMatch(/\["Free insured shipping", !isPreorder && arrivesBy \? `Arrives \$\{arrivesBy\}` : null, "Gift-boxed"\]/);
+    expect(actions).not.toMatch(/<div/);
+  });
+
+  /* Type and colour come from the clean system's classes and tokens and from
+     nowhere else (SPEC section 2); Tailwind is for layout. The swatch list,
+     which pictures metals and stones, is the one place a raw colour stays. */
+  it("draws its type and colour from the clean system only", () => {
+    expect(code).toMatch(/<div className="nf-clean min-h-screen">\s*<CleanStyles \/>/);
+    for (const banned of [/font-cormorant/, /font-nf-/, /text-nf-/, /bg-nf-/, /border-nf-/, /\btracking-/, /\btext-\[/, /--nf-/, /UpiBadges/, /\brounded/, /\bshadow-/, /backdrop-blur/, /\bfont-(?:light|normal|medium|semibold|bold)\b/, /\bitalic\b/, /\buppercase\b/]) {
+      expect(code).not.toMatch(banned);
+    }
+    const hexes = code.replace(/const SWATCHES[\s\S]*?\];/, "").match(/#[0-9a-fA-F]{3,8}\b/g) ?? [];
+    expect(hexes).toEqual([]);
+    expect(code).not.toMatch(/@\/components\/ui\/button/);
   });
 });
 
@@ -213,7 +318,7 @@ describe("stock on the product page and reel cards", () => {
   it("says one lead time for a piece it cannot ship now", () => {
     expect(code).toMatch(/const leadTime = preorderLead\(\{ soldOut, variantSoldOut, sizePreorder, size: selectedSize \}\);/);
     expect(code).toMatch(/\{leadTime \? `\$\{leadTime\} ` : arrivesBy \? `Order today and it arrives by \$\{arrivesBy\}\. `/);
-    expect(code).toMatch(/<PincodeChecker preorder=\{isPreorder\} \/>/);
+    expect(code).toMatch(/<PincodeChecker preorder=\{isPreorder\} look="clean" \/>/);
     expect(code).not.toMatch(/45 days|within 2 weeks/);
   });
 });

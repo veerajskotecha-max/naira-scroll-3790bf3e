@@ -1,7 +1,7 @@
 import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState, type MouseEvent } from "react";
 import { Link, Navigate, useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
-import { ArrowLeft, Gem, Gift, Heart, Leaf, MessageSquare, Plus, Sparkles } from "lucide-react";
+import { ArrowLeft, Heart } from "lucide-react";
 import JsonLd from "@/components/JsonLd";
 import Footer from "@/components/Footer";
 import PincodeChecker from "@/components/product/PincodeChecker";
@@ -9,13 +9,13 @@ import { cardCover } from "@/lib/cardCover";
 import { galleryAlt } from "@/lib/galleryAlt";
 import { onRadioGroupKeyDown, rovingTabIndex } from "@/lib/radioGroup";
 import { ImageLightbox } from "@/components/ui/image-lightbox";
-import { AtelierSkeleton } from "@/components/ui/atelier-skeleton";
 import RingSizeGuideModal from "@/components/jewellery/RingSizeGuideModal";
 import RingSizeGuide from "@/components/jewellery/RingSizeGuide";
-import { Button } from "@/components/ui/button";
 import PressMarquee from "@/components/jewellery/PressMarquee";
 import PdpOfferLadder from "@/components/jewellery/PdpOfferLadder";
 import { discountPercent } from "@/components/jewellery/JewelPriceTag";
+import { CleanDots, CleanDropdown, CleanDropdowns, CleanFact, CleanFacts, CleanPrice, CleanStyles, cleanButton, percent } from "@/components/clean";
+import PdpStyles from "@/components/pdp/PdpStyles";
 import { useQuery } from "@tanstack/react-query";
 import { fromShopify, useLiveJewellery } from "@/hooks/useLiveJewellery";
 import { fetchShopifyProductByHandle } from "@/lib/shopify";
@@ -37,34 +37,43 @@ import { completeTheLook, isSetRow, moreLikeThis } from "@/lib/pairings";
 import { buyableValues, cartLineFor, choiceNeeded, choices, choose, findVariant, oneTapVariant, sizeOption, variantLabel } from "@/lib/variants";
 import { colourFromParam, colourOfVariant, colourOption, openingChoice, variantChoice, variantPhoto } from "@/lib/colourCards";
 import { useBackToClose } from "@/hooks/useBackToClose";
-import { recentSoldCount } from "@/lib/dailySold";
 import { coatingOf, hasZirconeStone, presentJewellery, stoneOf } from "@/lib/jewelleryPresentation";
 import { reportShopperPerformance } from "@/lib/shopperPerformance";
 import { QUANTITY_OFFERS } from "@/lib/promo";
 import { clipText, fitTitle } from "@/lib/clipText";
-import UpiBadges from "@/components/checkout/UpiBadges";
 import { GST_LABEL } from "@/lib/gst";
+import { SHOP_RATING, clientsLabel } from "@/lib/trust";
 
 /*
   The product page, at /jewellery/<handle> (and at /preview/jewellery/<handle>,
   kept out of search). It replaced JewelDetail.tsx, kept for now so the switch
   can be undone in one line in App.tsx.
 
-  Same data, prices, cart and checkout as before. Set
-  against Nishorama, Bluorng, Project Shades, Palmonas and GIVA, it keeps the
-  first screen to what a decision needs and folds the rest away, the way
-  Nishorama does:
+  Same data, prices, offers, cart, checkout and tracking as before. The look is
+  the clean system the bag is drawn from too (src/components/clean, the
+  owner, 20 Nov 2026: "cleaner and elegant and simpler ... drop downs and
+  remove clutter without making things different"): one face (Jost), six
+  colours with gold as the only hue, one hairline, no boxes, shadows or
+  rounded corners. Type and colour here come only from the `nc-` classes and
+  `--nc-` tokens; Tailwind is for layout.
 
-    photo (and the reel the piece is in) → name and price → anti-tarnish,
-    skin-friendly and its plating, as Palmonas badges them → ring size (rings
-    only) → Add to cart → the gift box line → Details / Care / Delivery &
-    returns, closed until asked for → complete the look → reviews → press →
-    reels → more of the category.
+    photo, nothing laid over it, a 2px line showing which one → category and
+    the shop's rating → name and the wishlist heart → price, MRP, saving and
+    the tax note → one quiet table: QUALITY (anti-tarnish, skin-friendly, its
+    plating) and OFFER (Buy 2 / 3 / 4 priced for this piece) → metal, stone or
+    size → Buy Now and Add to cart → delivery in one line → four dropdowns
+    (Description open; Details and size, Care and plating, Delivery and
+    returns closed) → complete the look → reviews → press → reels → more of
+    the category.
 
-  Colours are Naira's (ivory ground, ink, gold detail, deep-sage buttons); the
-  html.nf-next class swaps the stock blue-grey palette the shared components
-  draw from for the brand one, dialogs included. Small text is held to 4.5:1
-  or better.
+  Not carried over, because the code showed them to be made up: the "pieces
+  sold in the last 48 hours" count (a number from the handle's letters), the
+  "someone bought" card (random names and cities) and the "4.9 · 50 reviews"
+  figure (one bundled list dealt to every piece). The head now carries the
+  shop's own rating and client count (lib/trust).
+
+  The html.nf-next class still swaps the stock blue-grey palette the shared
+  dialogs and toasts draw from for the brand one.
 
   Outside /preview/ it indexes, links to the product pages and carries the
   structured data and the embedded piece the pre-built page is drawn from.
@@ -73,7 +82,6 @@ import { GST_LABEL } from "@/lib/gst";
 const CustomerReviews = lazy(() => import("@/components/CustomerReviews"));
 const ReelShopNext = lazy(() => import("@/components/reels/ReelShopNext"));
 const GalleryReel = lazy(() => import("@/components/reels/GalleryReel"));
-const FomoPopup = lazy(() => import("@/components/FomoPopup"));
 
 /* Square: 15 of the 16 hero photos are 1:1, and it keeps the name and price
    above the fold on a 390px phone (see JewelDetail.tsx). */
@@ -81,21 +89,11 @@ const MOBILE_FRAME = "1/1";
 /* A transparent 1×1 GIF: what a screen gets from a <picture> whose source is not for it. */
 const BLANK_PIXEL = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
 const PRICE_VALID_UNTIL = new Date(Date.now() + 365 * 864e5).toISOString().slice(0, 10);
-const inr = (n: number) => `₹${Math.round(n).toLocaleString("en-IN")}`;
 
-/* The badges under the price. Every piece is sealed anti-tarnish over a
+/* The QUALITY row under the price. Every piece is sealed anti-tarnish over a
    hypoallergenic, nickel-free base (the anti-tarnish collection and the Care
    answers say the same); the plating is the piece's own. */
 const platingBadge = (finish: string) => finish;
-
-/* A gold bar with a glint, drawn like the lucide icons around it. */
-const Ingot = () => (
-  <svg width={11} height={11} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round">
-    <path d="M4.5 19h15l-2.8-7.5H7.3L4.5 19Z" />
-    <path d="M8.6 15.3h6.8" />
-    <path d="M12 8.6V5.6M8.5 9.4 7.1 7.3M15.5 9.4l1.4-2.1" />
-  </svg>
-);
 
 /* "Length: 15-19cm adjustable links" → { label: "Length", value: "15–19 cm adjustable links" }. */
 const tidy = (value: string) =>
@@ -129,8 +127,11 @@ const ringSizes: { value: string; status: "available" | "preorder" }[] = [
 const ringSizesFor = (piece: JewelPiece) =>
   isAdjustableRing(piece) ? adjustableSizes(piece.handle).map((value) => ({ value, status: "available" as const })) : ringSizes;
 
+/* The one tint, behind every photograph and in the loading shapes. */
+const linen = "bg-[var(--nc-linen)]";
 const JewelDetailSkeleton = () => (
-  <div className="min-h-screen bg-nf-ivory">
+  <div className="nf-clean min-h-screen">
+    <CleanStyles />
     <Helmet>
       <title>Loading piece | Naira Flore</title>
       <meta name="robots" content="noindex" />
@@ -138,12 +139,12 @@ const JewelDetailSkeleton = () => (
     <span className="sr-only" role="status">Loading piece</span>
     <div className="mx-auto max-w-[1400px] pb-16 pt-[107px] md:px-6 md:pt-[126px]" aria-hidden="true">
       <div className="flex flex-col lg:grid lg:items-start lg:gap-0" style={{ gridTemplateColumns: "1fr 1fr" }}>
-        <AtelierSkeleton className="w-full" style={{ aspectRatio: MOBILE_FRAME }} />
+        <div className={`w-full ${linen}`} style={{ aspectRatio: MOBILE_FRAME }} />
         <div className="mt-6 px-4 lg:mt-0 lg:px-10">
-          <AtelierSkeleton className="h-8 w-4/5" />
-          <AtelierSkeleton className="mt-4 h-6 w-1/3" />
-          <AtelierSkeleton className="mt-3 h-3 w-3/5" />
-          <AtelierSkeleton className="mt-8 h-12 w-full" />
+          <div className={`h-8 w-4/5 ${linen}`} />
+          <div className={`mt-4 h-6 w-1/3 ${linen}`} />
+          <div className={`mt-3 h-3 w-3/5 ${linen}`} />
+          <div className={`mt-8 h-12 w-full ${linen}`} />
         </div>
       </div>
     </div>
@@ -161,13 +162,6 @@ const readEmbeddedPiece = (handle?: string): EmbeddedPiece | null => {
     return null;
   }
 };
-type ReviewWall = typeof import("@/data/reviewWall");
-
-const label = "font-nf-label text-[9.5px] uppercase tracking-nf-24 text-nf-gold-text";
-/* A fold-down's row, and its plus, which turns to a cross when open. */
-const fold =
-  "flex min-h-[50px] cursor-pointer list-none items-center justify-between font-nf-label text-[10px] uppercase tracking-nf-16 text-nf-ink [&::-webkit-details-marker]:hidden";
-const foldMark = "shrink-0 text-nf-ink/70 transition-transform duration-200 group-open:rotate-45";
 
 /* A small square of the metal or stone beside its name. These picture the
    pieces themselves (a ruby, an emerald), not the brand's palette. */
@@ -210,6 +204,7 @@ const PairingCard = ({ piece, href, compact = false, prefer }: { piece: JewelPie
   /* The page opens on the colour the card shows, not the piece's first. */
   const colour = variant ? variant.options[colourOption(piece)?.name ?? ""] : undefined;
   const to = colour ? `${href}${href.includes("?") ? "&" : "?"}colour=${encodeURIComponent(colour.toLowerCase())}` : href;
+  const price = variant ? `₹${variant.price.toLocaleString("en-IN")}` : piece.priceLabel;
   const add = async () => {
     setAdding(true);
     setDrawerOpen(true);
@@ -223,9 +218,13 @@ const PairingCard = ({ piece, href, compact = false, prefer }: { piece: JewelPie
       setAdding(false);
     }
   };
+  /* A card's button: the small outline button, fitted to a third of a phone
+     (pdp.css): "Choose size" stays on one line at 360px, and "Choose month",
+     wider than the card, may take two. */
+  const action = `${cleanButton({ size: "sm", block: true })} pdp-cardbtn mt-2`;
   return (
-    <article className="flex min-w-0 flex-col" data-variant={variant ? variantLabel(variant) : undefined}>
-      <Link to={to} className="block aspect-square overflow-hidden bg-nf-ivory-deep">
+    <article className="flex h-full min-w-0 flex-col" data-variant={variant ? variantLabel(variant) : undefined}>
+      <Link to={to} className={`block aspect-square overflow-hidden ${linen}`}>
         <img
           src={shopifyImage(image, 360)}
           srcSet={shopifySrcSet(image, [240, 360, 480]) || undefined}
@@ -242,20 +241,24 @@ const PairingCard = ({ piece, href, compact = false, prefer }: { piece: JewelPie
           taken back from the margins, so nothing below moves. The clamp sits
           inside: a clamped box clips at its padding edge, so padding on it
           showed the top of a third line over the price. */}
-      <Link to={to} className="-mb-[5px] mt-[3px] block min-h-[44px] py-[5px] font-cormorant text-[13px] leading-[1.2] text-nf-ink">
+      <Link to={to} className="nc-small nc-small--ink -mb-[5px] mt-[3px] block min-h-[44px] py-[5px]">
         <span className="line-clamp-2">{piece.name}</span>
+        {/* A card without a button has nothing to line up below it: its
+            price sits right under the name, inside the same link, where the
+            room kept for a second line used to leave a blank one. */}
+        {!compact && <span className="nc-small block">{price}</span>}
       </Link>
-      <p className="mt-0.5 text-[12px] text-nf-ink/75">
-        {variant ? `₹${variant.price.toLocaleString("en-IN")}` : piece.priceLabel}
-        {variant && !need && <span className="text-nf-ink/60"> · {variantLabel(variant)}</span>}
-      </p>
+      {/* With a button: pushed to the card's foot, so prices and buttons line
+          up across the row whether a name takes one line or two. */}
+      {compact && (
+        <p className="nc-small mt-auto pt-0.5">
+          {price}
+          {variant && !need && <span> · {variantLabel(variant)}</span>}
+        </p>
+      )}
       {compact &&
         (need ? (
-          <Link
-            to={to}
-            aria-label={`Choose a ${need} for ${piece.name}`}
-            className="press-scale mt-2 flex h-11 w-full items-center justify-center border border-[var(--nf-cta)] font-nf-label text-[10px] uppercase tracking-nf-16 text-[var(--nf-cta)] transition-colors hover:bg-[var(--nf-cta)] hover:text-nf-ivory"
-          >
+          <Link to={to} aria-label={`Choose a ${need} for ${piece.name}`} className={action}>
             Choose {need}
           </Link>
         ) : (
@@ -264,7 +267,7 @@ const PairingCard = ({ piece, href, compact = false, prefer }: { piece: JewelPie
             onClick={add}
             disabled={adding || isLoading}
             aria-label={`Add ${piece.name}${variant ? ` in ${variantLabel(variant)}` : ""} to bag`}
-            className="press-scale mt-2 h-11 w-full border border-[var(--nf-cta)] font-nf-label text-[10px] uppercase tracking-nf-16 text-[var(--nf-cta)] transition-colors hover:bg-[var(--nf-cta)] hover:text-nf-ivory disabled:opacity-60"
+            className={action}
           >
             {adding ? "Adding…" : "Add"}
           </button>
@@ -331,7 +334,7 @@ const JewelDetailNext = () => {
   }, [piece, lookupMissing, catalogueLoading, snapshotPending, lookup.isLoading, isLive, handle]);
   const isMobile = useIsMobile();
   const { toggleItem, isWishlisted } = useWishlist();
-  const { addItem, buyNow, setDrawerOpen, isDrawerOpen, isLoading: cartLoading } = useCart();
+  const { addItem, buyNow, setDrawerOpen, isLoading: cartLoading } = useCart();
   const [buying, setBuying] = useState(false);
 
   /* Naira's palette for everything on screen while this page is open,
@@ -361,22 +364,6 @@ const JewelDetailNext = () => {
 
   const [selectedSize, setSelectedSize] = useState<string>("One Size");
   const sizedCategory = piece?.category === "Rings";
-  const [reviewWall, setReviewWall] = useState<ReviewWall | null>(null);
-  useEffect(() => {
-    let cancelled = false;
-    import("@/data/reviewWall")
-      .then((module) => !cancelled && setReviewWall(module))
-      .catch(() => {});
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-  const pieceName = piece?.name;
-  const rating = useMemo(() => {
-    if (!pieceName) return null;
-    if (reviewWall) return reviewWall.reviewSummary(pieceName, "jewellery");
-    return embedded?.piece.name === pieceName ? embedded.rating : null;
-  }, [pieceName, reviewWall, embedded]);
   useEffect(() => {
     setSelectedSize(sizedCategory ? "6" : "One Size");
   }, [sizedCategory, piece?.handle]);
@@ -486,8 +473,18 @@ const JewelDetailNext = () => {
      rung's gold rule included: drawn on the panel's foot 8px below the list,
      that rule sat under the bar on a 390x844 phone while the list counted as
      clear. Rungs reaching past the screen's edge do not hold it back (an
-     Instagram-sized screen keeps its bar). */
+     Instagram-sized screen keeps its bar).
+     And once it has stepped away it does not come back for the last few
+     pixels before the button it stands for: with the offer now a row of the
+     table, 104px lie between the rungs' foot and the button's (it was 63),
+     more than the bar's 65, so on a 360x640 phone the bar left for the rungs,
+     slid back in for 40px of scroll and left again as Add to cart came fully
+     into view. While the button is already arriving at the bottom edge, a bar
+     that is away stays away. A bar that is up (the page opened with the
+     button cut by the edge) stays up until the button is whole, as before. */
+  const barShown = useRef<boolean | null>(null);
   useEffect(() => {
+    barShown.current = null;
     const check = () => {
       const target = document.querySelector("#product-actions > button");
       if (!target) return;
@@ -498,7 +495,9 @@ const JewelDetailNext = () => {
       const priceClear = !price || price.getBoundingClientRect().bottom < window.innerHeight - barHeight;
       const rungs = document.querySelector("[data-offer-ladder] ul")?.getBoundingClientRect();
       const offerClear = !rungs || rungs.bottom > window.innerHeight || rungs.bottom < window.innerHeight - barHeight;
-      const next = notFullyShown && priceClear && offerClear;
+      const arriving = r.top < window.innerHeight && r.bottom > window.innerHeight;
+      const next = notFullyShown && priceClear && offerClear && !(arriving && barShown.current === false);
+      barShown.current = next;
       /* Writing the same value back keeps React from rendering at all, so a
          reflow that changed nothing cannot ask for another layout pass. */
       setStickyBarVisible((cur) => (cur === next ? cur : next));
@@ -583,7 +582,6 @@ const JewelDetailNext = () => {
   const soldOut = piece.availableForSale === false;
   const isRing = piece.category === "Rings";
   const finish = coatingOf(piece);
-  const soldCount = recentSoldCount(piece.handle);
   const stone = stoneOf(piece);
   const { specs, care: listedCare } = specsOf(piece);
   /* A size Shopify sells as variants (6, 7, 8) replaces the fixed list below. */
@@ -716,21 +714,18 @@ const JewelDetailNext = () => {
   const title = fitTitle(`${piece.name} · Demi-Gold Jewellery`);
   const ogImageUrl = absoluteUrl(shopifyOgImage(piece.image));
 
+  /* One wishlist button, beside the name. It used to sit on the photo, on
+     the laptop grid and in the phone's buy bar. */
   const heart = (
     <Heart
-      size={17}
-      strokeWidth={1.6}
+      size={20}
+      strokeWidth={1.25}
+      fill={wishlisted ? "currentColor" : "none"}
       className={heartPopped ? "heart-pop" : undefined}
       onAnimationEnd={() => setHeartPopped(false)}
-      style={{
-        color: wishlisted ? "var(--nf-gold-deep)" : "var(--nf-ink)",
-        fill: wishlisted ? "var(--nf-gold-deep)" : "none",
-      }}
+      aria-hidden="true"
     />
   );
-  /* Square, like every corner on the site (tailwind.config.ts sets all radii to 0). */
-  const overlayButton =
-    "press-scale z-10 flex h-11 w-11 items-center justify-center bg-nf-ivory/75 backdrop-blur-sm";
 
   /* The first photo shares one srcset between the two galleries, so it is
      downloaded once whichever the screen shows (see JewelDetail.tsx). */
@@ -745,8 +740,11 @@ const JewelDetailNext = () => {
     return alt === `${piece.name} view ${i + 1}` ? label : `${label}: ${alt}`;
   };
 
+  /* The phone's photos: edge to edge, swiped, nothing laid over them. The 2px
+     line under them says which one is showing (the reel, when the piece is in
+     one, is its last segment). */
   const MobileGallery = (
-    <div className="relative">
+    <div>
       <div
         ref={scrollRef}
         className="scrollbar-hide flex snap-x snap-mandatory overflow-x-auto"
@@ -757,7 +755,7 @@ const JewelDetailNext = () => {
             type="button"
             key={i}
             onClick={() => openLightbox(i)}
-            className="block w-full shrink-0 cursor-zoom-in snap-center bg-nf-ivory-deep p-0"
+            className={`block w-full shrink-0 cursor-zoom-in snap-center p-0 ${linen}`}
             style={{ aspectRatio: MOBILE_FRAME, scrollSnapStop: "always" }}
             aria-label={openLabel(img, i)}
           >
@@ -779,31 +777,22 @@ const JewelDetailNext = () => {
         ))}
         {galleryReel && (
           <div
-            className="relative w-full shrink-0 snap-center bg-nf-ink"
+            className="relative w-full shrink-0 snap-center bg-[var(--nc-ink)]"
             style={{ aspectRatio: MOBILE_FRAME, scrollSnapStop: "always" }}
             aria-label={`${piece.name} in a Naira reel`}
           >
-            <Suspense fallback={<div className="h-full w-full bg-nf-ink" />}>
+            <Suspense fallback={<div className="h-full w-full bg-[var(--nc-ink)]" />}>
               <GalleryReel reel={galleryReel} active={selectedImage === images.length} />
             </Suspense>
           </div>
         )}
       </div>
-      <button type="button" onClick={handleWishlist} className={`${overlayButton} absolute right-4 top-3`} aria-label={wishlisted ? "Remove from wishlist" : "Add to wishlist"}>
-        {heart}
-      </button>
       {slideCount > 1 && (
-        <span
-          className="pointer-events-none absolute bottom-3 left-3 z-10 bg-nf-ivory/85 px-2.5 py-1 font-nf-label text-[10.5px] tabular-nums tracking-nf-8 text-nf-ink backdrop-blur-sm"
-          aria-hidden="true"
-        >
-          {selectedImage + 1} / {slideCount}
-        </span>
-      )}
-      {galleryReel && selectedImage < images.length && (
-        <span className="pointer-events-none absolute bottom-3 right-3 z-10 bg-nf-ivory/85 px-2.5 py-1 font-nf-label text-[10px] uppercase tracking-nf-16 text-nf-ink backdrop-blur-sm" aria-hidden="true">
-          ▶ Video
-        </span>
+        <div className="nc-segs" aria-hidden="true">
+          {Array.from({ length: slideCount }, (_, i) => (
+            <span key={i} data-on={i === selectedImage ? "" : undefined} />
+          ))}
+        </div>
       )}
     </div>
   );
@@ -818,65 +807,79 @@ const JewelDetailNext = () => {
     const gridClass =
       count <= 1 ? "grid grid-cols-1 grid-rows-1" : count === 2 ? "grid grid-cols-1 grid-rows-2" : "grid grid-cols-2 grid-rows-2";
     return (
-      <div className="relative h-full min-h-full w-full">
-        <div className={`${gridClass} h-full min-h-full gap-[4px]`}>
-          {unique.map((img, i) => (
-            <button
-              type="button"
-              key={img}
-              onClick={() => openLightbox(i)}
-              className={`relative block min-h-0 w-full cursor-zoom-in overflow-hidden bg-nf-ivory-deep p-0 ${count === 3 && i === 0 ? "col-span-2" : ""}`}
-              style={{ height: "100%" }}
-              aria-label={openLabel(img, i)}
-            >
-              {i === 0 ? (
+      <div className={`${gridClass} h-full min-h-full w-full gap-[4px]`}>
+        {unique.map((img, i) => (
+          <button
+            type="button"
+            key={img}
+            onClick={() => openLightbox(i)}
+            className={`relative block min-h-0 w-full cursor-zoom-in overflow-hidden p-0 ${linen} ${count === 3 && i === 0 ? "col-span-2" : ""}`}
+            style={{ height: "100%" }}
+            aria-label={openLabel(img, i)}
+          >
+            {i === 0 ? (
+              <img
+                src={shopifyImage(img, 900)}
+                srcSet={shopifySrcSet(img, HERO_WIDTHS) || undefined}
+                sizes={HERO_SIZES}
+                alt={galleryAlt(piece, img, i)}
+                className="h-full w-full object-cover transition-transform duration-700 ease-out hover:scale-[1.03]"
+                width={1000}
+                height={1000}
+                loading="eager"
+                fetchPriority="high"
+                decoding="sync"
+              />
+            ) : (
+              /* Photos two to four are on this grid only, which a phone never
+                 shows, yet phones downloaded them, lazy or not: about 300 KB
+                 on Prism Rivière (27 Oct 2026). Only a desktop-width screen
+                 picks their source; a phone gets a one-pixel blank. */
+              <picture className="contents">
+                <source media="(min-width: 768px)" srcSet={shopifySrcSet(img, [600, 800, 1000, 1400]) || shopifyImage(img, 1000)} sizes={HERO_SIZES} />
                 <img
-                  src={shopifyImage(img, 900)}
-                  srcSet={shopifySrcSet(img, HERO_WIDTHS) || undefined}
-                  sizes={HERO_SIZES}
+                  src={BLANK_PIXEL}
                   alt={galleryAlt(piece, img, i)}
                   className="h-full w-full object-cover transition-transform duration-700 ease-out hover:scale-[1.03]"
                   width={1000}
                   height={1000}
-                  loading="eager"
-                  fetchPriority="high"
-                  decoding="sync"
+                  loading="lazy"
+                  decoding="async"
                 />
-              ) : (
-                /* Photos two to four are on this grid only, which a phone never
-                   shows, yet phones downloaded them, lazy or not: about 300 KB
-                   on Prism Rivière (27 Oct 2026). Only a desktop-width screen
-                   picks their source; a phone gets a one-pixel blank. */
-                <picture className="contents">
-                  <source media="(min-width: 768px)" srcSet={shopifySrcSet(img, [600, 800, 1000, 1400]) || shopifyImage(img, 1000)} sizes={HERO_SIZES} />
-                  <img
-                    src={BLANK_PIXEL}
-                    alt={galleryAlt(piece, img, i)}
-                    className="h-full w-full object-cover transition-transform duration-700 ease-out hover:scale-[1.03]"
-                    width={1000}
-                    height={1000}
-                    loading="lazy"
-                    decoding="async"
-                  />
-                </picture>
-              )}
-              {more > 0 && i === count - 1 && (
-                <span className="absolute bottom-3 right-3 bg-nf-ivory/90 px-2.5 py-1.5 font-nf-label text-[10.5px] uppercase tracking-nf-16 text-nf-ink">
-                  +{more} {more === 1 ? "photo" : "photos"}
-                </span>
-              )}
-            </button>
-          ))}
-        </div>
-        <button type="button" onClick={handleWishlist} className={`${overlayButton} absolute right-4 top-4`} aria-label={wishlisted ? "Remove from wishlist" : "Add to wishlist"}>
-          {heart}
-        </button>
+              </picture>
+            )}
+            {/* The one mark on a photograph: that there are more of them. */}
+            {more > 0 && i === count - 1 && (
+              <span className="nc-label absolute bottom-3 right-3 bg-[var(--nc-ivory)] px-2.5 py-1.5">
+                +{more} {more === 1 ? "photo" : "photos"}
+              </span>
+            )}
+          </button>
+        ))}
       </div>
     );
   })();
 
+  /* A choice's label row: its name in the caps label, the value chosen beside
+     it, and for a ring the way to the size chart. */
+  const sizeGuideLink = (
+    <button type="button" onClick={() => setSizeGuideOpen(true)} className="nc-small nc-link nc-link--ink nc-tap shrink-0">
+      Size guide
+    </button>
+  );
+  const stockNote = "nc-small mt-2";
+  /* The delivery promise in one line under the buttons: free shipping, the
+     date a visitor is quoted (the pre-built page and a reserved piece carry
+     none), the gift box. Each fact stays whole if a narrow phone wraps it. */
+  const promise = ["Free insured shipping", !isPreorder && arrivesBy ? `Arrives ${arrivesBy}` : null, "Gift-boxed"].filter(Boolean);
+
   return (
-    <div className="min-h-screen bg-nf-ivory text-nf-ink">
+    <div>
+      {/* Everything the clean system draws. The footer is a sibling, not a
+          child: inside, it would inherit this root's face and line height. */}
+      <div className="nf-clean min-h-screen">
+      <CleanStyles />
+      <PdpStyles />
       <Helmet>
         <title>{inPreview ? `Preview · ${title}` : title}</title>
         <meta name="description" content={`${piece.name}, ${clipText(piece.blurb, 130)}`} />
@@ -911,120 +914,105 @@ const JewelDetailNext = () => {
           ],
         }}
       />
-      {/* The piece the pre-built page was made from, read by the first render (see JewelDetail.tsx). */}
+      {/* The piece the pre-built page was made from, read by the first render
+          (see JewelDetail.tsx). The shape is unchanged; the rating it used to
+          carry was the bundled review list's, which the page no longer shows. */}
       <script
         type="application/json"
         id="nf-piece"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify({ piece, rating }).replace(/</g, "\\u003c") }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify({ piece, rating: null }).replace(/</g, "\\u003c") }}
       />
 
       {/* The page's one main landmark; the footer and the phone buy bar stay outside it. */}
-      <main>
-      {/* Breadcrumb (desktop) */}
+      <main className="pb-12 lg:pb-16">
+      {/* Breadcrumb (laptop). On a short screen (1280x720) the row gives back
+          8px, so the buttons stay on the first screen in the tallest state: a
+          ring in two metals and five sizes, with pieces already in the bag. */}
       <div className="mx-auto hidden max-w-[1400px] items-center justify-between gap-4 px-6 pb-3 pt-[126px] md:flex lg:pt-[136px]">
-        <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-[11px] tracking-nf-4 text-nf-ink/70">
-          <Link to="/" className="hover:text-nf-ink">Home</Link>
-          <span>/</span>
-          <Link to="/jewellery" className="hover:text-nf-ink">Jewellery</Link>
-          <span>/</span>
-          <span className="text-nf-ink">{piece.name}</span>
+        <nav aria-label="Breadcrumb" className="nc-small flex items-center gap-2 pt-2 [@media(max-height:760px)]:pt-0">
+          <Link to="/" className="nc-tap -mx-1.5 px-1.5">Home</Link>
+          <span aria-hidden="true">/</span>
+          <Link to="/jewellery" className="nc-tap">Jewellery</Link>
+          <span aria-hidden="true">/</span>
+          <span className="nc-small nc-small--ink" aria-current="page">{piece.name}</span>
         </nav>
-        <button
-          onClick={goBack}
-          className="inline-flex items-center gap-1.5 text-[11px] uppercase tracking-nf-16 text-nf-ink/70 transition-colors hover:text-nf-ink"
-          aria-label="Go back"
-        >
-          <ArrowLeft size={13} strokeWidth={1.6} /> Back
+        <button type="button" onClick={goBack} className="nc-small nc-link nc-tap mt-2 gap-1.5 [@media(max-height:760px)]:mt-0" aria-label="Go back">
+          <ArrowLeft size={14} strokeWidth={1.25} aria-hidden="true" /> Back
         </button>
       </div>
 
       {/* Phone gallery. Both galleries are in the page and CSS shows one (see JewelDetail.tsx). */}
-      <div className="relative pt-[107px] md:hidden">
-        <button type="button" onClick={goBack} className={`${overlayButton} absolute left-4 top-[119px] z-20`} aria-label="Go back">
-          <ArrowLeft size={17} strokeWidth={1.6} className="text-nf-ink" />
-        </button>
-        <div className="md:hidden">{MobileGallery}</div>
-      </div>
+      <div className="pt-[107px] md:hidden">{MobileGallery}</div>
 
-      <div className="mx-auto max-w-[1400px] pb-12 md:px-6">
+      <div className="mx-auto max-w-[1400px] md:px-6">
         <div className="flex flex-col lg:grid lg:items-start lg:gap-0" style={{ gridTemplateColumns: "1fr 1fr" }}>
           {/* On a laptop the photos stay in view while the details scroll past
               them, sized to the screen so the lower row is never cut off. */}
           <div className="hidden md:block lg:sticky lg:top-[140px] lg:h-[calc(100vh-156px)] lg:self-start">{DesktopGallery}</div>
 
-          <div className="flex w-full flex-col items-stretch px-4 pt-5 md:pt-6 lg:px-10 lg:pt-2 xl:px-12">
-            {/* Category and rating; the count always travels with the average. */}
-            <div className="flex min-h-[24px] items-center justify-between gap-3">
-              <p className={label}>{piece.category}</p>
-              {rating && (
-                <a
-                  href="#customer-reviews"
-                  onClick={toReviews}
-                  className="-mr-1 -my-[10px] inline-flex min-h-[44px] shrink-0 items-center gap-1 pl-2 text-[11.5px] text-nf-ink/75"
-                  aria-label={`Rated ${rating.rating} out of 5 from ${rating.count} reviews. Jump to reviews.`}
-                >
-                  <span aria-hidden="true" className="text-nf-gold-deep">★</span>
-                  <span className="font-medium text-nf-ink">{rating.rating}</span>
-                  <span className="underline decoration-nf-ink/25 underline-offset-4">{rating.count} reviews</span>
-                </a>
-              )}
+          <div className="w-full px-4 pt-3.5 md:px-0 md:pt-6 lg:pl-10 lg:pt-0 xl:pl-12 min-[1440px]:pl-16">
+          <div className="lg:max-w-[520px]">
+            {/* Category, the way back to the collection; and the shop's own
+                rating (lib/trust), the way down to the reviews. */}
+            <div className="flex items-center justify-between gap-3">
+              {/* "RINGS" alone is 43px wide: the row gives it a 44px target. */}
+              <span className="grid min-w-[44px]">
+                <Link to="/jewellery" data-pdp="eyebrow" className="nc-label nc-label--gold nc-tap">
+                  {piece.category}
+                </Link>
+              </span>
+              <a
+                href="#customer-reviews"
+                onClick={toReviews}
+                className="nc-small nc-tap shrink-0 gap-1"
+                aria-label={`Rated ${SHOP_RATING} out of 5. Trusted by ${clientsLabel} clients. Jump to reviews.`}
+              >
+                <span aria-hidden="true" className="nc-star">★</span>
+                <span className="nc-small nc-small--ink">{SHOP_RATING}</span>
+                <span aria-hidden="true">·</span>
+                <span className="nc-link">{clientsLabel} clients</span>
+              </a>
             </div>
 
-            <h1 className="mt-2 font-cormorant text-[22px] font-semibold leading-[1.1] text-nf-ink md:text-[26px] lg:text-[30px]">
-              {piece.name}
-            </h1>
+            {/* No gap between the name and the heart's box: the 12px of air
+                inside that box is the gap, and the name keeps the width
+                (326px of a 390px phone), so fewer names take a second line. */}
+            <div className="mt-0.5 flex items-start justify-between">
+              <h1 data-pdp="title" className="nc-title min-w-0">
+                {piece.name}
+              </h1>
+              <button
+                type="button"
+                onClick={handleWishlist}
+                className="nc-iconbtn -my-1.5 -mr-3 shrink-0"
+                aria-label={wishlisted ? "Remove from wishlist" : "Add to wishlist"}
+              >
+                {heart}
+              </button>
+            </div>
 
             {/* Price, the MRP it replaces and the saving, as the percentage shoppers compare. */}
-            <div id="product-price" className="mt-2.5 flex flex-wrap items-baseline gap-x-2.5 gap-y-1">
-              <span className="font-cormorant text-[19px] font-semibold leading-none text-nf-ink md:text-[22px]">{shown.priceLabel}</span>
-              {shown.compareAtLabel && saving > 0 && (
-                <>
-                  <span className="text-[12px] text-nf-ink/65 line-through">{shown.compareAtLabel}</span>
-                  <span className="font-nf-label text-[10.5px] font-medium uppercase tracking-nf-8 text-nf-gold-text">
-                    {discountPercent(shown)}% off
-                  </span>
-                </>
-              )}
-              <span className="text-[10.5px] tracking-nf-4 text-nf-ink/65">incl. {GST_LABEL}</span>
-            </div>
+            <CleanPrice
+              id="product-price"
+              className="mt-1.5"
+              price={shown.priceLabel}
+              compareAt={saving > 0 ? shown.compareAtLabel : null}
+              percentOff={saving > 0 ? discountPercent(shown) : null}
+              note={`incl. ${GST_LABEL}`}
+            />
 
-            {/* Stone evidence comes from the listing, not the generic summary. */}
-            <ul aria-label="Made to last" className="mt-3.5 flex flex-wrap gap-[5px]">
-              {[
-                { icon: <Sparkles size={11} strokeWidth={1.7} />, text: "Anti-tarnish" },
-                { icon: <Leaf size={11} strokeWidth={1.7} />, text: "Skin-friendly" },
-                { icon: <Ingot />, text: platingBadge(finish) },
-                ...(hasZirconeStone(piece) ? [{ icon: <Gem size={11} strokeWidth={1.7} />, text: "Zircone Stone" }] : []),
-              ].map(({ icon, text }) => (
-                <li
-                  key={text}
-                  className="inline-flex items-center gap-1 border border-nf-gold/30 bg-nf-ivory-deep/70 py-[3px] pl-[3px] pr-2 text-[10px] leading-none text-nf-ink/80 min-[375px]:text-[10.5px]"
-                >
-                  <span aria-hidden="true" className="flex h-[18px] w-[18px] items-center justify-center bg-nf-blush/35 text-nf-gold-text">
-                    {icon}
-                  </span>
-                  {text}
-                </li>
-              ))}
-            </ul>
-
-            <p className="mt-2.5 flex min-h-8 items-center justify-center gap-3 border-y border-nf-gold/30 bg-nf-ivory-deep/70 px-2.5 py-1.5">
-              <svg width="10" height="10" viewBox="0 0 12 12" fill="none" aria-hidden="true" className="shrink-0 text-nf-gold">
-                <path d="M6 0L7.5 4.5L12 6L7.5 7.5L6 12L4.5 7.5L0 6L4.5 4.5L6 0Z" fill="currentColor" />
-              </svg>
-              <span className="flex items-baseline gap-1.5">
-                <span className="font-cormorant text-[15px] italic leading-none text-nf-gold-text">{soldCount}</span>
-                <span className="whitespace-nowrap font-nf-label text-[10px] font-light uppercase leading-none tracking-nf-8 text-nf-ink min-[375px]:text-[10.5px]">
-                  pieces sold in the last 48 hours
-                </span>
-              </span>
-              <span className="h-2 w-px shrink-0 bg-nf-gold/30" aria-hidden="true" />
-            </p>
-
-            {/* Buy 3 / Buy 4, priced for this piece and following the bag. A
-                piece sold out altogether is reserved on WhatsApp and never
-                reaches the bag, so it is offered nothing it cannot get. */}
-            {!soldOut && <PdpOfferLadder price={shown.price} preorder={sizePreorder || variantSoldOut} />}
+            {/* One quiet table where three badges, a sold count and an offer
+                box used to be. Stone evidence comes from the listing, not the
+                generic summary. */}
+            <CleanFacts className="mt-4">
+              <CleanFact label="Quality">
+                <CleanDots items={["Anti-tarnish", "Skin-friendly", platingBadge(finish), hasZirconeStone(piece) && "Zircone Stone"]} />
+              </CleanFact>
+              {/* Buy 2 / 3 / 4, priced for this piece and following the bag. A
+                  piece sold out altogether is reserved on WhatsApp and never
+                  reaches the bag, so it is offered nothing it cannot get. */}
+              {!soldOut && <PdpOfferLadder price={shown.price} preorder={sizePreorder || variantSoldOut} />}
+            </CleanFacts>
 
             {/* The ways Shopify sells this piece: a metal, a stone, a size, a
                 month. Each value shows whether it can be bought with the other
@@ -1035,28 +1023,20 @@ const JewelDetailNext = () => {
               /* Ring sizes are US sizes, with a guide; any other size is as Shopify names it. */
               const ringSize = isSize && isRing;
               return (
-                <div key={option.name} className="mt-5" data-option={option.name}>
-                  <div className="flex items-center justify-between">
-                    <span className={label}>
-                      {ringSize ? `${option.name} · US` : option.name}
-                      {chosen[option.name] && <span className="ml-2 normal-case tracking-normal text-nf-ink/80">{chosen[option.name]}</span>}
-                    </span>
-                    {ringSize && (
-                      <button
-                        type="button"
-                        onClick={() => setSizeGuideOpen(true)}
-                        className="-mr-2 inline-flex min-h-[44px] items-center px-2 text-[11.5px] text-nf-ink underline decoration-nf-gold underline-offset-4"
-                      >
-                        Size guide
-                      </button>
-                    )}
+                <div key={option.name} className="mt-4" data-option={option.name}>
+                  <div className="flex min-h-[24px] items-center justify-between gap-3">
+                    <p className="flex min-w-0 items-baseline gap-2">
+                      <span className="nc-label">{ringSize ? `${option.name} · US` : option.name}</span>
+                      {chosen[option.name] && <span className="nc-small nc-small--ink">{chosen[option.name]}</span>}
+                    </p>
+                    {ringSize && sizeGuideLink}
                   </div>
                   {option.values.length > 6 ? (
                     <select
                       value={chosen[option.name] ?? ""}
                       onChange={(event) => pick(option.name, event.target.value)}
                       aria-label={option.name}
-                      className="mt-2 h-[44px] w-full border border-nf-ink/25 bg-transparent px-3 text-[13px] text-nf-ink"
+                      className="nc-select mt-2"
                     >
                       {option.values.map((value) => (
                         <option key={value} value={value}>
@@ -1065,7 +1045,7 @@ const JewelDetailNext = () => {
                       ))}
                     </select>
                   ) : (
-                    <div role="radiogroup" aria-label={option.name} onKeyDown={onRadioGroupKeyDown} className="mt-1 flex flex-wrap gap-2">
+                    <div role="radiogroup" aria-label={option.name} onKeyDown={onRadioGroupKeyDown} className="nc-chips mt-2">
                       {option.values.map((value, i) => {
                         const active = chosen[option.name] === value;
                         const swatch = isSize ? undefined : swatchOf(value);
@@ -1077,17 +1057,13 @@ const JewelDetailNext = () => {
                             aria-checked={active}
                             tabIndex={rovingTabIndex(option.values.indexOf(chosen[option.name] ?? ""), i)}
                             onClick={() => pick(option.name, value)}
-                            className={`flex min-h-[44px] min-w-[68px] flex-col items-center justify-center border px-4 text-[12px] font-medium transition-colors duration-150 ${
-                              active
-                                ? "border-[var(--nf-cta)] bg-[var(--nf-cta)] text-nf-ivory"
-                                : "border-nf-ink/25 bg-transparent text-nf-ink hover:border-nf-ink/50"
-                            }`}
+                            className="nc-chip"
                           >
-                            <span className="inline-flex items-center gap-1.5">
-                              {swatch && <span aria-hidden="true" className="h-3 w-3 shrink-0 border border-nf-ink/15" style={{ background: swatch }} />}
+                            <span>
+                              {swatch && <span aria-hidden="true" className="nc-swatch" style={{ background: swatch }} />}
                               {value}
                             </span>
-                            {!buyable[value] && <span className="block text-[9px] font-normal uppercase tracking-nf-8 opacity-80">Pre-order</span>}
+                            {!buyable[value] && <span className="nc-chip__note">Pre-order</span>}
                           </button>
                         );
                       })}
@@ -1097,21 +1073,14 @@ const JewelDetailNext = () => {
               );
             })}
             {/* A ring Shopify does not sell in sizes: the US size, after any
-                metal, as on the rings sold in sizes. Every other detail waits
-                in the fold-downs below, as on Nishorama. */}
+                metal, as on the rings sold in sizes. */}
             {isRing && !sizeName && (
-              <div className="mt-5">
-                <div className="flex items-center justify-between">
-                  <span className={label}>Ring size · US</span>
-                  <button
-                    type="button"
-                    onClick={() => setSizeGuideOpen(true)}
-                    className="-mr-2 inline-flex min-h-[44px] items-center px-2 text-[11.5px] text-nf-ink underline decoration-nf-gold underline-offset-4"
-                  >
-                    Size guide
-                  </button>
+              <div className="mt-4">
+                <div className="flex min-h-[24px] items-center justify-between gap-3">
+                  <span className="nc-label">Ring size · US</span>
+                  {sizeGuideLink}
                 </div>
-                <div role="radiogroup" aria-label="Ring size, US" onKeyDown={onRadioGroupKeyDown} className="mt-1 flex flex-wrap gap-2">
+                <div role="radiogroup" aria-label="Ring size, US" onKeyDown={onRadioGroupKeyDown} className="nc-chips mt-2">
                   {ringSizesFor(piece).map((s, i, sizes) => {
                     const active = selectedSize === s.value;
                     return (
@@ -1122,16 +1091,10 @@ const JewelDetailNext = () => {
                         aria-checked={active}
                         tabIndex={rovingTabIndex(sizes.findIndex((size) => size.value === selectedSize), i)}
                         onClick={() => setSelectedSize(s.value)}
-                        className={`min-h-[44px] min-w-[68px] border px-4 text-[12px] font-medium transition-colors duration-150 ${
-                          active
-                            ? "border-[var(--nf-cta)] bg-[var(--nf-cta)] text-nf-ivory"
-                            : "border-nf-ink/25 bg-transparent text-nf-ink hover:border-nf-ink/50"
-                        }`}
+                        className="nc-chip"
                       >
                         {s.value}
-                        {s.status === "preorder" && (
-                          <span className="block text-[9px] font-normal uppercase tracking-nf-8 opacity-80">Pre-order</span>
-                        )}
+                        {s.status === "preorder" && <span className="nc-chip__note">Pre-order</span>}
                       </button>
                     );
                   })}
@@ -1139,7 +1102,7 @@ const JewelDetailNext = () => {
                 {/* A sold-out ring (or metal) is made to order in every size;
                     the line under Pre-order says when it ships. */}
                 {!soldOut && !variantSoldOut && (
-                  <p className="mt-2 text-[11.5px] leading-[1.6] text-nf-ink/75">
+                  <p className={stockNote}>
                     {adjustable
                       ? `US ${selectedSize} ships now. ${adjustableFitNote(piece.handle)}`
                       : selectedSize === "6"
@@ -1151,7 +1114,7 @@ const JewelDetailNext = () => {
             )}
             {/* A sold-out piece says its lead time once, under the button. */}
             {variant && !soldOut && (sizeName || variantSoldOut) && (
-              <p className="mt-2 text-[11.5px] leading-[1.6] text-nf-ink/75">
+              <p className={stockNote}>
                 {variantSoldOut
                   ? `${sentence(choiceText(variant.options))} is sold out for now. ${VARIANT_SOLD_OUT_LEAD}`
                   : `${isRing ? "US" : "Size"} ${chosen[sizeName ?? ""]} is in stock and ships now.`}
@@ -1159,152 +1122,141 @@ const JewelDetailNext = () => {
             )}
             <RingSizeGuideModal isOpen={sizeGuideOpen} onClose={guide.requestClose} highlightSize={sizeName ? chosen[sizeName] ?? selectedSize : selectedSize} adjustable={adjustable} fitSizes={adjustableSizes(piece.handle)} />
 
-            {/* Quantity stays in the bag; both actions use the same chosen variant. */}
-            <div id="product-actions" className="mt-2 grid grid-cols-2 gap-2">
-              <Button
+            {/* Quantity stays in the bag; both actions use the same chosen
+                variant. The buttons are this box's own children: the phone's
+                buy bar watches the first of them. */}
+            <div id="product-actions" className="nc-btnrow mt-5">
+              {!isPreorder && (
+                /* "Opening checkout…" is 142px of caps; half a 360px phone leaves
+                   the label 126. While busy the button gives it its side padding
+                   and, on a narrower phone still, a second line. */
+                <button
+                  type="button"
+                  onClick={handleBuyNow}
+                  disabled={cartLoading || buying}
+                  className={`${cleanButton()} ${buying ? "!whitespace-normal !px-1 text-center" : ""}`}
+                >
+                  {buying ? "Opening checkout…" : "Buy Now"}
+                </button>
+              )}
+              <button
+                type="button"
                 onClick={isPreorder ? handlePreOrder : handleAddToCart}
                 disabled={cartLoading || buying}
-                className={`press-scale inline-flex h-[50px] w-full items-center justify-center bg-nf-ink px-2 font-nf-label text-[11.5px] font-medium uppercase tracking-nf-8 text-nf-ivory transition-colors duration-200 hover:bg-nf-ink/90 disabled:opacity-60 ${isPreorder ? "col-span-2" : "col-start-2 row-start-1"}`}
+                className={`${cleanButton({ fill: "ink" })} ${isPreorder ? "col-span-2" : ""}`}
               >
                 {isPreorder ? "Reserve now" : "Add to cart"}
-              </Button>
-              {!isPreorder && (
-                <Button variant="outline" onClick={handleBuyNow} disabled={cartLoading || buying} className="press-scale col-start-1 row-start-1 h-[50px] w-full border-nf-ink bg-transparent px-2 font-nf-label text-[11.5px] font-medium uppercase tracking-nf-8 text-nf-ink hover:bg-nf-ink/5">
-                  {buying ? "Opening checkout…" : <>Buy Now<UpiBadges size={16} /></>}
-                </Button>
-              )}
+              </button>
               {/* eslint-disable-next-line no-constant-binary-expression -- switched off in Lovable on 30 Sep (it was soldOut &&); kept so it can be switched back */}
               {false && (
-                <a
-                  href={sizedEnquiryHref}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="press-scale mt-2 inline-flex h-[44px] w-full items-center justify-center gap-2 border border-nf-ink/25 font-nf-label text-[11px] uppercase tracking-nf-16 text-nf-ink"
-                >
-                  <MessageSquare size={13} strokeWidth={1.6} /> Reserve on WhatsApp
+                <a href={sizedEnquiryHref} target="_blank" rel="noopener noreferrer" className={`${cleanButton({ size: "sm", block: true })} col-span-2`}>
+                  Reserve on WhatsApp
                 </a>
               )}
-              <p className="col-span-2 mt-1 flex items-center justify-center gap-2 text-center text-[11.5px] text-nf-ink/80">
-                <Gift size={14} strokeWidth={1.6} className="shrink-0 text-nf-gold-deep" aria-hidden="true" />
-                {soldOut ? `${SOLD_OUT_LEAD}, gift-boxed` : "Gift-ready: every piece arrives in the Naira gift box"}
+              <p className="nc-small col-span-2 mt-1 text-center [text-wrap:balance]">
+                {soldOut
+                  ? `${SOLD_OUT_LEAD}, gift-boxed`
+                  : promise.flatMap((fact, i) => [
+                      /* A plain space between the facts is where the line may
+                         break; the dot stays with the fact before it. */
+                      i > 0 ? " " : null,
+                      <span key={fact} className="whitespace-nowrap">
+                        {fact}
+                        {i < promise.length - 1 ? "\u00A0\u00B7" : null}
+                      </span>,
+                    ])}
               </p>
               {/* Lovable's "Naira bundle" panel (PdpOffers, 11829ae) said the same offer
-                  a second time under Buy Now; the page shows it once, in
-                  PdpOfferLadder under the price, which also follows the bag. To
-                  use the bundle panel instead, render it here and drop the
-                  ladder above. */}
+                  a second time under Buy Now; the page shows it once, in the
+                  OFFER row under the price, which also follows the bag. */}
             </div>
 
-            {/* Details, care and delivery as fold-downs, closed until asked for
-                (Nishorama's pattern): the first screen stays the photo, the
-                name, the price and the button. Every panel stays in the page,
-                so all of it is in the HTML. */}
-            <div className="mt-8 border-t border-nf-gold/15">
-              <details className="group border-b border-nf-gold/15">
-                <summary className={fold}>
-                  Details
-                  <Plus size={14} strokeWidth={1.4} className={foldMark} aria-hidden="true" />
-                </summary>
-                <div id="pdp-panel-details" className="pb-6">
-                  <p className="text-[13px] leading-[1.7] text-nf-ink/85">{piece.blurb}</p>
-                  {specs.length > 0 && (
-                    <dl className="mt-5 border-t border-nf-gold/15">
-                      {specs.map((s, i) => (
-                        <div key={i} className="grid grid-cols-[34%_1fr] gap-3 border-b border-nf-gold/15 py-2.5 text-[12px] leading-[1.55]">
-                          <dt className="font-nf-label text-[9.5px] uppercase tracking-nf-10 text-nf-gold-text">{s.label || "Detail"}</dt>
-                          <dd className="text-nf-ink/90">{s.value}</dd>
-                        </div>
-                      ))}
-                      {stone && !specs.some((s) => /stone/i.test(s.label)) && (
-                        <div className="grid grid-cols-[34%_1fr] gap-3 border-b border-nf-gold/15 py-2.5 text-[12px]">
-                          <dt className="font-nf-label text-[9.5px] uppercase tracking-nf-10 text-nf-gold-text">Stone</dt>
-                          <dd className="text-nf-ink/90">{stone}</dd>
-                        </div>
-                      )}
-                    </dl>
-                  )}
-                  {/* The spec list names plating and metal; the summary line is for pieces without one. */}
-                  {specs.length === 0 && <p className="mt-4 text-[12px] leading-[1.6] text-nf-ink/75">{piece.materials}</p>}
-                  {isRing && <RingSizeGuide highlightSize={sizeName ? chosen[sizeName] ?? selectedSize : selectedSize} adjustable={adjustable} fitSizes={adjustableSizes(piece.handle)} />}
-                  {/* The size guide photo again, right where the sizes are read. */}
-                  {piece.sizeGuide && (
-                    <img
-                      src={shopifyImage(piece.sizeGuide, 720)}
-                      srcSet={shopifySrcSet(piece.sizeGuide, [480, 720, 960]) || undefined}
-                      sizes="(min-width: 1024px) 420px, 100vw"
-                      alt={`${piece.name} size guide`}
-                      loading="lazy"
-                      decoding="async"
-                      className="mt-5 block w-full max-w-[420px] border border-nf-gold/15 bg-nf-ivory"
-                    />
-                  )}
-                  {piece.stylingTip && (
-                    <p className="mt-4 border-l-2 border-nf-gold/60 pl-3 font-nf-editorial text-[15px] italic leading-[1.5] text-nf-ink/85">
-                      {piece.stylingTip}
-                    </p>
-                  )}
-                </div>
-              </details>
+            {/* Four dropdowns (the owner: "see how to put drop downs and
+                remove clutter"). The paragraph that sells the piece is open;
+                specifications, care and delivery wait until asked for. Every
+                panel stays in the page, so all of it is in the HTML. */}
+            <CleanDropdowns className="mt-6">
+              <CleanDropdown title="Description" id="pdp-panel-description" defaultOpen>
+                <p>{piece.blurb}</p>
+                {piece.stylingTip && <p>{piece.stylingTip}</p>}
+              </CleanDropdown>
 
-              <details className="group border-b border-nf-gold/15">
-                <summary className={fold}>
-                  Care
-                  <Plus size={14} strokeWidth={1.4} className={foldMark} aria-hidden="true" />
-                </summary>
-                <div id="pdp-panel-care" className="space-y-2.5 pb-6 text-[13px] leading-[1.7] text-nf-ink/85">
-                  <p>{piece.care ?? listedCare ?? "Store in the pouch, avoid perfume and chlorinated water, and wipe gently after wear."}</p>
-                  {/* The two questions every jewellery buyer asks, answered for this piece. */}
-                  {care.map((c) => (
-                    <p key={c.q}>
-                      <strong className="font-semibold text-nf-ink">{c.q}</strong> {c.a}
-                    </p>
-                  ))}
-                </div>
-              </details>
-
-              <details className="group border-b border-nf-gold/15">
-                <summary className={fold}>
-                  Delivery & returns
-                  <Plus size={14} strokeWidth={1.4} className={foldMark} aria-hidden="true" />
-                </summary>
-                <div id="pdp-panel-delivery" className="pb-6">
-                  <div className="space-y-2.5 text-[13px] leading-[1.7] text-nf-ink/85">
-                    <p>
-                      {leadTime ? `${leadTime} ` : arrivesBy ? `Order today and it arrives by ${arrivesBy}. ` : `${PREORDER_NOTE} `}
-                      Free insured shipping across India, dispatched from our Mumbai atelier.
-                    </p>
-                    <p>
-                      Cash on delivery available. 7-day returns —{" "}
-                      <Link to="/exchange-return-policy" className="underline decoration-nf-gold underline-offset-4">
-                        read the policy
-                      </Link>
-                      .
-                    </p>
+              <CleanDropdown title="Details and size" id="pdp-panel-details">
+                {specs.length > 0 && (
+                  <CleanFacts bare>
+                    {specs.map((s, i) => (
+                      <CleanFact key={i} label={s.label || "Detail"}>
+                        {s.value}
+                      </CleanFact>
+                    ))}
+                    {stone && !specs.some((s) => /stone/i.test(s.label)) && <CleanFact label="Stone">{stone}</CleanFact>}
+                  </CleanFacts>
+                )}
+                {/* The spec list names plating and metal; the summary line is for pieces without one. */}
+                {specs.length === 0 && <p>{piece.materials}</p>}
+                {isRing && (
+                  /* A part of its own under the specifications: twice the panel's usual gap. */
+                  <div className="!mt-6">
+                    <RingSizeGuide highlightSize={sizeName ? chosen[sizeName] ?? selectedSize : selectedSize} adjustable={adjustable} fitSizes={adjustableSizes(piece.handle)} />
                   </div>
-                  <PincodeChecker preorder={isPreorder} />
-                  <a
-                    href={isRing ? sizedEnquiryHref : enquiryHref}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="mt-5 inline-flex min-h-[44px] items-center gap-2 text-[12px] text-nf-ink underline decoration-nf-gold underline-offset-4"
-                  >
-                    <MessageSquare size={14} strokeWidth={1.6} className="text-nf-gold-deep" /> Questions? Chat with us on WhatsApp
+                )}
+                {/* The size guide photo again, right where the sizes are read. */}
+                {piece.sizeGuide && (
+                  <img
+                    src={shopifyImage(piece.sizeGuide, 720)}
+                    srcSet={shopifySrcSet(piece.sizeGuide, [480, 720, 960]) || undefined}
+                    sizes="(min-width: 1024px) 420px, 100vw"
+                    alt={`${piece.name} size guide`}
+                    loading="lazy"
+                    decoding="async"
+                    className={`block w-full max-w-[420px] ${linen}`}
+                  />
+                )}
+              </CleanDropdown>
+
+              <CleanDropdown title="Care and plating" id="pdp-panel-care">
+                <p>{piece.care ?? listedCare ?? "Store in the pouch, avoid perfume and chlorinated water, and wipe gently after wear."}</p>
+                {/* The two questions every jewellery buyer asks, answered for this piece. */}
+                {care.map((c) => (
+                  <p key={c.q}>
+                    <strong>{c.q}</strong> {c.a}
+                  </p>
+                ))}
+              </CleanDropdown>
+
+              <CleanDropdown title="Delivery and returns" id="pdp-panel-delivery">
+                <p>
+                  {leadTime ? `${leadTime} ` : arrivesBy ? `Order today and it arrives by ${arrivesBy}. ` : `${PREORDER_NOTE} `}
+                  Free insured shipping across India, dispatched from our Mumbai atelier.
+                </p>
+                <p>
+                  Cash on delivery available. 7-day returns —{" "}
+                  <Link to="/exchange-return-policy" className="nc-link nc-link--ink whitespace-nowrap">
+                    read the policy
+                  </Link>
+                  .
+                </p>
+                <PincodeChecker preorder={isPreorder} look="clean" />
+                <p>
+                  <a href={isRing ? sizedEnquiryHref : enquiryHref} target="_blank" rel="noopener noreferrer" className="nc-link nc-link--ink nc-tap">
+                    Questions? Chat with us on WhatsApp
                   </a>
-                </div>
-              </details>
-            </div>
+                </p>
+              </CleanDropdown>
+            </CleanDropdowns>
 
             {/* Another piece, one tap from the bag. The label is the ladder's
                 first rung, read from promo.ts, so it always quotes the first
-                rung the bag really has: three pieces at 20% since 7 Nov 2026
-                (two pieces earn nothing now). */}
+                rung the bag really has. */}
             {pairings.length > 0 && (
-              <section className="mt-10" aria-labelledby="complete-the-look">
-                <div className="flex items-end justify-between gap-3">
-                  <h2 id="complete-the-look" className="font-cormorant text-[18px] leading-none text-nf-ink">
+              <section className="mt-12 lg:mt-16" aria-labelledby="complete-the-look">
+                <div className="flex items-baseline justify-between gap-3">
+                  <h2 id="complete-the-look" className="nc-heading">
                     {isSetRow(piece, pairings) ? "Complete the set" : "Complete the look"}
                   </h2>
-                  <p className="font-nf-label text-[9.5px] uppercase tracking-nf-16 text-nf-gold-text">{QUANTITY_OFFERS[0].minQuantity} pieces · {Math.round(QUANTITY_OFFERS[0].rate * 100)}% off</p>
+                  <p className="nc-label nc-label--gold shrink-0">
+                    {QUANTITY_OFFERS[0].minQuantity} pieces · {percent(QUANTITY_OFFERS[0].rate)} off
+                  </p>
                 </div>
                 <div className="mt-4 grid grid-cols-3 gap-3">
                   {pairings.map((p) => (
@@ -1314,25 +1266,34 @@ const JewelDetailNext = () => {
               </section>
             )}
           </div>
+          </div>
         </div>
       </div>
 
-      <Suspense fallback={<div className="min-h-[240px] bg-nf-ivory" aria-hidden="true" />}>
-        <CustomerReviews productName={piece.name} variant="jewellery" />
+      <Suspense fallback={<div className="min-h-[240px]" aria-hidden="true" />}>
+        <CustomerReviews productName={piece.name} variant="jewellery" look="clean" />
       </Suspense>
 
       <PressMarquee />
 
-      <Suspense fallback={<div className="min-h-[420px] bg-nf-ivory-deep md:hidden" aria-hidden="true" />}>
+      <Suspense fallback={<div className="min-h-[420px] md:hidden" aria-hidden="true" />}>
         <ReelShopNext hrefFor={hrefFor} />
       </Suspense>
 
       {similar.length > 0 && (
-        <section className="mx-auto max-w-[1400px] py-10 md:px-6" aria-labelledby="more-like-this">
-          <h2 id="more-like-this" className="px-4 font-cormorant text-[19px] leading-none text-nf-ink md:px-0">
+        <section className="mx-auto max-w-[1400px] pt-12 md:px-6 lg:pt-16" aria-labelledby="more-like-this">
+          <h2 id="more-like-this" className="nc-heading px-4 md:px-0">
             More {piece.category.toLowerCase()}
           </h2>
-          <div className="scrollbar-hide mt-4 flex snap-x gap-3 overflow-x-auto px-4 pb-1 md:grid md:grid-cols-4 md:overflow-visible md:px-0" style={{ overscrollBehaviorX: "contain" }}>
+          {/* Keyed by its pieces: when the live catalogue reorders them, a
+              snapping rail follows the card it was resting on, and the row
+              opened scrolled to its far end (966px on Woven Gold Hoops). A
+              new list is a new rail, at its start. */}
+          <div
+            key={similar.map((p) => p.handle).join(" ")}
+            className="scrollbar-hide mt-4 flex snap-x gap-3 overflow-x-auto px-4 pb-1 md:grid md:grid-cols-4 md:gap-y-8 md:overflow-visible md:px-0"
+            style={{ overscrollBehaviorX: "contain", scrollPaddingInline: "16px" }}
+          >
             {similar.map((p) => (
               <div key={p.handle} className="w-[42vw] max-w-[220px] shrink-0 snap-start md:w-auto md:max-w-none">
                 <PairingCard piece={p} href={hrefFor(p.handle)} />
@@ -1341,52 +1302,38 @@ const JewelDetailNext = () => {
           </div>
         </section>
       )}
-
-      <Suspense fallback={null}>
-        <FomoPopup
-          quiet
-          hrefFor={hrefFor}
-          suppressed={isDrawerOpen || lightboxOpen || sizeGuideOpen}
-          mobileStickyVisible={stickyBarVisible}
-        />
-      </Suspense>
       </main>
+      </div>
 
       <Footer compact slim />
 
-      {/* Phone buy bar: shown whenever Add to cart is not fully on screen. */}
+      {/* Phone buy bar: shown whenever Add to cart is not fully on screen.
+          The same two buttons, pinned; solid, with one hairline. */}
       <div
         ref={stickyBarRef}
-        className="fixed inset-x-0 bottom-0 z-40 flex items-center gap-2 border-t border-nf-gold/15 bg-nf-ivory/95 px-3 pt-2 backdrop-blur transition-[transform,visibility] duration-300 ease-out md:hidden"
+        className="nf-clean fixed inset-x-0 bottom-0 z-40 transition-[transform,visibility] duration-300 ease-out md:hidden"
         style={{
-          paddingBottom: "calc(0.5rem + env(safe-area-inset-bottom, 0px))",
           transform: stickyBarVisible ? "translateY(0)" : "translateY(110%)",
           visibility: stickyBarVisible ? "visible" : "hidden",
           pointerEvents: stickyBarVisible ? "auto" : "none",
         }}
         aria-hidden={!stickyBarVisible}
       >
-        <Button variant="outline"
-          onClick={handleWishlist}
-          aria-label={wishlisted ? "Remove from wishlist" : "Add to wishlist"}
-          className="press-scale flex h-[48px] w-[48px] shrink-0 items-center justify-center border border-nf-ink/25"
-        >
-          {heart}
-        </Button>
-        {/* Under 300px (a fold's cover screen) the badge sits under the
-            label: side by side they need 105px and the button has 97. */}
-        {!isPreorder && (
-          <Button variant="outline" onClick={handleBuyNow} disabled={cartLoading || buying} className="press-scale h-[48px] min-w-0 flex-1 border-nf-ink/40 bg-transparent px-2 font-nf-label text-[11px] uppercase tracking-nf-8 text-nf-ink hover:bg-nf-ink/5 max-[299px]:flex-col max-[299px]:gap-1">
-            {buying ? "Opening…" : <>Buy Now<UpiBadges size={15} /></>}
-          </Button>
-        )}
-        <Button
-          onClick={isPreorder ? handlePreOrder : handleAddToCart}
-          disabled={cartLoading || buying}
-          className="press-scale inline-flex h-[48px] min-w-0 flex-1 items-center justify-center gap-1 bg-nf-ink px-2 font-nf-label text-[11px] font-medium uppercase tracking-nf-8 text-nf-ivory hover:bg-nf-ink/90 disabled:opacity-60"
-        >
-          {isPreorder ? "Reserve now" : "Add to cart"}
-        </Button>
+        <div className="nc-bar">
+          {!isPreorder && (
+            <button type="button" onClick={handleBuyNow} disabled={cartLoading || buying} className={cleanButton({ size: "bar" })}>
+              {buying ? "Opening…" : "Buy Now"}
+            </button>
+          )}
+          <button
+            type="button"
+            onClick={isPreorder ? handlePreOrder : handleAddToCart}
+            disabled={cartLoading || buying}
+            className={cleanButton({ fill: "ink", size: "bar" })}
+          >
+            {isPreorder ? "Reserve now" : "Add to cart"}
+          </button>
+        </div>
       </div>
 
       <ImageLightbox

@@ -251,7 +251,12 @@ export const ReelFrame = ({
         src={stillUrl}
         alt={reel.title ?? "Naira Flore reel"}
         className="absolute inset-0 h-full w-full object-cover"
-        loading={active ? "eager" : "lazy"}
+        /* Always lazy. The showing reel's still used to load eagerly, and the
+           pre-built page carries this section far below the first screen: a
+           phone fetched the still (19 KB) alongside the piece's first photo,
+           on the same slow connection. Once the section is near, or the
+           gallery reaches its reel slide, lazy loads it at once. */
+        loading="lazy"
         decoding="async"
         onError={(event) => {
           event.currentTarget.onerror = null;

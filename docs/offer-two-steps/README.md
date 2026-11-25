@@ -35,8 +35,10 @@ Sent with a screenshot of the live bag (four pieces, "Buy 2 · 10% off / Buy 3 �
 The four-piece bag in the owner's screenshot came to ₹6,017 at 30%. Worked
 from that figure (₹8,596 before the offer), it comes to about ₹7,307 at 15%.
 
-Pictures of the built site are in `screens/` (the photos are blank there
-because the test bag was filled without images; the live bag shows them).
+Pictures of the built site are in `screens/`: the bag at two, three and four
+pieces (real pieces at their real prices: ₹3,103, ₹3,780 and ₹4,374) and the
+product page's offer panel. `pictures.cjs` takes them; like `walk.cjs`, it
+lets no write and no tracking request leave.
 
 ## The code
 

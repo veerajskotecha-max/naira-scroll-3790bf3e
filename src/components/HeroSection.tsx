@@ -218,7 +218,8 @@ const HeroSection = () => {
           {/* The buy-more offer, quietly, as a label under the headline (the
               owner, 2 Nov 2026). Rates from promo.ts, so it moves with the
               ladder; it rises after "worn." lands. Two rungs since 25 Nov
-              2026 (Buy 2 at 10%, Buy 3 at 15%; Buy 4 is gone): a phone gets
+              2026 (Buy 2 at 10%, Buy 3 at 20%; Buy 4 is gone), each said as
+              extra, on top of the prices already marked down: a phone gets
               the top of the ladder in one line at 11px, the most it can read
               without wrapping at 320px, and a wider screen gets every rung. */}
           <p
@@ -226,9 +227,9 @@ const HeroSection = () => {
             style={{ ...jost, animationDelay: "1.05s" }}
             className="mt-4 lg:mt-6 text-[11px] tracking-nf-16 sm:tracking-nf-24 uppercase font-medium text-nf-gold-text"
           >
-            <span data-hero-offer-short className="sm:hidden">Up to {Math.round(TOP_QUANTITY_OFFER.rate * 100)}% off when you buy more</span>
+            <span data-hero-offer-short className="sm:hidden">Up to extra {Math.round(TOP_QUANTITY_OFFER.rate * 100)}% off when you buy more</span>
             <span data-hero-offer-ladder className="hidden sm:inline">
-              {QUANTITY_OFFERS.map((offer) => `Buy ${offer.minQuantity}, ${Math.round(offer.rate * 100)}% off`).join(" · ")}
+              {QUANTITY_OFFERS.map((offer) => `Buy ${offer.minQuantity}, extra ${Math.round(offer.rate * 100)}% off`).join(" · ")}
             </span>
           </p>
         </div>

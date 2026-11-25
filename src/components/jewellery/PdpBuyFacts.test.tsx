@@ -11,8 +11,8 @@ describe("PdpBuyFacts", () => {
   it("states both rungs of the multi-buy ladder, and no Buy 4", () => {
     const { container } = render(<PdpBuyFacts arrivesBy="Thu, 1 Oct" />);
     expect(screen.getByText("Buy 2, save 10%")).toBeTruthy();
-    expect(screen.getByText("Buy 3, save 15%")).toBeTruthy();
-    expect(container.textContent).not.toMatch(/Buy 4|20%|30%/);
+    expect(screen.getByText("Buy 3, save 20%")).toBeTruthy();
+    expect(container.textContent).not.toMatch(/Buy 4|30%/);
   });
 
   /* The owner keeps the COD fee off the product page; the bag states it in

@@ -3,8 +3,9 @@ import { percent } from "./format";
 import { rungStates } from "./rungs";
 
 /*
-  The buy-more offer as words: "Buy 2 · 10% off" for each rung, in equal
-  columns, with no box, rule or icon. The rung the bag sits on is gold; one it
+  The buy-more offer as words: "Buy 2 · extra 10% off" for each rung, in
+  equal columns, with no box, rule or icon. "Extra" since 25 Nov 2026, the
+  owner's ask: the offer comes on top of the saving a piece already shows. The rung the bag sits on is gold; one it
   has climbed past steps back. The product page adds this piece's price at
   each rung under it (`each`); the bag centres the same three over its 2px
   line. The rungs themselves always come from promo.ts.
@@ -41,7 +42,7 @@ const CleanRungs = ({ offers, totalItems, each, centered = false, muted = false,
             data-passed={state === "passed" ? "" : undefined}
           >
             <span className="nc-rung__name">
-              Buy {offer.minQuantity} · {percent(offer.rate)}
+              Buy {offer.minQuantity} · extra {percent(offer.rate)}
               <span className="nc-rung__off"> off</span>
             </span>
             {each ? <span className="nc-rung__each">{each(offer)}</span> : null}

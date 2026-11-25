@@ -17,15 +17,15 @@
    the most common order carries no discount at all.
 
    BUY4 is not here, on purpose. The owner took the four-piece rung away on
-   25 Nov 2026 ("Keep buy 2 get 10% and buy 3 get 15 only ... Remove buy 4
-   offer"), and BUY4 is switched off in Shopify once this is live. Typed by
+   25 Nov 2026 ("Remove buy 4 offer ... so only buy 2 and 3 remain"), and
+   BUY4 is switched off in Shopify once this is live. Typed by
    hand it is now an unknown code: worth nothing in the bag, and never handed
    to Fastrr, so the bag cannot quote 30% off four pieces whatever Shopify
    still holds. */
 export const PROMO_DISCOUNTS = {
   FRIENDSANDFAMILY: 0.2,
   BUY2: 0.1,
-  BUY3: 0.15,
+  BUY3: 0.2,
   NAIRA10: 0.1,
 } as const;
 
@@ -45,22 +45,25 @@ export const getPromoDiscountRate = (code: string | null): number => {
 };
 
 /*
-  The buy-more ladder: two pieces take 10% off, three or more take 15%. Two
-  rungs, the owner's ask of 25 Nov 2026 ("Keep buy 2 get 10% and buy 3 get 15
-  only on the cart on additional offers. Remove buy 4 offer"). Four pieces
-  take what three do: BUY3 is "3 or more" in Shopify.
+  The buy-more ladder: two pieces take 10% off, three or more take 20%. Two
+  rungs, the owner's ask of 25 Nov 2026: Buy 4 is removed and Buy 2 and Buy 3
+  stay as they were ("Buy 3 keep 20% not 15.... so only buy 2 and 3 remain!
+  10 and 20% offer shown as extra discount on current discount"; an hour
+  earlier the ask had read 15% for Buy 3, built and never published). Four
+  pieces take what three do: BUY3 is "3 or more" in Shopify. Wherever the
+  offer is stated it is said as EXTRA ("Buy 2 · extra 10% off"): it comes off
+  the price a piece already sells at, on top of its saving on MRP.
 
   Before that: 10%, 20% and 30% for two, three and four pieces from 9 Nov
   2026; 20% and 30% for three and four from 7 Nov; 10% and 20% for two and
   three from 3 Nov; 20% and 30% on 2-3 Nov; 15% and 25% from 25 Oct.
 
   The rates live in two places and must change together: here and on the
-  Shopify codes of the same names. This change LOWERS what the bag gives
-  (BUY3 from 20% to 15%, BUY4 gone), so the site goes live first and Shopify
-  follows: BUY3 is set to 15% and BUY4 switched off only once this is
+  Shopify codes of the same names. BUY2 (10%) and BUY3 (20%) already match.
+  Removing Buy 4 LOWERS what a four-piece bag gets, so the site goes live
+  first and Shopify follows: BUY4 is switched off only once this is
   published, never before, so the live bag never promises more than the
-  checkout gives. In between, a three-piece order is charged 20% off where
-  the bag quoted 15%, which is in the shopper's favour.
+  checkout gives.
 
   Every consumer reads the rungs from here, and their number too: a grid of
   rungs takes one column per entry (`RUNG_GRID_COLS`), never a fixed count.
@@ -74,7 +77,7 @@ export const getPromoDiscountRate = (code: string | null): number => {
 */
 export const QUANTITY_OFFERS = [
   { code: "BUY2", minQuantity: 2, rate: 0.1 },
-  { code: "BUY3", minQuantity: 3, rate: 0.15 },
+  { code: "BUY3", minQuantity: 3, rate: 0.2 },
 ] as const;
 
 export type QuantityOffer = (typeof QUANTITY_OFFERS)[number];
@@ -155,21 +158,18 @@ export type ResolvedDiscount = {
  * and what the shopper typed wins outright — never both. On an exact tie the
  * rung wins, unless the typed code IS that rung (BUY2 typed into a two-piece
  * bag is still named as typed). The rungs are scoped in Shopify to
- * `discount-scope-all`, every product; NAIRA10 ties BUY2 on two pieces, and
- * the rung is the one that goes.
+ * `discount-scope-all`, every product; FRIENDSANDFAMILY (20%), which ties
+ * BUY3, only to the jewellery collections (175 of 194 products, read 2 Nov).
+ * Handing Fastrr FRIENDSANDFAMILY on that tie would charge an outfit in the
+ * bag full price while the bag quoted 20% off it, so the rung goes.
  *
- * Two rungs since 25 Nov 2026 (Buy 2 at 10%, Buy 3 at 15%; Buy 4 is gone), so
+ * Two rungs since 25 Nov 2026 (Buy 2 at 10%, Buy 3 at 20%; Buy 4 is gone), so
  * one piece earns nothing and only a typed code can discount it:
  * NAIRA10 (10%) wins on one piece, ties BUY2 on two (BUY2 goes) and loses to
  * BUY3 from three;
- * FRIENDSANDFAMILY (20%) is richer than both rungs, so a shopper who typed it
- * keeps it at every count and it is the code Fastrr gets. In Shopify it
- * covers only the jewellery collections (175 of 194 products, read 2 Nov), so
- * an outfit in that bag is charged full price while the bag quotes 20% off
- * it: true on one and two pieces before, and on every count since the rungs
- * dropped under it. The owner's call (widen the code in Shopify, or lower
- * it); nothing here can tell an outfit from a jewel.
- * A typed BUY4 is no code at all any more (it is not in PROMO_DISCOUNTS):
+ * FRIENDSANDFAMILY (20%) wins on one and two pieces and ties BUY3 from three
+ * (BUY3 goes, at every count from three now that no richer rung follows);
+ * a typed BUY4 is no code at all any more (it is not in PROMO_DISCOUNTS):
  * worth nothing, and the four-piece bag gets BUY3 as if nothing were typed.
  */
 export const resolveCartDiscount = (input: {
@@ -200,10 +200,10 @@ export const discountedSubtotal = (subtotal: number, resolved: ResolvedDiscount)
  * bag then saves on it, by the same resolver and rounding as the checkout.
  * A ₹1,499 piece beside a ₹2,399 one adds ₹1,109 and saves ₹390: the two
  * take 10% (₹3,898 at 10% is ₹3,508). As the third, beside ₹2,399 + ₹1,799
- * (₹4,198, charged ₹3,778), it adds ₹1,064 and saves ₹435: the whole bag
- * moves from 10% to 15% (₹5,697 at 15% is ₹4,842, from ₹4,842.45). As the
- * fourth it adds ₹1,275 and saves ₹224: the rate stays at 15%, the top rung
- * since 25 Nov 2026 (₹7,196 at 15% is ₹6,117).
+ * (₹4,198, charged ₹3,778), it adds ₹780 and saves ₹719: the whole bag
+ * moves from 10% to 20% (₹5,697 at 20% is ₹4,558, from ₹4,557.60). As the
+ * fourth it adds ₹1,199 and saves ₹300: the rate stays at 20%, the top rung
+ * since 25 Nov 2026 (₹7,196 at 20% is ₹5,757).
  */
 export const addOnEffect = (bag: { subtotal: number; totalItems: number; promoCode?: string | null }, price: number) => {
   const now = discountedSubtotal(bag.subtotal, resolveCartDiscount({ totalItems: bag.totalItems, promoCode: bag.promoCode }));
@@ -222,7 +222,7 @@ const percent = (rate: number) => `${Math.round(rate * 100)}%`;
  *
  * It names the piece the rung starts at: one piece reads "A second piece
  * takes 10% off your bag", two read "10% off your bag · a third piece makes
- * it 15%", and from three it is "15% off your bag, the best price" (the
+ * it 20%", and from three it is "20% off your bag, the best price" (the
  * rungs of 25 Nov 2026). "2 pieces take 10%" on a bag of one left her to
  * count; the line says plainly that the next piece is the one that pays.
  */
@@ -242,10 +242,11 @@ export const ladderHeadline = (totalItems: number, appliedRate = 0): string => {
 /**
  * What one piece costs at a rung, rounded as the bag rounds its total
  * (`discountedSubtotal`), and to the rupee what Shopify's code charges a
- * piece (₹999 at 10% is ₹899.10, at 15% ₹849.15). Over several of a piece
- * the two can sit ₹1 apart (4 × ₹849 = ₹3,396 against ₹3,397 for four ₹999
- * pieces; 3 × ₹2,337 = ₹7,011 against ₹7,010 for three ₹2,749 ones): the bag
- * rounds the total once, this rounds the piece. Never more than ₹1.
+ * piece (₹999 at 10% is ₹899.10, at 20% ₹799.20). Over several of a piece
+ * the two can sit ₹1 apart, the piece under the bag (3 × ₹799 = ₹2,397
+ * against ₹2,398 for three ₹999 pieces; 4 × ₹799 = ₹3,196 against ₹3,197
+ * for four): the bag rounds the total once, this rounds the piece. Never
+ * more than ₹1.
  */
 export const pieceAtRung = (price: number, offer: { code: string; rate: number }): number =>
   discountedSubtotal(price, { code: offer.code, rate: offer.rate, automatic: true });
@@ -299,13 +300,14 @@ export const pdpOfferStatus = (
   const adds = effect.adds < price ? `${rupees(effect.adds)}, not ${rupees(price)}` : rupees(effect.adds);
   if (effect.rate > now.rate) return `Add to bag for ${percent(effect.rate)} off everything: it adds ${adds}.`;
   /* The rate stays, and it is a rung's: the box above already prices this
-     piece at that rung (₹1,199 is "₹1,019 each" under Buy 3, the piece
-     rounded alone, as Shopify charges it, ₹1,019.15). "Adding this costs
-     ₹1,020" (the whole bag rounded again) one line under that gold column
-     would read as the same claim ₹1 apart. So the line names the rate and
-     leaves the figure to the box. A typed code's rate (FRIENDSANDFAMILY, 20%,
-     richer than both rungs) has no column of its own, so it keeps its
-     figure. */
+     piece at that rung (₹999 is "₹799 each" under Buy 3, the piece rounded
+     alone, as Shopify charges it, ₹799.20). The bag rounds its whole total
+     again, so in some bags "adding this costs ₹800" would sit one line
+     under that gold column, the same claim ₹1 apart (seven ₹999 pieces are
+     ₹5,594 and eight ₹6,394). So the line names the rate and leaves the
+     figure to the box. A typed code's rate (NAIRA10 or FRIENDSANDFAMILY on
+     one piece, FRIENDSANDFAMILY on two) has no column of its own, so it
+     keeps its figure. */
   const after = resolveCartDiscount({ totalItems: bag.totalItems + 1, promoCode: bag.promoCode });
   return after.automatic
     ? `${percent(now.rate)} off is on your bag, this piece included.`

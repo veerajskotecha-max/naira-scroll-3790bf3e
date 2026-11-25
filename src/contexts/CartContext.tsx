@@ -440,8 +440,8 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     /* The one discount the order actually gets. The bag earns BUY2 on two
        pieces and BUY3 on three or more, nothing on one (the rungs of 25 Nov
        2026; Buy 4 is gone); a typed code can discount one piece, tie BUY2
-       (NAIRA10) or beat both rungs (FRIENDSANDFAMILY). Resolved once here so
-       the code put on the cart, the code handed to Fastrr, the total shown
+       (NAIRA10), beat it or tie BUY3 (FRIENDSANDFAMILY). Resolved once here
+       so the code put on the cart, the code handed to Fastrr, the total shown
        in the drawer and the value Meta is told are all the same discount. */
     const resolved = resolveCartDiscount({
       totalItems: lines.reduce((sum, i) => sum + i.quantity, 0),
@@ -449,7 +449,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     });
     /* What the shopper is about to be charged: the bag's Total. It was the
        sum before the discount (4397 for a three-piece bag that BUY3 charges
-       3737 at 15%). */
+       3518 at 20%). */
     const charged = discountedSubtotal(value, resolved) + SHIPPING_CHARGE;
     trackPixel("InitiateCheckout", {
       currency: lines[0]?.currencyCode || "INR",

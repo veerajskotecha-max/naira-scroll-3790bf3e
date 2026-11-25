@@ -23,13 +23,13 @@ const rungText = (rung: Element) => {
    and is gone. */
 describe("SimpleLadder: the bag's offer strip", () => {
   /* The owner's offer of 25 Nov 2026, as literals: Buy 2 at 10%, Buy 3 at
-     15%, and no Buy 4 ("Keep buy 2 get 10% and buy 3 get 15 only on the cart
-     on additional offers. Remove buy 4 offer"). */
-  it("states both rungs as words, and no Buy 4", () => {
+     20%, no Buy 4, and each said as extra ("so only buy 2 and 3 remain! 10
+     and 20% offer shown as extra discount on current discount"). */
+  it("states both rungs as words, as extra, and no Buy 4", () => {
     const { container } = render(<SimpleLadder totalItems={1} />);
     const rungs = [...container.querySelectorAll("[data-ladder] [data-rung]")];
-    expect(rungs.map(rungText)).toEqual(["Buy 2 · 10% off", "Buy 3 · 15% off"]);
-    expect(container.textContent).not.toMatch(/Buy 4|20%|30%/);
+    expect(rungs.map(rungText)).toEqual(["Buy 2 · extra 10% off", "Buy 3 · extra 20% off"]);
+    expect(container.textContent).not.toMatch(/Buy 4|30%/);
     expect(rungs.map((rung) => rung.getAttribute("data-rung"))).toEqual(QUANTITY_OFFERS.map((offer) => String(offer.minQuantity)));
   });
 
@@ -104,7 +104,7 @@ describe("SimpleLadder: the bag's offer strip", () => {
   /* The rung the bag has reached is said, not only coloured. */
   it("tells a screen reader which rung the bag sits on", () => {
     const { container } = render(<SimpleLadder totalItems={3} />);
-    expect(container.querySelector("[data-current]")?.textContent).toBe("Buy 3 · 15% off, in your bag");
+    expect(container.querySelector("[data-current]")?.textContent).toBe("Buy 3 · extra 20% off, in your bag");
   });
 });
 

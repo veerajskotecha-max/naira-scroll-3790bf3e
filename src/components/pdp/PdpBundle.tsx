@@ -16,7 +16,7 @@ import { usePromoCode } from "./usePromoCode";
   "Complete the look" as a bundle: this piece and the pieces that go with it,
   each with a box to tick, the total for what is ticked, and one button that
   adds them together. The reel's cart ("complete your setup and save") with
-  the shop's real offer: two pieces take 10% off both, three or more 15%
+  the shop's real offer: two pieces take 10% off both, three or more 20%
   (the rates are promo.ts's; these are the ones of 25 Nov 2026).
 
   The pieces are the page's own pairings (lib/pairings `completeTheLook`), in

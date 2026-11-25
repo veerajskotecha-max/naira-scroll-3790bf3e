@@ -8,9 +8,10 @@ import { QUANTITY_OFFERS } from "@/lib/promo";
  * It leads with the buy-more offer (the owner, 2 Nov 2026: "add the offer
  * smartly to ... website headline"), read from promo.ts so it moves with the
  * ladder and always names what the bag takes off: Buy 2 at 10% and Buy 3 at
- * 15% since 25 Nov 2026, when the owner took Buy 4 away ("Keep buy 2 get 10%
- * and buy 3 get 15 only ... Remove buy 4 offer"). The owner had asked for the
- * percentage to come off the strip on 25 Oct; the later ask puts it back.
+ * 20% since 25 Nov 2026, when the owner took Buy 4 away, each said as EXTRA
+ * ("10 and 20% offer shown as extra discount on current discount"). The
+ * owner had asked for the percentage to come off the strip on 25 Oct; the
+ * later ask puts it back.
  * Then the sale (owner asked for the exclamation mark), the shipping promise
  * and the small-run scarcity line. NAIRA10 used to alternate here too, but the
  * owner asked for the code to come off the header; the code still exists in
@@ -20,7 +21,7 @@ import { QUANTITY_OFFERS } from "@/lib/promo";
  * identical halves or it visibly jumps on loop.
  */
 const OFFER_LINE = QUANTITY_OFFERS.map(
-  (offer) => `BUY ${offer.minQuantity} GET ${Math.round(offer.rate * 100)}% OFF`,
+  (offer) => `BUY ${offer.minQuantity} GET EXTRA ${Math.round(offer.rate * 100)}% OFF`,
 ).join(" · ");
 
 const MESSAGES = [OFFER_LINE, "SITEWIDE SALE LIVE TODAY!", "FREE INSURED SHIPPING", "MADE IN LIMITED BATCHES"];

@@ -46,19 +46,18 @@ describe("BagAddOn: one piece that goes with the bag, one tap away", () => {
   });
 
   it("counts the whole bag moving up a step", () => {
-    /* Two pieces, 3,698 at 10% = 3,328 (3,328.20). With the chain: 4,697 at 15% is 3,992.45 → 3,992: adds 664. */
+    /* Two pieces, 3,698 at 10% = 3,328 (3,328.20). With the chain: 4,697 at 20% is 3,757.60 → 3,758: adds 430. */
     row({ subtotal: 3698, totalItems: 2 }, 0.1);
-    expect(document.querySelector(".rn-addon__head")?.textContent).toBe("A third piece takes 15% off your bag");
-    expect(document.querySelector("[data-addon-effect]")?.textContent).toMatch(/^Adds ₹664 to your total/);
+    expect(document.querySelector(".rn-addon__head")?.textContent).toBe("A third piece takes 20% off your bag");
+    expect(document.querySelector("[data-addon-effect]")?.textContent).toMatch(/^Adds ₹430 to your total/);
     /* On a short screen the heading is not drawn; the step rides after the figure. */
-    expect(document.querySelector(".rn-addon__rate")?.textContent?.trim()).toBe("· 15% off your bag");
+    expect(document.querySelector(".rn-addon__rate")?.textContent?.trim()).toBe("· 20% off your bag");
   });
 
   it("says a drop as a drop, never as a negative sum", () => {
-    /* One dear piece at full price, 12,000. With the chain at 10%: 12,999 → 11,699 (11,699.10): the total drops 301.
-       (No bag of the shop's own prices is dear enough for this at 10% and 15%; the figure is for the wording.) */
-    row({ subtotal: 12000, totalItems: 1 }, 0);
-    expect(text()).toMatch(/Your total drops by ₹301/);
+    /* Two dear pieces at 10%: 12,000 → 10,800. With the chain at 20%: 12,999 → 10,399 (10,399.20): the total drops 401. */
+    row({ subtotal: 12000, totalItems: 2 }, 0.1);
+    expect(text()).toMatch(/Your total drops by ₹401/);
     expect(text()).not.toMatch(/-|Adds/);
   });
 

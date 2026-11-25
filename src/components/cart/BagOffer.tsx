@@ -2,8 +2,9 @@ import { CleanRungs, CleanTrack } from "@/components/clean";
 import { QUANTITY_OFFERS, quantityOfferProgress, rungPosition, TOP_QUANTITY_OFFER } from "@/lib/promo";
 
 /*
-  The bag's offer, in one line of words over one 2px line: "Buy 2 · 10% off"
-  and "Buy 3 · 15% off" (the owner's offer of 25 Nov 2026; Buy 4 is gone),
+  The bag's offer, in one line of words over one 2px line: "Buy 2 · extra 10%
+  off" and "Buy 3 · extra 20% off" (the owner's offer of 25 Nov 2026; Buy 4
+  is gone, and each is said as extra, on top of the saving on MRP),
   the rung the bag sits on in gold, and the line under them filling as pieces
   arrive. It is drawn from the same part
   as the product page's steps (CleanRungs), so the two can never disagree.

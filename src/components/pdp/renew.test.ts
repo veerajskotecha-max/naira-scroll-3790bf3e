@@ -58,15 +58,15 @@ describe("setLede: a piece sold as a set says what is in it", () => {
 describe("bundleEffect: what ticked pieces add to the bag, by the bag's own arithmetic", () => {
   const empty = { subtotal: 0, totalItems: 0 };
 
-  /* The offer of 25 Nov 2026, as literals: 10% at two pieces, 15% at three,
+  /* The offer of 25 Nov 2026, as literals: 10% at two pieces, 20% at three,
      and no richer step at four. */
-  it("prices two pieces together at 10% off both, three at 15%, and four at 15% too", () => {
+  it("prices two pieces together at 10% off both, three at 20%, and four at 20% too", () => {
     /* 1,049 + 999 = 2,048; at 10% 1,843.20 → 1,843. */
     expect(bundleEffect(empty, [1049, 999])).toEqual({ sum: 2048, adds: 1843, saves: 205, rate: 0.1 });
-    /* + 699 = 2,747; at 15% 2,334.95 → 2,335. */
-    expect(bundleEffect(empty, [1049, 999, 699])).toEqual({ sum: 2747, adds: 2335, saves: 412, rate: 0.15 });
-    /* + 899 = 3,646; still 15%: 3,099.10 → 3,099. */
-    expect(bundleEffect(empty, [1049, 999, 699, 899])).toEqual({ sum: 3646, adds: 3099, saves: 547, rate: 0.15 });
+    /* + 699 = 2,747; at 20% 2,197.60 → 2,198. */
+    expect(bundleEffect(empty, [1049, 999, 699])).toEqual({ sum: 2747, adds: 2198, saves: 549, rate: 0.2 });
+    /* + 899 = 3,646; still 20%: 2,916.80 → 2,917. */
+    expect(bundleEffect(empty, [1049, 999, 699, 899])).toEqual({ sum: 3646, adds: 2917, saves: 729, rate: 0.2 });
   });
 
   it("takes nothing off one piece on its own", () => {
@@ -75,9 +75,9 @@ describe("bundleEffect: what ticked pieces add to the bag, by the bag's own arit
 
   it("counts the pieces already in the bag: what these add, not a price for them alone", () => {
     /* One ₹2,399 piece in the bag (nothing off). Adding 1,049 + 999 makes
-       three: 4,447 at 15% is 3,779.95 → 3,780; less the 2,399 already there,
-       they add 1,381 and save 667 against their own 2,048. */
-    expect(bundleEffect({ subtotal: 2399, totalItems: 1 }, [1049, 999])).toEqual({ sum: 2048, adds: 1381, saves: 667, rate: 0.15 });
+       three: 4,447 at 20% is 3,557.60 → 3,558; less the 2,399 already there,
+       they add 1,159 and save 889 against their own 2,048. */
+    expect(bundleEffect({ subtotal: 2399, totalItems: 1 }, [1049, 999])).toEqual({ sum: 2048, adds: 1159, saves: 889, rate: 0.2 });
   });
 
   it("is promo.ts's addOnEffect when one piece is added", () => {
@@ -104,30 +104,31 @@ describe("offerLine: what adding this piece does to the bag, in words that say w
   it("says the step the bag reaches and what its total goes up by, never a third price for the piece", () => {
     /* One ₹2,399 piece in the bag. With this one: 3,448 at 10% is 3,103.20 → 3,103; up by 704. */
     expect(offerLine({ subtotal: 2399, totalItems: 1 }, 1049)).toBe("Add to bag and everything in it gets 10% off. Your total goes up by ₹704, not ₹1,049.");
-    /* Two pieces (3,698, at 10%: 3,328). With this one: 4,747 at 15% is 4,034.95 → 4,035; up by 707. */
-    expect(offerLine({ subtotal: 3698, totalItems: 2 }, 1049)).toBe("Add to bag and everything in it gets 15% off. Your total goes up by ₹707, not ₹1,049.");
+    /* Two pieces (3,698, at 10%: 3,328). With this one: 4,747 at 20% is 3,797.60 → 3,798; up by 470. */
+    expect(offerLine({ subtotal: 3698, totalItems: 2 }, 1049)).toBe("Add to bag and everything in it gets 20% off. Your total goes up by ₹470, not ₹1,049.");
   });
 
   it("says a drop as a drop, never as a negative sum", () => {
-    /* At 10% and 15% no bag of the shop's own prices is dear enough for a
-       piece to lower it; these figures are for the wording. One ₹12,000
-       piece, nothing off. With a ₹1,049 one: 13,049 at 10% is 11,744.10 →
+    /* 2,749 + 2,399 = 5,148 at 10% is 4,633. With a ₹599 piece: 5,747 at 20% is 4,597.60 → 4,598: 35 less.
+       On the way to 10% the figures are for the wording only: one ₹12,000
+       piece, nothing off; with a ₹1,049 one, 13,049 at 10% is 11,744.10 →
        11,744: 256 less. And 9,441 with 1,049 more: 10,490 at 10% is 9,441. */
+    expect(offerLine({ subtotal: 5148, totalItems: 2 }, 599)).toBe("Add to bag and everything in it gets 20% off. Your total drops by ₹35.");
     expect(offerLine({ subtotal: 12000, totalItems: 1 }, 1049)).toBe("Add to bag and everything in it gets 10% off. Your total drops by ₹256.");
     expect(offerLine({ subtotal: 9441, totalItems: 1 }, 1049)).toBe("Add to bag and everything in it gets 10% off. Your total stays the same.");
   });
 
   it("names the rate a full bag already has, and leaves the figure to the steps", () => {
-    /* Three pieces are the top since 25 Nov 2026: a fourth, or a fifth, gets the bag's 15%. */
-    expect(offerLine({ subtotal: 5697, totalItems: 3 }, 1049)).toBe("Your bag already has 15% off. This piece gets it too.");
-    expect(offerLine({ subtotal: 7196, totalItems: 4 }, 1049)).toBe("Your bag already has 15% off. This piece gets it too.");
+    /* Three pieces are the top since 25 Nov 2026: a fourth, or a fifth, gets the bag's 20%. */
+    expect(offerLine({ subtotal: 5697, totalItems: 3 }, 1049)).toBe("Your bag already has 20% off. This piece gets it too.");
+    expect(offerLine({ subtotal: 7196, totalItems: 4 }, 1049)).toBe("Your bag already has 20% off. This piece gets it too.");
   });
 
   it("stops selling a piece the bag already holds, and says what one more would do", () => {
     expect(offerLine({ subtotal: 1049, totalItems: 1 }, 1049, true)).toBe("This piece is in your bag. One more piece takes 10% off everything.");
-    expect(offerLine({ subtotal: 3448, totalItems: 2 }, 1049, true)).toBe("This piece is in your bag. One more piece takes 15% off everything.");
-    expect(offerLine({ subtotal: 5697, totalItems: 3 }, 1049, true)).toBe("This piece is in your bag, with 15% off.");
-    expect(offerLine({ subtotal: 7196, totalItems: 4 }, 1049, true)).toBe("This piece is in your bag, with 15% off.");
+    expect(offerLine({ subtotal: 3448, totalItems: 2 }, 1049, true)).toBe("This piece is in your bag. One more piece takes 20% off everything.");
+    expect(offerLine({ subtotal: 5697, totalItems: 3 }, 1049, true)).toBe("This piece is in your bag, with 20% off.");
+    expect(offerLine({ subtotal: 7196, totalItems: 4 }, 1049, true)).toBe("This piece is in your bag, with 20% off.");
   });
 
   it("keeps promo.ts's own sentence for a typed code", () => {
@@ -139,8 +140,8 @@ describe("offerLine: what adding this piece does to the bag, in words that say w
       for (const inBag of [false, true]) {
         const line = offerLine({ subtotal: totalItems * 1200, totalItems }, 1049, inBag && totalItems > 0);
         expect(line).not.toMatch(/\b0% off|NaN|undefined|₹-/);
-        // No rate the offer no longer has (Buy 3 was 20%, Buy 4 was 30%).
-        expect(line).not.toMatch(/20%|30%/);
+        // No rate the offer does not have (Buy 4's 30% is gone).
+        expect(line).not.toMatch(/30%|15%/);
         expect(line.length).toBeGreaterThan(10);
       }
     }
@@ -150,12 +151,12 @@ describe("offerLine: what adding this piece does to the bag, in words that say w
 describe("nextPieceLine and oneOf: the small words", () => {
   it("names the piece a richer step starts at, as the bag's foot always has", () => {
     expect(nextPieceLine(1, 0, 0.1)).toBe("A second piece takes 10% off your bag");
-    expect(nextPieceLine(2, 0.1, 0.15)).toBe("A third piece takes 15% off your bag");
+    expect(nextPieceLine(2, 0.1, 0.2)).toBe("A third piece takes 20% off your bag");
   });
 
   it("says nothing when one more piece reaches no richer step", () => {
-    /* A fourth piece beside three: the bag stays at the top step's 15%. */
-    expect(nextPieceLine(3, 0.15, 0.15)).toBe("");
+    /* A fourth piece beside three: the bag stays at the top step's 20%. */
+    expect(nextPieceLine(3, 0.2, 0.2)).toBe("");
     expect(nextPieceLine(1, 0.2, 0.2)).toBe("");
   });
 

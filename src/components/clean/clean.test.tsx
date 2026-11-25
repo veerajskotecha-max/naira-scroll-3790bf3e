@@ -64,7 +64,7 @@ describe("CleanRungs: the offer as words", () => {
   it("names each rung and its rate, with the piece's price there when given", () => {
     const { container } = render(<CleanRungs offers={OFFERS} totalItems={0} each={(offer) => `${rupees(1049 * (1 - offer.rate))} each`} />);
     const rungs = [...container.querySelectorAll("li")].map((li) => li.textContent);
-    expect(rungs).toEqual(["Buy 2 · 10% off₹944 each", "Buy 3 · 20% off₹839 each", "Buy 4 · 30% off₹734 each"]);
+    expect(rungs).toEqual(["Buy 2 · extra 10% off₹944 each", "Buy 3 · extra 20% off₹839 each", "Buy 4 · extra 30% off₹734 each"]);
     expect(container.querySelector("[data-current]")).toBeNull();
     expect(container.querySelector("a, button")).toBeNull();
   });
@@ -72,7 +72,7 @@ describe("CleanRungs: the offer as words", () => {
     const { container } = render(<CleanRungs offers={OFFERS} totalItems={3} />);
     const current = container.querySelector("[data-current]");
     expect(current?.getAttribute("data-rung")).toBe("3");
-    expect(current?.textContent).toBe("Buy 3 · 20% off, in your bag");
+    expect(current?.textContent).toBe("Buy 3 · extra 20% off, in your bag");
     expect(container.querySelector('[data-rung="2"]')?.hasAttribute("data-passed")).toBe(true);
     expect(container.querySelector('[data-rung="2"]')?.hasAttribute("data-reached")).toBe(true);
     expect(container.querySelector('[data-rung="4"]')?.hasAttribute("data-reached")).toBe(false);

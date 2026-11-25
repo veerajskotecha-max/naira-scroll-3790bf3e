@@ -149,13 +149,14 @@ describe("PdpOfferTracker: Buy 2 / 3 as a line that fills with the bag", () => {
   const frame = () => act(async () => void (await new Promise((r) => requestAnimationFrame(() => r(null)))));
 
   /* The owner's offer of 25 Nov 2026, as literals: Buy 2 at 10%, Buy 3 at
-     15%, and no Buy 4. ₹1,049 at 10% is 944.10, at 15% 891.65. */
+     20%, no Buy 4, each said as extra (it comes on top of the price a piece
+     already sells at). ₹1,049 at 10% is 944.10, at 20% 839.20. */
   it("prices the piece at each step by the bag's rounding, and says any pieces count, with no code", () => {
     render(<PdpOfferTracker price={1049} />);
     expect(document.querySelectorAll("[data-rung]")).toHaveLength(2);
-    expect([...rung(2).children].map((part) => part.textContent)).toEqual(["Buy 2", "10% off", "₹944 each"]);
-    expect([...rung(3).children].map((part) => part.textContent)).toEqual(["Buy 3", "15% off", "₹892 each"]);
-    expect(document.querySelector("[data-offer-ladder]")?.textContent).not.toMatch(/Buy 4|20%|30%/);
+    expect([...rung(2).children].map((part) => part.textContent)).toEqual(["Buy 2", "Extra 10% off", "₹944 each"]);
+    expect([...rung(3).children].map((part) => part.textContent)).toEqual(["Buy 3", "Extra 20% off", "₹839 each"]);
+    expect(document.querySelector("[data-offer-ladder]")?.textContent).not.toMatch(/Buy 4|30%/);
     expect(document.querySelector(".rn-offer__line")?.textContent).toBe("Mix any pieces. The discount applies in your bag, no code needed.");
     expect(stops()).toEqual(["open", "open"]);
     expect(screen.queryByRole("button", { name: "View bag" })).toBeNull();
@@ -203,7 +204,7 @@ describe("PdpOfferTracker: Buy 2 / 3 as a line that fills with the bag", () => {
     await frame();
     expect(fills()).toEqual(["0%", "0%"]);
     expect(stops()).toEqual(["open", "open"]);
-    expect(rung(2).textContent).toBe("Buy 210% off");
+    expect(rung(2).textContent).toBe("Buy 2Extra 10% off");
     expect(document.querySelector(".rn-offer__line")?.textContent).toBe("This offer is for in-stock pieces, not pre-orders.");
     expect(screen.queryByRole("button", { name: "View bag" })).toBeNull();
   });
@@ -231,14 +232,14 @@ describe("PdpBundle: complete the look, ticked and totalled", () => {
   it("re-totals as pieces are ticked and unticked, and its gold label follows the ticks", () => {
     bundle();
     /* One more tick would reach the next step, and the panel says so. */
-    expect(document.querySelector("[data-bundle-nudge]")?.textContent).toBe("Tick one more for 15% off all three.");
+    expect(document.querySelector("[data-bundle-nudge]")?.textContent).toBe("Tick one more for 20% off all three.");
     fireEvent.click(screen.getByRole("checkbox", { name: /Ribbon Bead Bracelet/ }));
-    /* 2,747 at 15% is 2,334.95 → 2,335. */
-    expect(sum()).toMatch(/₹2,335was ₹2,747/);
-    expect(sum()).toMatch(/You save ₹412/);
-    expect(addButton().textContent).toBe("Add 3 pieces₹2,335");
+    /* 2,747 at 20% is 2,197.60 → 2,198. */
+    expect(sum()).toMatch(/₹2,198was ₹2,747/);
+    expect(sum()).toMatch(/You save ₹549/);
+    expect(addButton().textContent).toBe("Add 3 pieces₹2,198");
     /* "2 pieces · 10% off" over a sum at the next step's rate was the stale label the reviews found. */
-    expect(label()).toBe("3 pieces · 15% off");
+    expect(label()).toBe("3 pieces · 20% off");
     expect(document.querySelector("[data-bundle-nudge]")).toBeNull();
     fireEvent.click(screen.getByRole("checkbox", { name: /Ribbon Bead Bracelet/ }));
     fireEvent.click(screen.getByRole("checkbox", { name: /Toggle Link Chain/ }));
@@ -265,14 +266,14 @@ describe("PdpBundle: complete the look, ticked and totalled", () => {
     cart.totalItems = 1;
     cart.subtotal = 2399;
     bundle();
-    /* Three pieces: 4,447 at 15% is 3,779.95 → 3,780, less the 2,399 there: adds 1,381, saves 667. */
-    expect(document.querySelector("[data-bundle-total]")?.textContent).toBe("Adds₹1,381to your total");
-    expect(sum()).toMatch(/You save ₹667/);
+    /* Three pieces: 4,447 at 20% is 3,557.60 → 3,558, less the 2,399 there: adds 1,159, saves 889. */
+    expect(document.querySelector("[data-bundle-total]")?.textContent).toBe("Adds₹1,159to your total");
+    expect(sum()).toMatch(/You save ₹889/);
     /* No struck price beside it, and no figure in the button: here it is not
        a price for these pieces. */
     expect(document.querySelector("[data-bundle-total] del")).toBeNull();
     expect(addButton().textContent).toBe("Add 2 pieces");
-    expect(label()).toBe("15% off your whole bag");
+    expect(label()).toBe("20% off your whole bag");
   });
 
   it("adds this piece and each ticked piece, in order, and opens the bag at the tap", async () => {

@@ -15,7 +15,7 @@ import type { JewelPiece } from "@/data/jewellery";
   offer and the bag's real arithmetic.
 
   The heading is what the next piece does, in the words the bag's foot has
-  always used ("A third piece takes 15% off your bag"). The line under the
+  always used ("A third piece takes 20% off your bag"). The line under the
   name is what this piece does to THIS bag (promo.ts `addOnEffect`, the
   bag's resolver and rounding), and says whose figure it is: "Adds ₹355 to
   your total". On its own, beside the piece's struck price, "Adds ₹355" read

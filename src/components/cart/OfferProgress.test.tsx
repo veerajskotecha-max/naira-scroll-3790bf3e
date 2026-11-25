@@ -15,11 +15,11 @@ afterEach(cleanup);
   and change the BUY codes in Shopify at the same time.
 
   The offer since 25 Nov 2026, the owner's ask: BUY2 = 10% at 2+ pieces and
-  BUY3 = 15% at 3+, with Buy 4 removed. (Before it: 10%, 20% and 30% at 2, 3
+  BUY3 = 20% at 3+, with Buy 4 removed. (Before it: 10%, 20% and 30% at 2, 3
   and 4 pieces from 9 Nov; 20% and 30% at 3 and 4 from 7 Nov; 10% and 20%
   from 3 Nov; 20% and 30% on 2-3 Nov; 15% and 25% from 25 Oct.) In Shopify,
-  BUY3 moves to 15% and BUY4 is switched off AFTER this is live, never
-  before.
+  BUY2 and BUY3 already match; BUY4 is switched off AFTER this is live,
+  never before.
 */
 describe("OfferProgress", () => {
   it("pushes the shopper towards the first rung before they reach it", () => {
@@ -29,25 +29,25 @@ describe("OfferProgress", () => {
 
   it("confirms the earned rung and names the next one", () => {
     render(<OfferProgress totalItems={2} />);
-    expect(screen.getByText("10% off — add 1 piece for 15%")).toBeInTheDocument();
+    expect(screen.getByText("10% off — add 1 piece for 20%")).toBeInTheDocument();
   });
 
   /* Three pieces are the top again since 25 Nov 2026: the band names no
      fourth piece and no richer rate. */
   it("at three pieces, says the bag has its best price and names no fourth", () => {
     const { container } = render(<OfferProgress totalItems={3} />);
-    expect(screen.getByText("15% off — your best price")).toBeInTheDocument();
-    expect(container.textContent).not.toMatch(/30%|20%|4 pieces/);
+    expect(screen.getByText("20% off — your best price")).toBeInTheDocument();
+    expect(container.textContent).not.toMatch(/30%|4 pieces/);
   });
 
   it("stops asking for more once the ladder is topped out", () => {
     render(<OfferProgress totalItems={4} />);
-    expect(screen.getByText("15% off — your best price")).toBeInTheDocument();
+    expect(screen.getByText("20% off — your best price")).toBeInTheDocument();
   });
 
   it("keeps the top rung's copy beyond its threshold", () => {
     render(<OfferProgress totalItems={7} />);
-    expect(screen.getByText(/^15% off —/)).toBeInTheDocument();
+    expect(screen.getByText(/^20% off —/)).toBeInTheDocument();
   });
 
   /* Every rung stays on show at every state: the next one is the reason to
@@ -58,9 +58,9 @@ describe("OfferProgress", () => {
     expect(screen.getByText("2 pieces")).toBeInTheDocument();
     expect(screen.getByText("3 pieces")).toBeInTheDocument();
     expect(screen.getByText("10% off")).toBeInTheDocument();
-    expect(screen.getByText("15% off")).toBeInTheDocument();
+    expect(screen.getByText("20% off")).toBeInTheDocument();
     expect(screen.queryByText("4 pieces")).not.toBeInTheDocument();
-    expect(container.textContent).not.toMatch(/30%|20%/);
+    expect(container.textContent).not.toMatch(/30%/);
   });
 
   /* Each label sits in its own half, under its own marker (1/4 and 3/4):
@@ -79,14 +79,14 @@ describe("OfferProgress", () => {
      the "skips a rung the code matches" case.) */
   it("never offers a saving the bag already has from a code", () => {
     render(<OfferProgress totalItems={1} appliedRate={0.1} quiet />);
-    expect(screen.getByText("10% off — add 2 pieces for 15%")).toBeInTheDocument();
+    expect(screen.getByText("10% off — add 2 pieces for 20%")).toBeInTheDocument();
     expect(screen.queryByText(/save 10%/)).not.toBeInTheDocument();
     expect(screen.queryByText(/for 10%/)).not.toBeInTheDocument();
   });
 
-  /* A 20% code (FRIENDSANDFAMILY) is richer than both rungs (10% and 15%)
-     since 25 Nov 2026, so the band has no rung left to offer: it says the
-     bag has its best price, on one piece and on two. */
+  /* A 20% code (FRIENDSANDFAMILY) already matches the top rung (BUY3, 20%)
+     since Buy 4 went on 25 Nov 2026, so the band has no rung left to offer:
+     it says the bag has its best price, on one piece and on two. */
   it("offers no rung to a bag whose code already beats them all", () => {
     render(<OfferProgress totalItems={1} appliedRate={0.2} quiet />);
     expect(screen.getByText("20% off — your best price")).toBeInTheDocument();

@@ -301,7 +301,7 @@ describe("the bag, state by state", () => {
   it("two pieces: Buy 2 reached, each line struck with its rate, one saving sentence", () => {
     open([hoops, ring]);
     expect(text("[data-total]")).toBe("₹2,023");
-    expect(text("[data-you-save]")).toBe("You save ₹225 · 10% off 2 pieces");
+    expect(text("[data-you-save]")).toBe("You save ₹225 · extra 10% off 2 pieces");
     expect(document.querySelector("[data-next-rung]")).toBeNull();
     expect([...document.querySelectorAll("[data-line-price]")].map((row) => row.textContent)).toEqual(["was ₹1,04910% off", "was ₹1,19910% off"]);
     expect([...document.querySelectorAll("[data-line-total]")].map((total) => total.textContent)).toEqual(["₹944", "₹1,079"]);

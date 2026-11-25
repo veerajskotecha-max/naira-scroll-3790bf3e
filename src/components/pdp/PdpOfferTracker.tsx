@@ -9,7 +9,8 @@ import { usePromoCode } from "./usePromoCode";
   The buy-more offer on the renewed product page: a padded panel under the
   reassurances, with a 2px line that fills as the bag does. The reel's pattern
   ("add one more to unlock…") with the shop's real offer: Buy 2 and Buy 3
-  (10% and 15% since 25 Nov 2026), however many steps promo.ts holds.
+  (extra 10% and extra 20% since 25 Nov 2026), however many steps promo.ts
+  holds.
 
   Every figure is promo.ts's: the rates from QUANTITY_OFFERS, this piece's
   price at each step from `pieceAtRung`, the line's fill from
@@ -109,7 +110,7 @@ const PdpOfferTracker = ({ price, preorder = false, className = "mt-6" }: { pric
               data-passed={state === "passed" ? "" : undefined}
             >
               <span className="rn-rung__name">Buy {offer.minQuantity}</span>
-              <span className="rn-rung__rate">{percent(offer.rate)} off</span>
+              <span className="rn-rung__rate">Extra {percent(offer.rate)} off</span>
               {!preorder && <span className="rn-rung__each">{rupees(pieceAtRung(price, offer))} each</span>}
               {state === "current" ? <span className="nc-sr">, in your bag</span> : null}
             </li>

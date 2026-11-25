@@ -206,7 +206,7 @@ describe("bagAddOns: the one piece the bag offers", () => {
 
   /* The add-on stops at the ladder's top rung: three pieces since Buy 4 went
      on 25 Nov 2026. With two in the bag the third piece is the one that
-     takes the whole bag from 10% to 15%, so it is still offered; a fourth
+     takes the whole bag from 10% to 20%, so it is still offered; a fourth
      brings no step, so the bag stops suggesting one. */
   it("offers nothing once the bag holds three pieces, or for a bag it cannot read", () => {
     expect(bagAddOns(["prism-riviere-bracelet"], 2, live)).not.toBeNull();

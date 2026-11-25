@@ -40,15 +40,15 @@ import { GST_LABEL } from "@/lib/gst";
   (components/clean): one face, six colours, one hairline, one button.
 
     Your bag  2 pieces                                    ×
-    Buy 2 · 10% off            Buy 3 · 15% off              the offer, as words
+    Buy 2 · extra 10% off      Buy 3 · extra 20% off        the offer, as words
     ━━━━━────────────────────────────────────────────────    over one 2px line
     [photo]  the piece, what the line costs, the MRP it
              replaces and the saving, − 1 +, Remove
-    A third piece takes 15% off your bag           (cart/BagAddOn)
+    A third piece takes 20% off your bag           (cart/BagAddOn)
     [photo]  one piece that goes with the bag            [Add]
     ─────────────────────────────────────────────────────
     Total  incl. 3% GST                    ₹3,448  ₹1,843
-    You save ₹1,605 · includes 10% off 2 pieces
+    You save ₹1,605 · includes extra 10% off 2 pieces
     Free insured shipping · Arrives 25–27 Nov
           ★ 4.5/5 · Trusted by 5,000+ clients     (cart/BagTrust)
              UPI · Cards · Cash on delivery
@@ -69,10 +69,9 @@ const formatPrice = (n: number) => `₹${Math.round(n).toLocaleString("en-IN")}`
    its own: the product page's figure for that rung (`pieceAtRung`) and, to
    the rupee, the per-piece price Shopify charges. It used to be the line's
    share of the bag's rounded total divided by its pieces, which gave
-   "₹799.33 each" for three ₹999 pieces at the 20% of the time, and, once
-   rounded, puts two ₹1,499 pieces at 15% at "₹1,275 each" against ₹1,274 on
-   the product page (Shopify: ₹1,274.15) whenever the bag's leftover rupee
-   lands on that line.
+   "₹799.33 each" for three ₹999 pieces at 20%, and, once rounded, puts two
+   ₹1,499 pieces at 20% at "₹1,200 each" against ₹1,199 on the product page
+   (Shopify: ₹1,199.20) whenever the bag's leftover rupee lands on that line.
    The line's total stays its share of the bag's total, so the lines still
    add up to it. */
 const formatUnitPrice = (n: number) => `₹${Math.round(n).toLocaleString("en-IN")}`;
@@ -241,7 +240,7 @@ const CartDrawerNext = () => {
   const mrpTotal = lines.reduce((sum, item) => sum + (mrpOf(item) ?? item.price) * item.quantity, 0) + SHIPPING_CHARGE;
   const youSave = mrpTotal - orderTotal;
   const savedOnMrp = mrpTotal - (lineSubtotal + SHIPPING_CHARGE);
-  const offerWords = `${pct(discount.rate)} ${rung ? `off ${lineCount} pieces` : "with your code"}`;
+  const offerWords = rung ? `extra ${pct(discount.rate)} off ${lineCount} pieces` : `${pct(discount.rate)} with your code`;
   const saveLine =
     youSave <= 0
       ? ""

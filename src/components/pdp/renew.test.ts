@@ -110,6 +110,15 @@ describe("renew.css", () => {
     }
   });
 
+  /* The bundle's tick is drawn over the middle of its box, in a layer above
+     the input (it is transformed). In a browser a tap there landed on the
+     drawing and ticked nothing; it must let taps through. */
+  it("lets taps pass through the bundle's drawn tick to its input", () => {
+    expect(css).toMatch(/\.nf-clean \.rn-check svg \{[^}]*pointer-events: none/);
+    const bundle = readFileSync(resolve(__dirname, "PdpBundle.tsx"), "utf8");
+    expect(bundle).toMatch(/<label className="rn-check" data-on=\{on \? "" : undefined\}>\s*<input\s+type="checkbox"/);
+  });
+
   it("moves only transform, opacity, colour and the offer line's width", () => {
     const moved = [...css.matchAll(/transition:\s*([^;]+);/g)].flatMap((m) => m[1].split(",").map((part) => part.trim().split(/\s+/)[0]));
     expect([...new Set(moved)].sort()).toEqual(["background-color", "border-color", "color", "none", "opacity", "transform", "width"]);

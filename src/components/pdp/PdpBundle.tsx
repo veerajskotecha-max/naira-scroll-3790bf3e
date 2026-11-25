@@ -138,7 +138,9 @@ const PdpBundle = ({ title, anchor, pieces, hrefFor, prefer }: Props) => {
               {need ? (
                 <span aria-hidden="true" className="block w-[22px]" />
               ) : (
-                <span className="rn-check" data-on={on ? "" : undefined}>
+                /* A label, so a tap anywhere on the box reaches the input:
+                   the drawn tick sits over its middle. */
+                <label className="rn-check" data-on={on ? "" : undefined}>
                   <input
                     type="checkbox"
                     checked={on}
@@ -146,7 +148,7 @@ const PdpBundle = ({ title, anchor, pieces, hrefFor, prefer }: Props) => {
                     aria-label={`Add ${piece.name}${variant ? ` in ${variantLabel(variant)}` : ""}, ${rupees(price)}`}
                   />
                   <Tick className="" />
-                </span>
+                </label>
               )}
               <Link to={to} tabIndex={-1} aria-hidden="true">
                 <img src={shopifyImage(image, 160)} alt="" width={56} height={56} loading="lazy" decoding="async" />

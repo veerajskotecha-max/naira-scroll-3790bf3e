@@ -98,9 +98,10 @@
 .nf-clean .rn-bundle__price { font-size: 14px; line-height: 20px; color: var(--nc-ink); white-space: nowrap; font-variant-numeric: tabular-nums; }
 /* A square box with a tick drawn in when chosen; the input itself fills its
    44px target and stays the thing a keyboard and a screen reader meet. */
-.nf-clean .rn-check { position: relative; display: grid; place-items: center; width: 22px; height: 22px; border: 1px solid var(--nc-muted); background: var(--nc-ivory); color: var(--nc-ivory); transition: background-color var(--nc-fast) ease, border-color var(--nc-fast) ease; }
+.nf-clean .rn-check { position: relative; display: grid; place-items: center; width: 22px; height: 22px; border: 1px solid var(--nc-muted); background: var(--nc-ivory); color: var(--nc-ivory); cursor: pointer; transition: background-color var(--nc-fast) ease, border-color var(--nc-fast) ease; }
 .nf-clean .rn-check input { position: absolute; inset: -11px; width: 44px; height: 44px; margin: 0; opacity: 0; cursor: pointer; }
-.nf-clean .rn-check svg { width: 12px; height: 12px; transform: scale(0.4); opacity: 0; transition: transform var(--nc-fast) var(--nc-ease), opacity var(--nc-fast) ease; }
+/* The tick is a drawing, not a target: taps pass through it to the input. */
+.nf-clean .rn-check svg { width: 12px; height: 12px; transform: scale(0.4); opacity: 0; pointer-events: none; transition: transform var(--nc-fast) var(--nc-ease), opacity var(--nc-fast) ease; }
 .nf-clean .rn-check[data-on] { background: var(--nc-ink); border-color: var(--nc-ink); }
 .nf-clean .rn-check[data-on] svg { transform: none; opacity: 1; }
 .nf-clean .rn-check[data-fixed] { opacity: 0.55; }

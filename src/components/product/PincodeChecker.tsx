@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { MapPin, CheckCircle2, AlertCircle, Info } from "lucide-react";
 import {
   getServiceability,
@@ -30,6 +30,10 @@ const PincodeChecker = ({
   look?: "clean";
   onChecked?: (pincode: string | null) => void;
 }) => {
+  /* The listener, held in a ref: the check below runs once on arrival for a
+     remembered pincode, and must not run again because the page re-rendered. */
+  const heard = useRef(onChecked);
+  heard.current = onChecked;
   const [pincode, setPincode] = useState("");
   const [result, setResult] = useState<Result | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -57,7 +61,7 @@ const PincodeChecker = ({
       return;
     }
     const info = getServiceability(value);
-    onChecked?.(info ? value : null);
+    heard.current?.(info ? value : null);
     if (info) {
       const eta = formatDeliveryDate(addWorkingDays(new Date(), info.days));
       setResult({ ...info, eta });

@@ -1,0 +1,382 @@
+{
+ "store1": {
+  "name": "Store 1 · a week ago",
+  "first": {
+   "h1": "Woven Gold Hoops",
+   "h1Top": 549,
+   "h1Size": "22px",
+   "h1Font": "Velista",
+   "priceTop": 583,
+   "priceSize": 19,
+   "addToBag": [
+    {
+     "text": "Add to cart",
+     "top": 760,
+     "bottom": 810,
+     "h": 50,
+     "w": 175,
+     "fixed": "",
+     "bg": "rgb(26, 22, 20)",
+     "color": "rgb(251, 243, 236)"
+    }
+   ],
+   "buyNow": [
+    {
+     "text": "Buy Now",
+     "top": 760,
+     "bottom": 810,
+     "h": 50,
+     "w": 175,
+     "fixed": "",
+     "bg": "rgba(0, 0, 0, 0)",
+     "color": "rgb(26, 22, 20)"
+    }
+   ],
+   "preorder": [],
+   "photo": {
+    "top": 107,
+    "h": 390,
+    "w": 390
+   },
+   "firstScreen": {
+    "elementsWithText": 39,
+    "words": 123,
+    "fontSizes": [
+     9.5,
+     10,
+     10.5,
+     11,
+     11.5,
+     12,
+     13.5,
+     19,
+     22,
+     23
+    ],
+    "smallestText": 9.5,
+    "under12px": 30,
+    "families": {
+     "ui-sans-serif": 19,
+     "Jost": 15,
+     "Velista": 2,
+     "Cormorant Garamond": 3
+    },
+    "colours": 8
+   },
+   "pageHeight": 3501,
+   "screens": 4.1,
+   "overflowX": 0,
+   "strip": "BUY 2 GET 10% OFF · BUY 3 GET 20% OFF · BUY 4 GET 30% OFF✦SITEWIDE SALE LIVE TODAY!✦FREE I"
+  },
+  "offerText": "Applied in your bag · no codeBuy 210% off₹944 eachBuy 320% off₹839 eachBuy 430% off₹734 each",
+  "sections": [
+   "872: Details",
+   "923: Care",
+   "974: Delivery & returns",
+   "1065: Complete the look",
+   "1417: Customer Reviews",
+   "1941: As featured in",
+   "2135: Shop the reel",
+   "2936: More earrings"
+  ],
+  "fullHeight": 3501,
+  "net": {
+   "requests": 69,
+   "img": 32,
+   "js": 26,
+   "bytes": 590112,
+   "kb": 576
+  },
+  "small": {
+   "buttons": [
+    {
+     "text": "Add to cart",
+     "top": 761,
+     "bottom": 811
+    },
+    {
+     "text": "Buy Now",
+     "top": 761,
+     "bottom": 811
+    },
+    {
+     "text": "Buy Now",
+     "top": 584,
+     "bottom": 632
+    },
+    {
+     "text": "Add to cart",
+     "top": 584,
+     "bottom": 632
+    }
+   ],
+   "vh": 640,
+   "overflowX": 0
+  },
+  "bag": {
+   "open": true,
+   "total": "₹3,558",
+   "save": "You save ₹889 · 20% for 3 pieces",
+   "ladder": "✦ Sitewide sale live today · up to 30% offBuy 210% offBuy 320% offBuy 430% off",
+   "text": "HOMEJEWELLERYShop AllRingsEarringsNecklacesBraceletsCUSTOM OUTFITSTHE EDITSOCCASIONGIFTINGTRACK ORDERCONTACT3WhatsApp Us",
+   "checkout": {
+    "text": "Checkout",
+    "top": 749,
+    "bottom": 801,
+    "h": 52
+   },
+   "vh": 844,
+   "subtotal": 4447
+  }
+ },
+ "store2": {
+  "name": "Store 2 · live today (as it went live 3 hours ago)",
+  "first": {
+   "h1": "Woven Gold Hoops",
+   "h1Top": 535,
+   "h1Size": "26px",
+   "h1Font": "Jost",
+   "priceTop": 573,
+   "priceSize": 20,
+   "addToBag": [
+    {
+     "text": "Add to bag₹1,049",
+     "top": 694,
+     "bottom": 746,
+     "h": 52,
+     "w": 238,
+     "fixed": "",
+     "bg": "rgb(26, 22, 20)",
+     "color": "rgb(251, 243, 236)"
+    }
+   ],
+   "buyNow": [
+    {
+     "text": "Buy now",
+     "top": 694,
+     "bottom": 746,
+     "h": 52,
+     "w": 112,
+     "fixed": "",
+     "bg": "rgba(0, 0, 0, 0)",
+     "color": "rgb(26, 22, 20)"
+    }
+   ],
+   "preorder": [],
+   "photo": {
+    "top": 107,
+    "h": 390,
+    "w": 390
+   },
+   "firstScreen": {
+    "elementsWithText": 32,
+    "words": 113,
+    "fontSizes": [
+     10,
+     11,
+     13,
+     14,
+     20,
+     26
+    ],
+    "smallestText": 10,
+    "under12px": 11,
+    "families": {
+     "ui-sans-serif": 8,
+     "Jost": 24
+    },
+    "colours": 5
+   },
+   "pageHeight": 3299,
+   "screens": 3.9,
+   "overflowX": 0,
+   "strip": "BUY 2 GET 10% OFF · BUY 3 GET 20% OFF · BUY 4 GET 30% OFF✦SITEWIDE SALE LIVE TODAY!✦FREE I"
+  },
+  "offerText": "Buy more, save moreBuy 210% off₹944 eachBuy 320% off₹839 eachBuy 430% off₹734 eachMix any pieces. The discount applies in your bag, no code needed.",
+  "sections": [
+   "1202: Description",
+   "1255: Details and size",
+   "1308: Care and plating",
+   "1361: Delivery and returns",
+   "1476: Complete the look",
+   "2015: Reviews",
+   "2955: As featured in",
+   "3099: Shop the reel",
+   "3845: More earrings"
+  ],
+  "fullHeight": 4413,
+  "net": {
+   "requests": 64,
+   "img": 28,
+   "js": 24,
+   "bytes": 517272,
+   "kb": 505
+  },
+  "small": {
+   "buttons": [
+    {
+     "text": "Buy now",
+     "top": 660,
+     "bottom": 712
+    },
+    {
+     "text": "Add to bag₹1,049",
+     "top": 660,
+     "bottom": 712
+    },
+    {
+     "text": "Buy now",
+     "top": 584,
+     "bottom": 632
+    },
+    {
+     "text": "Add to bag",
+     "top": 584,
+     "bottom": 632
+    }
+   ],
+   "vh": 640,
+   "overflowX": 0
+  },
+  "bag": {
+   "open": true,
+   "total": "₹3,558",
+   "save": "You save ₹3,619 · includes 20% off 3 pieces",
+   "ladder": "Buy 2 · 10% offBuy 3 · 20% off, in your bagBuy 4 · 30% off",
+   "text": "HOMEJEWELLERYShop AllRingsEarringsNecklacesBraceletsCUSTOM OUTFITSTHE EDITSOCCASIONGIFTINGTRACK ORDERCONTACT3WhatsApp Us",
+   "checkout": {
+    "text": "Checkout",
+    "top": 748,
+    "bottom": 800,
+    "h": 52
+   },
+   "vh": 844,
+   "subtotal": 4447
+  }
+ },
+ "store3": {
+  "name": "Store 3 · new offer",
+  "first": {
+   "h1": "Woven Gold Hoops",
+   "h1Top": 535,
+   "h1Size": "26px",
+   "h1Font": "Jost",
+   "priceTop": 573,
+   "priceSize": 20,
+   "addToBag": [
+    {
+     "text": "Add to bag₹1,049",
+     "top": 694,
+     "bottom": 746,
+     "h": 52,
+     "w": 238,
+     "fixed": "",
+     "bg": "rgb(26, 22, 20)",
+     "color": "rgb(251, 243, 236)"
+    }
+   ],
+   "buyNow": [
+    {
+     "text": "Buy now",
+     "top": 694,
+     "bottom": 746,
+     "h": 52,
+     "w": 112,
+     "fixed": "",
+     "bg": "rgba(0, 0, 0, 0)",
+     "color": "rgb(26, 22, 20)"
+    }
+   ],
+   "preorder": [],
+   "photo": {
+    "top": 107,
+    "h": 390,
+    "w": 390
+   },
+   "firstScreen": {
+    "elementsWithText": 32,
+    "words": 105,
+    "fontSizes": [
+     10,
+     11,
+     13,
+     14,
+     20,
+     26
+    ],
+    "smallestText": 10,
+    "under12px": 11,
+    "families": {
+     "ui-sans-serif": 8,
+     "Jost": 24
+    },
+    "colours": 5
+   },
+   "pageHeight": 3299,
+   "screens": 3.9,
+   "overflowX": 0,
+   "strip": "BUY 2 GET EXTRA 10% OFF · BUY 3 GET EXTRA 20% OFF✦SITEWIDE SALE LIVE TODAY!✦FREE INSURED S"
+  },
+  "offerText": "Buy more, save moreBuy 2Extra 10% off₹944 eachBuy 3Extra 20% off₹839 eachMix any pieces. The discount applies in your bag, no code needed.",
+  "sections": [
+   "1202: Description",
+   "1255: Details and size",
+   "1308: Care and plating",
+   "1361: Delivery and returns",
+   "1476: Complete the look",
+   "2015: Reviews",
+   "2955: As featured in",
+   "3099: Shop the reel",
+   "3845: More earrings"
+  ],
+  "fullHeight": 4413,
+  "net": {
+   "requests": 65,
+   "img": 32,
+   "js": 24,
+   "bytes": 1775510,
+   "kb": 1734
+  },
+  "small": {
+   "buttons": [
+    {
+     "text": "Buy now",
+     "top": 660,
+     "bottom": 712
+    },
+    {
+     "text": "Add to bag₹1,049",
+     "top": 660,
+     "bottom": 712
+    },
+    {
+     "text": "Buy now",
+     "top": 584,
+     "bottom": 632
+    },
+    {
+     "text": "Add to bag",
+     "top": 584,
+     "bottom": 632
+    }
+   ],
+   "vh": 640,
+   "overflowX": 0
+  },
+  "bag": {
+   "open": true,
+   "total": "₹3,558",
+   "save": "You save ₹3,619 · includes extra 20% off 3 pieces",
+   "ladder": "Buy 2 · extra 10% offBuy 3 · extra 20% off, in your bag",
+   "text": "HOMEJEWELLERYShop AllRingsEarringsNecklacesBraceletsCUSTOM OUTFITSTHE EDITSOCCASIONGIFTINGTRACK ORDERCONTACT3WhatsApp Us",
+   "checkout": {
+    "text": "Checkout",
+    "top": 748,
+    "bottom": 800,
+    "h": 52
+   },
+   "vh": 844,
+   "subtotal": 4447
+  }
+ }
+}

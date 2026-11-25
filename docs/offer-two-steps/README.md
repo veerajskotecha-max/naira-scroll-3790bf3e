@@ -1,121 +1,88 @@
-# Buy-more offer: Buy 2 = 10%, Buy 3 = 15%, Buy 4 removed
+# Buy-more offer: Buy 2 = extra 10%, Buy 3 = extra 20%, Buy 4 removed
 
-25 Nov 2026. **On `main` since that evening (commit `c18a5c8b`, a plain
-fast-forward from `9287744f`), after the owner said yes to sending it. It is
-live only once Publish is pressed in Lovable, and nothing in Shopify has been
-touched: steps 2 and 3 below are still to do.** The same commit is kept
-beside this file as `offer-two-steps.bundle`.
-
-The owner was also asked what "only on the cart" meant and chose to keep the
-offer showing everywhere it shows today (cart, product page, header strip,
-home line), with the new numbers.
-
-## What the owner asked
-
-Sent with a screenshot of the live bag (four pieces, "Buy 2 · 10% off / Buy 3 ·
-20% off / Buy 4 · 30% off", "includes 30% off 4 pieces"):
+25 Nov 2026, the owner's ask, in two messages an hour apart:
 
 > Keep buy 2 get 10% and buy 3 get 15 only on the cart on additional offers.
 > Remove buy 4 offer
 
-## What a shopper gets
+> Buy 3 keep 20% not 15.... so only buy 2 and 3 remain! 10 and 20% offer shown
+> as extra discount on current discount
 
-| Pieces in the bag | Live today | After this change |
+## Where things stand
+
+| | Offer it shows | State |
+|---|---|---|
+| The live site (nairaflore.com) | Buy 2 = 10%, Buy 3 = **15%**, no Buy 4 | Published the evening of 25 Nov from `main` at `c18a5c8b`, the first reading of the ask. **Not what the owner wants.** |
+| `main` | the same (`c18a5c8b`) | |
+| The corrected version | Buy 2 = **extra 10%**, Buy 3 = **extra 20%**, no Buy 4 | Commit `cf0a0b57` on top of `c18a5c8b`. Built and checked. Kept here as `offer-two-steps.bundle` until the owner says to send it to `main`. |
+| Shopify | BUY2 10%, BUY3 20%, BUY4 30%, all active | Untouched. Read only. |
+
+While the 15% version is live, a three-piece order is charged 20% off
+(Shopify's BUY3) where the bag quotes 15%: the shopper pays less than quoted.
+
+## What a shopper gets with the corrected version
+
+| Pieces in the bag | Before 25 Nov | Corrected version |
 |---|---|---|
 | 1 | nothing | nothing |
-| 2 | 10% off | 10% off |
-| 3 | 20% off | **15% off** |
-| 4 or more | 30% off | **15% off** (Buy 4 is gone) |
+| 2 | 10% off | extra 10% off |
+| 3 | 20% off | extra 20% off |
+| 4 or more | 30% off | extra 20% off (Buy 4 is gone) |
 
-- **Bag:** the strip reads "Buy 2 · 10% off" and "Buy 3 · 15% off". Three or
-  more pieces take 15%. The bag stops suggesting another piece at three
-  (there is no further step to reach).
-- **Product page:** the "Buy more, save more" panel has two steps, each priced
-  for the piece; the "Complete the look" bundle totals at 10% for two pieces
-  and 15% for three or more.
-- **Header strip:** "BUY 2 GET 10% OFF · BUY 3 GET 15% OFF". **Home line:**
-  "Up to 15% off when you buy more".
-- A BUY4 typed by hand, or left in a browser from before, is ignored and
-  never reaches the checkout.
+"Extra" because the offer comes off the price a piece already sells at, on top
+of its saving on MRP. It is said that way wherever the offer is stated:
 
-The four-piece bag in the owner's screenshot came to ₹6,017 at 30%. Worked
-from that figure (₹8,596 before the offer), it comes to about ₹7,307 at 15%.
+- **Bag:** "Buy 2 · extra 10% off", "Buy 3 · extra 20% off"; the saving line
+  reads "You save ₹3,619 · includes extra 20% off 3 pieces". The bag stops
+  suggesting another piece at three.
+- **Product page:** the panel's two steps read "Extra 10% off" and "Extra 20%
+  off", each priced for the piece.
+- **Header strip:** "BUY 2 GET EXTRA 10% OFF · BUY 3 GET EXTRA 20% OFF".
+  **Home line:** "Up to extra 20% off when you buy more".
+- A BUY4 typed by hand, or left in a browser from before, is ignored.
 
-Pictures of the built site are in `screens/`: the bag at two, three and four
-pieces (real pieces at their real prices: ₹3,103, ₹3,780 and ₹4,374) and the
-product page's offer panel. `pictures.cjs` takes them; like `walk.cjs`, it
-lets no write and no tracking request leave.
-
-## The code
-
-One file changes in its code: `src/lib/promo.ts`.
-
-```
- PROMO_DISCOUNTS   BUY3: 0.2 → 0.15      BUY4: 0.3 → removed
- QUANTITY_OFFERS   BUY3 rate 0.2 → 0.15  BUY4 (4 pieces, 0.3) → removed
-```
-
-Every screen reads the offer from there. The other 36 files in the commit are
-tests (the rates are pinned as literals on purpose, each figure worked by
-hand), comments, and the notes in `CLAUDE.md`, `AGENTS.md` and `roadmap.md`.
-`src/contexts/CartContext.tsx` changes in two comments only; this was checked
-by comparing every source file with its comments stripped.
+Pictures of the built site are in `screens/` (real pieces at their real
+prices: two pieces ₹3,103, three ₹3,558, four ₹4,117).
 
 ## To make it live, in this order
 
-1. **Put the commit on `main`.** Done on 25 Nov 2026 (`c18a5c8b`).
-2. **Press Publish in Lovable.** Committing is not deploying.
-3. **Only after it is live, in Shopify admin → Discounts:**
-   - `BUY3`: change 20% to 15% (and its title, "BUY3 — extra 20% off 3 or
-     more items").
-   - `BUY4`: deactivate ("BUY4 — extra 30% off 4 or more items").
-   - Leave `BUY2` (10%) and `NAIRA10` (10%) as they are.
+1. **Put `cf0a0b57` on `main`** (needs the owner's word). From `main` at
+   `c18a5c8b`:
+   `git fetch docs/offer-two-steps/offer-two-steps.bundle offer-extra && git merge --ff-only FETCH_HEAD`
+   (a real merge commit if `main` has moved; never rebase or force-push).
+2. **Press Publish in Lovable.**
+3. **Only after it is live, in Shopify admin → Discounts: deactivate `BUY4`.**
+   BUY2 (10%) and BUY3 (20%) already match the site and need no edit.
 
-Why this order: the change lowers what the bag gives. If Shopify moved first,
-the live bag would promise 20% and 30% that the checkout no longer gave. Done
-this way round, the only gap is in the shopper's favour: between steps 2 and
-3 a three-piece order is charged 20% off where the bag quoted 15%. So do step
-3 soon after step 2.
+## The code
 
-Read from Shopify on 25 Nov 2026 (read only): BUY2 10%, BUY3 20%, BUY4 30%,
-NAIRA10 10%, FRIENDSANDFAMILY 20%, all five active.
-
-To undo after it is on `main`: `git revert <the commit>`, Publish, and set
-Shopify back.
-
-## Two things for the owner
-
-1. **"Only on the cart".** Settled: the owner chose to keep the two offers
-   showing wherever the offer is named (the bag, the product page panel, the
-   header strip and the home line), not in the cart alone.
-2. **FRIENDSANDFAMILY (20%)** now beats the buy-more offer on every bag. It
-   used to tie Buy 3 at three pieces and lose to Buy 4. In Shopify it covers
-   jewellery only, so an outfit in a bag with that code would be quoted 20%
-   off and charged full price. Keep, lower or retire it: the owner's call.
+- `src/lib/promo.ts`: BUY4 leaves the ladder and the table of typed codes;
+  BUY2 stays 10% and BUY3 stays 20%.
+- The word "extra": `clean/CleanRungs.tsx`, `pdp/PdpOfferTracker.tsx`,
+  `AnnouncementBar.tsx`, `HeroSection.tsx`, and the saving line in
+  `CartDrawerNext.tsx`.
+- Everything else is tests (rates pinned as literals, worked by hand),
+  comments, and the notes in `CLAUDE.md`, `AGENTS.md` and `roadmap.md`.
 
 ## Checks
 
-- `npx tsc --noEmit -p tsconfig.app.json`: clean. ESLint on every changed
-  file: clean (one old warning in CartContext, not from this change).
-- `npx vitest run`: 1,214 of 1,215 pass. The one failure is
-  `src/hooks/useReels.test.ts`, which fails on `main` too and always has.
-- `npm run build`: 239 of 239 pages pre-rendered. No built file still names
-  Buy 4, "GET 20%", "GET 30%" or "Up to 30%".
-- `walk.cjs` (in this folder) against the built site in a real browser, every
-  write refused and every tracking request aborted. It passed:
+- tsc clean; ESLint clean (one old warning in CartContext).
+- 1,214 of 1,215 tests pass; the one failure is the old `useReels` test.
+- Full build, 239 of 239 pages pre-rendered; no built page names Buy 4,
+  "GET 30%" or 15%.
+- `stores/fit.cjs`: "extra" measured at 320, 360 and 390px. The panel, the
+  bag's strip and the saving line hold one line; the home line takes two
+  lines at 320px only.
+- `pictures.cjs`: bag totals to the rupee at two, three and four pieces, no
+  write and no tracking request leaving.
 
-  | Bag | Total | Says | Strip |
-  |---|---|---|---|
-  | 1 piece (₹1,049) | ₹1,049 | suggests "A second piece takes 10% off your bag" | nothing marked |
-  | 2 pieces (₹3,448) | ₹3,103 | "includes 10% off 2 pieces"; suggests "A third piece takes 15% off your bag" | Buy 2 |
-  | 3 pieces (₹4,447) | ₹3,780 | "includes 15% off 3 pieces"; no suggestion | Buy 3 |
-  | 4 pieces (₹5,446) | ₹4,629 | "includes 15% off 4 pieces" | Buy 3 |
-  | 5 pieces (₹6,945) | ₹5,903 | "includes 15% off 5 pieces" | Buy 3 |
-  | 3 pieces, NAIRA10 typed | ₹3,780 | the step's 15% wins over the code's 10% | |
-  | 3 pieces, FRIENDSANDFAMILY typed | ₹3,558 | "includes 20% with your code" | |
-  | 4 pieces, BUY4 left in storage | ₹4,629 | the old code is ignored | |
+FRIENDSANDFAMILY (20%) ties the top step again from three pieces, where the
+bag hands the checkout BUY3; it wins on one and two pieces, as before 25 Nov.
 
-  Product page (₹1,049 piece): "Buy 2 · 10% off · ₹944 each", "Buy 3 · 15% off
-  · ₹892 each"; with two other pieces in the bag: "Add to bag and everything
-  in it gets 15% off. Your total goes up by ₹722, not ₹1,049."; with three:
-  "Your bag already has 15% off. This piece gets it too."
+## The three stores, side by side
+
+`stores/` holds one phone (390x844), one piece (Woven Gold Hoops), three
+versions: the site as built on 16 Nov ("a week ago"), the version that went
+live on 25 Nov with the three-step offer, and the corrected two-step version.
+`three-stores-*.jpg` are the boards, `measurements.json` the plain
+measurements, `shoot.cjs` the script that took both.

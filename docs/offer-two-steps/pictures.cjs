@@ -13,7 +13,7 @@ const PIECES = [
   { id: "toggle-link-chain", variantId: "gid://shopify/ProductVariant/47501786742946", name: "Toggle Link Chain", price: 999, image: img("toggle-link-chain-1.jpg", 1787277342) },
   { id: "brushed-gold-huggies", variantId: "gid://shopify/ProductVariant/47501787594914", name: "Brushed Gold Huggies", price: 699, image: img("brushed-gold-huggies-1.jpg", 1787277497) },
 ].map((p, i) => ({ ...p, lineId: `l${i + 1}`, priceLabel: inr(p.price), currencyCode: "INR", quantity: 1 }));
-const RATE = [0, 0, 0.1, 0.15, 0.15];
+const RATE = [0, 0, 0.1, 0.2, 0.2];
 (async () => {
   require("node:fs").mkdirSync(OUT, { recursive: true });
   const browser = await chromium.launch({ args: ["--disable-blink-features=AutomationControlled"] });

@@ -1,8 +1,14 @@
 # Buy-more offer: Buy 2 = 10%, Buy 3 = 15%, Buy 4 removed
 
-25 Nov 2026. **Built and checked. NOT on `main` yet, and nothing in Shopify has
-been touched.** The work is one commit, `c18a5c8b`, on top of `main` as it
-stood at `9287744f`, saved beside this file as `offer-two-steps.bundle`.
+25 Nov 2026. **On `main` since that evening (commit `c18a5c8b`, a plain
+fast-forward from `9287744f`), after the owner said yes to sending it. It is
+live only once Publish is pressed in Lovable, and nothing in Shopify has been
+touched: steps 2 and 3 below are still to do.** The same commit is kept
+beside this file as `offer-two-steps.bundle`.
+
+The owner was also asked what "only on the cart" meant and chose to keep the
+offer showing everywhere it shows today (cart, product page, header strip,
+home line), with the new numbers.
 
 ## What the owner asked
 
@@ -57,10 +63,7 @@ by comparing every source file with its comments stripped.
 
 ## To make it live, in this order
 
-1. **Put the commit on `main`.** From an up-to-date `main`:
-   `git fetch docs/offer-two-steps/offer-two-steps.bundle offer-two-steps && git merge --ff-only FETCH_HEAD`
-   (if `main` has moved since `9287744f`, make it a real merge commit; never
-   rebase or force-push), then push.
+1. **Put the commit on `main`.** Done on 25 Nov 2026 (`c18a5c8b`).
 2. **Press Publish in Lovable.** Committing is not deploying.
 3. **Only after it is live, in Shopify admin → Discounts:**
    - `BUY3`: change 20% to 15% (and its title, "BUY3 — extra 20% off 3 or
@@ -82,11 +85,9 @@ Shopify back.
 
 ## Two things for the owner
 
-1. **"Only on the cart".** This was read as "keep only these two offers".
-   The same two offers therefore show wherever the offer is named: the bag,
-   the product page panel, the header strip and the home line. They have to
-   agree, because the bag charges by them. If it meant "show the offer in the
-   cart and nowhere else", that is a second, small change.
+1. **"Only on the cart".** Settled: the owner chose to keep the two offers
+   showing wherever the offer is named (the bag, the product page panel, the
+   header strip and the home line), not in the cart alone.
 2. **FRIENDSANDFAMILY (20%)** now beats the buy-more offer on every bag. It
    used to tie Buy 3 at three pieces and lose to Buy 4. In Shopify it covers
    jewellery only, so an outfit in a bag with that code would be quoted 20%

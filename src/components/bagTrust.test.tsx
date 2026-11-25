@@ -6,9 +6,11 @@ import { CartProvider, useCart } from "@/contexts/CartContext";
 import CartDrawerNext from "./CartDrawerNext";
 
 /*
-  The trust block in the real bag (the owner's ask, 16 Nov 2026, option B): the
-  star line and the ways to pay sit in the foot, directly above Checkout, and
-  the button keeps its GPay, PhonePe and Paytm discs. Shopify is only read here.
+  The trust block in the real bag (the owner's ask, 16 Nov 2026): the rating
+  line and the ways to pay sit in the foot, directly above Checkout. In the
+  clean redesign the ways to pay are words ("UPI · Cards · Cash on delivery")
+  and the button is its label alone: the GPay, PhonePe and Paytm discs were
+  the last foreign colours in the bag. Shopify is only read here.
 */
 const mocks = vi.hoisted(() => ({ fetch: vi.fn() }));
 vi.mock("@/lib/shopify", () => ({
@@ -63,7 +65,7 @@ const openBag = async () => {
 beforeEach(() => localStorage.clear());
 afterEach(cleanup);
 
-describe("the bag's trust block (option B)", () => {
+describe("the bag's trust block", () => {
   it("sits in the foot, directly above Checkout", async () => {
     await openBag();
     const block = document.querySelector("[data-bag-foot] [data-bag-trust]") as HTMLElement;
@@ -71,11 +73,20 @@ describe("the bag's trust block (option B)", () => {
     expect(block.nextElementSibling).toBe(document.querySelector("[data-checkout]"));
   });
 
-  /* UPI stays where the owner put it: on the button, the only place the
-     three discs are drawn. */
-  it("leaves the UPI discs on the Checkout button, and only there", async () => {
+  /* UPI is said in the line above the button, first of the three ways to
+     pay; no payment disc or logo is drawn anywhere in the bag. */
+  /* 25 Nov 2026, the renewed layer: the ways to pay are their own marks
+     again, once, in the trust block above the button; the button itself
+     stays a plain word. */
+  it("shows the ways to pay as marks above the button, and none on the button", async () => {
     await openBag();
     expect(document.querySelectorAll("[data-upi-badges]")).toHaveLength(1);
-    expect(document.querySelector("[data-checkout] [data-upi-badges]")).toBeTruthy();
+    const pay = document.querySelector("[data-bag-trust] [data-pay-line]") as HTMLElement;
+    expect(pay.textContent).toBe("Pay by UPI, Visa, Mastercard or cash on delivery.UPICardsCash on delivery");
+    expect(pay.querySelector("[data-mark='visa']")).not.toBeNull();
+    expect(pay.querySelector("[data-mark='mastercard']")).not.toBeNull();
+    const button = document.querySelector("[data-checkout]") as HTMLElement;
+    expect(button.textContent).toBe("Checkout");
+    expect(button.querySelector("svg, img")).toBeNull();
   });
 });

@@ -85,18 +85,23 @@ describe("a sold-out piece's product page before the catalogue arrives", () => {
     vi.unstubAllGlobals();
   });
 
-  it("offers only Reserve now on Molten Bloom Hoops, which opens the WhatsApp pre-order and sends nothing to the bag or checkout", async () => {
+  it("offers only Pre-order on WhatsApp on Molten Bloom Hoops, which opens the WhatsApp pre-order and sends nothing to the bag or checkout", async () => {
     openPage("molten-bloom-hoops");
     await screen.findByRole("heading", { level: 1, name: /Molten Bloom Hoops/ });
-    expect(actions()).toEqual(["Reserve now"]);
-    expect(screen.queryByRole("button", { name: /Buy Now/i })).toBeNull();
+    expect(actions()).toEqual(["Pre-order on WhatsApp"]);
+    expect(screen.queryByRole("button", { name: /Buy now/i })).toBeNull();
     expect(document.querySelector("#product-price")?.textContent).toMatch(/₹1,300.*₹1,859/);
-    expect(document.querySelector("#product-actions")?.textContent).toMatch(/Hand-finished for you and shipped within 2 weeks, gift-boxed/);
+    /* The lead time sits right under the button (the renewed page's promise line). */
+    expect(document.querySelector("#product-actions + [data-ship]")?.textContent).toMatch(/Hand-finished for you and shipped within 2 weeks, gift-boxed/);
+    /* A reserved piece is paid for on WhatsApp: no "in stock", no ways to pay, no offer. */
+    expect(document.querySelector("[data-ship]")?.textContent).not.toMatch(/In stock/);
+    expect(document.querySelector(".rn-pay")).toBeNull();
+    expect(document.querySelector("[data-offer-ladder]")).toBeNull();
     const ld = [...document.querySelectorAll('script[type="application/ld+json"]')].map((s) => s.textContent ?? "").join(" ");
     expect(ld).toMatch(/schema\.org\/OutOfStock/);
     expect(ld).not.toMatch(/schema\.org\/InStock/);
 
-    await act(async () => void fireEvent.click(screen.getByRole("button", { name: "Reserve now" })));
+    await act(async () => void fireEvent.click(screen.getByRole("button", { name: "Pre-order on WhatsApp" })));
     expect(mocks.open).toHaveBeenCalledTimes(1);
     const [url] = mocks.open.mock.calls[0];
     expect(url).toMatch(/^https:\/\/wa\.me\//);
@@ -107,10 +112,10 @@ describe("a sold-out piece's product page before the catalogue arrives", () => {
   });
 
   for (const [handle, name, price] of SOLD_OUT_30_OCT.slice(1)) {
-    it(`offers only Reserve now on ${name}`, async () => {
+    it(`offers only Pre-order on WhatsApp on ${name}`, async () => {
       openPage(handle);
       await screen.findByRole("heading", { level: 1, name: new RegExp(name) });
-      expect(actions()).toEqual(["Reserve now"]);
+      expect(actions()).toEqual(["Pre-order on WhatsApp"]);
       expect(document.querySelector("#product-price")?.textContent).toContain(price);
     });
   }

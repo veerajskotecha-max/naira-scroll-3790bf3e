@@ -1,54 +1,67 @@
 import { useEffect, useMemo, useRef, useState, type MouseEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ChevronLeft, Loader2, Minus, Plus, Undo2, X } from "lucide-react";
+import { Loader2, X } from "lucide-react";
 import { useLiveJewellery } from "@/hooks/useLiveJewellery";
-import { cartLineFor, variantById, variantLabel } from "@/lib/variants";
-import { cardCover } from "@/lib/cardCover";
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { cartLineFor, variantById } from "@/lib/variants";
+import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import { useCart, type CartItem } from "@/contexts/CartContext";
 import { cartKeyOf } from "@/lib/cartLines";
 import { discountedCartLines } from "@/lib/cartPricing";
 import { useSwipeDismiss } from "@/hooks/useSwipeDismiss";
 import { followOut, useBackToClose } from "@/hooks/useBackToClose";
 import {
+  addOnEffect,
   discountedSubtotal,
   getPromoCode,
   ladderHeadline,
   PROMO_EVENT,
   QUANTITY_OFFERS,
-  quantityOfferProgress,
   resolveCartDiscount,
-  RUNG_GRID_COLS,
-  rungPosition,
-  TOP_QUANTITY_OFFER,
 } from "@/lib/promo";
 import { SHIPPING_CHARGE, deliveryRangeFromNow } from "@/lib/serviceability";
-import UpiBadges from "@/components/checkout/UpiBadges";
+import { CleanStyles, cleanButton } from "@/components/clean";
+import RenewStyles from "@/components/pdp/RenewStyles";
+import BagEmpty from "@/components/cart/BagEmpty";
+import BagAddOn from "@/components/cart/BagAddOn";
+import { bagAddOns } from "@/lib/pairings";
+import BagLine from "@/components/cart/BagLine";
+import BagOffer from "@/components/cart/BagOffer";
 import { BagTrust } from "@/components/cart/BagTrust";
+import { useKeptFocus } from "@/components/cart/useKeptFocus";
+import { useBagFaces } from "@/components/cart/useBagFaces";
 import { useAuth } from "@/contexts/AuthContext";
 import { getSupabase } from "@/integrations/supabase/lazy";
-import { shopifyImage } from "@/lib/shopifyImage";
 import { clarityEvent } from "@/lib/clarity";
 import { WHATSAPP_NUMBER, type JewelPiece, type JewelVariant } from "@/data/jewellery";
 import { GST_LABEL } from "@/lib/gst";
 
 /*
-  The bag, on every page, as the CRO plan of 16 October draws it ("Naira Bag
-  CRO Plan"): the deal stays in view, the next piece is one tap away and the
-  reasons to trust sit beside the button.
+  The bag, on every page, drawn from the clean system the product page uses
+  (components/clean): one face, six colours, one hairline, one button.
 
-    ‹ Your bag · 1 piece
-    up to 30% off · Buy 3 · Buy 4              the ladder, rungs labelled
-    the piece, its MRP struck and "₹1,801 off"
-    Wears well with your bracelet · a third piece, "Adds ₹360 · saves ₹1,139", Add   (row no longer drawn)
-    [the box] Comes with a Naira gift box     a tap lifts it open
-    Total · incl. 3% GST, one savings line (or what the next rung takes), arrival date
-    ★ star line between hairlines, then "Cards · Cash on delivery" (cart/BagTrust)
-    Checkout · ₹2,399, then payment, returns and plating, and what comes next
+    Your bag  2 pieces                                    ×
+    Buy 2 · 10% off   Buy 3 · 20% off   Buy 4 · 30% off      the offer, as words
+    ━━━━━────────────────────────────────────────────────    over one 2px line
+    [photo]  the piece, what the line costs, the MRP it
+             replaces and the saving, − 1 +, Remove
+    A third piece takes 20% off your bag           (cart/BagAddOn)
+    [photo]  one piece that goes with the bag            [Add]
+    ─────────────────────────────────────────────────────
+    Total  incl. 3% GST                    ₹3,448  ₹1,843
+    You save ₹1,605 · includes 10% off 2 pieces
+    Free insured shipping · Arrives 25–27 Nov
+          ★ 4.5/5 · Trusted by 5,000+ clients     (cart/BagTrust)
+             UPI · Cards · Cash on delivery
+    [                   CHECKOUT                    ]
+                  7-day returns policy
+
+  The header, the offer and the foot stay put; only the list scrolls, so the
+  total and Checkout never leave the screen. Type and colour come from the
+  nc- classes and the --nc- tokens alone; the utilities here are layout.
 
   Same cart, discount resolver and checkout hand-off as before: every rupee
-  shown, including the add-on's, is the one the checkout charges. CartDrawer.tsx
-  is kept so the switch can be undone in one line in App.tsx.
+  shown is the one the checkout charges. CartDrawer.tsx is kept so the switch
+  can be undone in one line in App.tsx.
 */
 
 const formatPrice = (n: number) => `₹${Math.round(n).toLocaleString("en-IN")}`;
@@ -78,135 +91,37 @@ const lineOptions = (item: { selectedOptions?: Array<{ name: string; value: stri
    1–15 October each, and kept in deep stock. */
 const BEST_SELLERS = ["prism-riviere-bracelet", "woven-gold-hoops"];
 
-type Follow = ReturnType<typeof followOut>;
+/* The one hairline, wherever the bag draws a rule. */
+const RULE = "border-[color:var(--nc-rule)]";
 
-/* One small card with an Add: the pair row, and the empty bag's best-sellers.
-   The photo and name open the piece's page, so it can be seen before it is
-   added; the bag closes on the way out and the phone's back returns. */
-const PieceCard = ({
-  piece,
-  variant,
-  note,
-  onAdd,
-  busy,
-  follow,
-}: {
-  piece: JewelPiece;
-  /** The metal or stone it adds in, when it is sold in more than one. */
-  variant?: JewelVariant;
-  note?: string;
-  onAdd: () => void;
-  busy: boolean;
-  follow: Follow;
-}) => (
-  <div data-piece-card={piece.handle} data-variant={variant ? variantLabel(variant) : undefined} className="flex items-center gap-2.5 border border-nf-gold/20 bg-[var(--nf-surface)] px-2 py-1.5">
-    <Link to={`/jewellery/${piece.handle}`} onClick={follow} tabIndex={-1} aria-hidden="true" className="shrink-0">
-      <img
-        src={shopifyImage(variant?.image ?? cardCover(piece), 120) || variant?.image || cardCover(piece)}
-        alt=""
-        className="h-[45px] w-[36px] bg-nf-ivory-deep object-cover"
-        width={36}
-        height={45}
-        loading="lazy"
-      />
-    </Link>
-    <div className="min-w-0 flex-1">
-      <p className="truncate text-[12.5px] leading-[1.3] text-nf-ink">
-        <Link to={`/jewellery/${piece.handle}`} onClick={follow} className="underline-offset-4 hover:underline">
-          {piece.name}
-        </Link>{" "}
-        {variant ? `· ${variantLabel(variant)} · ₹${variant.price.toLocaleString("en-IN")}` : `· ${piece.priceLabel}`}
-      </p>
-      {note && <p className="text-[12px] leading-[1.3] text-nf-ink/75">{note}</p>}
-    </div>
-    <button
-      type="button"
-      onClick={onAdd}
-      disabled={busy}
-      aria-label={`Add ${piece.name}${variant ? ` in ${variantLabel(variant)}` : ""} to bag`}
-      className="press-scale inline-flex min-h-[44px] min-w-[52px] shrink-0 items-center justify-center border border-nf-ink px-3 font-nf-label text-[10.5px] font-medium uppercase tracking-nf-16 text-nf-ink transition-colors hover:bg-nf-ink hover:text-nf-ivory disabled:opacity-50"
-    >
-      {busy ? <Loader2 size={12} className="animate-spin" aria-hidden="true" /> : "Add"}
-    </button>
-  </div>
-);
-
-/* The bag's one reassurance, and the only one it keeps: the way back is as
-   easy as the way in. It sits under the button — after the decision, so it
-   reads as the reason to press it rather than as another term to get through. */
+/* The bag's one reassurance, under the button, after the decision: the way
+   to the returns policy. It names the policy and promises nothing the policy
+   does not ("Easy 7-day exchange & returns" said more than the page it opens:
+   the copy review, 25 Nov 2026). */
 export const BagReturns = ({
   onLeave,
 }: {
   onLeave?: (e: MouseEvent<HTMLAnchorElement>) => void;
 }) => (
-  <Link
-    to="/exchange-return-policy"
-    onClick={onLeave}
-    data-returns
-    /* A 44px target round a 17px line: 11px of padding up (the 12px gap under
-       Checkout, so it never takes that button's taps) and 16px down, each
-       taken back from the margin so nothing moves. */
-    className="-mb-4 mt-px flex items-center justify-center gap-1.5 pb-4 pt-[11px] text-[11.5px] text-nf-ink/60 hover:text-nf-ink"
-  >
-    <Undo2 size={12} strokeWidth={1.6} className="text-nf-gold-text" aria-hidden="true" />
-    Easy 7-day exchange &amp; returns
-  </Link>
+  <p className="mt-3 flex justify-center">
+    {/* A 44px target round a 20px line, drawn by a pseudo-element so the
+        focus ring keeps to the words. It takes the 12px above the line, up
+        to Checkout's edge and no further, and the 12px under it, down to the
+        sheet's foot: all 44px answer to the link, none of them to the button. */}
+    <Link
+      to="/exchange-return-policy"
+      onClick={onLeave}
+      data-returns
+      className="nc-small nc-link relative before:absolute before:inset-x-0 before:-inset-y-3 before:content-['']"
+    >
+      7-day returns policy
+    </Link>
+  </p>
 );
 
-/* Project Shades' ladder: a thin track, an open ring at each rung that fills
-   once reached, and the offer spelt out under it. Two rungs since 7 Nov 2026
-   (Buy 3 at 20%, Buy 4 at 30%; the owner took Buy 2 away the day Buy 4 came
-   in). Each rung is centred in its own share of the track (`rungPosition`:
-   a quarter and three quarters across) with its label in that share under
-   it, one column per rung (`RUNG_GRID_COLS`), so "Buy 3" and "Buy 4" can
-   never run into each other: placed by piece count, they sat a quarter of the
-   width apart with Buy 4 at the very end, and at 280px the labels met. */
-export const SimpleLadder = ({ totalItems }: { totalItems: number }) => {
-  const top = TOP_QUANTITY_OFFER.minQuantity;
-  const fill = quantityOfferProgress(totalItems);
-  return (
-    <div data-ladder className="shrink-0 bg-[var(--nf-surface)] px-5 pb-3.5 pt-3.5">
-      {/* The explanation rides on top, where the eye lands first: the sale is
-          on right now, and what it is worth, quiet in colour but at 11px, the
-          least a phone can read (it was 8.5px). The 24px rungs stand 10.5px
-          above the track, so the line keeps 20px clear of it: the rungs had
-          been touching its letters on every phone. On a phone narrower than
-          the line it wraps, and only after the dot: at 11px a 280-320px phone
-          broke it mid-phrase ("Sitewide sale live / today · up to 30% off"),
-          so each half is held together and the dot stays with the first.
-          "Up to" is the top rung, so the line moves when the ladder does. */}
-      <p className="mb-5 text-balance text-center font-sans text-[11px] font-normal leading-[1.4] text-nf-ink/60">
-        <span className="whitespace-nowrap">✦ Sitewide sale live today ·</span>{" "}
-        <span className="whitespace-nowrap">up to {pct(TOP_QUANTITY_OFFER.rate)} off</span>
-      </p>
-      <div className="relative h-[2px] bg-nf-ink/15" role="progressbar" aria-valuemin={0} aria-valuemax={top} aria-valuenow={Math.min(totalItems, top)} aria-label={`${totalItems} of ${top} pieces`}>
-        <span className="block h-full bg-nf-gold-deep transition-[width] duration-500 motion-reduce:transition-none" style={{ width: `${fill * 100}%` }} />
-        {QUANTITY_OFFERS.map((o, i) => (
-          <span
-            key={o.code}
-            aria-hidden="true"
-            data-rung-mark={o.minQuantity}
-            data-reached={totalItems >= o.minQuantity}
-            className={`absolute top-1/2 h-2.5 w-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full border transition-colors duration-300 motion-reduce:transition-none ${totalItems >= o.minQuantity ? "border-nf-gold-deep bg-nf-gold-deep" : "border-nf-ink/30 bg-[var(--nf-surface)]"}`}
-            style={{ left: `${rungPosition(i) * 100}%` }}
-          />
-        ))}
-      </div>
-      {/* One equal column per rung, each label centred under its own ring. */}
-      <ul className={`mt-[14px] grid ${RUNG_GRID_COLS} text-center`}>
-        {QUANTITY_OFFERS.map((o) => {
-          const reached = totalItems >= o.minQuantity;
-          return (
-            <li key={o.code} data-rung-label={o.minQuantity} className="min-w-0 leading-[1.3]">
-              <span className="block font-sans text-[11px] font-normal text-nf-ink/60">Buy {o.minQuantity}</span>
-              <span className={`block font-sans text-[12px] font-normal tabular-nums ${reached ? "text-nf-gold-text" : "text-nf-ink"}`}>{pct(o.rate)} off</span>
-            </li>
-          );
-        })}
-      </ul>
-    </div>
-  );
-};
+/* The bag's offer strip (cart/BagOffer): the rungs as one line of words over
+   the 2px line. It keeps the name the ladder has always been exported under. */
+export const SimpleLadder = BagOffer;
 
 const CartDrawerNext = () => {
   const {
@@ -226,7 +141,9 @@ const CartDrawerNext = () => {
     pending,
     addError,
   } = useCart();
-  const { jewellery } = useLiveJewellery(isDrawerOpen);
+  /* The bag's faces are asked for before its first opening. */
+  useBagFaces();
+  const { jewellery, isLoading: catalogueLoading } = useLiveJewellery(isDrawerOpen);
   const catalogueByHandle = useMemo(() => new Map(jewellery.map((piece) => [piece.handle, piece])), [jewellery]);
   const { user } = useAuth();
   const contentRef = useRef<HTMLDivElement>(null);
@@ -285,11 +202,15 @@ const CartDrawerNext = () => {
       const list = listRef.current;
       const target = list?.querySelector<HTMLElement>("[data-adding]") ?? list?.querySelector<HTMLElement>("li:last-child");
       if (!list || !target) return;
+      /* The suggestion is pinned to the list's foot: the line must clear it. */
+      const room = list.clientHeight - (list.querySelector<HTMLElement>("[data-bag-addon]")?.offsetHeight ?? 0);
       const bottom = target.getBoundingClientRect().bottom - list.getBoundingClientRect().top;
-      if (bottom > list.clientHeight) list.scrollTop += bottom - list.clientHeight;
+      if (bottom > room) list.scrollTop += bottom - room;
     });
     return () => cancelAnimationFrame(frame);
   }, [isDrawerOpen, pendingKey, lines.length]);
+  /* A keyboard press on a line's + or − keeps its place while Shopify answers. */
+  const keepFocus = useKeptFocus(listRef, isLoading);
   const lineSubtotal = subtotal + (pending ? pending.price * pending.quantity : 0);
   /* One resolver for the bag and the checkout hand-off: the total shown is the total charged. */
   const discount = resolveCartDiscount({ totalItems: lineCount, promoCode });
@@ -303,14 +224,29 @@ const CartDrawerNext = () => {
   const busy = isLoading || isSyncing;
 
   /* The deal from the product page, kept in view: each piece's MRP from the
-     live catalogue, and one saving against it at the total. */
+     catalogue (the shop's own, the struck price on its page), struck on its
+     line, and one saving against it at the total. The page said "₹1,049,
+     MRP ₹1,749, 40% off" and the bag then forgot it (the conversion review,
+     25 Nov 2026): the largest saving she had been shown was nowhere at the
+     moment of paying. A line the catalogue has no MRP for keeps the price it
+     replaces, as before. */
   const mrpOf = (item: CartItem) => {
     const piece = catalogueByHandle.get(item.id);
     const mrp = (variantById(piece, item.variantId) ?? piece)?.compareAtPrice;
     return mrp && mrp > item.price ? mrp : null;
   };
+  /* Every line at its MRP, or at its price where it has none: with no MRP
+     anywhere this is the total before the offer. */
   const mrpTotal = lines.reduce((sum, item) => sum + (mrpOf(item) ?? item.price) * item.quantity, 0) + SHIPPING_CHARGE;
   const youSave = mrpTotal - orderTotal;
+  const savedOnMrp = mrpTotal - (lineSubtotal + SHIPPING_CHARGE);
+  const offerWords = `${pct(discount.rate)} ${rung ? `off ${lineCount} pieces` : "with your code"}`;
+  const saveLine =
+    youSave <= 0
+      ? ""
+      : savedOnMrp > 0
+        ? `You save ${formatPrice(youSave)}${discountAmount > 0 ? ` · includes ${offerWords}` : " on MRP"}`
+        : `You save ${formatPrice(youSave)} · ${offerWords}`;
 
   const [adding, setAdding] = useState<string | null>(null);
   const addPiece = async (piece: JewelPiece, event: string, variant?: JewelVariant) => {
@@ -402,201 +338,177 @@ const CartDrawerNext = () => {
     }
   };
 
-  const stepper =
-    "press-scale relative flex h-8 w-8 items-center justify-center text-nf-ink before:absolute before:-inset-1.5 before:content-[''] disabled:opacity-40";
+  /* One piece that goes with the bag, while a richer step is still ahead of
+     it (lib/pairings: none from the top step on). Offered against the bag as
+     it will be once Shopify answers, and never while a piece is on its way. */
+  const addOn = useMemo(() => bagAddOns(lines.map((item) => item.id), lineCount, jewellery)?.pieces[0] ?? null, [lines, lineCount, jewellery]);
+  const addOnEffectNow = addOn ? addOnEffect({ subtotal: lineSubtotal, totalItems: lineCount, promoCode }, addOn.price) : null;
+
   const best = BEST_SELLERS.map((handle) => catalogueByHandle.get(handle)).filter(
     (piece): piece is JewelPiece => Boolean(piece && piece.availableForSale !== false && piece.variantId),
-  );
-
-  const undoNotice = removed && (
-    <div data-undo className="flex shrink-0 items-center justify-between gap-3 border-b border-nf-gold/15 bg-nf-ivory-deep px-4 py-2 text-[12px] text-nf-ink sm:px-5" role="status">
-      <span className="truncate">{removed.name} removed</span>
-      <button type="button" onClick={undo} className="min-h-[36px] shrink-0 px-1 font-medium text-[var(--nf-cta)] underline underline-offset-4">
-        Undo
-      </button>
-    </div>
   );
 
   return (
     <Sheet open={isDrawerOpen} onOpenChange={(next) => (next ? setDrawerOpen(true) : requestClose())}>
       <SheetContent
         ref={contentRef}
-        closeClassName="hidden sm:flex"
-        className="nf-palette inset-y-0 flex h-[100dvh] font-nf-label max-h-[100dvh] w-full flex-col gap-0 overflow-hidden border-l border-nf-ink/20 bg-[var(--nf-surface)] p-0 text-nf-ink sm:max-w-[420px]"
+        closeClassName="hidden"
+        /* A full-height sheet: the whole screen on a phone, a 420px drawer
+           with a hairline at its left from 640px. The sheet's stock shadow is
+           taken off; the dimmed page behind it is separation enough.
+           On a screen under 480px high (a phone on its side) the pinned
+           parts alone would fill it, so there the sheet scrolls as one
+           piece and Checkout is reached by scrolling, never cut off.
+           With "reduce motion" on, the sheet is simply there: the clean
+           system stills what is inside it, and this stills its own slide. */
+        style={{ boxShadow: "none" }}
+        className="nf-palette nf-clean inset-y-0 flex h-[100dvh] max-h-[100dvh] w-full flex-col gap-0 overflow-hidden border-0 p-0 sm:max-w-[420px] sm:border-l sm:border-[color:var(--nc-rule)] [@media(max-height:479px)]:overflow-y-auto motion-reduce:!animate-none"
       >
-        <SheetHeader className="shrink-0 border-b border-nf-ink/20 px-4 pb-2.5 pt-[max(12px,env(safe-area-inset-top))] sm:px-5 sm:pt-5">
-          <div className="flex items-center">
-            <button
-              type="button"
-              onClick={requestClose}
-              aria-label="Back to shopping"
-              className="-my-1.5 -ml-3 -mr-1 flex h-11 w-11 shrink-0 items-center justify-center text-nf-ink active:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nf-gold-deep sm:hidden"
-            >
-              <ChevronLeft size={22} strokeWidth={1.4} aria-hidden="true" />
-            </button>
-            <SheetTitle className="flex items-baseline gap-2.5 font-nf-editorial text-[20px] font-medium leading-none text-nf-ink">
-              Your bag
-              {lineCount > 0 && (
-                <span className="font-nf-label text-[9.5px] font-medium uppercase tracking-nf-16 text-nf-ink/70">
-                  {lineCount === 1 ? "1 piece" : `${lineCount} pieces`}
-                </span>
-              )}
-            </SheetTitle>
-          </div>
-        </SheetHeader>
+        <CleanStyles />
+        <RenewStyles />
+        <div className={`flex shrink-0 items-center justify-between border-b ${RULE} pb-1.5 pl-4 pt-[max(6px,env(safe-area-inset-top))]`}>
+          {/* The title is the sheet's name ("Your bag 2 pieces"). The two
+              parts are set side by side, each in its own style: the count
+              inside the heading's own element would inherit its tracking. */}
+          <SheetTitle className="flex items-baseline gap-2.5">
+            <span className="nc-heading nc-heading--sheet">Your bag</span>
+            {lineCount > 0 && (
+              <>
+                {" "}
+                <span className="nc-small">{lineCount === 1 ? "1 piece" : `${lineCount} pieces`}</span>
+              </>
+            )}
+          </SheetTitle>
+          {/* The cross is drawn 9px wide in the middle of its 44px target.
+              The target ends at the sheet's edge and the cross is set 1px to
+              the right inside it, so it ends on the 16px line the prices,
+              "Remove" and Checkout end on (it sat 5.5px inside that line). */}
+          <button type="button" onClick={requestClose} aria-label="Close bag" data-bag-close className="nc-iconbtn shrink-0">
+            <X size={18} strokeWidth={1.25} aria-hidden="true" className="translate-x-px" />
+          </button>
+        </div>
 
         {lines.length > 0 && <SimpleLadder totalItems={lineCount} />}
-        {undoNotice}
+        {removed && (
+          <div data-undo role="status" className="nc-notice shrink-0">
+            <span className="truncate">{removed.name} removed</span>
+            <button type="button" onClick={undo} className="nc-link nc-link--ink nc-tap -mr-2 shrink-0 px-2">
+              Undo
+            </button>
+          </div>
+        )}
         {addError && (
-          <p data-add-error role="alert" className="shrink-0 border-b border-nf-gold/15 bg-nf-ivory-deep px-4 py-2.5 text-[12.5px] leading-snug text-nf-ink sm:px-5">
+          <p data-add-error role="alert" className="nc-notice shrink-0">
             {addError}
           </p>
         )}
 
         {lines.length === 0 ? (
-          <div className="flex flex-1 flex-col overflow-y-auto">
-            <div className="flex flex-1 flex-col justify-center px-6 py-8">
-              <p className="text-center font-nf-editorial text-[20px] font-medium text-nf-ink">Your bag is empty</p>
-              {best.length > 0 && (
-                <div className="mt-5">
-                  <p className="font-nf-label text-[9.5px] font-medium uppercase tracking-nf-16 text-nf-gold-text">Most loved</p>
-                  <div className="mt-2 grid gap-2">
-                    {best.map((piece) => (
-                      <PieceCard key={piece.handle} piece={piece} busy={adding === piece.handle} follow={leave} onAdd={() => addPiece(piece, "bag_empty_added")} />
-                    ))}
-                  </div>
-                </div>
-              )}
-              <Link
-                to="/jewellery"
-                onClick={leave}
-                className="mx-auto mt-6 inline-flex min-h-[44px] items-center px-2 font-nf-label text-[11px] font-medium uppercase tracking-nf-16 text-[var(--nf-cta)] underline underline-offset-4"
-              >
-                Explore jewellery
-              </Link>
-            </div>
-          </div>
+          <BagEmpty
+            pieces={best}
+            adding={adding}
+            onAdd={(piece) => addPiece(piece, "bag_empty_added")}
+            onLeave={leave}
+            slots={catalogueLoading ? BEST_SELLERS : undefined}
+          />
         ) : (
           <>
-            <div ref={listRef} data-bag-list className="flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain bg-[var(--nf-surface)]">
+            <div
+              ref={listRef}
+              data-bag-list
+              onClickCapture={keepFocus}
+              className="flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain [@media(max-height:479px)]:flex-none [@media(max-height:479px)]:overflow-visible"
+            >
               <ul className="flex flex-col">
-                {lines.map((item, index) => (
-                  <li
-                    key={`${item.id}-${item.size}-${item.variantId}`}
-                    data-line={item.id}
-                    data-variant={item.variantId}
-                    data-adding={cartKeyOf(item) === pendingKey ? "" : undefined}
-                    className="flex gap-3 border-b border-nf-ink/10 px-4 py-3 sm:gap-4 sm:px-5 sm:py-5"
-                  >
-                    <Link to={pageOf(item)} onClick={leave} tabIndex={-1} aria-hidden="true" className="shrink-0">
-                      <img
-                        src={shopifyImage(item.image, 200) || item.image}
-                        alt={item.name}
-                        className="h-[80px] w-[64px] bg-nf-ivory-deep object-cover sm:h-[90px] sm:w-[72px]"
-                        width={72}
-                        height={90}
-                        loading={index < 3 ? "eager" : "lazy"}
-                        decoding="async"
-                      />
-                    </Link>
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-start justify-between gap-3">
-                        <Link
-                          to={pageOf(item)}
-                          onClick={leave}
-                          data-line-name
-                          className="line-clamp-2 text-[13.5px] font-medium leading-snug text-nf-ink sm:text-[14.5px]"
-                        >
-                          {item.name}
-                        </Link>
-                        <span data-line-total className="shrink-0 text-[14px] font-medium tabular-nums text-nf-ink">
-                          {formatPrice(discount.rate > 0 ? linePrices[index].total : item.price * item.quantity)}
-                        </span>
-                      </div>
-                      {lineOptions(item) ? <p className="mt-0.5 truncate text-[12px] text-nf-ink/60">{lineOptions(item)}</p> : null}
-                      {cartKeyOf(item) === pendingKey && (
-                        <p role="status" className="mt-1 flex items-center gap-1.5 text-[12.5px] text-nf-gold-text">
-                          <Loader2 size={12} className="animate-spin" aria-hidden="true" /> Adding to your bag…
-                        </p>
-                      )}
-                      <p data-line-price className="mt-1 flex flex-wrap items-baseline gap-x-2 gap-y-0.5 text-[13.5px] tabular-nums text-nf-ink/80">
-                        {discount.rate > 0 ? (
-                          <>
-                            <del className="text-[12px] text-nf-ink/50">{item.priceLabel}</del>
-                            <span className="font-medium text-nf-ink">
-                              {item.quantity > 1 ? `${formatUnitPrice(discountedSubtotal(item.price, discount))} each` : formatUnitPrice(linePrices[index].unit)}
-                            </span>
-                            <span className="text-[11px] text-nf-gold-text">{pct(discount.rate)} off</span>
-                          </>
-                        ) : item.priceLabel}
-                      </p>
-                      <div className="mt-1 flex items-center justify-between gap-2 sm:mt-3">
-                      <div className="inline-flex h-8 items-center border border-nf-ink/40 sm:h-10">
-                        <button
-                          type="button"
-                          onClick={() => (item.quantity <= 1 ? remove(item) : updateQuantity(item.id, item.size, item.quantity - 1, item.variantId))}
-                          disabled={isLoading}
-                          className={stepper}
-                          aria-label={item.quantity <= 1 ? `Remove ${item.name}` : "Decrease quantity"}
-                        >
-                          <Minus size={14} strokeWidth={1.5} />
-                        </button>
-                        <span className="w-8 text-center text-[13px]" aria-label={`Quantity ${item.quantity}`}>
-                          {item.quantity}
-                        </span>
-                        <button
-                          type="button"
-                          onClick={() => updateQuantity(item.id, item.size, item.quantity + 1, item.variantId)}
-                          disabled={isLoading}
-                          className={stepper}
-                          aria-label="Increase quantity"
-                        >
-                          <Plus size={14} strokeWidth={1.5} />
-                        </button>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => remove(item)}
-                        disabled={isLoading}
-                        aria-label={`Remove ${item.name}`}
-                        className="flex min-h-11 min-w-11 items-center justify-center gap-1.5 text-[13px] text-nf-ink/60 hover:text-nf-ink disabled:opacity-50"
-                      >
-                        <X size={14} strokeWidth={1.5} aria-hidden="true" /><span className="hidden sm:inline">Remove</span>
-                      </button>
-                      </div>
-                    </div>
-                  </li>
-                ))}
+                {lines.map((item, index) => {
+                  const off = discount.rate > 0;
+                  const paid = off ? linePrices[index].total : item.price * item.quantity;
+                  const mrp = mrpOf(item);
+                  return (
+                    <BagLine
+                      key={`${item.id}-${item.size}-${item.variantId}`}
+                      item={item}
+                      href={pageOf(item)}
+                      onLeave={leave}
+                      options={lineOptions(item)}
+                      total={formatPrice(paid)}
+                      was={mrp ? formatPrice(mrp) : off ? item.priceLabel : null}
+                      each={
+                        item.quantity > 1
+                          ? `${off ? formatUnitPrice(discountedSubtotal(item.price, discount)) : item.priceLabel} each`
+                          : null
+                      }
+                      /* Beside a struck MRP the rate is the whole saving
+                         against it, the offer included: "10% off" under
+                         ₹1,749 → ₹944 would be the wrong sum. */
+                      off={mrp ? `${Math.round((1 - paid / (mrp * item.quantity)) * 100)}% off` : off ? `${pct(discount.rate)} off` : null}
+                      adding={cartKeyOf(item) === pendingKey}
+                      busy={isLoading}
+                      eager={index < 3}
+                      onDecrease={() => (item.quantity <= 1 ? remove(item) : updateQuantity(item.id, item.size, item.quantity - 1, item.variantId))}
+                      onIncrease={() => updateQuantity(item.id, item.size, item.quantity + 1, item.variantId)}
+                      onRemove={() => remove(item)}
+                    />
+                  );
+                })}
               </ul>
-
+              {addOn && addOnEffectNow && (
+                <BagAddOn
+                  piece={addOn}
+                  effect={addOnEffectNow}
+                  rate={discount.rate}
+                  totalItems={lineCount}
+                  adding={adding === addOn.handle}
+                  disabled={Boolean(adding) || busy}
+                  onAdd={() => addPiece(addOn, "bag_pair_added")}
+                  onLeave={leave}
+                />
+              )}
             </div>
 
-            {/* The foot, as plain as Project Shades': total, one line of terms,
-                one black button. Every extra line here was a reason to pause. */}
-            <div data-bag-foot className="shrink-0 border-t border-nf-ink/20 bg-[var(--nf-surface)] px-5 pb-[max(14px,env(safe-area-inset-bottom))] pt-4">
-              <div className="flex items-baseline justify-between">
-                <span className="text-[15px] font-medium text-nf-ink">Total</span>
-                <span data-total className="text-[17px] font-medium text-nf-ink">{formatPrice(orderTotal)}</span>
+            {/* The foot: the total (tax said beside its name), what was saved,
+                the delivery terms in one line, the shop's rating and the ways
+                to pay, and one filled button. Every extra line here was a
+                reason to pause, and on a small phone the foot took four
+                tenths of the screen (the design review, 25 Nov 2026). */}
+            <div data-bag-foot className={`shrink-0 border-t ${RULE} px-4 pb-[max(12px,env(safe-area-inset-bottom))] pt-3`}>
+              <div className="flex items-baseline justify-between gap-3">
+                <span className="flex min-w-0 items-baseline gap-2">
+                  <span className="nc-text nc-text--strong">Total</span>
+                  <span className="nc-small truncate">incl. {GST_LABEL}</span>
+                </span>
+                <span className="flex shrink-0 items-baseline gap-2">
+                  {/* What the bag would cost at MRP and without the offer,
+                      struck, beside the one that is charged. */}
+                  {youSave > 0 && (
+                    <del data-total-was className="nc-small tabular-nums">
+                      <span className="nc-sr">was </span>
+                      {formatPrice(mrpTotal)}
+                    </del>
+                  )}
+                  <span key={orderTotal} data-total className="nc-price__now nc-price__now--sheet rn-tick-in tabular-nums">
+                    {formatPrice(orderTotal)}
+                  </span>
+                </span>
               </div>
-              {discountAmount > 0 ? (
-                <p data-you-save className="mt-1 text-[12.5px] font-medium text-nf-gold-text">
-                  You save {formatPrice(discountAmount)} · {pct(discount.rate)} {rung ? `for ${lineCount} pieces` : "with your code"}
+              {saveLine ? (
+                <p data-you-save className="nc-small nc-gold">
+                  {saveLine}
                 </p>
               ) : (
-                /* Nothing off yet: one or two pieces since 7 Nov 2026, when
-                   the first rung became the third piece. A bag of two that
-                   used to take 10% now shows full price, so the line where the
-                   saving would be says which piece starts it ("A third piece
-                   takes 20% off your bag"), in the saving's own place, so the
-                   foot keeps its height as the bag grows. */
-                nextRung && (
-                  <p data-next-rung className="mt-1 text-[12.5px] font-medium text-nf-gold-text">
+                /* Nothing saved yet and no suggestion to say it: the line
+                   where the saving would be names the piece that starts it
+                   ("A second piece takes 10% off your bag"). With a
+                   suggestion in the list, that row's heading says it. */
+                nextRung &&
+                !addOn && (
+                  <p data-next-rung className="nc-small nc-gold">
                     {nextRung}
                   </p>
                 )
               )}
-              <p className="mt-2 text-[12.5px] leading-[1.5] text-nf-ink/65">
-                Incl. {GST_LABEL}. Free insured shipping · arrives {arrivesBy}.
+              <p className="nc-small" data-bag-terms>
+                Free insured shipping · Arrives {arrivesBy}
               </p>
               {/* The shop's rating and the ways to pay, right above the
                   button (the owner's ask, 16 Nov 2026). */}
@@ -606,11 +518,10 @@ const CartDrawerNext = () => {
                 data-checkout
                 onClick={handleCheckout}
                 disabled={busy || opening}
-                className="press-scale mt-3 flex h-[52px] w-full items-center justify-center gap-2 bg-nf-ink text-[15px] font-medium tracking-[0.02em] text-nf-ivory transition-opacity duration-150 hover:opacity-90 disabled:opacity-80"
+                className={`${cleanButton({ fill: "ink", block: true })} mt-2`}
               >
-                {busy || opening ? <Loader2 size={16} className="animate-spin" aria-hidden="true" /> : null}
+                {busy || opening ? <Loader2 size={14} strokeWidth={1.25} className="animate-spin motion-reduce:animate-none" aria-hidden="true" /> : null}
                 {opening ? "Opening checkout…" : "Checkout"}
-                {!opening && <UpiBadges size={18} className="ml-1" />}
               </button>
               <BagReturns onLeave={leave} />
             </div>

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { MapPin, CheckCircle2, AlertCircle, Info } from "lucide-react";
 import {
   getServiceability,
@@ -15,7 +15,25 @@ interface Result extends Serviceability {
 /* A piece that is reserved rather than in stock (sold out, a sold-out colour,
    a size made to order) ships when it is ready: the courier's days still hold,
    but a dated "by Wed, 4 Nov" would be a promise the page does not make. */
-const PincodeChecker = ({ preorder = false }: { preorder?: boolean }) => {
+/* `look="clean"` is the product page's (src/components/clean): one hairline
+   field with its action inside, the same words as plain lines, no icons and
+   no green, amber or red. Without it this renders as it always has, for the
+   outfit page.
+   `onChecked` hears each answer: the pincode it could vouch for, or null. The
+   product page uses it to put that pincode's own date under its buttons. */
+const PincodeChecker = ({
+  preorder = false,
+  look,
+  onChecked,
+}: {
+  preorder?: boolean;
+  look?: "clean";
+  onChecked?: (pincode: string | null) => void;
+}) => {
+  /* The listener, held in a ref: the check below runs once on arrival for a
+     remembered pincode, and must not run again because the page re-rendered. */
+  const heard = useRef(onChecked);
+  heard.current = onChecked;
   const [pincode, setPincode] = useState("");
   const [result, setResult] = useState<Result | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -43,6 +61,7 @@ const PincodeChecker = ({ preorder = false }: { preorder?: boolean }) => {
       return;
     }
     const info = getServiceability(value);
+    heard.current?.(info ? value : null);
     if (info) {
       const eta = formatDeliveryDate(addWorkingDays(new Date(), info.days));
       setResult({ ...info, eta });
@@ -59,6 +78,80 @@ const PincodeChecker = ({ preorder = false }: { preorder?: boolean }) => {
     }
   };
 
+
+  if (look === "clean") {
+    return (
+      <div>
+        <form
+          className="nc-field"
+          noValidate
+          onSubmit={(event) => {
+            event.preventDefault();
+            check(pincode);
+          }}
+        >
+          <label htmlFor="pdp-pincode" className="nc-sr">
+            Pincode
+          </label>
+          <input
+            id="pdp-pincode"
+            type="text"
+            inputMode="numeric"
+            autoComplete="postal-code"
+            maxLength={6}
+            value={pincode}
+            onChange={(e) => setPincode(e.target.value.replace(/\D/g, ""))}
+            placeholder="Enter pincode"
+          />
+          {/* The field's box is 44px with its hairline, so the button inside
+              is 42: its target reaches over the hairline to the full 44. */}
+          <button type="submit" className="relative before:absolute before:inset-x-0 before:-inset-y-px before:content-['']">
+            Check
+          </button>
+        </form>
+
+        {error && (
+          <p role="alert" className="nc-small nc-small--ink mt-2">
+            {error}
+          </p>
+        )}
+
+        {/* The answer is read out when it arrives, as the error is. */}
+        <div aria-live="polite">
+        {unconfirmed && (
+          <p className="nc-small mt-2">
+            We can't confirm delivery to {unconfirmed} here. It is checked with your full address at checkout, before you pay.
+          </p>
+        )}
+
+        {result && !error && (
+          <div className="mt-2">
+            <p className="nc-small nc-small--ink">
+              {/* The same words; the date stays whole and the dot stays with
+                  the line it ends, when a narrow phone wraps the sentence. */}
+              Delivery to {result.pincode} in {result.days} working{" "}
+              {preorder ? (
+                "days once it ships"
+              ) : (
+                <>
+                  <span className="whitespace-nowrap">days ·</span> <span className="whitespace-nowrap">by {result.eta}</span>
+                </>
+              )}
+            </p>
+            <p className="nc-small nc-small--ink">
+              {/* No reason is given for a refusal: the list's own ("high
+                  return rate on COD in this region") told a shopper her area
+                  was a bad risk. What she can do is said instead. */}
+              {result.cod === "blocked"
+                ? "Cash on delivery is not available for this pincode. You can pay by UPI, card, wallet or net banking."
+                : "Cash on delivery available. UPI, cards, wallets and net banking too."}
+            </p>
+          </div>
+        )}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="mt-4">

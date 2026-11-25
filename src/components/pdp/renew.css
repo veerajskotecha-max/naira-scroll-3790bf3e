@@ -143,6 +143,8 @@
 .nf-clean .rn-pay.rn-pay--tight { gap: 4px 12px; margin-top: 4px; }
 /* On the page: the marks alone, from the left edge. */
 .nf-clean .rn-pay.rn-pay--marks { justify-content: flex-start; gap: 6px 12px; }
+/* The way to ask a question ends the row, on the buttons' right edge. */
+.nf-clean .rn-pay__ask { margin-left: auto; }
 
 /* ── the bundle: tick the pieces, see the total, one button ────── */
 .nf-clean .rn-bundle { margin-top: 12px; border-top: 1px solid var(--nc-rule); list-style: none; }

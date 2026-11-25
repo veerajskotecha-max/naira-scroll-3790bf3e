@@ -26,8 +26,12 @@ const ITEMS = [
 ] as const;
 
 /* A piece pre-ordered on WhatsApp is paid for there, not at checkout: it keeps
-   the three promises about the piece and leaves the ways to pay out. */
-const PdpTrust = ({ reserved = false }: { reserved?: boolean }) => (
+   the three promises about the piece and leaves the ways to pay out.
+   `questionHref` is a WhatsApp link about this piece: a first-time visitor's
+   question, asked where she is deciding, at the right end of the pay marks'
+   row (the conversion review, 25 Nov 2026: the link was only inside the
+   Delivery dropdown). */
+const PdpTrust = ({ reserved = false, questionHref }: { reserved?: boolean; questionHref?: string }) => (
   <>
     <ul className="rn-trust" data-count={reserved ? 3 : 4} aria-label="What comes with every piece">
       {ITEMS.filter((item) => !reserved || item.icon !== Banknote).map(({ icon: Icon, title, detail }) => (
@@ -40,7 +44,15 @@ const PdpTrust = ({ reserved = false }: { reserved?: boolean }) => (
         </li>
       ))}
     </ul>
-    {!reserved && <PayRow />}
+    {!reserved && (
+      <PayRow>
+        {questionHref && (
+          <a href={questionHref} target="_blank" rel="noopener noreferrer" className="rn-pay__ask nc-link nc-link--ink nc-tap" data-ask>
+            Questions? WhatsApp us
+          </a>
+        )}
+      </PayRow>
+    )}
   </>
 );
 

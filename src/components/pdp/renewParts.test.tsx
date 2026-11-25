@@ -108,6 +108,18 @@ describe("PdpTrust: what the shop already promises, under the buttons", () => {
     expect(document.querySelector("[data-mark='mastercard']")).not.toBeNull();
   });
 
+  it("ends the pay marks' row with the way to ask a question, when given one", () => {
+    render(<PdpTrust questionHref="https://wa.me/910000000000?text=Hi" />);
+    const ask = document.querySelector(".rn-pay [data-ask]") as HTMLAnchorElement;
+    expect(ask.textContent).toBe("Questions? WhatsApp us");
+    expect(ask.getAttribute("href")).toBe("https://wa.me/910000000000?text=Hi");
+    expect(ask.getAttribute("target")).toBe("_blank");
+    expect(ask.getAttribute("rel")).toBe("noopener noreferrer");
+    cleanup();
+    render(<PdpTrust />);
+    expect(document.querySelector("[data-ask]")).toBeNull();
+  });
+
   it("leaves the ways to pay out for a piece reserved on WhatsApp", () => {
     render(<PdpTrust reserved />);
     expect([...document.querySelectorAll(".rn-trust b")].map((b) => b.textContent)).toEqual(["Free shipping", "7-day returns", "3-year assurance"]);

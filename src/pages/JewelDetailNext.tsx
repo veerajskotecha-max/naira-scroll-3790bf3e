@@ -1329,7 +1329,7 @@ const JewelDetailNext = () => {
               )}
             </p>
             {/* Four promises the shop already makes, and the ways to pay. */}
-            <PdpTrust reserved={isPreorder} />
+            <PdpTrust reserved={isPreorder} questionHref={questionHref} />
             {/* Buy 2 / 3 / 4, priced for this piece and filling with the bag:
                 under the buttons and their reassurance, so Add to cart stays
                 on the first screen of a tall phone. A piece sold out

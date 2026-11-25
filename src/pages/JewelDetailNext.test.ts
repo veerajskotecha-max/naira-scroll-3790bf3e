@@ -323,7 +323,10 @@ describe("redesigned product page", () => {
     /* A pre-order's line no longer repeats the shipping the grid under it says. */
     expect(promise).toMatch(/"Pre-orders are arranged on WhatsApp, with the delivery date\."/);
     expect(code).not.toMatch(/"Free insured shipping", !isPreorder/);
-    expect(code).toMatch(/<PdpTrust reserved=\{isPreorder\} \/>/);
+    expect(code).toMatch(/<PdpTrust reserved=\{isPreorder\} questionHref=\{questionHref\} \/>/);
+    /* The question it opens is about this piece, and is a question: the old
+       link began "I'd love to pre-order" on pieces that ship today. */
+    expect(code).toMatch(/`Hi Naira Flore, I have a question about the "\$\{piece\.name\}"\$\{choiceLine \? ` in \$\{choiceLine\}` : ""\}\.`/);
     /* The bar: the price, then the same two buttons. */
     const bar = code.slice(code.indexOf('className="rn-bar"'));
     expect(bar).toMatch(/<b>\{shown\.priceLabel\}<\/b>/);

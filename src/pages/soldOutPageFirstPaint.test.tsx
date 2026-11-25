@@ -91,7 +91,12 @@ describe("a sold-out piece's product page before the catalogue arrives", () => {
     expect(actions()).toEqual(["Reserve now"]);
     expect(screen.queryByRole("button", { name: /Buy Now/i })).toBeNull();
     expect(document.querySelector("#product-price")?.textContent).toMatch(/₹1,300.*₹1,859/);
-    expect(document.querySelector("#product-actions")?.textContent).toMatch(/Hand-finished for you and shipped within 2 weeks, gift-boxed/);
+    /* The lead time sits right under the button (the renewed page's promise line). */
+    expect(document.querySelector("#product-actions + [data-ship]")?.textContent).toMatch(/Hand-finished for you and shipped within 2 weeks, gift-boxed/);
+    /* A reserved piece is paid for on WhatsApp: no "in stock", no ways to pay, no offer. */
+    expect(document.querySelector("[data-ship]")?.textContent).not.toMatch(/In stock/);
+    expect(document.querySelector(".rn-pay")).toBeNull();
+    expect(document.querySelector("[data-offer-ladder]")).toBeNull();
     const ld = [...document.querySelectorAll('script[type="application/ld+json"]')].map((s) => s.textContent ?? "").join(" ");
     expect(ld).toMatch(/schema\.org\/OutOfStock/);
     expect(ld).not.toMatch(/schema\.org\/InStock/);

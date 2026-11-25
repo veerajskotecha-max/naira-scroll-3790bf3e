@@ -12,9 +12,16 @@ import { ImageLightbox } from "@/components/ui/image-lightbox";
 import RingSizeGuideModal from "@/components/jewellery/RingSizeGuideModal";
 import RingSizeGuide from "@/components/jewellery/RingSizeGuide";
 import PressMarquee from "@/components/jewellery/PressMarquee";
-import PdpOfferLadder from "@/components/jewellery/PdpOfferLadder";
+import PdpAssurances from "@/components/pdp/PdpAssurances";
+import PdpOfferTracker from "@/components/pdp/PdpOfferTracker";
+import PdpTrust from "@/components/pdp/PdpTrust";
+import PdpBundle from "@/components/pdp/PdpBundle";
+import RenewStyles from "@/components/pdp/RenewStyles";
+import { ledeOf } from "@/components/pdp/renew";
+import { useReveal } from "@/components/pdp/useReveal";
+import { bestsellerHandles, readCachedVisits } from "@/lib/shopOrder";
 import { discountPercent } from "@/components/jewellery/JewelPriceTag";
-import { CleanDots, CleanDropdown, CleanDropdowns, CleanFact, CleanFacts, CleanPrice, CleanStyles, cleanButton, percent } from "@/components/clean";
+import { CleanDropdown, CleanDropdowns, CleanFact, CleanFacts, CleanPrice, CleanStyles, cleanButton, percent } from "@/components/clean";
 import PdpStyles from "@/components/pdp/PdpStyles";
 import { useQuery } from "@tanstack/react-query";
 import { fromShopify, useLiveJewellery } from "@/hooks/useLiveJewellery";
@@ -71,6 +78,26 @@ import { SHOP_RATING, clientsLabel } from "@/lib/trust";
   "someone bought" card (random names and cities) and the "4.9 · 50 reviews"
   figure (one bundled list dealt to every piece). The head now carries the
   shop's own rating and client count (lib/trust).
+
+  25 Nov 2026, the renewed layer (src/components/pdp, renew.css), on its own
+  branch for the owner's approval. She sent a reel of before-and-after shop
+  pages and asked for what they share: proof before the name, three quick
+  benefits, a clear choice, a delivery promise, one strong button with the
+  price in it, reassurance right under it, an offer that can be watched
+  filling, a bundle, padding, and simple motion. Over the clean page:
+
+    a "Popular" mark on the first photo where the shop's own view counts earn
+    it → category and rating → name → price with the saving as a tag → one
+    sentence from the piece's description → three ticked benefits → the offer
+    as a padded panel whose line fills with the bag → choices, the chosen one
+    filled → Add to cart with the price in it, Buy Now beside it → in stock
+    and the arrival date → four reassurances and the ways to pay → the same
+    four dropdowns (Description closed when its first sentence is already
+    above) → "Complete the look" as a bundle with one button → reviews →
+    press → reels → more of the category. The phone's buy bar adds the price.
+
+  Every fact on it is one the site already states or computes: nothing is
+  counted, timed or claimed that the shop does not know.
 
   The html.nf-next class still swaps the stock blue-grey palette the shared
   dialogs and toasts draw from for the brand one.
@@ -567,6 +594,17 @@ const JewelDetailNext = () => {
 
   const pairings = useMemo(() => (piece ? completeTheLook(piece, jewellery, 3) : []), [piece, jewellery]);
   const similar = useMemo(() => (piece ? moreLikeThis(piece, jewellery, 8) : []), [piece, jewellery]);
+  /* Among the shop's ten most viewed pieces that can be bought: the set the
+     listing marks "Bestseller", from the counts it already holds (cached, or
+     the seeded 30-day views). No request is made for it here. It is views,
+     so the photo says "Popular", not that it sold most. */
+  const popular = useMemo(
+    () => Boolean(piece && piece.availableForSale !== false && bestsellerHandles(jewellery, readCachedVisits()).has(piece.handle)),
+    [piece, jewellery],
+  );
+  /* Sections below the buy area rise in as they are reached (useReveal). */
+  const rootRef = useRef<HTMLDivElement>(null);
+  useReveal(rootRef, `${piece?.handle ?? ""}:${pairings.length}:${similar.length}`);
 
   /* Wait for the catalogue before calling a handle missing (see JewelDetail.tsx),
      unless Shopify has already said this one piece does not exist. */
@@ -744,7 +782,8 @@ const JewelDetailNext = () => {
      line under them says which one is showing (the reel, when the piece is in
      one, is its last segment). */
   const MobileGallery = (
-    <div>
+    <div className="relative">
+      {popular && <span className="rn-tag">Popular</span>}
       <div
         ref={scrollRef}
         className="scrollbar-hide flex snap-x snap-mandatory overflow-x-auto"
@@ -848,7 +887,8 @@ const JewelDetailNext = () => {
                 />
               </picture>
             )}
-            {/* The one mark on a photograph: that there are more of them. */}
+            {popular && i === 0 && <span className="rn-tag">Popular</span>}
+            {/* The other mark on a photograph: that there are more of them. */}
             {more > 0 && i === count - 1 && (
               <span className="nc-label absolute bottom-3 right-3 bg-[var(--nc-ivory)] px-2.5 py-1.5">
                 +{more} {more === 1 ? "photo" : "photos"}
@@ -872,14 +912,28 @@ const JewelDetailNext = () => {
      date a visitor is quoted (the pre-built page and a reserved piece carry
      none), the gift box. Each fact stays whole if a narrow phone wraps it. */
   const promise = ["Free insured shipping", !isPreorder && arrivesBy ? `Arrives ${arrivesBy}` : null, "Gift-boxed"].filter(Boolean);
+  /* The piece's own first sentence, under the price, when it is short enough
+     to read at a glance; the description below then opens on a tap. */
+  const lede = ledeOf(piece.blurb);
+  /* "Check pincode" under the buttons opens the delivery row and puts the
+     cursor in its field, without a history step. */
+  const toDelivery = () => {
+    const panel = document.getElementById("pdp-panel-delivery");
+    const row = panel?.closest("details");
+    if (!row) return;
+    row.open = true;
+    row.scrollIntoView({ behavior: "smooth", block: "center" });
+    window.setTimeout(() => panel?.querySelector("input")?.focus({ preventScroll: true }), 450);
+  };
 
   return (
     <div>
       {/* Everything the clean system draws. The footer is a sibling, not a
           child: inside, it would inherit this root's face and line height. */}
-      <div className="nf-clean min-h-screen">
+      <div ref={rootRef} className="nf-clean rn-page min-h-screen">
       <CleanStyles />
       <PdpStyles />
+      <RenewStyles />
       <Helmet>
         <title>{inPreview ? `Preview · ${title}` : title}</title>
         <meta name="description" content={`${piece.name}, ${clipText(piece.blurb, 130)}`} />
@@ -1000,19 +1054,13 @@ const JewelDetailNext = () => {
               percentOff={saving > 0 ? discountPercent(shown) : null}
               note={`incl. ${GST_LABEL}`}
             />
+            {/* One sentence that sells the piece, its own (lib: renew `ledeOf`). */}
+            {lede && <p className="nc-text rn-lede">{lede}</p>}
 
-            {/* One quiet table where three badges, a sold count and an offer
-                box used to be. Stone evidence comes from the listing, not the
-                generic summary. */}
-            <CleanFacts className="mt-4">
-              <CleanFact label="Quality">
-                <CleanDots items={["Anti-tarnish", "Skin-friendly", platingBadge(finish), hasZirconeStone(piece) && "Zircone Stone"]} />
-              </CleanFact>
-              {/* Buy 2 / 3 / 4, priced for this piece and following the bag. A
-                  piece sold out altogether is reserved on WhatsApp and never
-                  reaches the bag, so it is offered nothing it cannot get. */}
-              {!soldOut && <PdpOfferLadder price={shown.price} preorder={sizePreorder || variantSoldOut} />}
-            </CleanFacts>
+            {/* Three quick benefits, ticked: the same values, in the same
+                order, as the QUALITY row. Stone evidence comes from the
+                listing, not the generic summary. */}
+            <PdpAssurances items={["Anti-tarnish", "Skin-friendly", platingBadge(finish), hasZirconeStone(piece) && "Zircone Stone"]} />
 
             {/* The ways Shopify sells this piece: a metal, a stone, a size, a
                 month. Each value shows whether it can be bought with the other
@@ -1125,58 +1173,71 @@ const JewelDetailNext = () => {
             {/* Quantity stays in the bag; both actions use the same chosen
                 variant. The buttons are this box's own children: the phone's
                 buy bar watches the first of them. */}
-            <div id="product-actions" className="nc-btnrow mt-5">
-              {!isPreorder && (
-                /* "Opening checkout…" is 142px of caps; half a 360px phone leaves
-                   the label 126. While busy the button gives it its side padding
-                   and, on a narrower phone still, a second line. */
-                <button
-                  type="button"
-                  onClick={handleBuyNow}
-                  disabled={cartLoading || buying}
-                  className={`${cleanButton()} ${buying ? "!whitespace-normal !px-1 text-center" : ""}`}
-                >
-                  {buying ? "Opening checkout…" : "Buy Now"}
-                </button>
-              )}
+            <div id="product-actions" className="rn-actions mt-5">
+              {/* The one filled button, with the price in it; Buy Now beside
+                  it, narrower. A piece that cannot ship now has one button. */}
               <button
                 type="button"
                 onClick={isPreorder ? handlePreOrder : handleAddToCart}
                 disabled={cartLoading || buying}
-                className={`${cleanButton({ fill: "ink" })} ${isPreorder ? "col-span-2" : ""}`}
+                className={cleanButton({ fill: "ink" })}
               >
-                {isPreorder ? "Reserve now" : "Add to cart"}
+                {isPreorder ? (
+                  "Reserve now"
+                ) : (
+                  <>
+                    Add to cart
+                    <span className="rn-price-in">{shown.priceLabel}</span>
+                  </>
+                )}
               </button>
+              {!isPreorder && (
+                <button type="button" onClick={handleBuyNow} disabled={cartLoading || buying} className={`${cleanButton()} rn-buy`}>
+                  {buying ? "Opening…" : "Buy Now"}
+                </button>
+              )}
               {/* eslint-disable-next-line no-constant-binary-expression -- switched off in Lovable on 30 Sep (it was soldOut &&); kept so it can be switched back */}
               {false && (
                 <a href={sizedEnquiryHref} target="_blank" rel="noopener noreferrer" className={`${cleanButton({ size: "sm", block: true })} col-span-2`}>
                   Reserve on WhatsApp
                 </a>
               )}
-              <p className="nc-small col-span-2 mt-1 text-center [text-wrap:balance]">
-                {soldOut
-                  ? `${SOLD_OUT_LEAD}, gift-boxed`
-                  : promise.flatMap((fact, i) => [
-                      /* A plain space between the facts is where the line may
-                         break; the dot stays with the fact before it. */
-                      i > 0 ? " " : null,
-                      <span key={fact} className="whitespace-nowrap">
-                        {fact}
-                        {i < promise.length - 1 ? "\u00A0\u00B7" : null}
-                      </span>,
-                    ])}
-              </p>
-              {/* Lovable's "Naira bundle" panel (PdpOffers, 11829ae) said the same offer
-                  a second time under Buy Now; the page shows it once, in the
-                  OFFER row under the price, which also follows the bag. */}
             </div>
+            {/* The promise, right under the buttons. A piece that ships now
+                says so, with the date a visitor is quoted (the pre-built page
+                carries none) and the way to check a pincode; one that cannot
+                says its one lead time. */}
+            <p className="rn-ship" data-ship>
+              {soldOut ? (
+                `${SOLD_OUT_LEAD}, gift-boxed`
+              ) : isPreorder ? (
+                promise.join(" · ")
+              ) : (
+                <>
+                  <span className="rn-dot" aria-hidden="true" />
+                  <strong>In stock</strong>
+                  {arrivesBy && <span>Arrives {arrivesBy}</span>}
+                  <button type="button" onClick={toDelivery} className="nc-link nc-link--ink nc-tap">
+                    Check pincode
+                  </button>
+                </>
+              )}
+            </p>
+            {/* Four promises the shop already makes, and the ways to pay. */}
+            <PdpTrust reserved={isPreorder} />
+            {/* Buy 2 / 3 / 4, priced for this piece and filling with the bag:
+                under the buttons and their reassurance, so Add to cart stays
+                on the first screen of a tall phone. A piece sold out
+                altogether is reserved on WhatsApp and never reaches the bag,
+                so it is offered nothing it cannot get. */}
+            {!soldOut && <PdpOfferTracker price={shown.price} preorder={sizePreorder || variantSoldOut} />}
 
             {/* Four dropdowns (the owner: "see how to put drop downs and
                 remove clutter"). The paragraph that sells the piece is open;
                 specifications, care and delivery wait until asked for. Every
                 panel stays in the page, so all of it is in the HTML. */}
             <CleanDropdowns className="mt-6">
-              <CleanDropdown title="Description" id="pdp-panel-description" defaultOpen>
+              <CleanDropdown title="Description" id="pdp-panel-description" defaultOpen={!lede}>
                 <p>{piece.blurb}</p>
                 {piece.stylingTip && <p>{piece.stylingTip}</p>}
               </CleanDropdown>
@@ -1248,8 +1309,20 @@ const JewelDetailNext = () => {
             {/* Another piece, one tap from the bag. The label is the ladder's
                 first rung, read from promo.ts, so it always quotes the first
                 rung the bag really has. */}
-            {pairings.length > 0 && (
-              <section className="mt-12 lg:mt-16" aria-labelledby="complete-the-look">
+            {/* A piece that ships now is offered with its pairings as a bundle:
+                tick, see the total, one button. One that is reserved on
+                WhatsApp cannot be added with them, so it keeps the cards. */}
+            {pairings.length > 0 && !isPreorder && (
+              <PdpBundle
+                title={isSetRow(piece, pairings) ? "Complete the set" : "Complete the look"}
+                anchor={{ name: piece.name, image: leadImage ?? cardCover(piece), price: shown.price, note: choiceLine ? sentence(choiceLine) : undefined, line: cartItem() }}
+                pieces={pairings}
+                hrefFor={hrefFor}
+                prefer={variant?.options}
+              />
+            )}
+            {pairings.length > 0 && isPreorder && (
+              <section className="rn-reveal mt-12 lg:mt-16" aria-labelledby="complete-the-look">
                 <div className="flex items-baseline justify-between gap-3">
                   <h2 id="complete-the-look" className="nc-heading">
                     {isSetRow(piece, pairings) ? "Complete the set" : "Complete the look"}
@@ -1270,18 +1343,24 @@ const JewelDetailNext = () => {
         </div>
       </div>
 
-      <Suspense fallback={<div className="min-h-[240px]" aria-hidden="true" />}>
-        <CustomerReviews productName={piece.name} variant="jewellery" look="clean" />
-      </Suspense>
+      <div className="rn-reveal">
+        <Suspense fallback={<div className="min-h-[240px]" aria-hidden="true" />}>
+          <CustomerReviews productName={piece.name} variant="jewellery" look="clean" />
+        </Suspense>
+      </div>
 
-      <PressMarquee />
+      <div className="rn-reveal">
+        <PressMarquee />
+      </div>
 
-      <Suspense fallback={<div className="min-h-[420px] md:hidden" aria-hidden="true" />}>
-        <ReelShopNext hrefFor={hrefFor} />
-      </Suspense>
+      <div className="rn-reveal">
+        <Suspense fallback={<div className="min-h-[420px] md:hidden" aria-hidden="true" />}>
+          <ReelShopNext hrefFor={hrefFor} />
+        </Suspense>
+      </div>
 
       {similar.length > 0 && (
-        <section className="mx-auto max-w-[1400px] pt-12 md:px-6 lg:pt-16" aria-labelledby="more-like-this">
+        <section className="rn-reveal mx-auto max-w-[1400px] pt-12 md:px-6 lg:pt-16" aria-labelledby="more-like-this">
           <h2 id="more-like-this" className="nc-heading px-4 md:px-0">
             More {piece.category.toLowerCase()}
           </h2>
@@ -1319,7 +1398,14 @@ const JewelDetailNext = () => {
         }}
         aria-hidden={!stickyBarVisible}
       >
-        <div className="nc-bar">
+        <div className="rn-bar" data-single={isPreorder ? "" : undefined}>
+          {/* The price rides in the bar: by the time it shows, the page's own
+              price has usually scrolled away. */}
+          <p className="rn-bar__price">
+            <span className="nc-sr">Price </span>
+            <b>{shown.priceLabel}</b>
+            {saving > 0 && shown.compareAtLabel && <del>{shown.compareAtLabel}</del>}
+          </p>
           {!isPreorder && (
             <button type="button" onClick={handleBuyNow} disabled={cartLoading || buying} className={cleanButton({ size: "bar" })}>
               {buying ? "Opening…" : "Buy Now"}

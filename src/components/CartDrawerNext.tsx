@@ -10,6 +10,7 @@ import { discountedCartLines } from "@/lib/cartPricing";
 import { useSwipeDismiss } from "@/hooks/useSwipeDismiss";
 import { followOut, useBackToClose } from "@/hooks/useBackToClose";
 import {
+  addOnEffect,
   discountedSubtotal,
   getPromoCode,
   ladderHeadline,
@@ -20,6 +21,8 @@ import {
 import { SHIPPING_CHARGE, deliveryRangeFromNow } from "@/lib/serviceability";
 import { CleanStyles, cleanButton } from "@/components/clean";
 import BagEmpty from "@/components/cart/BagEmpty";
+import BagAddOn from "@/components/cart/BagAddOn";
+import { bagAddOns } from "@/lib/pairings";
 import BagLine from "@/components/cart/BagLine";
 import BagOffer from "@/components/cart/BagOffer";
 import { BagTrust } from "@/components/cart/BagTrust";
@@ -314,6 +317,12 @@ const CartDrawerNext = () => {
     }
   };
 
+  /* One piece that goes with the bag, while a richer step is still ahead of
+     it (lib/pairings: none from the top step on). Offered against the bag as
+     it will be once Shopify answers, and never while a piece is on its way. */
+  const addOn = useMemo(() => bagAddOns(lines.map((item) => item.id), lineCount, jewellery)?.pieces[0] ?? null, [lines, lineCount, jewellery]);
+  const addOnEffectNow = addOn ? addOnEffect({ subtotal: lineSubtotal, totalItems: lineCount, promoCode }, addOn.price) : null;
+
   const best = BEST_SELLERS.map((handle) => catalogueByHandle.get(handle)).filter(
     (piece): piece is JewelPiece => Boolean(piece && piece.availableForSale !== false && piece.variantId),
   );
@@ -416,6 +425,17 @@ const CartDrawerNext = () => {
                   );
                 })}
               </ul>
+              {addOn && addOnEffectNow && (
+                <BagAddOn
+                  piece={addOn}
+                  effect={addOnEffectNow}
+                  rate={discount.rate}
+                  adding={adding === addOn.handle}
+                  disabled={Boolean(adding) || busy}
+                  onAdd={() => addPiece(addOn, "bag_pair_added")}
+                  onLeave={leave}
+                />
+              )}
             </div>
 
             {/* The foot: the total, what was saved (or what the next piece

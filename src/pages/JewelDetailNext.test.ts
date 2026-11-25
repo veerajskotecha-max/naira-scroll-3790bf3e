@@ -12,6 +12,14 @@ import { resolve } from "path";
   pinned the old look now pin the new one: a QUALITY row for the badges, four
   dropdowns for the three fold-downs, the shop's own rating for the bundled
   review count, and nothing invented (no sold count, no "someone bought" card).
+
+  25 Nov 2026: the renewed layer (src/components/pdp, renew.css), on its own
+  branch. The behaviour rules stand. What moved: the QUALITY row is three
+  ticked benefits, the OFFER row is a panel under the buttons whose line
+  fills with the bag, Add to cart carries the price with Buy Now beside it,
+  the promise and four reassurances sit right under them, the description
+  folds away when its first sentence is already under the price, and
+  "Complete the look" is a bundle with one button.
 */
 const src = readFileSync(resolve(__dirname, "JewelDetailNext.tsx"), "utf8");
 const code = src.replace(/\/\*[\s\S]*?\*\//g, "").replace(/\/\/.*$/gm, "").replace(/\{\s*\}/g, "{}");
@@ -98,8 +106,8 @@ describe("redesigned product page", () => {
      Four native <details> rows (CleanDropdown), named and ordered as the spec
      has them; the paragraph that sells the piece is open, the rest closed.
      Every panel stays in the page, so all of it is in the HTML. */
-  it("folds the rest into four dropdowns, the description open", () => {
-    const rows = [...code.matchAll(/<CleanDropdown title="([^"]+)" id="([^"]+)"( defaultOpen)?>/g)].map((m) => [m[1], m[2], Boolean(m[3])]);
+  it("folds the rest into four dropdowns, the description open only when no sentence of it is under the price", () => {
+    const rows = [...code.matchAll(/<CleanDropdown title="([^"]+)" id="([^"]+)"( defaultOpen=\{!lede\})?>/g)].map((m) => [m[1], m[2], Boolean(m[3])]);
     expect(rows).toEqual([
       ["Description", "pdp-panel-description", true],
       ["Details and size", "pdp-panel-details", false],
@@ -109,27 +117,31 @@ describe("redesigned product page", () => {
     expect(code.match(/<CleanDropdown\s/g)).toHaveLength(4);
     expect(code.match(/<CleanDropdowns\s/g)).toHaveLength(1);
     expect(code).not.toMatch(/<details/);
-    /* The description leads with the piece's own paragraph. */
+    /* The description leads with the piece's own paragraph, whole: the
+       sentence lifted to sit under the price is still in it. */
     const description = code.slice(code.indexOf('id="pdp-panel-description"'), code.indexOf('id="pdp-panel-details"'));
     expect(description).toMatch(/\{piece\.blurb\}/);
     expect(description).toMatch(/\{piece\.stylingTip && <p>\{piece\.stylingTip\}<\/p>\}/);
+    expect(code).toMatch(/const lede = ledeOf\(piece\.blurb\);/);
+    expect(code).toMatch(/\{lede && <p className="nc-text rn-lede">\{lede\}<\/p>\}/);
+    expect(code.indexOf("rn-lede")).toBeGreaterThan(code.indexOf('id="product-price"'));
+    expect(code.indexOf("rn-lede")).toBeLessThan(code.indexOf('id="product-actions"'));
   });
 
-  /* The owner (2 Nov 2026): the offer under the price and the badges. Once,
-     before the choices and Add to cart, priced from the chosen variant; a
-     piece sold out altogether is reserved on WhatsApp, outside the bag. */
-  it("puts the buy-more offer under the price and qualities, before the choices and Add to cart", () => {
-    const offer = code.indexOf("<PdpOfferLadder");
-    expect(offer).toBeGreaterThan(code.indexOf('id="product-price"'));
-    expect(offer).toBeGreaterThan(code.indexOf("<CleanDots"));
-    /* The qualities and the offer are two rows of one table. */
-    const table = code.slice(code.indexOf("<CleanFacts"), code.indexOf("</CleanFacts>"));
-    expect(table).toMatch(/<CleanFact label="Quality">/);
-    expect(table).toContain("<PdpOfferLadder");
-    expect(offer).toBeLessThan(code.indexOf("choices(piece).map"));
-    expect(offer).toBeLessThan(code.indexOf('id="product-actions"'));
-    expect(code.match(/<PdpOfferLadder/g)).toHaveLength(1);
-    expect(code).toMatch(/\{!soldOut && <PdpOfferLadder price=\{shown\.price\} preorder=\{sizePreorder \|\| variantSoldOut\} \/>\}/);
+  /* The owner (2 Nov 2026): the offer on the product page, priced for the
+     piece. 25 Nov 2026: a padded panel whose line fills with the bag, under
+     the buttons and their reassurance (so Add to cart stays on a tall
+     phone's first screen) and before the dropdowns. Once, priced from the
+     chosen variant; a piece sold out altogether is reserved on WhatsApp,
+     outside the bag, and is offered nothing. */
+  it("puts the buy-more offer in a panel under the buttons and reassurance, before the dropdowns", () => {
+    const offer = code.indexOf("<PdpOfferTracker");
+    expect(offer).toBeGreaterThan(code.indexOf('id="product-actions"'));
+    expect(offer).toBeGreaterThan(code.indexOf("<PdpTrust"));
+    expect(offer).toBeLessThan(code.indexOf("<CleanDropdowns"));
+    expect(code.match(/<PdpOfferTracker/g)).toHaveLength(1);
+    expect(code).toMatch(/\{!soldOut && <PdpOfferTracker price=\{shown\.price\} preorder=\{sizePreorder \|\| variantSoldOut\} \/>\}/);
+    expect(code).not.toMatch(/PdpOfferLadder/);
   });
 
   it("keeps the shoppable reels in the page, after the press strip", () => {
@@ -205,16 +217,16 @@ describe("redesigned product page", () => {
     expect(code).toMatch(/const toReviews = [\s\S]*?e\.preventDefault\(\);[\s\S]*?scrollIntoView/);
   });
 
-  /* Three bordered badges with icons became one row of plain words: the same
-     values, in the same order, with the stone only where the listing has one. */
-  it("says anti-tarnish, skin-friendly and the piece's own plating in the QUALITY row under the price, before Add to cart", () => {
-    const quality = code.indexOf("<CleanDots");
-    expect(quality).toBeGreaterThan(code.indexOf('id="product-price"'));
-    expect(quality).toBeLessThan(code.indexOf('id="product-actions"'));
-    expect(code.slice(quality - 80, quality)).toMatch(/<CleanFact label="Quality">/);
-    const row = code.slice(quality, quality + 300);
-    expect(row).toMatch(/items=\{\["Anti-tarnish", "Skin-friendly", platingBadge\(finish\), hasZirconeStone\(piece\) && "Zircone Stone"\]\}/);
-    expect(code).not.toMatch(/aria-label="Made to last"/);
+  /* Three bordered badges with icons became one row of plain words, and
+     then three ticked benefits: the same values, in the same order, with the
+     stone only where the listing has one. */
+  it("says anti-tarnish, skin-friendly and the piece's own plating as ticked benefits under the price, before Add to cart", () => {
+    const benefits = code.indexOf("<PdpAssurances");
+    expect(benefits).toBeGreaterThan(code.indexOf('id="product-price"'));
+    expect(benefits).toBeLessThan(code.indexOf('id="product-actions"'));
+    expect(code.slice(benefits, benefits + 300)).toMatch(/items=\{\["Anti-tarnish", "Skin-friendly", platingBadge\(finish\), hasZirconeStone\(piece\) && "Zircone Stone"\]\}/);
+    expect(code.match(/<PdpAssurances/g)).toHaveLength(1);
+    expect(code).not.toMatch(/<CleanDots/);
   });
 
   /* What the code map showed to be made up is not carried into the new page:
@@ -235,28 +247,79 @@ describe("redesigned product page", () => {
     expect(code).toMatch(/<Link to="\/jewellery" data-pdp="eyebrow" className="nc-label nc-label--gold nc-tap">\s*\{piece\.category\}\s*<\/Link>/);
   });
 
-  /* The wishlist heart sits beside the name; nothing is laid over the phone's
-     photo, and the laptop's grid keeps only "+N photos". */
-  it("lays nothing over the photographs but the count of more", () => {
+  /* The wishlist heart sits beside the name. One mark may sit on the first
+     photograph, "Popular", and only where the shop's own view counts earn it
+     (the listing's "Bestseller" set, read from what is already cached: no
+     request is made for it); the laptop's grid also keeps "+N photos". */
+  it("lays one earned mark over the first photograph, and the count of more", () => {
     const phone = code.slice(code.indexOf("const MobileGallery"), code.indexOf("const DesktopGallery"));
     expect(phone).not.toMatch(/\babsolute\b/);
+    expect(phone.match(/rn-tag/g)).toHaveLength(1);
+    expect(phone).toMatch(/\{popular && <span className="rn-tag">Popular<\/span>\}/);
     expect(phone).toMatch(/className="nc-segs"/);
     const laptop = code.slice(code.indexOf("const DesktopGallery"), code.indexOf("const sizeGuideLink"));
     expect(laptop.match(/\babsolute\b/g)).toHaveLength(1);
+    expect(laptop).toMatch(/\{popular && i === 0 && <span className="rn-tag">Popular<\/span>\}/);
     expect(laptop).toMatch(/\+\{more\} \{more === 1 \? "photo" : "photos"\}/);
     expect(code.match(/onClick=\{handleWishlist\}/g)).toHaveLength(1);
+    /* Views, not sales, and never for a piece that cannot be bought. */
+    expect(code).toMatch(/piece\.availableForSale !== false && bestsellerHandles\(jewellery, readCachedVisits\(\)\)\.has\(piece\.handle\)/);
+    expect(code).not.toMatch(/usePieceVisits|fetchVisits/);
+    expect(code).not.toMatch(/>\s*Bestseller\s*</i);
   });
 
-  /* One pair of buttons in the page, the same pair in the phone's bar; no
-     payment discs in either, and the bar's first watcher is a direct child of
-     #product-actions. */
-  it("keeps the buttons as #product-actions' own children, with the delivery line under them", () => {
-    const actions = code.slice(code.indexOf('id="product-actions"'), code.indexOf("<CleanDropdowns"));
-    expect(actions).toMatch(/\{buying \? "Opening checkout…" : "Buy Now"\}/);
-    expect(actions).toMatch(/\{isPreorder \? "Reserve now" : "Add to cart"\}/);
-    expect(actions).toMatch(/`\$\{SOLD_OUT_LEAD\}, gift-boxed`/);
-    expect(code).toMatch(/\["Free insured shipping", !isPreorder && arrivesBy \? `Arrives \$\{arrivesBy\}` : null, "Gift-boxed"\]/);
+  /* One filled button with the price in it and Buy Now beside it; the same
+     pair in the phone's bar, after the price. No payment discs in a button.
+     The bar's first watcher is a direct child of #product-actions. */
+  it("keeps the buttons as #product-actions' own children, the price in the one that adds, the promise right under them", () => {
+    const actions = code.slice(code.indexOf('id="product-actions"'), code.indexOf("<PdpTrust"));
+    expect(actions).toMatch(/Add to cart\s*<span className="rn-price-in">\{shown\.priceLabel\}<\/span>/);
+    expect(actions).toMatch(/\{buying \? "Opening…" : "Buy Now"\}/);
+    expect(actions).toMatch(/"Reserve now"/);
     expect(actions).not.toMatch(/<div/);
+    /* The first button in the box is the one the bar stands for. */
+    expect(actions.indexOf("handleAddToCart")).toBeLessThan(actions.indexOf("handleBuyNow"));
+    /* In stock, the date a visitor is quoted and the way to a pincode check;
+       a piece that cannot ship now says its one lead time instead. */
+    const promise = actions.slice(actions.indexOf('className="rn-ship"'));
+    expect(promise).toMatch(/`\$\{SOLD_OUT_LEAD\}, gift-boxed`/);
+    expect(promise).toMatch(/<strong>In stock<\/strong>/);
+    expect(promise).toMatch(/\{arrivesBy && <span>Arrives \{arrivesBy\}<\/span>\}/);
+    expect(promise).toMatch(/onClick=\{toDelivery\}/);
+    expect(code).toMatch(/\["Free insured shipping", !isPreorder && arrivesBy \? `Arrives \$\{arrivesBy\}` : null, "Gift-boxed"\]/);
+    expect(code).toMatch(/<PdpTrust reserved=\{isPreorder\} \/>/);
+    /* The bar: the price, then the same two buttons. */
+    const bar = code.slice(code.indexOf('className="rn-bar"'));
+    expect(bar).toMatch(/<b>\{shown\.priceLabel\}<\/b>/);
+    expect(bar).toMatch(/\{buying \? "Opening…" : "Buy Now"\}/);
+    expect(bar).toMatch(/\{isPreorder \? "Reserve now" : "Add to cart"\}/);
+  });
+
+  /* "Complete the look" as a bundle: the piece as chosen and its pairings,
+     ticked, totalled by the bag's own arithmetic, added with one button. A
+     piece that is reserved on WhatsApp cannot go in the bag with them, so it
+     keeps the cards. */
+  it("offers the pairings as a bundle for a piece that ships now, as cards for one that is reserved", () => {
+    const bundle = code.slice(code.indexOf("<PdpBundle"), code.indexOf("<PdpBundle") + 600);
+    expect(code).toMatch(/\{pairings\.length > 0 && !isPreorder && \(\s*<PdpBundle/);
+    expect(bundle).toMatch(/line: cartItem\(\)/);
+    expect(bundle).toMatch(/price: shown\.price/);
+    expect(bundle).toMatch(/pieces=\{pairings\}/);
+    expect(code).toMatch(/\{pairings\.length > 0 && isPreorder && \(/);
+    expect(code.indexOf("<PdpBundle")).toBeGreaterThan(code.indexOf("<CleanDropdowns"));
+    expect(code.indexOf("<PdpBundle")).toBeLessThan(code.indexOf("<CustomerReviews"));
+  });
+
+  /* Sections below the buy area rise in as they are reached. Only wrappers
+     the page itself renders carry the class: what a lazy part draws later is
+     inside one, so nothing can arrive hidden with no one watching for it. */
+  it("lets the lower sections rise in, each inside a wrapper the page renders itself", () => {
+    expect(code).toMatch(/useReveal\(rootRef, /);
+    expect(code).toMatch(/<div className="rn-reveal">\s*<Suspense fallback=\{[^}]*\}>\s*<CustomerReviews/);
+    expect(code).toMatch(/<div className="rn-reveal">\s*<PressMarquee \/>/);
+    expect(code).toMatch(/<div className="rn-reveal">\s*<Suspense fallback=\{[^}]*\}>\s*<ReelShopNext/);
+    const above = code.slice(code.indexOf("<main"), code.indexOf("<CleanDropdowns"));
+    expect(above).not.toMatch(/rn-reveal/);
   });
 
   /* Type and colour come from the clean system's classes and tokens and from
@@ -264,6 +327,8 @@ describe("redesigned product page", () => {
      which pictures metals and stones, is the one place a raw colour stays. */
   it("draws its type and colour from the clean system only", () => {
     expect(code).toMatch(/<div className="nf-clean min-h-screen">\s*<CleanStyles \/>/);
+    /* The page's own root adds the renewed layer's class and stylesheet. */
+    expect(code).toMatch(/<div ref=\{rootRef\} className="nf-clean rn-page min-h-screen">\s*<CleanStyles \/>\s*<PdpStyles \/>\s*<RenewStyles \/>/);
     for (const banned of [/font-cormorant/, /font-nf-/, /text-nf-/, /bg-nf-/, /border-nf-/, /\btracking-/, /\btext-\[/, /--nf-/, /UpiBadges/, /\brounded/, /\bshadow-/, /backdrop-blur/, /\bfont-(?:light|normal|medium|semibold|bold)\b/, /\bitalic\b/, /\buppercase\b/]) {
       expect(code).not.toMatch(banned);
     }

@@ -1,5 +1,5 @@
 import { fireEvent, render, screen } from "@testing-library/react";
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import PincodeChecker from "./PincodeChecker";
 
 /* A reserved piece got "Delivery to 400001 in 3 working days · by Wed, 4 Nov"
@@ -53,7 +53,7 @@ describe('PincodeChecker look="clean"', () => {
     expect(screen.getByLabelText("Pincode")).toBe(screen.getByPlaceholderText("Enter pincode"));
     check("400001");
     expect(screen.getByText(/Delivery to/).textContent).toMatch(/^Delivery to 400001 in 3 working days · by /);
-    expect(screen.getByText("Cash on Delivery available · UPI, cards, wallets and net banking accepted")).toBeTruthy();
+    expect(screen.getByText("Cash on delivery available. UPI, cards, wallets and net banking too.")).toBeTruthy();
     expect(container.querySelectorAll("svg")).toHaveLength(0);
     expect(container.innerHTML).not.toMatch(/hsl\(|style=/);
     expect(container.querySelector(".nc-field input")).toBeTruthy();
@@ -100,5 +100,40 @@ describe('PincodeChecker look="clean"', () => {
     render(<PincodeChecker look="clean" />);
     expect((screen.getByPlaceholderText("Enter pincode") as HTMLInputElement).value).toBe("400001");
     expect(screen.getByText(/Delivery to/)).toBeTruthy();
+  });
+
+  /* Where cash on delivery is refused (Patna, 800001) the line gave the
+     list's own reason, "high return rate on COD in this region": it told a
+     shopper her area was a bad risk. It now says what she can do instead. */
+  it("refuses cash on delivery without giving a reason, and says how one can pay", () => {
+    const { container } = render(<PincodeChecker look="clean" />);
+    check("800001");
+    expect(screen.getByText(/Delivery to/)).toBeTruthy();
+    expect(screen.getByText("Cash on delivery is not available for this pincode. You can pay by UPI, card, wallet or net banking.")).toBeTruthy();
+    expect(container.textContent).not.toMatch(/return rate|region|risk|Prepaid only/i);
+  });
+
+  it("tells the page each answer: the pincode it can vouch for, or nothing", () => {
+    const onChecked = vi.fn();
+    render(<PincodeChecker look="clean" onChecked={onChecked} />);
+    check("400001");
+    expect(onChecked).toHaveBeenLastCalledWith("400001");
+    check("999999");
+    expect(onChecked).toHaveBeenLastCalledWith(null);
+    /* A pincode that is not six digits is no answer at all. */
+    onChecked.mockClear();
+    check("12345");
+    expect(onChecked).not.toHaveBeenCalled();
+  });
+});
+
+/* The outfit page's look keeps its own words: nothing here changed for it. */
+describe("PincodeChecker, the default look", () => {
+  beforeEach(() => localStorage.clear());
+
+  it("still says cash on delivery as it always has", () => {
+    render(<PincodeChecker />);
+    check("400001");
+    expect(document.body.textContent).toMatch(/Cash on Delivery/);
   });
 });

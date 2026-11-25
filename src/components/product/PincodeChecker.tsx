@@ -18,8 +18,18 @@ interface Result extends Serviceability {
 /* `look="clean"` is the product page's (src/components/clean): one hairline
    field with its action inside, the same words as plain lines, no icons and
    no green, amber or red. Without it this renders as it always has, for the
-   outfit page. */
-const PincodeChecker = ({ preorder = false, look }: { preorder?: boolean; look?: "clean" }) => {
+   outfit page.
+   `onChecked` hears each answer: the pincode it could vouch for, or null. The
+   product page uses it to put that pincode's own date under its buttons. */
+const PincodeChecker = ({
+  preorder = false,
+  look,
+  onChecked,
+}: {
+  preorder?: boolean;
+  look?: "clean";
+  onChecked?: (pincode: string | null) => void;
+}) => {
   const [pincode, setPincode] = useState("");
   const [result, setResult] = useState<Result | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -47,6 +57,7 @@ const PincodeChecker = ({ preorder = false, look }: { preorder?: boolean; look?:
       return;
     }
     const info = getServiceability(value);
+    onChecked?.(info ? value : null);
     if (info) {
       const eta = formatDeliveryDate(addWorkingDays(new Date(), info.days));
       setResult({ ...info, eta });
@@ -124,9 +135,12 @@ const PincodeChecker = ({ preorder = false, look }: { preorder?: boolean; look?:
               )}
             </p>
             <p className="nc-small nc-small--ink">
+              {/* No reason is given for a refusal: the list's own ("high
+                  return rate on COD in this region") told a shopper her area
+                  was a bad risk. What she can do is said instead. */}
               {result.cod === "blocked"
-                ? `Cash on Delivery is unavailable for this pincode (${result.codReason}). Prepaid only · UPI, cards, wallets and net banking accepted.`
-                : "Cash on Delivery available · UPI, cards, wallets and net banking accepted"}
+                ? "Cash on delivery is not available for this pincode. You can pay by UPI, card, wallet or net banking."
+                : "Cash on delivery available. UPI, cards, wallets and net banking too."}
             </p>
           </div>
         )}

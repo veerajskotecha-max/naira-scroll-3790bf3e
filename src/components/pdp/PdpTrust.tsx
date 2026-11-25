@@ -7,20 +7,25 @@ import PayRow from "./PayRow";
   plainly, and the ways to pay as their own marks.
 
     Free shipping           insured and gift-boxed: the delivery terms
-    7-day returns           the returns policy the bag links to
+    7-day returns           "On eligible pieces", the footer's own words
     3-year assurance        the plating assurance (Care, and the footer)
-    Cash on delivery        the delivery terms
+    Cash on delivery        on most pincodes: lib/serviceability refuses it
+                            in some regions, so the line does not promise all
 
-  Nothing here is new: each line is a promise the site makes today.
+  Nothing here is new, and nothing says more than its source does. The
+  returns line said "Exchange or return" until the copy review of 25 Nov
+  2026: the published policy covers a piece that arrives faulty, so the line
+  keeps to the words the footer already uses and the dropdown below links
+  the policy itself.
 */
 const ITEMS = [
   { icon: Truck, title: "Free shipping", detail: "Insured, gift-boxed" },
-  { icon: RotateCcw, title: "7-day returns", detail: "Exchange or return" },
+  { icon: RotateCcw, title: "7-day returns", detail: "On eligible pieces" },
   { icon: BadgeCheck, title: "3-year assurance", detail: "On the plating" },
-  { icon: Banknote, title: "Cash on delivery", detail: "UPI and cards too" },
+  { icon: Banknote, title: "Cash on delivery", detail: "On most pincodes" },
 ] as const;
 
-/* A piece reserved on WhatsApp is paid for there, not at checkout: it keeps
+/* A piece pre-ordered on WhatsApp is paid for there, not at checkout: it keeps
    the three promises about the piece and leaves the ways to pay out. */
 const PdpTrust = ({ reserved = false }: { reserved?: boolean }) => (
   <>

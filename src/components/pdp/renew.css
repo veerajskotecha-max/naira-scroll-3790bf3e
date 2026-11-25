@@ -10,6 +10,12 @@
   .nf-clean .rn- (its parts, which the phone's buy bar and the bag also use),
   so no other page is touched. It adds three tints to the clean palette and
   nothing else: no face, no radius, no shadow.
+
+  Second pass, the same day, after three reviews (a designer, a copy editor,
+  a conversion specialist): one left edge under the buttons, the offer's rate
+  as the largest thing in its panel, equal cells for the choices, more air
+  between the blocks, a wider column and larger supporting type on a laptop,
+  and a first screen that keeps a buy button on a short phone.
 */
 .nf-clean {
   --rn-gold-wash: #F3E6CE; /* pale gold: the saving tag, a reached step's ground */
@@ -17,26 +23,53 @@
   --rn-sage-wash: #E7EEEA; /* the dot's ring as it fades */
 }
 
+/* Section headings in the name's own weight (the name is 400 since the
+   owner chose it); the light 300 read as a different face beside it. */
+.nf-clean .nc-heading { font-weight: 400; letter-spacing: -0.015em; }
+
+/* ── the photographs ──────────────────────────────────────────── */
+/* On a short screen the square frame gives up some height, so the name, the
+   price and a buy button share the first screen with the photo: a 390x664
+   iPhone in Safari, a 360x640 Android, any phone inside an app's browser.
+   Tall phones keep the square. The photo is cut evenly, top and bottom. */
+@media (max-width: 767px) {
+  .nf-clean .rn-frame { max-height: max(240px, calc(100vh - 310px)); }
+  @supports (height: 100svh) {
+    .nf-clean .rn-frame { max-height: max(240px, calc(100svh - 310px)); }
+  }
+}
+/* A mark on the first photograph, only where the shop's own counts earn it;
+   and the way to the piece's reel, at the other corner. */
+.nf-clean .rn-tag { position: absolute; left: 16px; bottom: 16px; z-index: 1; display: inline-flex; align-items: center; gap: 6px; padding: 4px 9px; border: 0; background: var(--nc-ivory); font: 500 11px/16px var(--nc-font); letter-spacing: 0.18em; text-transform: uppercase; color: var(--nc-ink); pointer-events: none; }
+.nf-clean .rn-tag--video { left: auto; right: 16px; cursor: pointer; pointer-events: auto; -webkit-tap-highlight-color: transparent; }
+/* A 44px target round a 24px mark. */
+.nf-clean .rn-tag--video::before { content: ""; position: absolute; inset: -10px -6px; }
+
 /* ── the head ─────────────────────────────────────────────────── */
 /* One sentence under the price: the piece's own first line. */
 .nf-clean .rn-lede { margin-top: 6px; color: var(--nc-muted); text-wrap: pretty; }
 /* The saving as a small tag: ink on pale gold, the one filled word by the price. */
 .nf-clean.rn-page #product-price .nc-price__off { align-self: center; padding: 2px 7px; background: var(--rn-gold-wash); font-weight: 500; font-size: 11px; line-height: 16px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--nc-ink); }
-/* A mark on the first photograph, only where the shop's own counts earn it. */
-.nf-clean .rn-tag { position: absolute; left: 12px; bottom: 14px; z-index: 1; padding: 4px 9px; background: var(--nc-ivory); font-weight: 500; font-size: 11px; line-height: 16px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--nc-ink); pointer-events: none; }
 
 /* ── three quick benefits: a tick and two words each, no boxes ─── */
-.nf-clean .rn-sure { display: flex; flex-wrap: wrap; gap: 6px 16px; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--nc-rule); list-style: none; }
+/* Two to a row, the second row starting under the first; three short ones
+   share one line where a phone has the room for it. */
+.nf-clean .rn-sure { display: grid; grid-template-columns: repeat(2, max-content); gap: 6px 24px; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--nc-rule); list-style: none; }
 .nf-clean .rn-sure li { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; line-height: 20px; color: var(--nc-ink); white-space: nowrap; }
 .nf-clean .rn-tick { flex: none; width: 12px; height: 12px; color: var(--nc-gold-line); }
+@media (min-width: 375px) {
+  .nf-clean .rn-sure[data-row] { display: flex; flex-wrap: nowrap; gap: 6px 16px; }
+}
 
 /* ── a padded panel: the offer, the bundle ─────────────────────── */
 .nf-clean .rn-panel { padding: 14px 14px 12px; background: var(--nc-linen); }
-.nf-clean .rn-panel__head { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 20px; }
+.nf-clean .rn-panel--bundle { padding-bottom: 20px; }
+/* On a phone too narrow for both, the gold label drops under the heading. */
+.nf-clean .rn-panel__head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 2px 12px; min-height: 20px; }
 
 /* The offer: a 2px line that fills as the bag does, a stop at each step,
-   and the steps as words centred under their stops. */
-.nf-clean .rn-steps { position: relative; margin: 14px 0 8px; height: 8px; }
+   and each step in three short lines centred under its stop. */
+.nf-clean .rn-steps { position: relative; margin: 14px 0 10px; height: 8px; }
 .nf-clean .rn-steps__line { position: absolute; left: 0; right: 0; top: 3px; height: 2px; background: var(--nc-rule); overflow: hidden; }
 .nf-clean .rn-steps__ghost, .nf-clean .rn-steps__fill { position: absolute; left: 0; top: 0; bottom: 0; transform-origin: left center; transition: width 600ms var(--nc-ease); }
 .nf-clean .rn-steps__ghost { background: var(--nc-gold-line); opacity: 0.35; }
@@ -45,17 +78,34 @@
 .nf-clean .rn-steps__stop { position: absolute; top: 0; width: 8px; height: 8px; margin-left: -4px; background: var(--nc-linen); border: 1px solid var(--nc-muted); transform: rotate(45deg); transition: background-color var(--nc-slow) ease, border-color var(--nc-slow) ease, transform var(--nc-slow) var(--nc-ease); }
 .nf-clean .rn-steps__stop[data-reached] { background: var(--nc-gold-line); border-color: var(--nc-gold-line); }
 .nf-clean .rn-steps__stop[data-current] { transform: rotate(45deg) scale(1.3); }
-.nf-clean .rn-offer__line { margin-top: 8px; }
 /* A pre-order choice earns no step: the line and its stops step back. */
 .nf-clean .rn-steps[data-muted] .rn-steps__stop { border-color: var(--nc-rule); }
+/* BUY 2, then the rate (the largest thing in the panel), then this piece's
+   price at that step. The step the bag sits on is gold; one it has climbed
+   past steps back. */
+.nf-clean .rn-rungs { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); list-style: none; text-align: center; }
+.nf-clean .rn-rungs li { display: flex; flex-direction: column; align-items: center; min-width: 0; }
+.nf-clean .rn-rung__name { font: 500 11px/16px var(--nc-font); letter-spacing: 0.18em; text-transform: uppercase; color: var(--nc-muted); white-space: nowrap; }
+.nf-clean .rn-rung__rate { font: 500 16px/22px var(--nc-font); color: var(--nc-ink); white-space: nowrap; transition: color var(--nc-slow) ease; }
+.nf-clean .rn-rung__each { font: 400 13px/20px var(--nc-font); color: var(--nc-muted); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.nf-clean .rn-rungs li[data-current] .rn-rung__name, .nf-clean .rn-rungs li[data-current] .rn-rung__rate { color: var(--nc-gold); }
+.nf-clean .rn-rungs li[data-passed] .rn-rung__rate, .nf-clean .rn-rungs[data-muted] .rn-rung__rate { color: var(--nc-muted); }
+.nf-clean .rn-offer__line { margin-top: 12px; text-align: center; text-wrap: balance; }
+/* What adding this piece does to the bag, beside the button it is about. */
+.nf-clean .rn-offer-note { margin-top: 16px; text-wrap: pretty; }
 
-/* ── choices: the chosen one is filled, so it cannot be missed ─── */
+/* ── choices: equal cells; the chosen one is filled ────────────── */
+.nf-clean.rn-page .nc-chips[data-cols] { display: grid; gap: 8px; }
+.nf-clean.rn-page .nc-chips[data-cols="5"] { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+.nf-clean.rn-page .nc-chips[data-cols="3"] { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.nf-clean.rn-page .nc-chips[data-cols] .nc-chip { min-width: 0; padding: 0 6px; }
 .nf-clean.rn-page .nc-chip { transition: background-color var(--nc-fast) ease, color var(--nc-fast) ease, border-color var(--nc-fast) ease; }
 .nf-clean.rn-page .nc-chip[aria-checked="true"] { padding: 0 14px; border: 1px solid var(--nc-ink); background: var(--nc-ink); color: var(--nc-ivory); }
+.nf-clean.rn-page .nc-chips[data-cols] .nc-chip[aria-checked="true"] { padding: 0 6px; }
 .nf-clean.rn-page .nc-chip[aria-checked="true"] .nc-chip__note { color: var(--nc-ivory); opacity: 0.8; }
 
-/* ── the buttons: the price rides in the one that adds ─────────── */
-.nf-clean .rn-actions { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; }
+/* ── the buttons: Buy now, then the one that adds, price inside ── */
+.nf-clean .rn-actions { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 8px; }
 .nf-clean .rn-actions > .nc-btn:only-of-type { grid-column: 1 / -1; }
 .nf-clean .rn-actions .rn-buy { padding: 0 18px; }
 .nf-clean .rn-price-in { letter-spacing: 0.02em; white-space: nowrap; }
@@ -64,30 +114,35 @@
 .nf-clean.rn-page .nc-btn:not(:disabled):active, .nf-clean .rn-bar .nc-btn:not(:disabled):active { transform: scale(0.985); opacity: 1; }
 
 /* ── the promise under the buttons ─────────────────────────────── */
-.nf-clean .rn-ship { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 2px 8px; margin-top: 12px; font-size: 13px; line-height: 20px; color: var(--nc-muted); text-align: center; }
+/* From the page's left edge, like every row round it; the way to check a
+   pincode ends on the buttons' right edge. */
+.nf-clean .rn-ship { display: flex; flex-wrap: wrap; align-items: center; gap: 2px 8px; margin-top: 12px; font-size: 13px; line-height: 20px; color: var(--nc-muted); }
 .nf-clean .rn-ship strong { font-weight: 500; color: var(--nc-ink); }
+.nf-clean .rn-ship > button { margin-left: auto; }
 .nf-clean .rn-dot { position: relative; flex: none; width: 7px; height: 7px; background: var(--rn-sage); }
-.nf-clean .rn-dot::after { content: ""; position: absolute; inset: 0; background: var(--rn-sage); animation: rn-pulse 2.4s var(--nc-ease) 600ms 3; }
+.nf-clean .rn-dot::after { content: ""; position: absolute; inset: 0; background: var(--rn-sage); animation: rn-pulse 2.4s var(--nc-ease) 600ms 3; opacity: 0; }
 @keyframes rn-pulse {
-  from { opacity: 0.55; transform: scale(1); }
-  to { opacity: 0; transform: scale(3.2); }
+  from { opacity: 0.5; transform: scale(1); }
+  to { opacity: 0; transform: scale(2); }
 }
 
-/* Four reassurances, two by two on a phone, in a row where there is room. */
-.nf-clean .rn-trust { display: grid; grid-template-columns: 1fr 1fr; margin-top: 16px; border-top: 1px solid var(--nc-rule); border-bottom: 1px solid var(--nc-rule); list-style: none; }
+/* Four reassurances, two by two on a phone, in a row where there is room:
+   a title and what it covers, two levels of type. */
+.nf-clean .rn-trust { display: grid; grid-template-columns: 1fr 1fr; margin-top: 20px; border-top: 1px solid var(--nc-rule); border-bottom: 1px solid var(--nc-rule); list-style: none; }
 .nf-clean .rn-trust li { display: flex; align-items: flex-start; gap: 10px; padding: 12px 8px 12px 0; }
 .nf-clean .rn-trust li:nth-child(even) { padding-left: 12px; border-left: 1px solid var(--nc-rule); }
 .nf-clean .rn-trust li:nth-child(n + 3) { border-top: 1px solid var(--nc-rule); }
-/* Three promises (a reserved piece): the third runs the full width on a phone. */
+/* Three promises (a pre-order): the third runs the full width on a phone. */
 .nf-clean .rn-trust[data-count="3"] li:nth-child(3) { grid-column: 1 / -1; }
 .nf-clean .rn-trust svg { flex: none; margin-top: 1px; color: var(--nc-ink); }
-.nf-clean .rn-trust b { display: block; font-weight: 500; font-size: 13px; line-height: 18px; color: var(--nc-ink); }
+.nf-clean .rn-trust b { display: block; font-weight: 500; font-size: 14px; line-height: 20px; color: var(--nc-ink); }
 .nf-clean .rn-trust span { display: block; font-size: 13px; line-height: 18px; color: var(--nc-muted); }
-/* The ways to pay, as their own marks, under the reassurances. */
+/* The ways to pay, as their own marks. In the bag: centred, with words. */
 .nf-clean .rn-pay { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 6px 14px; margin-top: 12px; font-size: 13px; line-height: 20px; color: var(--nc-muted); }
 .nf-clean .rn-pay > span { display: inline-flex; align-items: center; gap: 8px; }
-/* The same line in the bag's foot, close under the rating. */
 .nf-clean .rn-pay.rn-pay--tight { gap: 4px 12px; margin-top: 4px; }
+/* On the page: the marks alone, from the left edge. */
+.nf-clean .rn-pay.rn-pay--marks { justify-content: flex-start; gap: 6px 12px; }
 
 /* ── the bundle: tick the pieces, see the total, one button ────── */
 .nf-clean .rn-bundle { margin-top: 12px; border-top: 1px solid var(--nc-rule); list-style: none; }
@@ -96,6 +151,8 @@
 .nf-clean .rn-bundle__name { display: block; font-size: 14px; line-height: 20px; color: var(--nc-ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .nf-clean .rn-bundle__note { display: block; font-size: 13px; line-height: 18px; color: var(--nc-muted); }
 .nf-clean .rn-bundle__price { font-size: 14px; line-height: 20px; color: var(--nc-ink); white-space: nowrap; font-variant-numeric: tabular-nums; }
+/* Already in the bag: its price is not part of this total. */
+.nf-clean .rn-bundle__price[data-muted] { color: var(--nc-muted); }
 /* A square box with a tick drawn in when chosen; the input itself fills its
    44px target and stays the thing a keyboard and a screen reader meet. */
 .nf-clean .rn-check { position: relative; display: grid; place-items: center; width: 22px; height: 22px; border: 1px solid var(--nc-muted); background: var(--nc-ivory); color: var(--nc-ivory); cursor: pointer; transition: background-color var(--nc-fast) ease, border-color var(--nc-fast) ease; }
@@ -104,11 +161,13 @@
 .nf-clean .rn-check svg { width: 12px; height: 12px; transform: scale(0.4); opacity: 0; pointer-events: none; transition: transform var(--nc-fast) var(--nc-ease), opacity var(--nc-fast) ease; }
 .nf-clean .rn-check[data-on] { background: var(--nc-ink); border-color: var(--nc-ink); }
 .nf-clean .rn-check[data-on] svg { transform: none; opacity: 1; }
-.nf-clean .rn-check[data-fixed] { opacity: 0.55; }
+.nf-clean .rn-check[data-fixed] { opacity: 0.55; cursor: default; }
 .nf-clean .rn-check:has(input:focus-visible) { outline: 2px solid var(--nc-ink); outline-offset: 2px; }
 .nf-clean .rn-bundle__sum { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 2px 12px; margin-top: 12px; }
 .nf-clean .rn-bundle__total { display: inline-flex; align-items: baseline; gap: 8px; font-weight: 500; font-size: 20px; line-height: 24px; color: var(--nc-ink); font-variant-numeric: tabular-nums; }
 .nf-clean .rn-bundle__total del { font-weight: 400; font-size: 13px; line-height: 20px; color: var(--nc-muted); }
+/* "Tick one more for 20% off all three": a row of its own under the total. */
+.nf-clean .rn-bundle__nudge { flex-basis: 100%; }
 .nf-clean .rn-tick-in { animation: rn-tick var(--nc-slow) var(--nc-ease); }
 @keyframes rn-tick {
   from { opacity: 0; transform: translateY(3px); }
@@ -120,8 +179,43 @@
 .nf-clean .rn-bar[data-single] { grid-template-columns: auto minmax(0, 1fr); }
 .nf-clean .rn-bar__price { display: flex; flex-direction: column; justify-content: center; min-width: 52px; padding-right: 4px; font-variant-numeric: tabular-nums; }
 .nf-clean .rn-bar__price b { font-weight: 500; font-size: 16px; line-height: 20px; color: var(--nc-ink); }
-.nf-clean .rn-bar__price del { font-size: 12px; line-height: 14px; color: var(--nc-muted); }
+.nf-clean .rn-bar__price del, .nf-clean .rn-bar__price > span:not(.nc-sr) { font-size: 12px; line-height: 14px; color: var(--nc-muted); white-space: nowrap; }
 .nf-clean .rn-bar .nc-btn { padding: 0 6px; font-size: 12px; letter-spacing: 0.1em; }
+/* While the page's own price is on screen the bar does not say it again. */
+.nf-clean .rn-bar[data-price-shown] { grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); }
+.nf-clean .rn-bar[data-price-shown][data-single] { grid-template-columns: minmax(0, 1fr); }
+.nf-clean .rn-bar[data-price-shown] .rn-bar__price { display: none; }
+
+/* ── the lower page ───────────────────────────────────────────── */
+/* The specification rows run to the dropdown's own right edge. */
+.nf-clean.rn-page .nc-drop__panel .nc-facts { margin-right: -24px; }
+
+/* ── the bag ──────────────────────────────────────────────────── */
+/* The offer strip's line carries the page's own stops: a diamond at each
+   step, gold once reached, so the bag and the page draw one offer. */
+.nf-clean .rn-bagsteps { position: relative; }
+.nf-clean .rn-bagsteps > i { position: absolute; top: -3px; width: 8px; height: 8px; margin-left: -4px; background: var(--nc-ivory); border: 1px solid var(--nc-muted); transform: rotate(45deg); transition: background-color var(--nc-slow) ease, border-color var(--nc-slow) ease; }
+.nf-clean .rn-bagsteps > i[data-reached] { background: var(--nc-gold-line); border-color: var(--nc-gold-line); }
+/* The suggestion stays at the foot of the list while the lines scroll under
+   it: on a short phone it was cut off below the second line. */
+.nf-clean .rn-addon { position: sticky; bottom: 0; z-index: 1; margin-top: auto; padding: 12px 16px; background: var(--nc-linen); border-top: 1px solid var(--nc-rule); }
+.nf-clean .rn-addon__row { display: flex; align-items: center; gap: 12px; margin-top: 8px; }
+.nf-clean .rn-addon__photo { display: block; width: 48px; height: 60px; object-fit: cover; background: var(--nc-ivory); }
+/* The step it reaches, said after the figure on a short screen (below). */
+.nf-clean .rn-addon__rate { display: none; }
+/* The bag's close cross: its focus ring inside the sheet's edge, which clipped it. */
+.nf-clean [data-bag-close]:focus-visible { outline-offset: -2px; }
+@media (max-height: 699px) {
+  /* A short screen: the suggestion is one row, and each line gives up 4px
+     of air above and below, so two lines and the suggestion show whole. */
+  .nf-clean .rn-addon { padding: 8px 16px; }
+  .nf-clean .rn-addon__head { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  .nf-clean .rn-addon__row { margin-top: 0; }
+  .nf-clean .rn-addon__photo { width: 40px; height: 50px; }
+  .nf-clean .rn-addon__rate { display: inline; }
+  .nf-clean .rn-addon__long { display: none; }
+  .nf-clean [data-bag-list] > ul > li { padding-top: 12px; padding-bottom: 12px; }
+}
 
 /* ── sections rise in as they are reached ──────────────────────── */
 /* Armed only once the page's script is running in a real browser (the
@@ -138,8 +232,19 @@
   .nf-clean .rn-trust li:nth-child(n + 3) { border-top: 0; }
 }
 @media (min-width: 1024px) {
-  .nf-clean .rn-panel { padding: 18px 18px 16px; }
+  /* A laptop is read from further away: the supporting lines go up a size,
+     the panels get more air, and a paragraph keeps a readable measure. */
+  .nf-clean .rn-panel { padding: 20px; }
   .nf-clean .rn-bundle__total { font-size: 22px; line-height: 28px; }
+  .nf-clean .rn-rung__rate { font-size: 18px; line-height: 24px; }
+  .nf-clean .rn-lede { font-size: 15px; line-height: 24px; }
+  .nf-clean .rn-sure li, .nf-clean .rn-ship, .nf-clean .rn-pay { font-size: 14px; line-height: 22px; }
+  .nf-clean.rn-page .nc-drop__panel > p { max-width: 62ch; }
+  /* The site lays a film-grain texture and a darkened edge over every page
+     on a laptop (components/wow/FilmGrain). Over this page it turned the
+     ivory ground grey (#EEE6E0 for #FBF3EC) and dulled every photograph, so
+     while the product page is open it is not drawn. */
+  html.nf-next .film-grain, html.nf-next .film-grain + div { display: none; }
 }
 @media (prefers-reduced-motion: reduce) {
   .nf-clean .rn-dot::after { animation: none; opacity: 0; }

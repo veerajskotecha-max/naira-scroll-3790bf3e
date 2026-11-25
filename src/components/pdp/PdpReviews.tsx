@@ -183,7 +183,7 @@ const PdpReviews = ({ productName, variant = "jewellery" }: { productName?: stri
                     type="button"
                     onClick={() => setPhoto(image)}
                     className="h-[72px] w-[72px] shrink-0 overflow-hidden bg-[var(--nc-linen)] p-0"
-                    aria-label={`Open customer photo ${n + 1}`}
+                    aria-label={`Open ${review.name}'s photo${review.images.length > 1 ? ` ${n + 1}` : ""}`}
                   >
                     <img loading="lazy" decoding="async" src={reviewThumb(image)} alt="" className="h-full w-full object-cover" width={72} height={72} />
                   </button>

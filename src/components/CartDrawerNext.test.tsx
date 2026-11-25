@@ -38,14 +38,21 @@ describe("SimpleLadder: the bag's offer strip", () => {
     expect(ladder.querySelector("p")).toBeNull();
   });
 
-  /* The strip is two things, the words and the line under them: no marks on
-     the line, no second row of labels, nothing to press. */
-  it("is the rungs and the line, with nothing else", () => {
+  /* The strip is two things, the words and the line under them: no second
+     row of labels, nothing to press. The line carries a stop at each step,
+     the product page's own diamonds, gold once reached: without them three
+     labels over an underline read as tabs (the design review, 25 Nov 2026). */
+  it("is the rungs and the line with a stop at each step, and nothing else", () => {
     const { container } = render(<SimpleLadder totalItems={2} />);
     const ladder = container.querySelector("[data-ladder]") as HTMLElement;
     expect([...ladder.children].map((child) => child.tagName)).toEqual(["UL", "DIV"]);
-    expect(ladder.lastElementChild?.getAttribute("role")).toBe("progressbar");
-    expect(ladder.querySelector("[data-rung-mark], [data-rung-label]")).toBeNull();
+    const line = ladder.lastElementChild as HTMLElement;
+    expect(line.firstElementChild?.getAttribute("role")).toBe("progressbar");
+    const stops = [...line.querySelectorAll("i")];
+    expect(stops.map((stop) => stop.hasAttribute("data-reached"))).toEqual([true, false, false]);
+    expect(stops.map((stop) => Number.parseFloat((stop as HTMLElement).style.left).toFixed(2))).toEqual(["16.67", "50.00", "83.33"]);
+    for (const stop of stops) expect(stop.getAttribute("aria-hidden")).toBe("true");
+    expect(ladder.querySelector("[data-rung-label]")).toBeNull();
     expect(ladder.querySelector("a, button, svg, img")).toBeNull();
   });
 
@@ -84,7 +91,8 @@ describe("SimpleLadder: the bag's offer strip", () => {
     expect(parseFloat(fill.style.width)).toBeCloseTo(quantityOfferProgress(n) * 100, 3);
     expect(bar.getAttribute("aria-valuenow")).toBe(String(Math.min(n, 4)));
     expect(bar.getAttribute("aria-valuemax")).toBe("4");
-    expect(bar.getAttribute("aria-label")).toBe(`${n} of 4 pieces`);
+    /* A bag of five is still "4 of 4": the line has no fifth step. */
+    expect(bar.getAttribute("aria-label")).toBe(`${Math.min(n, 4)} of 4 pieces`);
   });
 
   /* The rung the bag has reached is said, not only coloured. */
@@ -94,17 +102,19 @@ describe("SimpleLadder: the bag's offer strip", () => {
   });
 });
 
-/* The bag says "easy 7-day exchange & returns" in its own words, and sends the
-   shopper to the policy that states the window — a promise with no page behind
-   it is the kind of line that turns into a WhatsApp argument. */
-describe("BagReturns: the bag's exchange and returns line", () => {
-  it("promises an easy 7-day exchange and returns", () => {
+/* The bag names the returns policy and sends the shopper to it: a promise
+   with no page behind it is the kind of line that turns into a WhatsApp
+   argument. It promises nothing the policy does not: "Easy 7-day exchange &
+   returns" said more than the page it opens (the copy review, 25 Nov 2026). */
+describe("BagReturns: the bag's returns line", () => {
+  it("names the 7-day returns policy, and promises no more than it", () => {
     render(
       <MemoryRouter>
         <BagReturns />
       </MemoryRouter>,
     );
-    expect(screen.getByText(/easy 7-day exchange & returns/i)).toBeTruthy();
+    expect(screen.getByText("7-day returns policy")).toBeTruthy();
+    expect(document.body.textContent).not.toMatch(/easy|exchange/i);
   });
 
   it("links to the policy that spells the window out", () => {
@@ -113,7 +123,7 @@ describe("BagReturns: the bag's exchange and returns line", () => {
         <BagReturns />
       </MemoryRouter>,
     );
-    const line = screen.getByText(/easy 7-day exchange & returns/i).closest("a");
+    const line = screen.getByText("7-day returns policy").closest("a");
     expect(line).toHaveAttribute("href", "/exchange-return-policy");
   });
 

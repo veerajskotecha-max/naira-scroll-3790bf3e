@@ -218,31 +218,31 @@ describe("the bag keeps a keyboard user's place", () => {
 
   it("hands focus back to + once Shopify has answered a press from the keyboard", async () => {
     const view = open([hoops, ring]);
-    const plus = screen.getAllByRole("button", { name: "Increase quantity" })[1];
+    const plus = screen.getAllByRole("button", { name: /^Add one more / })[1];
     await press(plus, "keyboard");
     expect(cart.calls.updateQuantity).toHaveBeenCalledTimes(1);
     busyThenIdle(view, [hoops, { ...ring, quantity: 2 }]);
-    expect(document.activeElement).toBe(screen.getAllByRole("button", { name: "Increase quantity" })[1]);
+    expect(document.activeElement).toBe(screen.getAllByRole("button", { name: /^Add one more / })[1]);
     expect(document.activeElement?.closest("[data-line]")?.getAttribute("data-line")).toBe("crystal-baguette-eternity-ring");
   });
 
   it("hands it back to − as well, under whatever name the button now has", async () => {
     const view = open([{ ...hoops, quantity: 2 }, ring]);
-    await press(screen.getByRole("button", { name: "Decrease quantity" }), "keyboard");
+    await press(screen.getByRole("button", { name: /^One fewer / }), "keyboard");
     busyThenIdle(view, [hoops, ring]);
     expect(document.activeElement).toBe(screen.getAllByRole("button", { name: "Remove Woven Gold Hoops" })[0]);
   });
 
   it("leaves focus alone after a tap or a click", async () => {
     const view = open([hoops, ring]);
-    await press(screen.getAllByRole("button", { name: "Increase quantity" })[0], "pointer");
+    await press(screen.getAllByRole("button", { name: /^Add one more / })[0], "pointer");
     busyThenIdle(view, [{ ...hoops, quantity: 2 }, ring]);
     expect(document.activeElement?.closest("[data-line]")).toBeNull();
   });
 
   it("does not take focus from where the shopper has moved it since", async () => {
     const view = open([hoops, ring]);
-    await press(screen.getAllByRole("button", { name: "Increase quantity" })[0], "keyboard");
+    await press(screen.getAllByRole("button", { name: /^Add one more / })[0], "keyboard");
     const draw = (isLoading: boolean) => {
       cart.state = { ...cart.state, isLoading };
       view.rerender(
@@ -301,9 +301,9 @@ describe("the bag, state by state", () => {
   it("two pieces: Buy 2 reached, each line struck with its rate, one saving sentence", () => {
     open([hoops, ring]);
     expect(text("[data-total]")).toBe("₹2,023");
-    expect(text("[data-you-save]")).toBe("You save ₹225 · 10% for 2 pieces");
+    expect(text("[data-you-save]")).toBe("You save ₹225 · 10% off 2 pieces");
     expect(document.querySelector("[data-next-rung]")).toBeNull();
-    expect([...document.querySelectorAll("[data-line-price]")].map((row) => row.textContent)).toEqual(["₹1,04910% off", "₹1,19910% off"]);
+    expect([...document.querySelectorAll("[data-line-price]")].map((row) => row.textContent)).toEqual(["was ₹1,04910% off", "was ₹1,19910% off"]);
     expect([...document.querySelectorAll("[data-line-total]")].map((total) => total.textContent)).toEqual(["₹944", "₹1,079"]);
     expect(document.querySelector("[data-rung][data-current]")?.getAttribute("data-rung")).toBe("2");
     for (const saving of document.querySelectorAll("[data-you-save], [data-line-price] > span:last-child")) expect(saving.className).toMatch(/\bnc-gold\b/);
@@ -311,7 +311,7 @@ describe("the bag, state by state", () => {
 
   it("two of one piece at full price would read each; with Buy 2 it reads the struck price, each and the rate", () => {
     open([{ ...hoops, quantity: 2 }]);
-    expect(text("[data-line-price]")).toBe("₹1,049₹944 each10% off");
+    expect(text("[data-line-price]")).toBe("was ₹1,049₹944 each10% off");
     expect(text("[data-line-total]")).toBe("₹1,888");
   });
 
@@ -324,7 +324,7 @@ describe("the bag, state by state", () => {
     localStorage.setItem("naira-promo-code", "NAIRA10");
     open([hoops]);
     expect(text("[data-you-save]")).toBe("You save ₹105 · 10% with your code");
-    expect(text("[data-line-price]")).toBe("₹1,04910% off");
+    expect(text("[data-line-price]")).toBe("was ₹1,04910% off");
   });
 
   /* The piece on its way in is listed and counted from the tap. */
@@ -385,11 +385,11 @@ describe("the bag, state by state", () => {
   it("plus adds one; minus at one removes the line", async () => {
     open([hoops, { ...ring, quantity: 2 }]);
     await act(async () => {
-      fireEvent.click(screen.getAllByRole("button", { name: "Increase quantity" })[0]);
+      fireEvent.click(screen.getAllByRole("button", { name: /^Add one more / })[0]);
     });
     expect(cart.calls.updateQuantity).toHaveBeenLastCalledWith("woven-gold-hoops", undefined, 2, hoops.variantId);
     await act(async () => {
-      fireEvent.click(screen.getByRole("button", { name: "Decrease quantity" }));
+      fireEvent.click(screen.getByRole("button", { name: /^One fewer / }));
     });
     expect(cart.calls.updateQuantity).toHaveBeenLastCalledWith("crystal-baguette-eternity-ring", undefined, 1, ring.variantId);
     await act(async () => {

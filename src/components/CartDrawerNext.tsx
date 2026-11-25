@@ -42,16 +42,18 @@ import { GST_LABEL } from "@/lib/gst";
     Your bag  2 pieces                                    ×
     Buy 2 · 10% off   Buy 3 · 20% off   Buy 4 · 30% off      the offer, as words
     ━━━━━────────────────────────────────────────────────    over one 2px line
-    [photo]  the piece, what the line costs, the price it
-             replaces and the rate taken off, − 1 +, Remove
+    [photo]  the piece, what the line costs, the MRP it
+             replaces and the saving, − 1 +, Remove
+    A third piece takes 20% off your bag           (cart/BagAddOn)
+    [photo]  one piece that goes with the bag            [Add]
     ─────────────────────────────────────────────────────
-    Total                                          ₹2,023
-    You save ₹225 · 10% for 2 pieces
-    Incl. 3% GST. Free insured shipping · arrives 25–27 Nov.
-       ★ Rated 4.5/5 · Trusted by 5,000+ clients   (cart/BagTrust)
+    Total  incl. 3% GST                    ₹3,448  ₹1,843
+    You save ₹1,605 · includes 10% off 2 pieces
+    Free insured shipping · Arrives 25–27 Nov
+          ★ 4.5/5 · Trusted by 5,000+ clients     (cart/BagTrust)
              UPI · Cards · Cash on delivery
     [                   CHECKOUT                    ]
-              Easy 7-day exchange & returns
+                  7-day returns policy
 
   The header, the offer and the foot stay put; only the list scrolls, so the
   total and Checkout never leave the screen. Type and colour come from the
@@ -92,9 +94,10 @@ const BEST_SELLERS = ["prism-riviere-bracelet", "woven-gold-hoops"];
 /* The one hairline, wherever the bag draws a rule. */
 const RULE = "border-[color:var(--nc-rule)]";
 
-/* The bag's one reassurance, and the only one it keeps: the way back is as
-   easy as the way in. It sits under the button, after the decision, so it
-   reads as the reason to press it rather than as another term to get through. */
+/* The bag's one reassurance, under the button, after the decision: the way
+   to the returns policy. It names the policy and promises nothing the policy
+   does not ("Easy 7-day exchange & returns" said more than the page it opens:
+   the copy review, 25 Nov 2026). */
 export const BagReturns = ({
   onLeave,
 }: {
@@ -111,7 +114,7 @@ export const BagReturns = ({
       data-returns
       className="nc-small nc-link relative before:absolute before:inset-x-0 before:-inset-y-3 before:content-['']"
     >
-      Easy 7-day exchange &amp; returns
+      7-day returns policy
     </Link>
   </p>
 );
@@ -199,8 +202,10 @@ const CartDrawerNext = () => {
       const list = listRef.current;
       const target = list?.querySelector<HTMLElement>("[data-adding]") ?? list?.querySelector<HTMLElement>("li:last-child");
       if (!list || !target) return;
+      /* The suggestion is pinned to the list's foot: the line must clear it. */
+      const room = list.clientHeight - (list.querySelector<HTMLElement>("[data-bag-addon]")?.offsetHeight ?? 0);
       const bottom = target.getBoundingClientRect().bottom - list.getBoundingClientRect().top;
-      if (bottom > list.clientHeight) list.scrollTop += bottom - list.clientHeight;
+      if (bottom > room) list.scrollTop += bottom - room;
     });
     return () => cancelAnimationFrame(frame);
   }, [isDrawerOpen, pendingKey, lines.length]);
@@ -219,14 +224,29 @@ const CartDrawerNext = () => {
   const busy = isLoading || isSyncing;
 
   /* The deal from the product page, kept in view: each piece's MRP from the
-     live catalogue, and one saving against it at the total. */
+     catalogue (the shop's own, the struck price on its page), struck on its
+     line, and one saving against it at the total. The page said "₹1,049,
+     MRP ₹1,749, 40% off" and the bag then forgot it (the conversion review,
+     25 Nov 2026): the largest saving she had been shown was nowhere at the
+     moment of paying. A line the catalogue has no MRP for keeps the price it
+     replaces, as before. */
   const mrpOf = (item: CartItem) => {
     const piece = catalogueByHandle.get(item.id);
     const mrp = (variantById(piece, item.variantId) ?? piece)?.compareAtPrice;
     return mrp && mrp > item.price ? mrp : null;
   };
+  /* Every line at its MRP, or at its price where it has none: with no MRP
+     anywhere this is the total before the offer. */
   const mrpTotal = lines.reduce((sum, item) => sum + (mrpOf(item) ?? item.price) * item.quantity, 0) + SHIPPING_CHARGE;
   const youSave = mrpTotal - orderTotal;
+  const savedOnMrp = mrpTotal - (lineSubtotal + SHIPPING_CHARGE);
+  const offerWords = `${pct(discount.rate)} ${rung ? `off ${lineCount} pieces` : "with your code"}`;
+  const saveLine =
+    youSave <= 0
+      ? ""
+      : savedOnMrp > 0
+        ? `You save ${formatPrice(youSave)}${discountAmount > 0 ? ` · includes ${offerWords}` : " on MRP"}`
+        : `You save ${formatPrice(youSave)} · ${offerWords}`;
 
   const [adding, setAdding] = useState<string | null>(null);
   const addPiece = async (piece: JewelPiece, event: string, variant?: JewelVariant) => {
@@ -363,7 +383,7 @@ const CartDrawerNext = () => {
               The target ends at the sheet's edge and the cross is set 1px to
               the right inside it, so it ends on the 16px line the prices,
               "Remove" and Checkout end on (it sat 5.5px inside that line). */}
-          <button type="button" onClick={requestClose} aria-label="Close bag" className="nc-iconbtn shrink-0">
+          <button type="button" onClick={requestClose} aria-label="Close bag" data-bag-close className="nc-iconbtn shrink-0">
             <X size={18} strokeWidth={1.25} aria-hidden="true" className="translate-x-px" />
           </button>
         </div>
@@ -402,6 +422,8 @@ const CartDrawerNext = () => {
               <ul className="flex flex-col">
                 {lines.map((item, index) => {
                   const off = discount.rate > 0;
+                  const paid = off ? linePrices[index].total : item.price * item.quantity;
+                  const mrp = mrpOf(item);
                   return (
                     <BagLine
                       key={`${item.id}-${item.size}-${item.variantId}`}
@@ -409,14 +431,17 @@ const CartDrawerNext = () => {
                       href={pageOf(item)}
                       onLeave={leave}
                       options={lineOptions(item)}
-                      total={formatPrice(off ? linePrices[index].total : item.price * item.quantity)}
-                      was={off ? item.priceLabel : null}
+                      total={formatPrice(paid)}
+                      was={mrp ? formatPrice(mrp) : off ? item.priceLabel : null}
                       each={
                         item.quantity > 1
                           ? `${off ? formatUnitPrice(discountedSubtotal(item.price, discount)) : item.priceLabel} each`
                           : null
                       }
-                      off={off ? `${pct(discount.rate)} off` : null}
+                      /* Beside a struck MRP the rate is the whole saving
+                         against it, the offer included: "10% off" under
+                         ₹1,749 → ₹944 would be the wrong sum. */
+                      off={mrp ? `${Math.round((1 - paid / (mrp * item.quantity)) * 100)}% off` : off ? `${pct(discount.rate)} off` : null}
                       adding={cartKeyOf(item) === pendingKey}
                       busy={isLoading}
                       eager={index < 3}
@@ -432,6 +457,7 @@ const CartDrawerNext = () => {
                   piece={addOn}
                   effect={addOnEffectNow}
                   rate={discount.rate}
+                  totalItems={lineCount}
                   adding={adding === addOn.handle}
                   disabled={Boolean(adding) || busy}
                   onAdd={() => addPiece(addOn, "bag_pair_added")}
@@ -440,18 +466,24 @@ const CartDrawerNext = () => {
               )}
             </div>
 
-            {/* The foot: the total, what was saved (or what the next piece
-                saves), the terms in one line, the shop's rating and the ways
+            {/* The foot: the total (tax said beside its name), what was saved,
+                the delivery terms in one line, the shop's rating and the ways
                 to pay, and one filled button. Every extra line here was a
-                reason to pause. */}
+                reason to pause, and on a small phone the foot took four
+                tenths of the screen (the design review, 25 Nov 2026). */}
             <div data-bag-foot className={`shrink-0 border-t ${RULE} px-4 pb-[max(12px,env(safe-area-inset-bottom))] pt-3`}>
               <div className="flex items-baseline justify-between gap-3">
-                <span className="nc-text nc-text--strong">Total</span>
-                <span className="flex items-baseline gap-2">
-                  {/* The total before the offer, struck, beside the one that is charged. */}
-                  {discountAmount > 0 && (
+                <span className="flex min-w-0 items-baseline gap-2">
+                  <span className="nc-text nc-text--strong">Total</span>
+                  <span className="nc-small truncate">incl. {GST_LABEL}</span>
+                </span>
+                <span className="flex shrink-0 items-baseline gap-2">
+                  {/* What the bag would cost at MRP and without the offer,
+                      struck, beside the one that is charged. */}
+                  {youSave > 0 && (
                     <del data-total-was className="nc-small tabular-nums">
-                      {formatPrice(lineSubtotal + SHIPPING_CHARGE)}
+                      <span className="nc-sr">was </span>
+                      {formatPrice(mrpTotal)}
                     </del>
                   )}
                   <span key={orderTotal} data-total className="nc-price__now nc-price__now--sheet rn-tick-in tabular-nums">
@@ -459,27 +491,24 @@ const CartDrawerNext = () => {
                   </span>
                 </span>
               </div>
-              {discountAmount > 0 ? (
+              {saveLine ? (
                 <p data-you-save className="nc-small nc-gold">
-                  You save {formatPrice(discountAmount)} · {pct(discount.rate)} {rung ? `for ${lineCount} pieces` : "with your code"}
+                  {saveLine}
                 </p>
               ) : (
-                /* Nothing off yet: the line where the saving would be says
-                   which piece starts it ("A second piece takes 10% off your
-                   bag"), in the saving's own place, so the foot keeps its
-                   height as the bag grows. */
-                nextRung && (
+                /* Nothing saved yet and no suggestion to say it: the line
+                   where the saving would be names the piece that starts it
+                   ("A second piece takes 10% off your bag"). With a
+                   suggestion in the list, that row's heading says it. */
+                nextRung &&
+                !addOn && (
                   <p data-next-rung className="nc-small nc-gold">
                     {nextRung}
                   </p>
                 )
               )}
-              {/* One line where it fits. Where it does not (a narrow phone,
-                  or a window that crosses into the next month), it breaks
-                  between its two sentences, not inside the date. */}
-              <p className="nc-small">
-                <span className="inline-block">Incl. {GST_LABEL}.</span>{" "}
-                <span className="inline-block">Free insured shipping · arrives {arrivesBy}.</span>
+              <p className="nc-small" data-bag-terms>
+                Free insured shipping · Arrives {arrivesBy}
               </p>
               {/* The shop's rating and the ways to pay, right above the
                   button (the owner's ask, 16 Nov 2026). */}

@@ -43,15 +43,17 @@ describe("BagLine: one piece in the bag", () => {
   it("explains a discount on one piece with the struck price and the rate", () => {
     const { line } = draw({ total: "₹944", was: "₹1,049", off: "10% off" });
     const row = line.querySelector("[data-line-price]") as HTMLElement;
-    expect(row.textContent).toBe("₹1,04910% off");
-    expect(row.querySelector("del")?.textContent).toBe("₹1,049");
+    /* "was" is for a screen reader: a struck figure has no sound of its own. */
+    expect(row.textContent).toBe("was ₹1,04910% off");
+    expect(row.querySelector("del")?.textContent).toBe("was ₹1,049");
+    expect(row.querySelector("del .nc-sr")?.textContent).toBe("was ");
     expect(row.lastElementChild?.className).toMatch(/\bnc-gold\b/);
     expect(line.textContent?.match(/₹944/g)).toHaveLength(1);
   });
 
   it("adds one piece's price on a line of two or more", () => {
     const { line } = draw({ item: { ...item, quantity: 2 }, total: "₹1,469", was: "₹1,049", each: "₹734 each", off: "30% off" });
-    expect(line.querySelector("[data-line-price]")?.textContent).toBe("₹1,049₹734 each30% off");
+    expect(line.querySelector("[data-line-price]")?.textContent).toBe("was ₹1,049₹734 each30% off");
     expect(screen.getByLabelText("Quantity 2")).toBeTruthy();
   });
 
@@ -79,13 +81,14 @@ describe("BagLine: one piece in the bag", () => {
     expect(onDecrease).toHaveBeenCalledTimes(1);
     fireEvent.click(removes[1]);
     expect(onRemove).toHaveBeenCalledTimes(1);
-    fireEvent.click(screen.getByRole("button", { name: "Increase quantity" }));
+    /* Plus names the piece: a bag of four lines had four "Increase quantity". */
+    fireEvent.click(screen.getByRole("button", { name: "Add one more Woven Gold Hoops" }));
     expect(onIncrease).toHaveBeenCalledTimes(1);
   });
 
-  it("calls minus Decrease quantity once there is more than one", () => {
+  it("calls minus one fewer of the piece once there is more than one", () => {
     draw({ item: { ...item, quantity: 3 } });
-    expect(screen.getByRole("button", { name: "Decrease quantity" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "One fewer Woven Gold Hoops" })).toBeTruthy();
     expect(screen.getAllByRole("button", { name: "Remove Woven Gold Hoops" })).toHaveLength(1);
   });
 

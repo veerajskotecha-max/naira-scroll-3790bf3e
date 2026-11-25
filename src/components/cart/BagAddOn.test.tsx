@@ -25,7 +25,7 @@ const row = (bag: { subtotal: number; totalItems: number }, rate: number, over: 
   const onAdd = vi.fn();
   render(
     <MemoryRouter>
-      <BagAddOn piece={chain} effect={addOnEffect(bag, chain.price)} rate={rate} adding={false} disabled={false} onAdd={onAdd} onLeave={() => {}} {...over} />
+      <BagAddOn piece={chain} effect={addOnEffect(bag, chain.price)} rate={rate} totalItems={bag.totalItems} adding={false} disabled={false} onAdd={onAdd} onLeave={() => {}} {...over} />
     </MemoryRouter>,
   );
   return onAdd;
@@ -36,22 +36,28 @@ describe("BagAddOn: one piece that goes with the bag, one tap away", () => {
   it("says the step one more piece reaches and what it adds to this bag", () => {
     /* One ₹1,049 piece. With the chain: 2,048 at 10% is 1,843.20 → 1,843; it adds 794, not 999. */
     row({ subtotal: 1049, totalItems: 1 }, 0);
-    expect(text()).toMatch(/One more piece · 10% off everything/);
+    /* The heading is the sentence the bag's foot has always used. */
+    expect(document.querySelector(".rn-addon__head")?.textContent).toBe("A second piece takes 10% off your bag");
     expect(text()).toMatch(/Toggle Link Chain/);
-    expect(text()).toMatch(/Adds ₹794₹999/);
+    /* Whose figure it is, and no struck price beside it: "Adds ₹794" next
+       to a struck ₹999 read as a sale price for the chain. */
+    expect(document.querySelector("[data-addon-effect]")?.textContent).toMatch(/^Adds ₹794 to your total/);
+    expect(document.querySelector("[data-bag-addon] del")).toBeNull();
   });
 
   it("counts the whole bag moving up a step", () => {
     /* Two pieces, 3,698 at 10% = 3,328. With the chain: 4,697 at 20% is 3,757.60 → 3,758: adds 430. */
     row({ subtotal: 3698, totalItems: 2 }, 0.1);
-    expect(text()).toMatch(/One more piece · 20% off everything/);
-    expect(text()).toMatch(/Adds ₹430₹999/);
+    expect(document.querySelector(".rn-addon__head")?.textContent).toBe("A third piece takes 20% off your bag");
+    expect(document.querySelector("[data-addon-effect]")?.textContent).toMatch(/^Adds ₹430 to your total/);
+    /* On a short screen the heading is not drawn; the step rides after the figure. */
+    expect(document.querySelector(".rn-addon__rate")?.textContent?.trim()).toBe("· 20% off your bag");
   });
 
   it("says a drop as a drop, never as a negative sum", () => {
     /* Three dear pieces at 20%: 12,000 → 9,600. With the chain at 30%: 12,999 → 9,099: the total drops 501. */
     row({ subtotal: 12000, totalItems: 3 }, 0.2);
-    expect(text()).toMatch(/Your total drops ₹501/);
+    expect(text()).toMatch(/Your total drops by ₹501/);
     expect(text()).not.toMatch(/-|Adds/);
   });
 

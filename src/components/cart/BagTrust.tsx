@@ -15,7 +15,7 @@ import PayRow from "@/components/pdp/PayRow";
   facts: 5,000 is how many clients bought, not how many rated.
 */
 
-const RATING_TEXT = `Rated ${SHOP_RATING}/5 · Trusted by ${clientsLabel} clients`;
+const RATING_TEXT = `${SHOP_RATING}/5 · Trusted by ${clientsLabel} clients`;
 
 /** The rating line. The star is decoration: the rating is written out beside it. */
 export const RatingLine = ({ className = "" }: { className?: string }) => (
@@ -23,6 +23,9 @@ export const RatingLine = ({ className = "" }: { className?: string }) => (
     <span aria-hidden="true" className="nc-star">
       ★
     </span>{" "}
+    {/* The same words as the product page's head and its reviews; "Rated"
+        is said to a screen reader, where the star is not. */}
+    <span className="nc-sr">Rated </span>
     {RATING_TEXT}
   </p>
 );

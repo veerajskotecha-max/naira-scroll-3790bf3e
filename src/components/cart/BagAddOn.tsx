@@ -2,6 +2,7 @@ import type { MouseEvent } from "react";
 import { Link } from "react-router-dom";
 import { Loader2 } from "lucide-react";
 import { cleanButton, percent, rupees } from "@/components/clean";
+import { nextPieceLine } from "@/components/pdp/renew";
 import { cardCover } from "@/lib/cardCover";
 import { shopifyImage } from "@/lib/shopifyImage";
 import type { JewelPiece } from "@/data/jewellery";
@@ -13,14 +14,21 @@ import type { JewelPiece } from "@/data/jewellery";
   The reel's cart ("complete your setup and save 30%") with the shop's real
   offer and the bag's real arithmetic.
 
-  The line under the name is what the piece does to THIS bag (promo.ts
-  `addOnEffect`, the bag's resolver and rounding): what it adds to the total,
-  with its own price struck beside it when the step it reaches makes that
-  less. A cheap piece that lifts a dear bag to the next step can lower the
-  total; that is said as a drop, never as a negative sum.
+  The heading is what the next piece does, in the words the bag's foot has
+  always used ("A third piece takes 20% off your bag"). The line under the
+  name is what this piece does to THIS bag (promo.ts `addOnEffect`, the
+  bag's resolver and rounding), and says whose figure it is: "Adds ₹355 to
+  your total". On its own, beside the piece's struck price, "Adds ₹355" read
+  as a sale price the bag then broke (the copy review, 25 Nov 2026), so the
+  struck price is gone. A cheap piece that lifts a dear bag to the next step
+  can lower the total; that is said as a drop, never as a negative sum.
 
-  A row between hairlines on the one tint, like a notice: no card, no shadow.
-  The photo and the name open the piece's page, so it can be seen first.
+  It stays at the foot of the list while the lines scroll under it, and on a
+  short screen it is one row (renew.css `.rn-addon`): the heading is kept for
+  a screen reader and the step it reaches rides after the figure instead.
+
+  A row on the one tint, like a notice: no card, no shadow. The photo and
+  the name open the piece's page, so it can be seen first.
 */
 type Props = {
   piece: JewelPiece;
@@ -28,6 +36,8 @@ type Props = {
   effect: { adds: number; saves: number; rate: number };
   /** The rate the bag has now, to know whether this piece reaches a new step. */
   rate: number;
+  /** Pieces in the bag, the one on its way in included. */
+  totalItems: number;
   adding: boolean;
   disabled: boolean;
   onAdd: () => void;
@@ -35,24 +45,15 @@ type Props = {
   onLeave: (event: MouseEvent<HTMLAnchorElement>) => void;
 };
 
-const BagAddOn = ({ piece, effect, rate, adding, disabled, onAdd, onLeave }: Props) => {
+const BagAddOn = ({ piece, effect, rate, totalItems, adding, disabled, onAdd, onLeave }: Props) => {
   const href = `/jewellery/${piece.handle}`;
   const lifts = effect.rate > rate;
-  const adds =
-    effect.adds > 0 ? `Adds ${rupees(effect.adds)}` : effect.adds < 0 ? `Your total drops ${rupees(-effect.adds)}` : "Your total stays the same";
   return (
-    <aside data-bag-addon={piece.handle} className="rn-tick-in bg-[var(--nc-linen)] px-4 pb-3 pt-3" aria-label="Goes with your bag">
-      <p className="nc-label nc-label--gold">{lifts ? `One more piece · ${percent(effect.rate)} off everything` : "Goes with your bag"}</p>
-      <div className="mt-2 flex items-center gap-3">
+    <aside data-bag-addon={piece.handle} className="rn-addon rn-tick-in" aria-label="Goes with your bag">
+      <p className="nc-label nc-label--gold rn-addon__head">{nextPieceLine(totalItems, rate, effect.rate) || "Goes with your bag"}</p>
+      <div className="rn-addon__row">
         <Link to={href} onClick={onLeave} tabIndex={-1} aria-hidden="true" className="shrink-0">
-          <img
-            src={shopifyImage(cardCover(piece), 120) || cardCover(piece)}
-            alt=""
-            className="h-[60px] w-[48px] bg-[var(--nc-ivory)] object-cover"
-            width={48}
-            height={60}
-            loading="lazy"
-          />
+          <img src={shopifyImage(cardCover(piece), 120) || cardCover(piece)} alt="" className="rn-addon__photo" width={48} height={60} loading="lazy" />
         </Link>
         <div className="min-w-0 flex-1">
           <Link
@@ -62,9 +63,21 @@ const BagAddOn = ({ piece, effect, rate, adding, disabled, onAdd, onLeave }: Pro
           >
             <span className="block truncate">{piece.name}</span>
           </Link>
-          <p className="nc-small">
-            <span className="nc-small nc-small--ink">{adds}</span>
-            {effect.adds > 0 && effect.adds < piece.price && <del className="ml-2">{piece.priceLabel}</del>}
+          <p className="nc-small truncate" data-addon-effect>
+            {effect.adds > 0 ? (
+              <span className="nc-small nc-small--ink">
+                Adds {rupees(effect.adds)}
+                <span className="rn-addon__long"> to your total</span>
+              </span>
+            ) : (
+              <span className="nc-small nc-small--ink">{effect.adds < 0 ? `Your total drops by ${rupees(-effect.adds)}` : "Your total stays the same"}</span>
+            )}
+            {lifts && effect.adds > 0 && (
+              <span className="rn-addon__rate nc-gold" aria-hidden="true">
+                {" "}
+                · {percent(effect.rate)} off your bag
+              </span>
+            )}
           </p>
         </div>
         <button type="button" onClick={onAdd} disabled={disabled} aria-label={`Add ${piece.name} to bag`} className={`${cleanButton({ size: "sm" })} shrink-0`}>

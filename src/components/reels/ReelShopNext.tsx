@@ -433,7 +433,7 @@ const ReelShopNext = ({ hrefFor = productHref }: { hrefFor?: HrefFor }) => {
           <div
             ref={railRef}
             onScroll={onScroll}
-            className="scrollbar-hide mt-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-1 pr-[20%]"
+            className="scrollbar-hide mt-4 flex snap-x snap-mandatory scroll-px-4 gap-3 overflow-x-auto px-4 pb-1 pr-[20%]"
             style={{ overscrollBehaviorX: "contain" }}
           >
             {reels.map((reel, index) => {

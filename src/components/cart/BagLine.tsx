@@ -99,7 +99,12 @@ const BagLine = ({ item, href, onLeave, options, total, was, each, off, adding, 
       )}
       {(was || each) && (
         <p data-line-price className="nc-small mt-0.5 flex flex-wrap items-baseline gap-x-2 tabular-nums">
-          {was ? <del>{was}</del> : null}
+          {was ? (
+            <del>
+              <span className="nc-sr">was </span>
+              {was}
+            </del>
+          ) : null}
           {each ? <span className="nc-small nc-small--ink">{each}</span> : null}
           {off ? <span className="nc-small nc-gold">{off}</span> : null}
         </p>
@@ -113,7 +118,8 @@ const BagLine = ({ item, href, onLeave, options, total, was, each, off, adding, 
           onDecrease={onDecrease}
           onIncrease={onIncrease}
           disabled={busy}
-          decreaseLabel={item.quantity <= 1 ? `Remove ${item.name}` : "Decrease quantity"}
+          decreaseLabel={item.quantity <= 1 ? `Remove ${item.name}` : `One fewer ${item.name}`}
+          increaseLabel={`Add one more ${item.name}`}
         />
         <button type="button" onClick={onRemove} disabled={busy} aria-label={`Remove ${item.name}`} className="nc-small nc-link nc-tap pl-3 disabled:opacity-40 max-[319px]:pl-0">
           Remove

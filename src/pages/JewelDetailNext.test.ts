@@ -122,7 +122,7 @@ describe("redesigned product page", () => {
     const description = code.slice(code.indexOf('id="pdp-panel-description"'), code.indexOf('id="pdp-panel-details"'));
     expect(description).toMatch(/\{piece\.blurb\}/);
     expect(description).toMatch(/\{piece\.stylingTip && <p>\{piece\.stylingTip\}<\/p>\}/);
-    expect(code).toMatch(/const lede = ledeOf\(piece\.blurb\);/);
+    expect(code).toMatch(/const lede = setLede\(specs\.find\(\(spec\) => \/\^set\$\/i\.test\(spec\.label\)\)\?\.value\) \?\? ledeOf\(piece\.blurb\);/);
     expect(code).toMatch(/\{lede && <p className="nc-text rn-lede">\{lede\}<\/p>\}/);
     expect(code.indexOf("rn-lede")).toBeGreaterThan(code.indexOf('id="product-price"'));
     expect(code.indexOf("rn-lede")).toBeLessThan(code.indexOf('id="product-actions"'));
@@ -220,11 +220,11 @@ describe("redesigned product page", () => {
   /* Three bordered badges with icons became one row of plain words, and
      then three ticked benefits: the same values, in the same order, with the
      stone only where the listing has one. */
-  it("says anti-tarnish, skin-friendly and the piece's own plating as ticked benefits under the price, before Add to cart", () => {
+  it("says anti-tarnish, skin-friendly and the piece's own plating as ticked benefits under the price, before Add to bag", () => {
     const benefits = code.indexOf("<PdpAssurances");
     expect(benefits).toBeGreaterThan(code.indexOf('id="product-price"'));
     expect(benefits).toBeLessThan(code.indexOf('id="product-actions"'));
-    expect(code.slice(benefits, benefits + 300)).toMatch(/items=\{\["Anti-tarnish", "Skin-friendly", platingBadge\(finish\), hasZirconeStone\(piece\) && "Zircone Stone"\]\}/);
+    expect(code.slice(benefits, benefits + 300)).toMatch(/items=\{\["Anti-tarnish", "Skin-friendly", platingBadge\(finish\), hasZirconeStone\(piece\) && "Zircone stone"\]\}/);
     expect(code.match(/<PdpAssurances/g)).toHaveLength(1);
     expect(code).not.toMatch(/<CleanDots/);
   });
@@ -247,19 +247,34 @@ describe("redesigned product page", () => {
     expect(code).toMatch(/<Link to="\/jewellery" data-pdp="eyebrow" className="nc-label nc-label--gold nc-tap">\s*\{piece\.category\}\s*<\/Link>/);
   });
 
-  /* The wishlist heart sits beside the name. One mark may sit on the first
-     photograph, "Popular", and only where the shop's own view counts earn it
-     (the listing's "Bestseller" set, read from what is already cached: no
-     request is made for it); the laptop's grid also keeps "+N photos". */
-  it("lays one earned mark over the first photograph, and the count of more", () => {
+  /* The wishlist heart sits beside the name. Two small marks may sit on the
+     first photograph and leave with it when it is swiped: "Popular", only
+     where the shop's own view counts earn it (the listing's "Bestseller"
+     set, read from what is already cached: no request is made for it), and
+     "Video", the way to the piece's reel at the far end of the photos. Over
+     every slide, "Popular" covered the size guide's note and the reel's
+     caption (the conversion review, 25 Nov 2026). The laptop's grid also
+     keeps "+N photos". */
+  it("lays its marks over the first photograph only, and the count of more", () => {
     const phone = code.slice(code.indexOf("const MobileGallery"), code.indexOf("const DesktopGallery"));
     expect(phone).not.toMatch(/\babsolute\b/);
-    expect(phone.match(/rn-tag/g)).toHaveLength(1);
-    expect(phone).toMatch(/\{popular && <span className="rn-tag">Popular<\/span>\}/);
+    expect(phone).toMatch(/\{i === 0 && popular && \(\s*<span className="rn-tag" aria-hidden="true">\s*Popular\s*<\/span>\s*\)\}/);
+    expect(phone).toMatch(/\{i === 0 && galleryReel && \(\s*<button type="button" onClick=\{toReel\} className="rn-tag rn-tag--video"/);
+    /* Each mark is a sibling of the photo's button, never inside it: a
+       button's label hid the word from a screen reader, and a button cannot
+       hold another. */
+    expect(phone).toMatch(/<\/button>\s*\{i === 0 && popular/);
+    expect(phone.match(/className="rn-tag/g)).toHaveLength(2);
+    expect(code).toMatch(/const toReel = \(\) => \{\s*const el = scrollRef\.current;\s*if \(el\) el\.scrollTo\(\{ left: el\.offsetWidth \* images\.length, behavior: "smooth" \}\);/);
+    /* Said once to a reader who cannot see the photograph. */
+    expect(code).toMatch(/\{popular && <span className="nc-sr">Popular piece\.<\/span>\}/);
     expect(phone).toMatch(/className="nc-segs"/);
+    /* The frame that gives up height on a short screen: every slide, the
+       reel's, and the loading shape, so nothing jumps when the page arrives. */
+    expect(code.match(/rn-frame/g)?.length).toBeGreaterThanOrEqual(3);
     const laptop = code.slice(code.indexOf("const DesktopGallery"), code.indexOf("const sizeGuideLink"));
     expect(laptop.match(/\babsolute\b/g)).toHaveLength(1);
-    expect(laptop).toMatch(/\{popular && i === 0 && <span className="rn-tag">Popular<\/span>\}/);
+    expect(laptop).toMatch(/\{popular && i === 0 && \(\s*<span className="rn-tag" aria-hidden="true">\s*Popular\s*<\/span>\s*\)\}/);
     expect(laptop).toMatch(/\+\{more\} \{more === 1 \? "photo" : "photos"\}/);
     expect(code.match(/onClick=\{handleWishlist\}/g)).toHaveLength(1);
     /* Views, not sales, and never for a piece that cannot be bought. */
@@ -268,44 +283,69 @@ describe("redesigned product page", () => {
     expect(code).not.toMatch(/>\s*Bestseller\s*</i);
   });
 
-  /* One filled button with the price in it and Buy Now beside it; the same
-     pair in the phone's bar, after the price. No payment discs in a button.
-     The bar's first watcher is a direct child of #product-actions. */
+  /* Buy now, narrower, then the one filled button with the price in it: the
+     same order as the phone's bar, where the price comes first (the page had
+     them one way and the bar the other). The words are the bag's own ("Add
+     to bag": the offer line, the drawer and "View bag" all say bag). No
+     payment discs in a button. The bar's watcher is a direct child of
+     #product-actions. */
   it("keeps the buttons as #product-actions' own children, the price in the one that adds, the promise right under them", () => {
     const actions = code.slice(code.indexOf('id="product-actions"'), code.indexOf("<PdpTrust"));
-    expect(actions).toMatch(/Add to cart\s*<span className="rn-price-in">\{shown\.priceLabel\}<\/span>/);
-    expect(actions).toMatch(/\{buying \? "Opening…" : "Buy Now"\}/);
-    expect(actions).toMatch(/"Reserve now"/);
+    expect(actions).toMatch(/Add to bag\s*<span className="rn-price-in">\{shown\.priceLabel\}<\/span>/);
+    expect(actions).toMatch(/\{buying \? "Opening…" : "Buy now"\}/);
+    /* A piece that cannot ship now has one button, and it says where it leads. */
+    expect(actions).toMatch(/"Pre-order on WhatsApp"/);
+    expect(code).not.toMatch(/Reserve now|Add to cart"|Buy Now/);
     expect(actions).not.toMatch(/<div/);
-    /* The first button in the box is the one the bar stands for. */
-    expect(actions.indexOf("handleAddToCart")).toBeLessThan(actions.indexOf("handleBuyNow"));
+    /* Buy now first, as in the bar; both are the box's own children. */
+    expect(actions.indexOf("handleBuyNow")).toBeLessThan(actions.indexOf("handleAddToCart"));
+    /* Once this piece is in the bag the filled button opens the bag, and
+       nothing is added a second time. */
+    expect(actions).toMatch(/inBag \? \(\s*"View bag"\s*\)/);
+    expect(code).toMatch(/const inBag = !isPreorder && items\.some\(\(item\) => cartKeyOf\(item\) === cartKeyOf\(cartItem\(\)\)\);/);
+    expect(code).toMatch(/setDrawerOpen\(true\);\s*if \(inBag\) return;\s*await addItem\(cartItem\(\)\);/);
+    /* What adding it does to a bag that holds pieces is said just above. */
+    expect(code.indexOf("data-offer-note")).toBeLessThan(code.indexOf('id="product-actions"'));
+    expect(code).toMatch(/const offerNote = !isPreorder && totalItems > 0 \? offerLine\(\{ subtotal, totalItems, promoCode \}, shown\.price, inBag\) : "";/);
     /* In stock, the date a visitor is quoted and the way to a pincode check;
        a piece that cannot ship now says its one lead time instead. */
     const promise = actions.slice(actions.indexOf('className="rn-ship"'));
     expect(promise).toMatch(/`\$\{SOLD_OUT_LEAD\}, gift-boxed`/);
-    expect(promise).toMatch(/<strong>In stock<\/strong>/);
-    expect(promise).toMatch(/\{arrivesBy && <span>Arrives \{arrivesBy\}<\/span>\}/);
+    expect(promise).toMatch(/<strong>\{sizeInStock \? `\$\{sizeInStock\} in stock` : "In stock"\}<\/strong>/);
+    expect(promise).toMatch(/arrivesBy && <span>Arrives \{arrivesBy\}<\/span>/);
+    /* A pincode checked before gets its own date in place of the range. */
+    expect(promise).toMatch(/To \{shipTo\.pincode\} by \{shipTo\.eta\}/);
     expect(promise).toMatch(/onClick=\{toDelivery\}/);
-    expect(code).toMatch(/\["Free insured shipping", !isPreorder && arrivesBy \? `Arrives \$\{arrivesBy\}` : null, "Gift-boxed"\]/);
+    /* A pre-order's line no longer repeats the shipping the grid under it says. */
+    expect(promise).toMatch(/"Pre-orders are arranged on WhatsApp, with the delivery date\."/);
+    expect(code).not.toMatch(/"Free insured shipping", !isPreorder/);
     expect(code).toMatch(/<PdpTrust reserved=\{isPreorder\} \/>/);
     /* The bar: the price, then the same two buttons. */
     const bar = code.slice(code.indexOf('className="rn-bar"'));
     expect(bar).toMatch(/<b>\{shown\.priceLabel\}<\/b>/);
-    expect(bar).toMatch(/\{buying \? "Opening…" : "Buy Now"\}/);
-    expect(bar).toMatch(/\{isPreorder \? "Reserve now" : "Add to cart"\}/);
+    expect(bar).toMatch(/\{buying \? "Opening…" : "Buy now"\}/);
+    expect(bar).toMatch(/\{isPreorder \? "Pre-order" : inBag \? "View bag" : "Add to bag"\}/);
+    /* While the page's own price is on screen the bar does not print it again. */
+    expect(bar).toMatch(/data-price-shown=\{priceOnScreen \? "" : undefined\}/);
+    /* A ring says the size it is about to add. */
+    expect(bar).toMatch(/isRing && !isPreorder && sizeInStock \? \(\s*<span>Size \{sizeInStock\}<\/span>/);
   });
 
-  /* "Complete the look" as a bundle: the piece as chosen and its pairings,
-     ticked, totalled by the bag's own arithmetic, added with one button. A
-     piece that is reserved on WhatsApp cannot go in the bag with them, so it
-     keeps the cards. */
-  it("offers the pairings as a bundle for a piece that ships now, as cards for one that is reserved", () => {
-    const bundle = code.slice(code.indexOf("<PdpBundle"), code.indexOf("<PdpBundle") + 600);
-    expect(code).toMatch(/\{pairings\.length > 0 && !isPreorder && \(\s*<PdpBundle/);
+  /* "Complete the look" as a bundle: the piece as chosen and the pairings
+     one tap can add, ticked, totalled by the bag's own arithmetic, added
+     with one button. A piece that is pre-ordered on WhatsApp cannot go in
+     the bag with them, so it keeps the cards; so does a piece none of whose
+     pairings can be ticked. */
+  it("offers the pairings as a bundle for a piece that ships now, as cards for one that is pre-ordered", () => {
+    const bundle = code.slice(code.indexOf("<PdpBundle"), code.indexOf("<PdpBundle") + 700);
+    expect(code).toMatch(/\{bundlePieces\.length > 0 && !isPreorder && \(\s*<PdpBundle/);
     expect(bundle).toMatch(/line: cartItem\(\)/);
     expect(bundle).toMatch(/price: shown\.price/);
-    expect(bundle).toMatch(/pieces=\{pairings\}/);
-    expect(code).toMatch(/\{pairings\.length > 0 && isPreorder && \(/);
+    expect(bundle).toMatch(/pieces=\{bundlePieces\}/);
+    /* It is told when the bag already holds this piece, so it never adds it twice. */
+    expect(bundle).toMatch(/anchorInBag=\{inBag\}/);
+    expect(code).toMatch(/const bundlePieces = useMemo\(\(\) => pairingPool\.filter\(\(p\) => !choiceNeeded\(p\)\)\.slice\(0, 3\), \[pairingPool\]\);/);
+    expect(code).toMatch(/\{pairings\.length > 0 && \(isPreorder \|\| bundlePieces\.length === 0\) && \(/);
     expect(code.indexOf("<PdpBundle")).toBeGreaterThan(code.indexOf("<CleanDropdowns"));
     expect(code.indexOf("<PdpBundle")).toBeLessThan(code.indexOf("<PdpReviews"));
   });
@@ -388,8 +428,9 @@ describe("stock on the product page and reel cards", () => {
      days in Delivery & returns and a dated pincode promise. */
   it("says one lead time for a piece it cannot ship now", () => {
     expect(code).toMatch(/const leadTime = preorderLead\(\{ soldOut, variantSoldOut, sizePreorder, size: selectedSize \}\);/);
-    expect(code).toMatch(/\{leadTime \? `\$\{leadTime\} ` : arrivesBy \? `Order today and it arrives by \$\{arrivesBy\}\. `/);
-    expect(code).toMatch(/<PincodeChecker preorder=\{isPreorder\} look="clean" \/>/);
+    /* "arrives by 30 Nov – 2 Dec": "by" cannot take a range. */
+    expect(code).toMatch(/\{leadSaid \? `\$\{leadSaid\} ` : arrivesBy \? `Order today and it arrives \$\{arrivesBy\}\. `/);
+    expect(code).toMatch(/<PincodeChecker preorder=\{isPreorder\} look="clean" onChecked=\{noteShipTo\} \/>/);
     expect(code).not.toMatch(/45 days|within 2 weeks/);
   });
 });

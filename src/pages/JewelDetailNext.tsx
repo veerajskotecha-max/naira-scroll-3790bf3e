@@ -1,7 +1,7 @@
 import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState, type MouseEvent } from "react";
 import { Link, Navigate, useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
-import { ArrowLeft, Heart } from "lucide-react";
+import { ArrowLeft, Heart, Play } from "lucide-react";
 import JsonLd from "@/components/JsonLd";
 import Footer from "@/components/Footer";
 import PincodeChecker from "@/components/product/PincodeChecker";
@@ -17,7 +17,9 @@ import PdpOfferTracker from "@/components/pdp/PdpOfferTracker";
 import PdpTrust from "@/components/pdp/PdpTrust";
 import PdpBundle from "@/components/pdp/PdpBundle";
 import RenewStyles from "@/components/pdp/RenewStyles";
-import { ledeOf } from "@/components/pdp/renew";
+import { ledeOf, offerLine, setLede } from "@/components/pdp/renew";
+import { usePromoCode } from "@/components/pdp/usePromoCode";
+import { cartKeyOf } from "@/lib/cartLines";
 import { useReveal } from "@/components/pdp/useReveal";
 import NearView from "@/components/pdp/NearView";
 import { bestsellerHandles, readCachedVisits } from "@/lib/shopOrder";
@@ -34,12 +36,12 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { useWishlist } from "@/contexts/WishlistContext";
 import { useCart } from "@/contexts/CartContext";
 import { isAdjustableRing, adjustableFitNote, adjustableSizes } from "@/data/ringFit";
-import { jewelleryEnquiryUrl, preorderWhatsAppUrl, WHATSAPP_NUMBER, PREORDER_NOTE, SOLD_OUT_LEAD, SIZE_PREORDER_LEAD, VARIANT_SOLD_OUT_LEAD, preorderLead, type JewelPiece } from "@/data/jewellery";
+import { preorderWhatsAppUrl, WHATSAPP_NUMBER, PREORDER_NOTE, SOLD_OUT_LEAD, SIZE_PREORDER_LEAD, VARIANT_SOLD_OUT_LEAD, preorderLead, type JewelPiece } from "@/data/jewellery";
 import { absoluteUrl } from "@/lib/absoluteUrl";
 import { shopifyImage, shopifyOgImage, shopifySrcSet, OG_IMAGE_SIZE } from "@/lib/shopifyImage";
 import { linkPlaced } from "@/lib/viewContent";
 import { useViewContent } from "@/hooks/useViewContent";
-import { deliveryRangeFromNow } from "@/lib/serviceability";
+import { addWorkingDays, deliveryRangeFromNow, formatDeliveryDate, getServiceability, isValidPincode } from "@/lib/serviceability";
 import { isPreviewPath, previewProductPath } from "@/lib/preview";
 import { completeTheLook, isSetRow, moreLikeThis } from "@/lib/pairings";
 import { buyableValues, cartLineFor, choiceNeeded, choices, choose, findVariant, oneTapVariant, sizeOption, variantLabel } from "@/lib/variants";
@@ -163,6 +165,7 @@ const linen = "bg-[var(--nc-linen)]";
 const JewelDetailSkeleton = () => (
   <div className="nf-clean min-h-screen">
     <CleanStyles />
+    <RenewStyles />
     <Helmet>
       <title>Loading piece | Naira Flore</title>
       <meta name="robots" content="noindex" />
@@ -170,7 +173,7 @@ const JewelDetailSkeleton = () => (
     <span className="sr-only" role="status">Loading piece</span>
     <div className="mx-auto max-w-[1400px] pb-16 pt-[107px] md:px-6 md:pt-[126px]" aria-hidden="true">
       <div className="flex flex-col lg:grid lg:items-start lg:gap-0" style={{ gridTemplateColumns: "1fr 1fr" }}>
-        <div className={`w-full ${linen}`} style={{ aspectRatio: MOBILE_FRAME }} />
+        <div className={`rn-frame w-full ${linen}`} style={{ aspectRatio: MOBILE_FRAME }} />
         <div className="mt-6 px-4 lg:mt-0 lg:px-10">
           <div className={`h-8 w-4/5 ${linen}`} />
           <div className={`mt-4 h-6 w-1/3 ${linen}`} />
@@ -365,7 +368,8 @@ const JewelDetailNext = () => {
   }, [piece, lookupMissing, catalogueLoading, snapshotPending, lookup.isLoading, isLive, handle]);
   const isMobile = useIsMobile();
   const { toggleItem, isWishlisted } = useWishlist();
-  const { addItem, buyNow, setDrawerOpen, isLoading: cartLoading } = useCart();
+  const { items, totalItems, subtotal, addItem, buyNow, setDrawerOpen, isLoading: cartLoading } = useCart();
+  const promoCode = usePromoCode();
   const [buying, setBuying] = useState(false);
 
   /* Naira's palette for everything on screen while this page is open,
@@ -475,6 +479,23 @@ const JewelDetailNext = () => {
     if (typeof navigator !== "undefined" && navigator.webdriver) return;
     setArrivesBy(deliveryRangeFromNow());
   }, []);
+  /* A pincode the shopper has checked before (the checker in Delivery keeps
+     it): the promise under the buttons is then theirs, a date for their own
+     pincode rather than the range every visitor is quoted. Read once the
+     page is drawn, and again whenever the checker answers. */
+  const [shipTo, setShipTo] = useState<{ pincode: string; eta: string } | null>(null);
+  const noteShipTo = useCallback((pincode: string | null) => {
+    const info = pincode && isValidPincode(pincode) ? getServiceability(pincode) : null;
+    setShipTo(info ? { pincode: info.pincode, eta: formatDeliveryDate(addWorkingDays(new Date(), info.days)) } : null);
+  }, []);
+  useEffect(() => {
+    if (typeof navigator !== "undefined" && navigator.webdriver) return;
+    try {
+      noteShipTo(localStorage.getItem("naira-pincode"));
+    } catch {
+      /* storage blocked: the range stays */
+    }
+  }, [noteShipTo]);
   const [heartPopped, setHeartPopped] = useState(false);
 
   /* The reel a piece appears in becomes the gallery's last slide. Its list is
@@ -516,6 +537,9 @@ const JewelDetailNext = () => {
      that is away stays away. A bar that is up (the page opened with the
      button cut by the edge) stays up until the button is whole, as before. */
   const barShown = useRef<boolean | null>(null);
+  /* While the page's own price is on screen the bar leaves its copy out: on
+     a small phone the two stood 24px apart, the same two figures twice. */
+  const [priceOnScreen, setPriceOnScreen] = useState(true);
   useEffect(() => {
     barShown.current = null;
     const check = () => {
@@ -529,8 +553,15 @@ const JewelDetailNext = () => {
       const rungs = document.querySelector("[data-offer-ladder] ul")?.getBoundingClientRect();
       const offerClear = !rungs || rungs.bottom > window.innerHeight || rungs.bottom < window.innerHeight - barHeight;
       const arriving = r.top < window.innerHeight && r.bottom > window.innerHeight;
-      const next = notFullyShown && priceClear && offerClear && !(arriving && barShown.current === false);
+      /* The bundle has a button of its own ("Add 2 pieces"): while that is
+         on screen the bar steps aside, so two different Adds never share it. */
+      const bundle = document.querySelector("[data-bundle-add]")?.getBoundingClientRect();
+      const bundleClear = !bundle || bundle.top >= window.innerHeight || bundle.bottom <= 0;
+      const next = notFullyShown && priceClear && offerClear && !(arriving && barShown.current === false) && bundleClear;
       barShown.current = next;
+      const priceRect = price?.getBoundingClientRect();
+      const shown = Boolean(priceRect && priceRect.bottom > 0 && priceRect.top < window.innerHeight);
+      setPriceOnScreen((cur) => (cur === shown ? cur : shown));
       /* Writing the same value back keeps React from rendering at all, so a
          reflow that changed nothing cannot ask for another layout pass. */
       setStickyBarVisible((cur) => (cur === next ? cur : next));
@@ -598,7 +629,12 @@ const JewelDetailNext = () => {
     };
   }, [isMobile, images.length]);
 
-  const pairings = useMemo(() => (piece ? completeTheLook(piece, jewellery, 3) : []), [piece, jewellery]);
+  /* The page's pairings, best first. The cards show the first three; the
+     bundle lists the first three that one tap can add, since a piece that
+     needs a size or a month chosen cannot be ticked. */
+  const pairingPool = useMemo(() => (piece ? completeTheLook(piece, jewellery, 6) : []), [piece, jewellery]);
+  const pairings = useMemo(() => pairingPool.slice(0, 3), [pairingPool]);
+  const bundlePieces = useMemo(() => pairingPool.filter((p) => !choiceNeeded(p)).slice(0, 3), [pairingPool]);
   const similar = useMemo(() => (piece ? moreLikeThis(piece, jewellery, 8) : []), [piece, jewellery]);
   /* Among the shop's ten most viewed pieces that can be bought: the set the
      listing marks "Bestseller", from the counts it already holds (cached, or
@@ -644,13 +680,15 @@ const JewelDetailNext = () => {
   const saving = shown.compareAtPrice && shown.compareAtPrice > shown.price ? shown.compareAtPrice - shown.price : 0;
   const steel = /stainless steel/i.test(piece.materials);
   const waterproof = /waterproof/i.test(piece.materials) || /waterproof/i.test(listedCare ?? "");
-  const enquiryHref = jewelleryEnquiryUrl(piece.name);
   /* A pre-order is a sold-out piece, or a ring size we do not stock (US 5 / 7). */
   const sizePreorder = isRing && !sizeName && !adjustable && ringSizes.find((r) => r.value === selectedSize)?.status === "preorder";
   /* ...or a variant Shopify has sold out of. */
   const isPreorder = soldOut || sizePreorder || variantSoldOut;
   /* ...and has the one lead time its state carries, wherever delivery is said. */
   const leadTime = preorderLead({ soldOut, variantSoldOut, sizePreorder, size: selectedSize });
+  /* One word for one thing on this page: the chips and the button say
+     "pre-order", so the lead time does too (the shared line says "Reserve it"). */
+  const leadSaid = leadTime === VARIANT_SOLD_OUT_LEAD ? "Pre-order it on WhatsApp and we will confirm the delivery date." : leadTime;
   /* A ring Shopify does not sell in sizes is sized from the US list
      (`ringSizes`), and the size rides on the line as a note, a metal chosen or
      not (Droplet Open Ring is sold in gold and silver, not in sizes). */
@@ -665,8 +703,10 @@ const JewelDetailNext = () => {
     priceLabel: shown.priceLabel,
     choice: choiceLine || undefined,
   });
-  const sizedEnquiryHref = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
-    `Hi Naira Flore, I'd love to order the "${piece.name}"${choiceLine ? ` in ${choiceLine}` : ""} Could you share availability and next steps?`,
+  /* "Questions?" in Delivery: a question about this piece as chosen. (It
+     used to open on "I'd love to pre-order…", on pieces that ship today.) */
+  const questionHref = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
+    `Hi Naira Flore, I have a question about the "${piece.name}"${choiceLine ? ` in ${choiceLine}` : ""}.`,
   )}`;
 
   /* The variant chosen goes in the bag as itself, its size included; a ring
@@ -685,12 +725,24 @@ const JewelDetailNext = () => {
           size: noteSize,
         };
 
+  /* This piece, as chosen, is already a line of the bag: the page stops
+     selling it a second time. The filled button opens the bag, the sentence
+     above it says so, and the bundle no longer adds it again (the conversion
+     review of 25 Nov 2026 found "Add 2 pieces" putting a second pair of hoops
+     in). One more of the same is a tap on + in the bag. */
+  const inBag = !isPreorder && items.some((item) => cartKeyOf(item) === cartKeyOf(cartItem()));
+  /* What adding this piece does to a bag that already holds pieces, said
+     beside the button it is about; nothing on an empty bag, where the offer
+     panel below says it all. */
+  const offerNote = !isPreorder && totalItems > 0 ? offerLine({ subtotal, totalItems, promoCode }, shown.price, inBag) : "";
+
   /* The bag opens at the tap with the piece on its way in, and says so there
      if Shopify cannot add it. It used to open only once Shopify answered,
      one to three seconds on 4G. */
   const handleAddToCart = async () => {
     if (isPreorder) return handlePreOrder();
     setDrawerOpen(true);
+    if (inBag) return;
     await addItem(cartItem());
   };
 
@@ -723,11 +775,11 @@ const JewelDetailNext = () => {
       q: "Will it tarnish?",
       a: `It is ${finishInSentence}${steel && !/steel/i.test(finish) ? " on surgical stainless steel" : ""}${
         waterproof ? ", waterproof and made not to tarnish" : ", made to resist tarnish"
-      }, and the finish is covered by our 3-year plating assurance — cared for well, it keeps its colour for a lifetime.`,
+      }, and the finish is covered by our 3-year plating assurance.`,
     },
     {
       q: "Sensitive skin?",
-      a: `Every Naira piece is made to be skin-safe for everyday wear${steel ? ", on a surgical stainless steel base" : ""}. If it does not suit you, return it within 7 days.`,
+      a: `Every Naira piece is made to be skin-safe for everyday wear${steel ? ", on a surgical stainless steel base" : ""}.`,
     },
   ];
 
@@ -784,24 +836,32 @@ const JewelDetailNext = () => {
     return alt === `${piece.name} view ${i + 1}` ? label : `${label}: ${alt}`;
   };
 
-  /* The phone's photos: edge to edge, swiped, nothing laid over them. The 2px
-     line under them says which one is showing (the reel, when the piece is in
-     one, is its last segment). */
+  /* The phone's photos: edge to edge, swiped. The 2px line under them says
+     which one is showing (the reel, when the piece is in one, is its last
+     segment). Two small marks ride on the first photo and leave with it:
+     "Popular", where the shop's own counts earn it, and "Video", the way to
+     the reel at the far end. Each slide is a frame of its own, so a mark can
+     sit beside the photo's button, not inside it. On a short screen the
+     frame gives up some height (renew.css `.rn-frame`), so the name, the
+     price and a buy button share the first screen with the photo. */
+  const toReel = () => {
+    const el = scrollRef.current;
+    if (el) el.scrollTo({ left: el.offsetWidth * images.length, behavior: "smooth" });
+  };
   const MobileGallery = (
     <div className="relative">
-      {popular && <span className="rn-tag">Popular</span>}
       <div
         ref={scrollRef}
         className="scrollbar-hide flex snap-x snap-mandatory overflow-x-auto"
         style={{ scrollbarWidth: "none", WebkitOverflowScrolling: "touch", overscrollBehaviorX: "contain" }}
       >
         {images.map((img, i) => (
+          <div key={i} className="relative w-full shrink-0 snap-center" style={{ scrollSnapStop: "always" }}>
           <button
             type="button"
-            key={i}
             onClick={() => openLightbox(i)}
-            className={`block w-full shrink-0 cursor-zoom-in snap-center p-0 ${linen}`}
-            style={{ aspectRatio: MOBILE_FRAME, scrollSnapStop: "always" }}
+            className={`rn-frame block w-full cursor-zoom-in p-0 ${linen}`}
+            style={{ aspectRatio: MOBILE_FRAME }}
             aria-label={openLabel(img, i)}
           >
             {(i === 0 || !prerendering) && (
@@ -819,10 +879,22 @@ const JewelDetailNext = () => {
               />
             )}
           </button>
+          {i === 0 && popular && (
+            <span className="rn-tag" aria-hidden="true">
+              Popular
+            </span>
+          )}
+          {i === 0 && galleryReel && (
+            <button type="button" onClick={toReel} className="rn-tag rn-tag--video" aria-label={`Watch ${piece.name} in a Naira reel`}>
+              <Play size={9} strokeWidth={0} fill="currentColor" aria-hidden="true" />
+              Video
+            </button>
+          )}
+          </div>
         ))}
         {galleryReel && (
           <div
-            className="relative w-full shrink-0 snap-center bg-[var(--nc-ink)]"
+            className="rn-frame relative w-full shrink-0 snap-center bg-[var(--nc-ink)]"
             style={{ aspectRatio: MOBILE_FRAME, scrollSnapStop: "always" }}
             aria-label={`${piece.name} in a Naira reel`}
           >
@@ -893,7 +965,11 @@ const JewelDetailNext = () => {
                 />
               </picture>
             )}
-            {popular && i === 0 && <span className="rn-tag">Popular</span>}
+            {popular && i === 0 && (
+              <span className="rn-tag" aria-hidden="true">
+                Popular
+              </span>
+            )}
             {/* The other mark on a photograph: that there are more of them. */}
             {more > 0 && i === count - 1 && (
               <span className="nc-label absolute bottom-3 right-3 bg-[var(--nc-ivory)] px-2.5 py-1.5">
@@ -914,13 +990,15 @@ const JewelDetailNext = () => {
     </button>
   );
   const stockNote = "nc-small mt-2";
-  /* The delivery promise in one line under the buttons: free shipping, the
-     date a visitor is quoted (the pre-built page and a reserved piece carry
-     none), the gift box. Each fact stays whole if a narrow phone wraps it. */
-  const promise = ["Free insured shipping", !isPreorder && arrivesBy ? `Arrives ${arrivesBy}` : null, "Gift-boxed"].filter(Boolean);
-  /* The piece's own first sentence, under the price, when it is short enough
-     to read at a glance; the description below then opens on a tap. */
-  const lede = ledeOf(piece.blurb);
+  /* The size that ships, named in the promise under the buttons ("US 6 in
+     stock"): the note that used to say so above them said stock twice. */
+  const sizeInStock = sizeName ? `${isRing ? "US" : "Size"} ${chosen[sizeName] ?? ""}`.trim() : noteSize;
+  /* A piece sold as a set says so wherever it is named beside others. */
+  const soldAsSet = specs.some((spec) => /^set$/i.test(spec.label));
+  /* One line under the price: what is in a set, for a piece sold as one;
+     otherwise the piece's own first sentence, when it is short enough to
+     read at a glance. The description below then opens on a tap. */
+  const lede = setLede(specs.find((spec) => /^set$/i.test(spec.label))?.value) ?? ledeOf(piece.blurb);
   /* "Check pincode" under the buttons opens the delivery row and puts the
      cursor in its field, without a history step. */
   const toDelivery = () => {
@@ -1011,7 +1089,7 @@ const JewelDetailNext = () => {
           <div className="hidden md:block lg:sticky lg:top-[140px] lg:h-[calc(100vh-156px)] lg:self-start">{DesktopGallery}</div>
 
           <div className="w-full px-4 pt-3.5 md:px-0 md:pt-6 lg:pl-10 lg:pt-0 xl:pl-12 min-[1440px]:pl-16">
-          <div className="lg:max-w-[520px]">
+          <div className="lg:max-w-[600px]">
             {/* Category, the way back to the collection; and the shop's own
                 rating (lib/trust), the way down to the reviews. */}
             <div className="flex items-center justify-between gap-3">
@@ -1028,9 +1106,9 @@ const JewelDetailNext = () => {
                 aria-label={`Rated ${SHOP_RATING} out of 5. Trusted by ${clientsLabel} clients. Jump to reviews.`}
               >
                 <span aria-hidden="true" className="nc-star">★</span>
-                <span className="nc-small nc-small--ink">{SHOP_RATING}</span>
+                <span className="nc-small nc-small--ink">{SHOP_RATING}/5</span>
                 <span aria-hidden="true">·</span>
-                <span className="nc-link">{clientsLabel} clients</span>
+                <span className="nc-link">Trusted by {clientsLabel} clients</span>
               </a>
             </div>
 
@@ -1041,6 +1119,8 @@ const JewelDetailNext = () => {
               <h1 data-pdp="title" className="nc-title min-w-0">
                 {piece.name}
               </h1>
+              {/* The mark on the photograph, for a reader who cannot see it. */}
+              {popular && <span className="nc-sr">Popular piece.</span>}
               <button
                 type="button"
                 onClick={handleWishlist}
@@ -1066,7 +1146,7 @@ const JewelDetailNext = () => {
             {/* Three quick benefits, ticked: the same values, in the same
                 order, as the QUALITY row. Stone evidence comes from the
                 listing, not the generic summary. */}
-            <PdpAssurances items={["Anti-tarnish", "Skin-friendly", platingBadge(finish), hasZirconeStone(piece) && "Zircone Stone"]} />
+            <PdpAssurances items={["Anti-tarnish", "Skin-friendly", platingBadge(finish), hasZirconeStone(piece) && "Zircone stone"]} />
 
             {/* The ways Shopify sells this piece: a metal, a stone, a size, a
                 month. Each value shows whether it can be bought with the other
@@ -1076,11 +1156,17 @@ const JewelDetailNext = () => {
               const isSize = option.name === sizeName;
               /* Ring sizes are US sizes, with a guide; any other size is as Shopify names it. */
               const ringSize = isSize && isRing;
+              /* Ruby, Emerald, Amethyst are colours of the stone the listing
+                 names (cubic zirconia), not three gemstones. */
+              const label = /^stone$/i.test(option.name) ? "Stone colour" : option.name;
+              /* Equal cells: five across for plain sizes, three for a value
+                 that carries a swatch or a "Pre-order" note. */
+              const cols = isSize && option.values.every((value) => buyable[value]) ? 5 : 3;
               return (
                 <div key={option.name} className="mt-4" data-option={option.name}>
                   <div className="flex min-h-[24px] items-center justify-between gap-3">
                     <p className="flex min-w-0 items-baseline gap-2">
-                      <span className="nc-label">{ringSize ? `${option.name} · US` : option.name}</span>
+                      <span className="nc-label">{ringSize ? `${option.name} · US` : label}</span>
                       {chosen[option.name] && <span className="nc-small nc-small--ink">{chosen[option.name]}</span>}
                     </p>
                     {ringSize && sizeGuideLink}
@@ -1099,7 +1185,7 @@ const JewelDetailNext = () => {
                       ))}
                     </select>
                   ) : (
-                    <div role="radiogroup" aria-label={option.name} onKeyDown={onRadioGroupKeyDown} className="nc-chips mt-2">
+                    <div role="radiogroup" aria-label={label} onKeyDown={onRadioGroupKeyDown} className="nc-chips mt-2" data-cols={cols}>
                       {option.values.map((value, i) => {
                         const active = chosen[option.name] === value;
                         const swatch = isSize ? undefined : swatchOf(value);
@@ -1134,7 +1220,13 @@ const JewelDetailNext = () => {
                   <span className="nc-label">Ring size · US</span>
                   {sizeGuideLink}
                 </div>
-                <div role="radiogroup" aria-label="Ring size, US" onKeyDown={onRadioGroupKeyDown} className="nc-chips mt-2">
+                <div
+                  role="radiogroup"
+                  aria-label="Ring size, US"
+                  onKeyDown={onRadioGroupKeyDown}
+                  className="nc-chips mt-2"
+                  data-cols={ringSizesFor(piece).every((size) => size.status !== "preorder") ? 5 : 3}
+                >
                   {ringSizesFor(piece).map((s, i, sizes) => {
                     const active = selectedSize === s.value;
                     return (
@@ -1155,76 +1247,78 @@ const JewelDetailNext = () => {
                 </div>
                 {/* A sold-out ring (or metal) is made to order in every size;
                     the line under Pre-order says when it ships. */}
-                {!soldOut && !variantSoldOut && (
-                  <p className={stockNote}>
-                    {adjustable
-                      ? `US ${selectedSize} ships now. ${adjustableFitNote(piece.handle)}`
-                      : selectedSize === "6"
-                        ? "US 6 is in stock and ships now."
-                        : `US ${selectedSize} is a pre-order, ${SIZE_PREORDER_LEAD}.`}
-                  </p>
+                {!soldOut && !variantSoldOut && (adjustable || sizePreorder) && (
+                  <p className={stockNote}>{adjustable ? adjustableFitNote(piece.handle) : `US ${selectedSize} is a pre-order, ${SIZE_PREORDER_LEAD}.`}</p>
                 )}
               </div>
             )}
             {/* A sold-out piece says its lead time once, under the button. */}
-            {variant && !soldOut && (sizeName || variantSoldOut) && (
+            {variant && !soldOut && variantSoldOut && (
               <p className={stockNote}>
-                {variantSoldOut
-                  ? `${sentence(choiceText(variant.options))} is sold out for now. ${VARIANT_SOLD_OUT_LEAD}`
-                  : `${isRing ? "US" : "Size"} ${chosen[sizeName ?? ""]} is in stock and ships now.`}
+                {sentence(choiceText(variant.options))} is sold out for now. Pre-order it on WhatsApp and we will confirm the delivery date.
               </p>
             )}
             <RingSizeGuideModal isOpen={sizeGuideOpen} onClose={guide.requestClose} highlightSize={sizeName ? chosen[sizeName] ?? selectedSize : selectedSize} adjustable={adjustable} fitSizes={adjustableSizes(piece.handle)} />
 
+            {/* What adding this piece does to the bag as it stands, beside the
+                button it is about. Read out when it changes. */}
+            <p className="rn-offer-note nc-small nc-gold" data-offer-note aria-live="polite" hidden={!offerNote}>
+              {offerNote}
+            </p>
             {/* Quantity stays in the bag; both actions use the same chosen
                 variant. The buttons are this box's own children: the phone's
-                buy bar watches the first of them. */}
-            <div id="product-actions" className="rn-actions mt-5">
-              {/* The one filled button, with the price in it; Buy Now beside
-                  it, narrower. A piece that cannot ship now has one button. */}
+                buy bar watches the first of them. Buy now first and narrower,
+                then the one filled button with the price in it, at the right
+                where the bar keeps it too. A piece that cannot ship now has
+                one button, and it says where it leads. */}
+            <div id="product-actions" className={`rn-actions ${offerNote ? "mt-3" : "mt-5"}`}>
+              {!isPreorder && (
+                <button type="button" onClick={handleBuyNow} disabled={cartLoading || buying} className={`${cleanButton()} rn-buy`}>
+                  {buying ? "Opening…" : "Buy now"}
+                </button>
+              )}
               <button
                 type="button"
                 onClick={isPreorder ? handlePreOrder : handleAddToCart}
                 disabled={cartLoading || buying}
                 className={cleanButton({ fill: "ink" })}
+                data-in-bag={inBag ? "" : undefined}
               >
                 {isPreorder ? (
-                  "Reserve now"
+                  "Pre-order on WhatsApp"
+                ) : inBag ? (
+                  "View bag"
                 ) : (
                   <>
-                    Add to cart
+                    Add to bag
                     <span className="rn-price-in">{shown.priceLabel}</span>
                   </>
                 )}
               </button>
-              {!isPreorder && (
-                <button type="button" onClick={handleBuyNow} disabled={cartLoading || buying} className={`${cleanButton()} rn-buy`}>
-                  {buying ? "Opening…" : "Buy Now"}
-                </button>
-              )}
-              {/* eslint-disable-next-line no-constant-binary-expression -- switched off in Lovable on 30 Sep (it was soldOut &&); kept so it can be switched back */}
-              {false && (
-                <a href={sizedEnquiryHref} target="_blank" rel="noopener noreferrer" className={`${cleanButton({ size: "sm", block: true })} col-span-2`}>
-                  Reserve on WhatsApp
-                </a>
-              )}
             </div>
             {/* The promise, right under the buttons. A piece that ships now
                 says so, with the date a visitor is quoted (the pre-built page
-                carries none) and the way to check a pincode; one that cannot
-                says its one lead time. */}
+                carries none; a pincode checked before gets its own date) and
+                the way to check a pincode; one that cannot says its one lead
+                time, or where a pre-order is arranged. */}
             <p className="rn-ship" data-ship>
               {soldOut ? (
                 `${SOLD_OUT_LEAD}, gift-boxed`
               ) : isPreorder ? (
-                promise.join(" · ")
+                "Pre-orders are arranged on WhatsApp, with the delivery date."
               ) : (
                 <>
                   <span className="rn-dot" aria-hidden="true" />
-                  <strong>In stock</strong>
-                  {arrivesBy && <span>Arrives {arrivesBy}</span>}
+                  <strong>{sizeInStock ? `${sizeInStock} in stock` : "In stock"}</strong>
+                  {shipTo ? (
+                    <span>
+                      To {shipTo.pincode} by {shipTo.eta}
+                    </span>
+                  ) : (
+                    arrivesBy && <span>Arrives {arrivesBy}</span>
+                  )}
                   <button type="button" onClick={toDelivery} className="nc-link nc-link--ink nc-tap">
-                    Check pincode
+                    {shipTo ? "Change" : "Check pincode"}
                   </button>
                 </>
               )}
@@ -1242,7 +1336,7 @@ const JewelDetailNext = () => {
                 remove clutter"). The paragraph that sells the piece is open;
                 specifications, care and delivery wait until asked for. Every
                 panel stays in the page, so all of it is in the HTML. */}
-            <CleanDropdowns className="mt-6">
+            <CleanDropdowns className="mt-8">
               <CleanDropdown title="Description" id="pdp-panel-description" defaultOpen={!lede}>
                 <p>{piece.blurb}</p>
                 {piece.stylingTip && <p>{piece.stylingTip}</p>}
@@ -1293,19 +1387,22 @@ const JewelDetailNext = () => {
 
               <CleanDropdown title="Delivery and returns" id="pdp-panel-delivery">
                 <p>
-                  {leadTime ? `${leadTime} ` : arrivesBy ? `Order today and it arrives by ${arrivesBy}. ` : `${PREORDER_NOTE} `}
+                  {leadSaid ? `${leadSaid} ` : arrivesBy ? `Order today and it arrives ${arrivesBy}. ` : `${PREORDER_NOTE} `}
                   Free insured shipping across India, dispatched from our Mumbai atelier.
                 </p>
+                {/* Cash on delivery is refused in some regions (lib/serviceability),
+                    so it is promised for most pincodes and checked for hers
+                    below; a pre-order is arranged on WhatsApp, not paid here. */}
                 <p>
-                  Cash on delivery available. 7-day returns —{" "}
+                  {!isPreorder && "Cash on delivery on most pincodes: check yours below. "}7-day returns on eligible pieces.{" "}
                   <Link to="/exchange-return-policy" className="nc-link nc-link--ink whitespace-nowrap">
-                    read the policy
+                    Read the policy
                   </Link>
                   .
                 </p>
-                <PincodeChecker preorder={isPreorder} look="clean" />
+                <PincodeChecker preorder={isPreorder} look="clean" onChecked={noteShipTo} />
                 <p>
-                  <a href={isRing ? sizedEnquiryHref : enquiryHref} target="_blank" rel="noopener noreferrer" className="nc-link nc-link--ink nc-tap">
+                  <a href={questionHref} target="_blank" rel="noopener noreferrer" className="nc-link nc-link--ink nc-tap">
                     Questions? Chat with us on WhatsApp
                   </a>
                 </p>
@@ -1318,20 +1415,22 @@ const JewelDetailNext = () => {
             {/* A piece that ships now is offered with its pairings as a bundle:
                 tick, see the total, one button. One that is reserved on
                 WhatsApp cannot be added with them, so it keeps the cards. */}
-            {pairings.length > 0 && !isPreorder && (
+            {bundlePieces.length > 0 && !isPreorder && (
               <PdpBundle
-                title={isSetRow(piece, pairings) ? "Complete the set" : "Complete the look"}
+                title={!soldAsSet && isSetRow(piece, bundlePieces) ? "Complete the set" : "Complete the look"}
                 anchor={{ name: piece.name, image: leadImage ?? cardCover(piece), price: shown.price, note: choiceLine ? sentence(choiceLine) : undefined, line: cartItem() }}
-                pieces={pairings}
+                anchorInBag={inBag}
+                anchorNoun={soldAsSet ? "This set" : "This piece"}
+                pieces={bundlePieces}
                 hrefFor={hrefFor}
                 prefer={variant?.options}
               />
             )}
-            {pairings.length > 0 && isPreorder && (
+            {pairings.length > 0 && (isPreorder || bundlePieces.length === 0) && (
               <section className="rn-reveal mt-12 lg:mt-16" aria-labelledby="complete-the-look">
                 <div className="flex items-baseline justify-between gap-3">
                   <h2 id="complete-the-look" className="nc-heading">
-                    {isSetRow(piece, pairings) ? "Complete the set" : "Complete the look"}
+                    {!soldAsSet && isSetRow(piece, pairings) ? "Complete the set" : "Complete the look"}
                   </h2>
                   <p className="nc-label nc-label--gold shrink-0">
                     {QUANTITY_OFFERS[0].minQuantity} pieces · {percent(QUANTITY_OFFERS[0].rate)} off
@@ -1406,17 +1505,27 @@ const JewelDetailNext = () => {
         }}
         aria-hidden={!stickyBarVisible}
       >
-        <div className="rn-bar" data-single={isPreorder ? "" : undefined}>
-          {/* The price rides in the bar: by the time it shows, the page's own
-              price has usually scrolled away. */}
+        <div className="rn-bar" data-single={isPreorder ? "" : undefined} data-price-shown={priceOnScreen ? "" : undefined}>
+          {/* The price rides in the bar once the page's own has scrolled
+              away; a ring says the size it is about to add under it. */}
           <p className="rn-bar__price">
             <span className="nc-sr">Price </span>
             <b>{shown.priceLabel}</b>
-            {saving > 0 && shown.compareAtLabel && <del>{shown.compareAtLabel}</del>}
+            {isRing && !isPreorder && sizeInStock ? (
+              <span>Size {sizeInStock}</span>
+            ) : (
+              saving > 0 &&
+              shown.compareAtLabel && (
+                <del>
+                  <span className="nc-sr">was </span>
+                  {shown.compareAtLabel}
+                </del>
+              )
+            )}
           </p>
           {!isPreorder && (
             <button type="button" onClick={handleBuyNow} disabled={cartLoading || buying} className={cleanButton({ size: "bar" })}>
-              {buying ? "Opening…" : "Buy Now"}
+              {buying ? "Opening…" : "Buy now"}
             </button>
           )}
           <button
@@ -1425,7 +1534,7 @@ const JewelDetailNext = () => {
             disabled={cartLoading || buying}
             className={cleanButton({ fill: "ink", size: "bar" })}
           >
-            {isPreorder ? "Reserve now" : "Add to cart"}
+            {isPreorder ? "Pre-order" : inBag ? "View bag" : "Add to bag"}
           </button>
         </div>
       </div>

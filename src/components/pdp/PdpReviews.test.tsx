@@ -109,13 +109,15 @@ describe("PdpReviews: the product page's reviews", () => {
     expect(first.textContent).toContain(review.text);
     expect(first.textContent).not.toMatch(/[“”"]/);
     expect(first.querySelectorAll("svg")).toHaveLength(0);
-    // Her photographs, as squares that open.
-    expect(within(first).getAllByRole("button", { name: /^Open customer photo \d+$/ })).toHaveLength(review.images.length);
+    // Her photographs, as squares that open, each named for her: four
+    // buttons on a page all called "Open customer photo 1" told a screen
+    // reader nothing apart.
+    expect(within(first).getAllByRole("button", { name: new RegExp(`^Open ${review.name}'s photo`) })).toHaveLength(review.images.length);
   });
 
   it("opens a customer's photograph in a named dialog", async () => {
     await show();
-    fireEvent.click(screen.getAllByRole("button", { name: "Open customer photo 1" })[0]);
+    fireEvent.click(screen.getAllByRole("button", { name: /^Open .+'s photo/ })[0]);
     const dialog = screen.getByRole("dialog", { name: "Customer photo" });
     expect(dialog.hasAttribute("aria-describedby")).toBe(false);
     expect(within(dialog).getByAltText("Customer photo")).toBeTruthy();

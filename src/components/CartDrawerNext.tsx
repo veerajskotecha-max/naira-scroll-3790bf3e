@@ -40,6 +40,7 @@ import { GST_LABEL } from "@/lib/gst";
   (components/clean): one face, six colours, one hairline, one button.
 
     Your bag  2 pieces                                    ×
+       Black Friday sale is live! Get your offer prices today.
     Buy 2 · extra 10% off      Buy 3 · extra 20% off        the offer, as words
     ━━━━━────────────────────────────────────────────────    over one 2px line
     [photo]  the piece, what the line costs, the MRP it

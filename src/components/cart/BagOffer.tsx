@@ -14,8 +14,8 @@ import { QUANTITY_OFFERS, quantityOfferProgress, rungPosition, TOP_QUANTITY_OFFE
   product page's own stops (renew.css `.rn-bagsteps`). Without them the
   labels over an underline read as tabs (the design review, 25 Nov 2026).
 
-  It says the offer and nothing else. The line that used to ride on top of it,
-  that a sitewide sale was live today, is gone: the offer is permanent.
+  A quiet Black Friday line sits above the track (the owner's wording of
+  28 Nov 2026); the offer itself and its checkout rules are unchanged.
 */
 const BagOffer = ({ totalItems }: { totalItems: number }) => {
   const top = TOP_QUANTITY_OFFER.minQuantity;
@@ -23,6 +23,7 @@ const BagOffer = ({ totalItems }: { totalItems: number }) => {
   const counted = Math.min(Math.max(0, totalItems), top);
   return (
     <div data-ladder className="shrink-0">
+      <p className="nc-small pb-1 text-center text-balance">Black Friday sale is live! Get your offer prices today.</p>
       {/* Equal columns the full width of the sheet (one per rung, two since
           25 Nov 2026), with no side padding: the line under them fills to a
           quarter at two pieces, which is then exactly the middle of "Buy 2",

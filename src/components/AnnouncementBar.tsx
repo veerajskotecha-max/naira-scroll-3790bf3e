@@ -12,10 +12,10 @@ import { QUANTITY_OFFERS } from "@/lib/promo";
  * ("10 and 20% offer shown as extra discount on current discount"). The
  * owner had asked for the percentage to come off the strip on 25 Oct; the
  * later ask puts it back.
- * Then the sale (owner asked for the exclamation mark), the shipping promise
- * and the small-run scarcity line. NAIRA10 used to alternate here too, but the
- * owner asked for the code to come off the header; the code still exists in
- * Shopify and the resolver still accepts it.
+ * Then the Black Friday sale line (the owner's wording of 28 Nov 2026), the
+ * shipping promise and the small-run scarcity line. NAIRA10 used to alternate
+ * here too, but the owner asked for the code to come off the header; the code
+ * still exists in Shopify and the resolver still accepts it.
  *
  * The marquee animates to translateX(-50%), so the run must be exactly two
  * identical halves or it visibly jumps on loop.
@@ -24,7 +24,8 @@ const OFFER_LINE = QUANTITY_OFFERS.map(
   (offer) => `BUY ${offer.minQuantity} GET EXTRA ${Math.round(offer.rate * 100)}% OFF`,
 ).join(" · ");
 
-const MESSAGES = [OFFER_LINE, "SITEWIDE SALE LIVE TODAY!", "FREE INSURED SHIPPING", "MADE IN LIMITED BATCHES"];
+const SALE_LINE = "BLACK FRIDAY SALE IS LIVE! GET YOUR OFFER PRICES TODAY.";
+const MESSAGES = [OFFER_LINE, SALE_LINE, "FREE INSURED SHIPPING", "MADE IN LIMITED BATCHES"];
 
 /* The run keeps the pace it had before the offer led it: 22 s for the three
    older lines, about 108 characters' worth once each line's padding and star
@@ -43,7 +44,7 @@ const AnnouncementBar = () => (
   >
     <Link
       to="/jewellery"
-      aria-label={`Shop the jewellery — ${OFFER_LINE.toLowerCase()}, sitewide sale live today, free insured shipping, made in limited batches`}
+      aria-label={`Shop the jewellery — ${OFFER_LINE.toLowerCase()}, ${SALE_LINE.toLowerCase()}, free insured shipping, made in limited batches`}
       className="flex items-center h-full"
     >
       <div className="animate-marquee flex shrink-0 items-center whitespace-nowrap" style={{ animationDuration: `${RUN_SECONDS}s` }}>

@@ -16,11 +16,10 @@ const rungText = (rung: Element) => {
   return copy.textContent;
 };
 
-/* The bag's offer is one line of words over one 2px line: the rungs,
-   the one the bag sits on marked, and the line filling as pieces arrive. It
-   states the offer and nothing else: the line that rode on top of it, that a
-   sitewide sale was live today, described a permanent offer as a passing one
-   and is gone. */
+/* The bag's offer is one quiet Black Friday line, then the rungs as words
+   over one 2px line: the one the bag sits on marked, and the line filling as
+   pieces arrive. The sale sentence is the owner's wording of 28 Nov 2026;
+   it changes no offer or checkout rule. */
 describe("SimpleLadder: the bag's offer strip", () => {
   /* The owner's offer of 25 Nov 2026, as literals: Buy 2 at 10%, Buy 3 at
      20%, no Buy 4, and each said as extra ("so only buy 2 and 3 remain! 10
@@ -33,23 +32,23 @@ describe("SimpleLadder: the bag's offer strip", () => {
     expect(rungs.map((rung) => rung.getAttribute("data-rung"))).toEqual(QUANTITY_OFFERS.map((offer) => String(offer.minQuantity)));
   });
 
-  it("no longer says a sitewide sale is live today", () => {
+  it("shows the owner's Black Friday sentence above the offers", () => {
     const { container } = render(<SimpleLadder totalItems={3} />);
     const ladder = container.querySelector("[data-ladder]") as HTMLElement;
+    expect(ladder.firstElementChild?.textContent).toBe("Black Friday sale is live! Get your offer prices today.");
     expect(ladder.textContent).not.toMatch(/sitewide sale/i);
-    expect(ladder.textContent).not.toMatch(/live today/i);
     expect(ladder.textContent).not.toMatch(/up to/i);
-    expect(ladder.querySelector("p")).toBeNull();
   });
 
-  /* The strip is two things, the words and the line under them: no second
-     row of labels, nothing to press. The line carries a stop at each step,
+  /* Below the sale sentence, the strip is two things: the words and the line
+     under them, with no second row of labels and nothing to press. The line
+     carries a stop at each step,
      the product page's own diamonds, gold once reached: without them the
      labels over an underline read as tabs (the design review, 25 Nov 2026). */
   it("is the rungs and the line with a stop at each step, and nothing else", () => {
     const { container } = render(<SimpleLadder totalItems={2} />);
     const ladder = container.querySelector("[data-ladder]") as HTMLElement;
-    expect([...ladder.children].map((child) => child.tagName)).toEqual(["UL", "DIV"]);
+    expect([...ladder.children].map((child) => child.tagName)).toEqual(["P", "UL", "DIV"]);
     const line = ladder.lastElementChild as HTMLElement;
     expect(line.firstElementChild?.getAttribute("role")).toBe("progressbar");
     const stops = [...line.querySelectorAll("i")];
@@ -200,8 +199,8 @@ describe("the bag's files draw from the clean system alone", () => {
     expect(text).toMatch(/closeClassName="hidden"/);
   });
 
-  /* The bag is its own offer's only home: no "Sitewide sale live today". */
-  it("does not say a sale is live today anywhere in the bag", () => {
-    for (const file of FILES) expect(code(file)).not.toMatch(/sitewide sale|live today/i);
+  /* The Black Friday wording replaced the old sitewide-sale sentence. */
+  it("does not revive the old sitewide-sale wording anywhere in the bag", () => {
+    for (const file of FILES) expect(code(file)).not.toMatch(/sitewide sale/i);
   });
 });

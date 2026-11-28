@@ -27,7 +27,7 @@ describe("AnnouncementBar", () => {
     const lines = [...container.querySelectorAll("a > div > span")].map((s) => s.firstChild?.textContent);
     expect(lines.slice(0, 4)).toEqual([
       "BUY 2 GET EXTRA 10% OFF · BUY 3 GET EXTRA 20% OFF",
-      "SITEWIDE SALE LIVE TODAY!",
+      "BLACK FRIDAY SALE IS LIVE! GET YOUR OFFER PRICES TODAY.",
       "FREE INSURED SHIPPING",
       "MADE IN LIMITED BATCHES",
     ]);
@@ -45,14 +45,13 @@ describe("AnnouncementBar", () => {
   });
 
   /* A longer run on the same 22 s would race. The duration grows with the
-     run so the letters keep the pace they had: 22 s for the three older lines,
-     34.6 s with the two "extra" rungs leading (170 characters' worth at 22 s
-     per 108; it was 36.3 s with three rungs). */
+     run so the letters keep the pace they had, including the longer Black
+     Friday sentence added on 28 Nov 2026. */
   it("keeps the strip's pace with the longer run", () => {
     const { container } = bar();
     const seconds = parseFloat((container.querySelector(".animate-marquee") as HTMLElement).style.animationDuration);
-    expect(seconds).toBeGreaterThan(33);
-    expect(seconds).toBeLessThan(36);
+    expect(seconds).toBeGreaterThan(40);
+    expect(seconds).toBeLessThan(42);
   });
 
   /* The marquee animates to translateX(-50%): the run must be exactly two
